@@ -133,7 +133,7 @@ class PageLayoutListener {
 		} else {
 			$path = dirname(__DIR__);
 			$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
-			if (false && file_exists($filename)) {
+			if (file_exists($filename)) {
 				$fileTime = strtotime('+1 month',fileatime($filename));
 				if ($fileTime > time())
 					return true;
