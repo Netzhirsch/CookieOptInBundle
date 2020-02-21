@@ -20,13 +20,15 @@ class GetSystemMessagesListener
 			$license[] = PageLayoutListener::checkLicense($rootPoint);
 		}
 
+		$kontaktString = "Bitte kontaktieren Sie Netzhirsch unter <a href=\"tel:045138943740\">0451 / 38 94 37 40</a> oder <a href=\"mailto:netzhirsch@netzhirsch.de\">netzhirsch@netzhirsch.de</a>, um einen Lizenzschlüssel zu erwerben.";
+
 		if (in_array(false, $license)) {
-			return '<p class="tl_error">Keine gültige Lizenz oder Probemonat abgelaufen für das Netzhirsch Cookie Opt In Bundle</p>';
+			return '<p class="tl_error">Keine gültige Lizenz oder Probemonat abgelaufen für das Netzhirsch Cookie Opt In Bundle.<br><b>' . $kontaktString . '</b></p>';
 		}
 
-		$remainingTrialPeriod = PageLayoutListener::checkLicenseRemainingTrialPeriod();
-		if (!empty($remainingTrialPeriod)) {
-			return '<p class="tl_info">Noch '.$remainingTrialPeriod->format('d').' Tage vom Probemonat für das Netzhirsch Cookie Opt In Bundle</p>';
+		$dateInterval = PageLayoutListener::checkLicenseRemainingTrialPeriod();
+		if (!empty($dateInterval)) {
+			return '<p class="tl_info">Noch '.$dateInterval->d.' Tage vom Probemonat für das Netzhirsch Cookie Opt In Bundle.<br><b>' . $kontaktString . '</b></p>';
 		}
 		
 		return '';

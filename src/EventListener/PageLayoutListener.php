@@ -149,19 +149,25 @@ class PageLayoutListener {
 		}
 	}
 
+	/**
+	 * @return \DateInterval|false|null
+	 * @throws Exception
+	 */
 	public static function checkLicenseRemainingTrialPeriod(){
-		$remainingTrialPeriod = null;
+		$dateInterval = null;
 
 		$path = dirname(__DIR__);
 		$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
 		if (file_exists($filename)) {
 			$fileTime = strtotime('+1 month',fileatime($filename));
 			if ($fileTime > time()) {
-				$remainingTrialPeriod = new DateTime();
-				$remainingTrialPeriod->setTimestamp($fileTime-time());
+				$datetimeFile = new DateTime();
+				$datetimeFile->setTimestamp($fileTime);
+				$datetimeToday = new DateTime();
+				$dateInterval = date_diff($datetimeFile, $datetimeToday);
 			}
 		}
-		return $remainingTrialPeriod;
+		return $dateInterval;
 	}
 
 	/**

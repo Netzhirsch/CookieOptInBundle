@@ -67,7 +67,6 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,cssTemplateStyle
 	,defaultCss
 	;isNewCookieVersion
-	,cookieVersion
 ';
 
 // setCookieVersion check for right modul
@@ -471,8 +470,8 @@ class tl_module_extend extends tl_module {
 	
 	public function setCookieVersion(DC_Table $dca)
 	{
-		$modName = $dca->__get('value');
-		if ($modName == 'mod_cookie_opt_in_bar') {
+		$strField = $dca->__get('field');
+		if ($strField == 'isNewCookieVersion') {
 			$cookieOptInBarMod = ModuleModel::findOneByType('cookieOptInBar');
 			if (!empty($cookieOptInBarMod->isNewCookieVersion)) {
 				$cookieOptInBarMod->cookieVersion++;
