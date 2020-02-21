@@ -1,0 +1,93 @@
+<tr>
+	<th>
+		Gruppe
+	</th>
+	<td>
+		<?php echo $tool->cookieToolGroup; ?>
+	</td>
+</tr>
+<tr>
+	<th>
+		Name
+	</th>
+	<td>
+		<?php echo $tool->cookieToolsName; ?>
+	</td>
+</tr>
+<tr>
+	<th>
+		Anbieter
+	</th>
+	<td>
+		<?php echo $tool->cookieToolsProvider; ?>
+	</td>
+</tr>
+<tr>
+	<th>
+		Datenschutz
+	</th>
+	<td>
+		<?php echo '<a href="'; ?>
+		<?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
+		<?php echo '"'; ?>
+		<?php echo ' title="Datenschutzerklärung von '.$tool->cookieToolsProvider.'"'; ?>
+		<?php echo 'target="_blank"'; ?>
+		<?php echo '>'; ?>
+		<?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
+		<?php echo '</a>' ?>
+	</td>
+</tr>
+<tr>
+	<th>
+		Zweck
+	</th>
+	<td>
+		<?php echo $tool->cookieToolsUse; ?>
+	</td>
+</tr>
+<tr>
+	<th>
+		Erlaubt
+	</th>
+	<td>
+		<?php $checked = ''; ?>
+		<?php if(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) || in_array($tool->id,$this->arrData['cookiesSelected'])): ?>
+			<?php $checked = 'checked'; ?>
+		<?php endif; ?>
+		<?php $class = 'ncoi---switch'; ?>
+		<?php $disabled = ''; ?>
+		<?php if($tool->cookieToolGroup == 'Essenziell'): ?>
+			<?php $disabled = ' disabled'; ?>
+			<?php $class .= ' ncoi---disabled'; ?>
+		<?php endif; ?>
+		<?php $label = '<label';?>
+		<?php $label .= ' class="';?>
+		<?php $label .= $class;?>
+		<?php $label .= '"';?>
+		<?php $label .= ' for="';?>
+		<?php $label .= $tool->id;?>
+		<?php $label .= '">';?>
+		<?php echo $label ?>
+
+		<?php $input = '<input id="';?>
+		<?php $input .= $tool->id; ?>
+		<?php $input .= '"';?>
+		<?php $input .= ' title="';?>
+		<?php $input .= $tool->cookieToolsName; ?>
+		<?php $input .= '"';?>
+		<?php $input .= ' class="ncoi---cookie"';?>
+		<?php $input .= ' type="checkbox"';?>
+		<?php $input .= ' data-group="';?>
+		<?php $input .= $tool->cookieToolGroup;?>
+		<?php $input .= '"';?>
+		<?php $input .= ' data-cookie-id="';?>
+		<?php $input .= $tool->id;?>
+		<?php $input .= '"';?>
+		<?php $input .= ' '.$disabled;?>
+		<?php $input .= ' '.$checked;?>
+		<?php $input .= '>';?>
+		<?php echo $input;?>
+		<div class="ncoi---slider ncoi---round"></div>
+		<?php echo '</label>'; ?>
+	</td>
+</tr>

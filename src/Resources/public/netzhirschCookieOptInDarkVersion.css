@@ -1,0 +1,42 @@
+.ncoi---behind {
+	background: rgba(0,0,0,0.21);
+}
+.ncoi---scroll ,.ncoi---scroll--overflow {
+	background: rgba(0, 0, 0, 0.8);
+}
+.ncoi---scroll--overflow .ncoi---container__opacity {
+	background: inherit;
+}
+.ncoi---behind .ncoi---container .ncoi---content{
+	color: #ffffff;
+}
+.ncoi--table a{
+	color: white;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---actions .ncoi--link {
+	background: #9f9f9f;
+	color: white;
+}
+ .ncoi---behind .ncoi---container .ncoi---content .ncoi---actions  .ncoi---link--primary{
+	background: #ffffff;
+	color: black;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---footer .ncoi--link{
+	color: #a2a2a2;
+}
+.ncoi---slider {
+	background-color: #ccc;
+}
+.ncoi---slider:before {
+	background-color: #fff;
+}
+input:checked + .ncoi---slider {
+	background-color: #037c2b;
+}
+.ncoi---disabled input:checked + .ncoi---slider {
+	background-color: #9f9f9f;
+}
+.ncoi---button {
+	background: #5bb5cb;
+	color: white;
+}

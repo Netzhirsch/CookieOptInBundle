@@ -1,0 +1,178 @@
+.ncoi---behind {
+	left: 0;
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	z-index: 999999;
+	bottom: 0;
+	display: flex;
+	align-items: end;
+	justify-content: center;
+	font: 15px/21px "Century Gothic", sans-serif;
+}
+.ncoi---behind .ncoi---container {
+	z-index: 1000000;
+	display: flex;
+	justify-content: center;
+	align-self: end;
+}
+.ncoi---scroll {
+	justify-content: center;
+	align-items: baseline;
+	position: fixed;
+	bottom: 0;
+}
+.ncoi---scroll--overflow {
+	height: 46%;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 1em;
+}
+.ncoi---hidden {
+	display: none !important;
+}
+.ncoi---behind .ncoi---container .ncoi---content{
+	display: flex;
+	flex-direction: column;
+}
+.ncoi---behind .ncoi---container .ncoi---content--question{
+	max-width: 300px;
+}
+.ncoi---hint,.ncoi---behind .ncoi---container .ncoi--headline {
+	padding: 0 1em;
+}
+.ncoi---scroll ,.ncoi---scroll--overflow {
+	border-radius: 4px 4px 0 0;
+}
+.ncoi---info {
+	padding-left: 1em;
+}
+.ncoi---behind .ncoi---container .ncoi---content--info{
+	bottom: 0;
+	max-width: 571px;
+}
+.ncoi---behind .ncoi---container .ncoi--headline{
+	display: flex;
+	font-size: 1.1em;
+}
+.ncoi---behind .ncoi---container .ncoi---content--w20 .ncoi--headline{
+	justify-content: center;
+	flex-direction: column;
+}
+.ncoi--table {
+	text-align: left;
+	font-size: 0.8em;
+	padding-left: 1em;
+}
+.ncoi--table table{
+	table-layout: fixed;
+	width: 100%;
+}
+.ncoi--table th{
+	width: 30%;
+}
+.ncoi--table td{
+	width: 70%
+}
+.ncoi--table td {
+	text-align: left;
+	padding-left: 1em;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---groups{
+	display: flex;
+	margin: 0.5em 1em;
+}
+.ncoi---content--w80 .ncoi---groups{
+	flex-direction: column;
+}
+.ncoi---content--w20 .ncoi---groups{
+	flex-direction: column;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---groups .ncoi---group{
+	display: flex;
+	padding: 0.3em 0;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---actions {
+	display: flex;
+	flex-direction: column;
+	padding: 0 2em;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---actions .ncoi---action {
+	display: flex;
+	justify-content: center;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---actions .ncoi--link, .ncoi---behind .ncoi---container .ncoi---content .ncoi---actions  .ncoi---link--primary{
+	padding: 0.5em;
+	margin: 0.3em 0;
+	border-radius: 5px;
+	text-decoration: none;
+	font-size: 1em;
+}
+.ncoi---behind .ncoi---container .ncoi---content .ncoi---footer{
+	display: flex;
+	justify-content: center;
+	font-size: 0.9em;
+	padding: 1em 0;
+}
+.ncoi---switch {
+	display: inline-block;
+	height: 24px;
+	position: relative;
+	width: 50px;
+}
+
+.ncoi---switch input {
+	display:none;
+}
+.ncoi---slider {
+	bottom: 0;
+	cursor: pointer;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	transition: .4s;
+}
+
+.ncoi---slider:before {
+	bottom: 4px;
+	content: "";
+	height: 16px;
+	left: 4px;
+	position: absolute;
+	transition: .4s;
+	width: 16px;
+}
+
+input:checked + .ncoi---slider:before {
+	transform: translateX(26px);
+}
+
+.ncoi---slider.ncoi---round {
+	border-radius: 34px;
+}
+
+.ncoi---slider.ncoi---round:before {
+	border-radius: 50%;
+}
+.ncoi---slider-container {
+	width: 65%;
+}
+.ncoi---text-label {
+	width: 35%;
+}
+.ncoi---space {
+	height: 2em;
+}
+.ncoi---button {
+	padding: 1em;
+}
+.ncoi---revoke--button {
+	font-size: 0.8em;
+}
+@media screen and (orientation: landscape) and (min-width: 1020px){
+	.ncoi---footer {
+		flex-direction: row;
+		align-items: center;
+	}
+}

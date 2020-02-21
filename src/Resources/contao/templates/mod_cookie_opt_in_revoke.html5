@@ -1,0 +1,23 @@
+<?php $id = $this->arrData['cssID'] ?>
+<?php $id = str_replace(' id=','',$id)?>
+<?php $id = str_replace('"','',$id)?>
+<?php $class = $this->arrData['class'] ?>
+
+<div
+	id="<?php echo $id ?>"
+	class="netzhirschCookieOptIn ncoi---mod-missing <?php echo $class ?>"
+	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
+>
+	<div
+			id="ncoi-allowed"
+			class="netzhirschCookieOptInContainer">
+
+		<a id="ncoi---revoke" class="ncoi---revoke--button" href="#" title="Entscheidnung ändern">
+			<?php echo $this->arrData['revokeButton'] ?>
+		</a>
+		<div class="netzhirschCookieOptInFooter">
+			<?php echo $this->arrData['impress'] ?>
+			<?php echo $this->arrData['privacyPolicy'] ?>
+		</div>
+	</div>
+</div>
