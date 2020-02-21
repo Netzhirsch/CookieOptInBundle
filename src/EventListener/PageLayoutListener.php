@@ -6,6 +6,8 @@ use Contao\Config;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use DateTime;
+use Exception;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use ModuleModel;
 
@@ -15,6 +17,7 @@ class PageLayoutListener {
 	 * @param PageModel   $pageModel
 	 * @param LayoutModel $layout
 	 *
+	 * @throws Exception
 	 */
 	public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
 		$removeModules = false;
@@ -112,7 +115,15 @@ class PageLayoutListener {
 		}
 	}
 
+	/**
+	 * @param PageModel $pageModel
+	 *
+	 * @throws Exception
+	 *
+	 * @return bool
+	 */
 	public static function checkLicense(PageModel $pageModel) {
+
 		$licenseKey = (!empty($pageModel->__get('ncoi_license_key'))) ? $pageModel->__get('ncoi_license_key') : Config::get('ncoi_license_key');
 
 		$domain = $_SERVER['HTTP_HOST'];
@@ -131,15 +142,26 @@ class PageLayoutListener {
 		if (in_array($licenseKey, $hashes)) {
 			return true;
 		} else {
-			$path = dirname(__DIR__);
-			$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
-			if (file_exists($filename)) {
-				$fileTime = strtotime('+1 month',fileatime($filename));
-				if ($fileTime > time())
-					return true;
+			if (!empty(self::checkLicenseRemainingTrialPeriod())) {
+				return true;
 			}
 			return false;
 		}
+	}
+
+	public static function checkLicenseRemainingTrialPeriod(){
+		$remainingTrialPeriod = null;
+
+		$path = dirname(__DIR__);
+		$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
+		if (file_exists($filename)) {
+			$fileTime = strtotime('+1 month',fileatime($filename));
+			if ($fileTime > time()) {
+				$remainingTrialPeriod = new DateTime();
+				$remainingTrialPeriod->setTimestamp($fileTime-time());
+			}
+		}
+		return $remainingTrialPeriod;
 	}
 
 	/**
