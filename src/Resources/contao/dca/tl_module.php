@@ -136,6 +136,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieVersion'] = [
 	'eval' => [
 		'style' => 'display:none'
 	],
+	'default' => '1',
 	'sql' => "int(10) NULL",
 ];
 
