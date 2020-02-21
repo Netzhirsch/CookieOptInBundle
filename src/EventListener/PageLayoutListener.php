@@ -25,8 +25,8 @@ class PageLayoutListener {
 			$removeModules = true;
 
 		$moduleIds = [];
-		$moduleIds[] = $this->checkModules($layout, $removeModules, $moduleIds);
-		$moduleIds[] = $this->checkModules($pageModel, $removeModules, $moduleIds);
+		$moduleIds = $this->checkModules($layout, $removeModules, $moduleIds);
+		$moduleIds = $this->checkModules($pageModel, $removeModules, $moduleIds);
 		$moduleIds = array_unique($moduleIds);
 
 		//module exist

@@ -1,6 +1,7 @@
 {
     "name": "netzhirsch/cookie-opt-in-bundle",
     "type": "contao-bundle",
+	"version": "1.0.14",
     "description": "Netzhirsch Cookie Opt In",
     "license": "GPL-3.0+",
     "authors": [
@@ -20,11 +21,18 @@
     },
     "autoload": {
         "classmap": [
-            "src/ContaoManager/Plugin.php"
+            "src/ContaoManager/Plugin.php",
+			"src/Resources/contao/"
         ],
         "psr-4": {
             "Netzhirsch\\CookieOptInBundle\\": "src/"
-        }
+        },
+		"exclude-from-classmap": [
+			"src/Resources/contao/config/",
+			"src/Resources/contao/dca/",
+			"src/Resources/contao/languages/",
+			"src/Resources/contao/templates/"
+		]
     },
     "extra": {
         "contao-manager-plugin": "Netzhirsch\\CookieOptInBundle\\ContaoManager\\Plugin"
