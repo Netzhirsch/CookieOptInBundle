@@ -83,8 +83,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 		'exclude'   => true,
 		'inputType' => 'textarea',
 		'eval' => ['tl_class'=>'long clr'],
-		'default' => $GLOBALS['TL_LANG']['tl_module']['questionHintDefault'],
-		'sql' => "text NULL default ''"
+		'sql' => "text NULL default ''",
+		'load_callback' => [['tl_module_extend','getDefaultQuestionHintDefault']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
@@ -114,7 +114,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	'inputType' => 'textarea',
 	'eval' => ['tl_class'=>'long'],
 	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
-	'sql' => "text  NULL default ''"
+	'sql' => "text  NULL default ''",
+	'load_callback' => [['tl_module_extend','getDefaultInfoHintDefault']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
@@ -149,11 +150,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
 		'submitOnChange' => true,
 		'doNotCopy' => true,
 	],
-	'default' => [
-		'Essenziell',
-		'Analyse',
-	],
 	'sql' => "blob NULL default '' ",
+	'load_callback' => [['tl_module_extend','getDefaultGroups']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
@@ -462,6 +460,30 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
 
 class tl_module_extend extends tl_module {
 	
+	public function getDefaultQuestionHintDefault($value){
+
+		if (empty($value))
+			$value = $GLOBALS['TL_LANG']['tl_module']['questionHintDefault'];
+
+		return $value;
+	}
+
+	public function getDefaultInfoHintDefault($value){
+
+		if (empty($value))
+			$value = $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'];
+
+		return $value;
+	}
+
+	public function getDefaultGroups($value){
+
+		if (empty($value))
+			$value = ['Essenziell'];
+
+		return $value;
+	}
+
 	public function getDefaultHeadline($value){
 		if ($value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"h2";}')
 			return $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBarDefault'];

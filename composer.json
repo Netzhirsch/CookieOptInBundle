@@ -1,6 +1,7 @@
 {
     "name": "netzhirsch/cookie-opt-in-bundle",
     "type": "contao-bundle",
+	"version": "2.0.0",
     "description": "Netzhirsch Cookie Opt In",
     "license": "GPL-3.0+",
     "authors": [
