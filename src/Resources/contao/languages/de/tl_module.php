@@ -23,11 +23,11 @@ $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBar'] = ['Überschrift'];
 
 $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBarDefault'] = 'a:2:{s:5:"value";s:24:"Datenschutzeinstellungen";s:4:"unit";s:2:"h2";}';
 
-$GLOBALS['TL_LANG']['tl_module']['questionHintDefault'] = 'Wir nutzen Cookies auf unserer Website. Einige von ihnen sind essenziell, während andere uns helfen, diese Website und Ihre Erfahrung zu verbessern.';
+$GLOBALS['TL_LANG']['tl_module']['questionHintDefault'] = ['Wir nutzen Cookies auf unserer Website. Einige von ihnen sind essenziell, während andere uns helfen, diese Website und Ihre Erfahrung zu verbessern.'];
 
 $GLOBALS['TL_LANG']['tl_module']['infoHint'] = ['Informationen','Bitte geben Sie den Informationstext beim Klick auf den Button "Infos" ein.'];
 
-$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = 'In dieser Übersicht können Sie, einzelne Cookies einer Kategorie oder ganze Kategorien an- und abwählen. Ausserdem erhalten Sie weitere Informationen zu den verfügbaren Cookies.';
+$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = ['In dieser Übersicht können Sie, einzelne Cookies einer Kategorie oder ganze Kategorien an- und abwählen. Ausserdem erhalten Sie weitere Informationen zu den verfügbaren Cookies.'];
 
 $GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] =
 	[

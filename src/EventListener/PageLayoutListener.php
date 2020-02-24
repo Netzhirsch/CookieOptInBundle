@@ -21,7 +21,10 @@ class PageLayoutListener {
 	 */
 	public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
 		$removeModules = false;
-		if (!self::checkLicense($pageModel))
+
+		$licenseKey = (!empty($pageModel->__get('ncoi_license_key'))) ? $pageModel->__get('ncoi_license_key') : Config::get('ncoi_license_key');
+
+		if (!self::checkLicense($licenseKey) && !empty(self::checkLicenseRemainingTrialPeriod()))
 			$removeModules = true;
 
 		$moduleIds = [];
@@ -116,15 +119,12 @@ class PageLayoutListener {
 	}
 
 	/**
-	 * @param PageModel $pageModel
 	 *
 	 * @throws Exception
 	 *
 	 * @return bool
 	 */
-	public static function checkLicense(PageModel $pageModel) {
-
-		$licenseKey = (!empty($pageModel->__get('ncoi_license_key'))) ? $pageModel->__get('ncoi_license_key') : Config::get('ncoi_license_key');
+	public static function checkLicense($licenseKey) {
 
 		$domain = $_SERVER['HTTP_HOST'];
 		$hashes[] = hash('sha256',$domain .'netzhirsch');
@@ -142,9 +142,6 @@ class PageLayoutListener {
 		if (in_array($licenseKey, $hashes)) {
 			return true;
 		} else {
-			if (!empty(self::checkLicenseRemainingTrialPeriod())) {
-				return true;
-			}
 			return false;
 		}
 	}
