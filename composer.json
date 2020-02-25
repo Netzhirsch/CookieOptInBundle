@@ -23,12 +23,13 @@
 		"source": "https://github.com/Netzhirsch/CookieOptInBundle"
 	},
 	"require": {
+		"php": "^7.2",
 		"heimrichhannot/contao-fieldpalette-bundle": "0.4.9",
 		"symfony/serializer": "*",
 		"ext-json": "*"
 	},
 	"conflict": {
-		"contao/core": "*",
+		"contao/core": ">4.4",
 		"contao/manager-plugin": "<2.0 || >=3.0"
 	},
 	"autoload": {
