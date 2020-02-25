@@ -13,9 +13,6 @@ use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * @property mixed defaultCss
- */
 class ModuleCookieOptInBar extends Module
 {
 	/**
@@ -46,6 +43,7 @@ class ModuleCookieOptInBar extends Module
 	public function compile(){
 		
 		$this->strTemplate = 'mod_cookie_opt_in_bar';
+		$tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['module'];
 
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
@@ -60,8 +58,9 @@ class ModuleCookieOptInBar extends Module
 		
 		$netzhirschOptInCookie = self::getCookieData(System::getContainer());
 		$data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
-		$data['cookieGroupsSelected'][] = 'Essenziell';
-		$data['cookieGroups'][] ='Essenziell';
+		$data['cookieGroupsSelected'][] = $tlLang['cookieGroup']['essential'];
+		$data['cookieGroups'][] = $tlLang['cookieGroup']['essential'];
+
 		foreach ($data['cookieTools'] as $cookieTool) {
 			foreach ($netzhirschOptInCookie->cookieIds as $cookieId) {
 				if ($cookieId == $cookieTool->id) {
@@ -70,7 +69,7 @@ class ModuleCookieOptInBar extends Module
 					}
 				}
 			}
-			if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroups'])) {
+			if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroups']) && $cookieTool->cookieToolGroup != 'essential' && $cookieTool->cookieToolGroup != 'Essenziell') {
 				$data['cookieGroups'][] = $cookieTool->cookieToolGroup;
 			}
 			
@@ -102,14 +101,14 @@ class ModuleCookieOptInBar extends Module
 		$impress = PageModel::findById($this->__get('impress'));
 		if (!empty($impress)) {
 			$impress = $impress->getFrontendUrl();
-			$impress = '<a class="ncoi--link" href="'.$impress.'" title ="Impressum"> Impressum </a>';
+			$impress = '<a class="ncoi--link" href="'.$impress.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
 			$data['impress'] = $impress;
 		}
 		
 		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));
 		if (!empty($privacyPolicy)) {
 			$privacyPolicy = $privacyPolicy->getFrontendUrl();
-			$privacyPolicy = '<a class="ncoi--link" href="'.$privacyPolicy.'" title ="Datenschutzerklärung"> Datenschutzerklärung </a>';
+			$privacyPolicy = '<a class="ncoi--link" href="'.$privacyPolicy.'" title ="'.$tlLang['privacyPolicy'].'"> '.$tlLang['privacyPolicy'].' </a>';
 			$data['privacyPolicy'] = $privacyPolicy;
 		}
 		

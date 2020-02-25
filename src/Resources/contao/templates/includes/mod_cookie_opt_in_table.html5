@@ -1,6 +1,7 @@
 <tr>
+	<?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
 	<th>
-		Gruppe
+		<?php echo $tlLang['group']; ?>
 	</th>
 	<td>
 		<?php echo $tool->cookieToolGroup; ?>
@@ -8,7 +9,7 @@
 </tr>
 <tr>
 	<th>
-		Name
+		<?php echo $tlLang['name']; ?>
 	</th>
 	<td>
 		<?php echo $tool->cookieToolsName; ?>
@@ -16,7 +17,7 @@
 </tr>
 <tr>
 	<th>
-		Anbieter
+		<?php echo $tlLang['provider']; ?>
 	</th>
 	<td>
 		<?php echo $tool->cookieToolsProvider; ?>
@@ -24,13 +25,13 @@
 </tr>
 <tr>
 	<th>
-		Datenschutz
+		<?php echo $tlLang['privacyPolicy']; ?>
 	</th>
 	<td>
 		<?php echo '<a href="'; ?>
 		<?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
 		<?php echo '"'; ?>
-		<?php echo ' title="Datenschutzerklärung von '.$tool->cookieToolsProvider.'"'; ?>
+		<?php echo ' title="'.$tool->cookieToolsProvider.'"'; ?>
 		<?php echo 'target="_blank"'; ?>
 		<?php echo '>'; ?>
 		<?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
@@ -39,7 +40,7 @@
 </tr>
 <tr>
 	<th>
-		Zweck
+		<?php echo $tlLang['use']; ?>
 	</th>
 	<td>
 		<?php echo $tool->cookieToolsUse; ?>
@@ -47,16 +48,16 @@
 </tr>
 <tr>
 	<th>
-		Erlaubt
+		<?php echo $tlLang['allowed']; ?>
 	</th>
 	<td>
 		<?php $checked = ''; ?>
-		<?php if(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) || in_array($tool->id,$this->arrData['cookiesSelected'])): ?>
+		<?php if(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) || in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell'): ?>
 			<?php $checked = 'checked'; ?>
 		<?php endif; ?>
 		<?php $class = 'ncoi---switch'; ?>
 		<?php $disabled = ''; ?>
-		<?php if($tool->cookieToolGroup == 'Essenziell'): ?>
+		<?php if($tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell'): ?>
 			<?php $disabled = ' disabled'; ?>
 			<?php $class .= ' ncoi---disabled'; ?>
 		<?php endif; ?>

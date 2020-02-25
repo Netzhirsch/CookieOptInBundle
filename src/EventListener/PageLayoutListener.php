@@ -111,7 +111,7 @@ class PageLayoutListener {
 				$cookieToolGroup = $toolTyp->cookieToolGroup;
 				if (empty($cookieToolGroup))
 					$cookieToolGroup = $toolTyp['cookieToolGroup'];
-				if ($cookieToolGroup != 'Essenziell') {
+				if ($cookieToolGroup != 'Essenziell' && $cookieToolGroup != 'essential') {
 					setrawcookie($cookieToolsTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
 				}
 			}

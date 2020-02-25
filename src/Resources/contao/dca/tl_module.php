@@ -82,7 +82,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 		'explanation' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
 		'exclude'   => true,
 		'inputType' => 'textarea',
-		'eval' => ['tl_class'=>'long clr'],
+		'eval' => [
+				'tl_class'=>'long clr',
+				'alwaysSave' => true,
+		],
 		'sql' => "text NULL default ''",
 		'load_callback' => [['tl_module_extend','getDefaultQuestionHintDefault']]
 ];
@@ -112,7 +115,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['infoHint'],
 	'exclude'   => true,
 	'inputType' => 'textarea',
-	'eval' => ['tl_class'=>'long'],
+	'eval' => [
+			'alwaysSave' => true,
+			'tl_class'	=>	'long'
+	],
 	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
 	'sql' => "text  NULL default ''",
 	'load_callback' => [['tl_module_extend','getDefaultInfoHintDefault']]
@@ -479,7 +485,7 @@ class tl_module_extend extends tl_module {
 	public function getDefaultGroups($value){
 
 		if (empty($value))
-			$value = ['Essenziell'];
+			$value = [$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['cookieGroup']['essential']];
 
 		return $value;
 	}
@@ -508,8 +514,8 @@ class tl_module_extend extends tl_module {
 	{
 		$fieldPaletteModel = FieldPaletteModel::findById($dca->id);
 		$modul = ModuleModel::findById($fieldPaletteModel->pid);
-		$cookieToolGroups = $modul->cookieToolGroups;
-		$cookieToolGroups = StringUtil::deserialize($cookieToolGroups[0]['cookieGroups']);
+		$cookieToolGroups = $modul->cookieGroups;
+		$cookieToolGroups = StringUtil::deserialize($cookieToolGroups);
 		if (empty($cookieToolGroups)){
 			$cookieToolGroups = [
 				'Essenziell',

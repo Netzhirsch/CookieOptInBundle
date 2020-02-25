@@ -12,6 +12,9 @@
 ):?>
 	<?php $class = "ncoi---hidden" ?>
 <?php endif; ?>
+
+<?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
+
 <div class="ncoi---behind <?php echo $class ?>">
 	<div
 			id="<?php echo $id ?>"
@@ -36,7 +39,7 @@
 					<div id="ncoi---infos" class="ncoi---hidden">
 						<div class="ncoi--table">
 							<?php if(!empty($this->arrData['cookieTools'])) : ?>
-							<h3>Tools</h3>
+							<h3><?php echo $tlLang['tools']; ?></h3>
 							<table>
 								<tbody>
 								<?php if(!empty($this->arrData['cookieTools'])) : ?>
@@ -62,7 +65,7 @@
 									<?php endif; ?>
 									<?php $class = ''; ?>
 									<?php $disabled = ''; ?>
-									<?php if($cookieGroup == 'Essenziell'): ?>
+									<?php if($cookieGroup == $tlLang['essential']): ?>
 										<?php $disabled = 'disabled'; ?>
 										<?php $class = ' ncoi---disabled'; ?>
 									<?php endif; ?>
@@ -105,10 +108,10 @@
 							<a id="ncoi---allowed" class="<?php echo $classSave ?>" href="#" title="<?php echo $this->arrData['saveButton'] ?>"><?php echo $this->arrData['saveButton'] ?></a>
 							<a class="ncoi---infos--show ncoi---action ncoi--link" href="#" title="Informationen anzeigen">
 								<span class="ncoi---infos--show__active ncoi---hidden">
-									Infos ausblenden
+									<?php echo $tlLang['info'].' '.$tlLang['hidden']; ?>
 								</span>
 								<span class="ncoi---infos--sho__deactivate">
-									Infos
+									<?php echo $tlLang['info'] ?>
 								</span>
 							</a>
 						</div>
