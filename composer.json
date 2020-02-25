@@ -1,39 +1,52 @@
 {
-    "name": "netzhirsch/cookie-opt-in-bundle",
-    "type": "contao-bundle",
-    "description": "Netzhirsch Cookie Opt In",
-    "license": "GPL-3.0+",
-    "authors": [
-        {
-            "name": "Netzhirsch",
-            "homepage": "https://www.netzhirsch.de"
-        }
-    ],
-    "require": {
-        "heimrichhannot/contao-fieldpalette-bundle": "0.4.9",
+	"name": "netzhirsch/cookie-opt-in-bundle",
+	"description": "Netzhirsch Cookie Opt In",
+	"keywords": [
+		"contao",
+		"cookie",
+		"opt-in",
+		"cookiebar"
+	],
+	"type": "contao-bundle",
+	"homepage": "https://www.netzhirsch.de",
+	"license": "GPL-3.0+",
+	"authors": [
+		{
+			"name": "Netzhirsch",
+			"homepage": "https://www.netzhirsch.de"
+		}
+	],
+	"support": {
+		"email": "netzhirsch@netzhirsch.de",
+		"issues": "https://github.com/Netzhirsch/CookieOptInBundle/issues",
+		"wiki": "https://github.com/Netzhirsch/CookieOptInBundle/wiki",
+		"source": "https://github.com/Netzhirsch/CookieOptInBundle"
+	},
+	"require": {
+		"heimrichhannot/contao-fieldpalette-bundle": "0.4.9",
 		"symfony/serializer": "*",
 		"ext-json": "*"
-    },
-    "conflict": {
-        "contao/core": "*",
-        "contao/manager-plugin": "<2.0 || >=3.0"
-    },
-    "autoload": {
-        "classmap": [
-            "src/ContaoManager/Plugin.php",
+	},
+	"conflict": {
+		"contao/core": "*",
+		"contao/manager-plugin": "<2.0 || >=3.0"
+	},
+	"autoload": {
+		"classmap": [
+			"src/ContaoManager/Plugin.php",
 			"src/Resources/contao/"
-        ],
-        "psr-4": {
-            "Netzhirsch\\CookieOptInBundle\\": "src/"
-        },
+		],
+		"psr-4": {
+			"Netzhirsch\\CookieOptInBundle\\": "src/"
+		},
 		"exclude-from-classmap": [
 			"src/Resources/contao/config/",
 			"src/Resources/contao/dca/",
 			"src/Resources/contao/languages/",
 			"src/Resources/contao/templates/"
 		]
-    },
-    "extra": {
-        "contao-manager-plugin": "Netzhirsch\\CookieOptInBundle\\ContaoManager\\Plugin"
-    }
+	},
+	"extra": {
+		"contao-manager-plugin": "Netzhirsch\\CookieOptInBundle\\ContaoManager\\Plugin"
+	}
 }
