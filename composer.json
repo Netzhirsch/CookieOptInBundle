@@ -9,7 +9,7 @@
 	],
 	"type": "contao-bundle",
 	"homepage": "https://www.netzhirsch.de",
-	"license": "GPL-3.0+",
+	"license": "LGPL-3.0-or-later",
 	"authors": [
 		{
 			"name": "Netzhirsch",
@@ -23,14 +23,14 @@
 		"source": "https://github.com/Netzhirsch/CookieOptInBundle"
 	},
 	"require": {
-		"php": "^7.2",
+		"php": ">=7.1",
+		"contao/core-bundle": "^4.4",
 		"heimrichhannot/contao-fieldpalette-bundle": "0.4.9",
 		"symfony/serializer": "*",
 		"ext-json": "*"
 	},
 	"conflict": {
-		"contao/core": ">4.4",
-		"contao/manager-plugin": "<2.0 || >=3.0"
+		"contao/core": "*"
 	},
 	"autoload": {
 		"classmap": [
