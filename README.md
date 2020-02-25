@@ -1,5 +1,8 @@
 # Netzhirsch Cookie Opt In Bundle
 
+[![Latest Version on Packagist](http://img.shields.io/packagist/v/Netzhirsch/cookie-opt-in-bundle.svg)](https://packagist.org/packages/netzhirsch/cookie-opt-in-bundle)
+[![Installations via composer per month](http://img.shields.io/packagist/dm/Netzhirsch/cookie-opt-in-bundle.svg)](https://packagist.org/packages/netzhirsch/cookie-opt-in-bundle)
+
 ## System requirements
  * Webserver
  * PHP 7.2.0 with GDlib, DOM, Phar and SOAP
