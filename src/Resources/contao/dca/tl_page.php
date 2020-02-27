@@ -5,11 +5,11 @@
 //Contao 4.9 need rootfallback
 $root = 'rootfallback';
 
-$GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace('{global_legend', '{ncoi_license_legend},ncoi_license_key,ncoi_license_protected;{global_legend', $GLOBALS['TL_DCA']['tl_page']['palettes']['rootfallback']);
+$GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace('{global_legend', '{ncoi_license_legend},ncoi_license_key,ncoi_license_protected;{global_legend', $GLOBALS['TL_DCA']['tl_page']['palettes'][$root]);
 
 //Contao 4.4 need root
 $root = 'root';
-$GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace('{global_legend', '{ncoi_license_legend},ncoi_license_key,ncoi_license_protected;{global_legend', $GLOBALS['TL_DCA']['tl_page']['palettes']['rootfallback']);
+$GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace('{global_legend', '{ncoi_license_legend},ncoi_license_key,ncoi_license_protected;{global_legend', $GLOBALS['TL_DCA']['tl_page']['palettes'][$root]);
 
 /**
  * Add fields to tl_page
