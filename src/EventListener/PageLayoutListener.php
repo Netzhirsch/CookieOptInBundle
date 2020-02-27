@@ -24,7 +24,7 @@ class PageLayoutListener {
 
 		$licenseKey = (!empty($pageModel->__get('ncoi_license_key'))) ? $pageModel->__get('ncoi_license_key') : Config::get('ncoi_license_key');
 
-		if (!self::checkLicense($licenseKey) && !empty(self::checkLicenseRemainingTrialPeriod()))
+		if (!self::checkLicense($licenseKey) && empty(self::checkLicenseRemainingTrialPeriod()))
 			$removeModules = true;
 
 		$moduleIds = [];

@@ -16,7 +16,7 @@ $arrFields = [
         'label'     => &$GLOBALS['TL_LANG']['tl_settings']['ncoi_license_key'],
         'exclude'   => true,
         'inputType' => 'text',
-        'eval'      => ['maxlength'=>64, 'rgxp'=>'alnum','tl_class' => 'w50'],
+        'eval'      => ['maxlength'=>64, 'rgxp'=>'alnum','tl_class' => 'long'],
         'sql'       => "varchar(64) NOT NULL default ''",
     ]
 ];
