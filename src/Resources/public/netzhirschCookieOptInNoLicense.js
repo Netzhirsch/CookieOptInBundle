@@ -1,0 +1,1 @@
+console.error("Keine Lizenz für Netzhirsch Cookie Opt In Bar");

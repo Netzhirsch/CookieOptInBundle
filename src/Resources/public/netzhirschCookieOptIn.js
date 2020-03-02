@@ -24,8 +24,8 @@
 		$('#ncoi---allowed--all').on('click', function (e) {
 			e.preventDefault();
 			$('.ncoi---behind').addClass('ncoi---hidden');
-			$('.ncoi---groups input').prop('checked',true);
-			$('.ncoi---cookie').prop('checked',true);
+			$('.ncoi---cookie-group input').prop('checked',true);
+			$('.ncoi---sliding').prop('checked',true);
 			track();
 		});
 
@@ -36,25 +36,18 @@
 			$('#matomoTracking').remove();
 		});
 
-		$('.ncoi---infos--show').on('click',function (e) {
+		$('#ncoi---infos--show').on('click',function (e) {
 			e.preventDefault();
-			$('.ncoi---behind .ncoi---scroll')
-				.toggleClass('ncoi---content--question')
-				.toggleClass('ncoi---content--info')
-				.toggleClass('ncoi---scroll--overflow');
-			$('.ncoi---scroll--overflow').animate({
-				scrollTop:$('.ncoi--headline').offset().bottom
-			},2000);
-			$('#ncoi---infos').toggleClass('ncoi---hidden');
 			$('.ncoi---hint').toggleClass('ncoi---hidden');
-			$('.ncoi---infos--show__active').toggleClass('ncoi---hidden');
-			$('.ncoi---infos--sho__deactivate').toggleClass('ncoi---hidden');
+			$('.ncoi---table').toggleClass('ncoi---hidden');
+			$('.ncoi---infos--show-active').toggleClass('ncoi---hidden');
+			$('.ncoi---infos--show-deactivate').toggleClass('ncoi---hidden');
 
 		});
 
-		$('.cookieGroup').on('change',function () {
+		$('.ncoi---sliding').on('change',function () {
 			let group = $(this);
-			$('.ncoi---cookie').each(function () {
+			$('.ncoi---sliding').each(function () {
 				let cookie = $(this).data('group');
 				if(group.val().localeCompare(cookie) === 0)
 					$(this).prop('checked',group.prop('checked'));
@@ -71,7 +64,7 @@
 				if( group.localeCompare(cookie) === 0 && !$(this).prop('checked'))
 					allChecked = false;
 			});
-			$('.cookieGroup').each(function () {
+			$('.ncoi---cookie-group input').each(function () {
 				let group = $(this).val();
 				if(group.localeCompare(cookie) === 0)
 					$(this).prop('checked',allChecked);
@@ -130,6 +123,7 @@
 				tools.forEach(function (tool) {
 					let toolName = tool.cookieToolsSelect;
 					if (toolName.localeCompare('googleAnalytics') === 0) {
+						console.log('tracking google');
 						$.getScript('https://www.googletagmanager.com/gtag/js?id=' + tool.cookieToolsTrackingId);
 						window.dataLayer = window.dataLayer || [];
 						function gtag(){dataLayer.push(arguments);}

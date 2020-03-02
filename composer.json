@@ -27,7 +27,8 @@
 		"contao/core-bundle": "^4.4",
 		"heimrichhannot/contao-fieldpalette-bundle": "0.4.9",
 		"symfony/serializer": "*",
-		"ext-json": "*"
+		"ext-json": "*",
+		"ext-curl": "*"
 	},
 	"conflict": {
 		"contao/core": "*"

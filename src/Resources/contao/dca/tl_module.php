@@ -209,6 +209,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 					'googleAnalytics' => 'Google Analytics',
 					'facebookPixel' => 'Facebook Pixel',
 					'matomo' => 'Matomo',
+					'-' => '-'
 				],
 				'sql' => "varchar(32) default '' ",
 			],
@@ -558,7 +559,7 @@ class tl_module_extend extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$netzhirschCookieFieldModel->cookieToolsProvider = '';
 			$netzhirschCookieFieldModel->cookieToolsTrackingId = '1';
-			$netzhirschCookieFieldModel->cookieToolsSelect = 'netzhirsch';
+			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
 			$netzhirschCookieFieldModel->cookieToolsUse = 'Dient zum bestimmen welche Cookie angenommen oder abgelehnt wurden';
 			$netzhirschCookieFieldModel->cookieToolGroup = 'Essenziell';
 			
@@ -582,7 +583,7 @@ class tl_module_extend extends tl_module {
 			$csrfCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$csrfCookieFieldModel->cookieToolsProvider = '';
 			$csrfCookieFieldModel->cookieToolsTrackingId = '1';
-			$csrfCookieFieldModel->cookieToolsSelect = 'netzhirsch';
+			$csrfCookieFieldModel->cookieToolsSelect = '-';
 			$csrfCookieFieldModel->cookieToolsUse = 'Dient der Sicherheit der Website vor Cross-Site-Request-Forgery
 		Angriffen. Nach dem Schließen des Browsers wird das Cookie wieder gelöscht';
 			$csrfCookieFieldModel->cookieToolGroup = 'Essenziell';
@@ -606,7 +607,7 @@ class tl_module_extend extends tl_module {
 			$phpSessIdCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$phpSessIdCookieFieldModel->cookieToolsProvider = '';
 			$phpSessIdCookieFieldModel->cookieToolsTrackingId = '1';
-			$phpSessIdCookieFieldModel->cookieToolsSelect = 'netzhirsch';
+			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
 			$phpSessIdCookieFieldModel->cookieToolsUse = 'Cookie von PHP (Programmiersprache), PHP Daten-Identifikator.
 		Enthält nur einen Verweis auf die aktuelle Sitzung. Im Browser des Nutzers werden keine Informationen
 		gespeichert und dieses Cookie kann nur von der aktuellen Website genutzt werden. Dieses Cookie wird vor

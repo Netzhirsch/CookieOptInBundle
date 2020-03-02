@@ -9,7 +9,10 @@ use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use Exception;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
+use Less_Exception_Parser;
+use Less_Parser;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -39,7 +42,11 @@ class ModuleCookieOptInBar extends Module
 		}
 		return parent::generate();
 	}
-	
+
+	/**
+	 * @return |null
+	 * @throws Less_Exception_Parser
+	 */
 	public function compile(){
 		
 		$this->strTemplate = 'mod_cookie_opt_in_bar';
@@ -91,7 +98,7 @@ class ModuleCookieOptInBar extends Module
 		
 		if (!empty($this->headlineCookieOptInBar)) {
 			$headlineData = StringUtil::deserialize($this->headlineCookieOptInBar);
-			$data['headlineCookieOptInBar'] = "<".$headlineData['unit']." class=\"ncoi--headline\">".$headlineData['value']."</".$headlineData['unit'].">";
+			$data['headlineCookieOptInBar'] = "<".$headlineData['unit']." class=\"ncoi---headline\">".$headlineData['value']."</".$headlineData['unit'].">";
 		}
 		
 		$questionHint = $this->arrData['questionHint'];
@@ -101,14 +108,14 @@ class ModuleCookieOptInBar extends Module
 		$impress = PageModel::findById($this->__get('impress'));
 		if (!empty($impress)) {
 			$impress = $impress->getFrontendUrl();
-			$impress = '<a class="ncoi--link" href="'.$impress.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
+			$impress = '<a class="ncoi---link" href="'.$impress.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
 			$data['impress'] = $impress;
 		}
 		
 		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));
 		if (!empty($privacyPolicy)) {
 			$privacyPolicy = $privacyPolicy->getFrontendUrl();
-			$privacyPolicy = '<a class="ncoi--link" href="'.$privacyPolicy.'" title ="'.$tlLang['privacyPolicy'].'"> '.$tlLang['privacyPolicy'].' </a>';
+			$privacyPolicy = '<a class="ncoi---link" href="'.$privacyPolicy.'" title ="'.$tlLang['privacyPolicy'].'"> '.$tlLang['privacyPolicy'].' </a>';
 			$data['privacyPolicy'] = $privacyPolicy;
 		}
 		
@@ -159,13 +166,27 @@ class ModuleCookieOptInBar extends Module
 		$cookies = $request->getCurrentRequest()->cookies;
 		
 		$netzhirschOptInCookie = $cookies->get('_netzhirsch_cookie_opt_in');
-		/** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
 		return json_decode($netzhirschOptInCookie);
 	}
 
+	/**
+	 * @param $defaultCss
+	 * @param $cssTemplateStyle
+	 *
+	 * @throws Less_Exception_Parser
+	 * @throws Exception
+	 */
 	public static function setCssJs($defaultCss,$cssTemplateStyle)
 	{
 		if ($defaultCss == "1") {
+
+			$parser = new Less_Parser();
+			$dir = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR;
+			$parser->parseFile( $dir.'netzhirschCookieOptIn.less' );
+
+			$css = $parser->getCss();
+			file_put_contents('bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css',$css);
+
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
 			if ($cssTemplateStyle == 'dark')
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInDarkVersion.css|static';

@@ -24,10 +24,6 @@
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
 	>
-		<div class="ncoi---scroll ncoi---content--w20">
-				<div
-						id="ncoi-allowed"
-						class="ncoi---container ncoi---content ncoi---content--question">
 					<?php echo $this->arrData['headlineCookieOptInBar'] ?>
 					<div class="ncoi---hint">
 						<?php echo $this->arrData['questionHint'] ?>
@@ -35,85 +31,62 @@
 					<div class="ncoi---hint ncoi---hidden">
 						<?php echo $this->arrData['infoHint'] ?>
 					</div>
-
-					<div id="ncoi---infos" class="ncoi---hidden">
-						<div class="ncoi--table">
+					<div class="ncoi---table ncoi---hidden">
+						<?php if(!empty($this->arrData['cookieTools'])) : ?>
+						<table>
 							<?php if(!empty($this->arrData['cookieTools'])) : ?>
-							<h3><?php echo $tlLang['tools']; ?></h3>
-							<table>
-								<tbody>
-								<?php if(!empty($this->arrData['cookieTools'])) : ?>
-									<?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
-										<?php include('includes/mod_cookie_opt_in_table.html5') ?>
-										<tr class="ncoi---space"></tr>
-									<?php endforeach;?>
-								<?php endif;?>
-								</tbody>
-							</table>
+								<?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
+									<?php include('includes/mod_cookie_opt_in_table.html5') ?>
+								<?php endforeach;?>
 							<?php endif;?>
-						</div>
+						</table>
+						<?php endif;?>
 					</div>
-					<div id="ncoi--cookie-Groups" class="ncoi---groups">
+					<div id="ncoi---cookie-groups" class="ncoi---cookie-groups">
 						<?php foreach($this->arrData['cookieGroups'] as $cookieGroup): ?>
-							<div class="ncoi---group">
-								<span class="ncoi---text-label"><?php echo $cookieGroup;?></span>
-								<div class="ncoi---slider-container">
-
-									<?php $checked = ''; ?>
-									<?php if(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) : ?>
-										<?php $checked = 'checked'; ?>
-									<?php endif; ?>
-									<?php $class = ''; ?>
-									<?php $disabled = ''; ?>
-									<?php if($cookieGroup == $tlLang['essential']): ?>
-										<?php $disabled = 'disabled'; ?>
-										<?php $class = ' ncoi---disabled'; ?>
-									<?php endif; ?>
-									<?php $label = '<label class="ncoi---switch';?>
-									<?php $label .= $class;?>
-									<?php $label .= '"';?>
-									<?php $label .= ' for="';?>
-									<?php $label .= $cookieGroup;?>
-									<?php $label .= '">';?>
-									<?php echo $label ?>
-									<?php $input = '<input id="';?>
-									<?php $input .= $cookieGroup; ?>
-									<?php $input .= '"';?>
-									<?php $input .= ' class="cookieGroup"';?>
-									<?php $input .= ' title="';?>
-									<?php $input .= $cookieGroup; ?>
-									<?php $input .= '"';?>
-									<?php $input .= ' type="checkbox"';?>
-									<?php $input .= ' value="';?>
-									<?php $input .= $cookieGroup;?>
-									<?php $input .= '" ';?>
-									<?php $input .= $checked;?>
-									<?php $input .= ' ';?>
-									<?php $input .= $disabled ;?>
-									<?php $input .= '>';?>
-									<?php echo $input ?>
-									<div class="ncoi---slider ncoi---round"></div>
-									<?php echo '</label>'; ?>
+							<div class="ncoi---cookie-group">
+								<div class="ncoi---cookie-group-inner">
+									<div class="ncoi---slider-container">
+										<input
+											type="checkbox"
+											id="<?=$cookieGroup?>"
+											value="<?=$cookieGroup?>"
+											class="ncoi---sliding"
+											<?=(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) ? 'checked' : ''?>
+											<?=($cookieGroup == $tlLang['essential']) ? 'disabled' : ''?>
+										/>
+										<label class="ncoi---sliding" for="<?=$cookieGroup?>"><i></i><span><?=$cookieGroup?></span></label>
+									</div>
 								</div>
 							</div>
 						<?php endforeach; ?>
 					</div>
 						<div class="ncoi---actions">
-							<?php $classSave = 'ncoi---action ncoi--link' ?>
+							<?php $classSave = '' ?>
 							<?php if (count($this->arrData['cookieGroups']) > 1) : ?>
-								<a id="ncoi---allowed--all" class="ncoi---action ncoi---link ncoi---link--primary" href="#" title="<?php echo$this->arrData['saveAllButton'] ?>"><?php echo $this->arrData['saveAllButton'] ?></a>
+								<div class="ncoi---action ncoi---link ncoi---link-primary">
+									<a id="ncoi---allowed--all" class="" href="#" title="<?php echo$this->arrData['saveAllButton'] ?>">
+										<?php echo $this->arrData['saveAllButton'] ?>
+									</a>
+								</div>
 							<?php else : ?>
-								<?php $classSave .= ' ncoi---link--primary' ?>
+								<?php $classSave .= ' ncoi---link-primary' ?>
 							<?php endif ?>
-							<a id="ncoi---allowed" class="<?php echo $classSave ?>" href="#" title="<?php echo $this->arrData['saveButton'] ?>"><?php echo $this->arrData['saveButton'] ?></a>
-							<a class="ncoi---infos--show ncoi---action ncoi--link" href="#" title="Informationen anzeigen">
-								<span class="ncoi---infos--show__active ncoi---hidden">
-									<?php echo $tlLang['info'].' '.$tlLang['hidden']; ?>
-								</span>
-								<span class="ncoi---infos--sho__deactivate">
-									<?php echo $tlLang['info'] ?>
-								</span>
-							</a>
+							<div class="ncoi---action ncoi---link<?=$classSave?>">
+								<a id="ncoi---allowed" href="#" title="<?php echo $this->arrData['saveButton'] ?>">
+									<?php echo $this->arrData['saveButton'] ?>
+								</a>
+							</div>
+							<div class="ncoi---action ncoi---link ncoi---infos-show">
+								<a id="ncoi---infos--show" href="#" title="Informationen anzeigen">
+									<span class="ncoi---infos--show-active ncoi---hidden">
+										<?php echo $tlLang['info'].' '.$tlLang['hidden']; ?>
+									</span>
+									<span class="ncoi---infos--show-deactivate">
+										<?php echo $tlLang['info'] ?>
+									</span>
+								</a>
+							</div>
 						</div>
 						<?php if(!empty($this->arrData['impress']) && !empty($this->arrData['impress'])) :?>
 							<div class="ncoi---footer">
@@ -123,6 +96,4 @@
 							</div>
 						<?php endif; ?>
 				</div>
-		</div>
-	</div>
 </div>

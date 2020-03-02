@@ -6,10 +6,12 @@ use Contao\Config;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use DateInterval;
 use DateTime;
 use Exception;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use ModuleModel;
+use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 
 class PageLayoutListener {
 
@@ -20,28 +22,46 @@ class PageLayoutListener {
 	 * @throws Exception
 	 */
 	public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
+
 		$removeModules = false;
 
 		$licenseKey = (!empty($pageModel->__get('ncoi_license_key'))) ? $pageModel->__get('ncoi_license_key') : Config::get('ncoi_license_key');
+		$licenseExpiryDate = (!empty($pageModel->__get('ncoi_license_expiry_date'))) ? $pageModel->__get('ncoi_license_expiry_date') : Config::get('ncoi_license_expiry_date');
 
-		if (!self::checkLicense($licenseKey) && empty(self::checkLicenseRemainingTrialPeriod()))
-			$removeModules = true;
+		if (!self::checkLicense($licenseKey,$licenseExpiryDate,$_SERVER['HTTP_HOST']) && empty(self::checkLicenseRemainingTrialPeriod())) {
+
+			$licenseExpiryDate = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+			if (empty($licenseExpiryDate)) {
+
+				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
+				$removeModules = true;
+			} else {
+
+				LicenseController::setLicense($licenseExpiryDate,$_SERVER['HTTP_HOST']);
+			}
+		}
 
 		$moduleIds = [];
 		$moduleIds = $this->checkModules($layout, $removeModules, $moduleIds);
 		$moduleIds = $this->checkModules($pageModel, $removeModules, $moduleIds);
 		$moduleIds = array_unique($moduleIds);
 
-		//module exist
-		if (empty($moduleIds)) {
-			$GLOBALS['TL_JAVASCRIPT']['netzhirschError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInError.js|static';
-
+		if ($removeModules) {
 			return;
 		}
-		elseif (count($moduleIds) > 1) {
-			$GLOBALS['TL_JAVASCRIPT']['netzhirschError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInErrorMore.js|static';
 
-			return;
+		//for customer info
+		if (!$removeModules) {
+			if (empty($moduleIds)) {
+				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInError.js|static';
+
+				return;
+			}
+			elseif (count($moduleIds) > 1) {
+				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInErrorMore.js|static';
+
+				return;
+			}
 		}
 
 		//module in this layout
@@ -50,7 +70,6 @@ class PageLayoutListener {
 
 		$netzhirschOptInCookie = $_COOKIE['_netzhirsch_cookie_opt_in'];
 
-		/** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this */
 		$netzhirschOptInCookie = json_decode($netzhirschOptInCookie);
 
 		$paletteModule = FieldPaletteModel::findByPid($modulBar->id);
@@ -70,7 +89,7 @@ class PageLayoutListener {
 			return;
 		}
 
-		if ($netzhirschOptInCookie->cookieVersion == $modulBar->__get('cookieVersion'))
+		if (!empty($modulBar) && $netzhirschOptInCookie->cookieVersion == $modulBar->__get('cookieVersion'))
 			return;
 
 		self::deleteCookie($cookieTools);
@@ -119,15 +138,31 @@ class PageLayoutListener {
 	}
 
 	/**
-	 *
-	 * @throws Exception
+	 * @param string   $licenseKey
+	 * @param string $licenseExpiryDate
 	 *
 	 * @return bool
+	 * @throws Exception
 	 */
-	public static function checkLicense($licenseKey) {
+	public static function checkLicense($licenseKey,$licenseExpiryDate,$domain) {
 
-		$domain = $_SERVER['HTTP_HOST'];
-		$hashes[] = hash('sha256',$domain .'netzhirsch');
+		/** @var DateInterval $licenseExpiryTimeDiff */
+		$licenseExpiryTimeDiff = self::getLicenseRemainingExpiryDays($licenseExpiryDate);
+
+		if ($licenseExpiryTimeDiff !== false) {
+			if($licenseExpiryTimeDiff->invert == 0) {
+				return false;
+			}
+		}
+
+		// in Frontend Y-m-d in Backend d.m.Y
+		if (strpos($licenseExpiryDate, '.') === false) {
+			$licenseExpiryDate = date_create_from_format('Y-m-d', $licenseExpiryDate);
+		} else {
+			$licenseExpiryDate = date_create_from_format('d.m.Y', $licenseExpiryDate);
+		}
+
+		$hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
 
 		//all possible subdomains
 		$domainLevels = explode(".", $domain);
@@ -136,7 +171,7 @@ class PageLayoutListener {
 			if (count($domainLevels) < 2) break;
 			unset($domainLevels[$key]);
 			$domain = implode(".", $domainLevels);
-			$hashes[] = hash('sha256',$domain .'netzhirsch');
+			$hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
 		}
 
 		if (in_array($licenseKey, $hashes)) {
@@ -147,7 +182,19 @@ class PageLayoutListener {
 	}
 
 	/**
-	 * @return \DateInterval|false|null
+	 * @param string $licenseExpiryDate
+	 *
+	 * @return DateInterval|false
+	 * @throws Exception
+	 */
+	public static function getLicenseRemainingExpiryDays($licenseExpiryDate) {
+		$today = new DateTime('now');
+		$licenseExpiryDate = date_create_from_format('d.m.Y', $licenseExpiryDate);
+		return date_diff($licenseExpiryDate, $today);
+	}
+
+	/**
+	 * @return DateInterval|false|null
 	 * @throws Exception
 	 */
 	public static function checkLicenseRemainingTrialPeriod(){
@@ -156,17 +203,32 @@ class PageLayoutListener {
 		$path = dirname(__DIR__);
 		$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
 		if (file_exists($filename)) {
-			$fileTime = strtotime('+1 month',fileatime($filename));
-			if ($fileTime > time()) {
-				$datetimeFile = new DateTime();
-				$datetimeFile->setTimestamp($fileTime);
-				$datetimeToday = new DateTime();
-				$dateInterval = date_diff($datetimeFile, $datetimeToday);
+			$fileTime = self::getTrialPeriod();
+			if ($fileTime->getTimestamp() > time()) {
+				$today = new DateTime();
+				$dateInterval = date_diff($fileTime, $today);
 			}
 		}
 		return $dateInterval;
 	}
 
+	/**
+	 * @return DateTime|null
+	 * @throws Exception
+	 */
+	public static function getTrialPeriod(){
+
+		$datetimeFile = null;
+
+		$path = dirname(__DIR__);
+		$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
+		if (file_exists($filename)) {
+			$fileTime = strtotime('+1 month',fileatime($filename));
+			$datetimeFile = new DateTime();
+			$datetimeFile->setTimestamp($fileTime);
+		}
+		return $datetimeFile;
+	}
 	/**
 	 * @param LayoutModel|PageModel $layoutOrPage
 	 * @param             			$removeModules
