@@ -5,10 +5,10 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 
 
 use Contao\Config;
-use Contao\CoreBundle\Controller\AbstractController;
 use Contao\PageModel;
 use DateTime;
 use Exception;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 

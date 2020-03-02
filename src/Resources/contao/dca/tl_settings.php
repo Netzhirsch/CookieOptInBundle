@@ -26,7 +26,7 @@ $arrFields = [
 				'submitOnChange' => true,
 		],
         'sql'       => "varchar(64) NOT NULL default ''",
-		'load_callback' => [['tl_settings','getLicenseKey']]
+		'load_callback' => [['tl_settings_ncoi','getLicenseKey']]
     ],
 	'ncoi_license_expiry_date' => [
 			'label' => &$GLOBALS['TL_LANG']['tl_settings']['ncoi_license_expiry_date'],
@@ -38,13 +38,13 @@ $arrFields = [
 					'readonly' => true
 			],
 			'sql' => "varchar(64) NULL NULL default ''",
-			'load_callback' => [['tl_settings','getLicenseExpiryDate']]
+			'load_callback' => [['tl_settings_ncoi','getLicenseExpiryDate']]
 	],
 ];
 
 $dc['fields'] = array_merge($dc['fields'], $arrFields);
 
-class tl_settings {
+class tl_settings_ncoi extends tl_settings{
 	/**
 	 * @param $licenseExpiryDate
 	 *
