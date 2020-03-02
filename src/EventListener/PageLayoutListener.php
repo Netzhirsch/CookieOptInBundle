@@ -146,6 +146,9 @@ class PageLayoutListener {
 	 */
 	public static function checkLicense($licenseKey,$licenseExpiryDate,$domain) {
 
+		if (empty($licenseKey) || empty($licenseExpiryDate))
+			return false;
+		
 		/** @var DateInterval $licenseExpiryTimeDiff */
 		$licenseExpiryTimeDiff = self::getLicenseRemainingExpiryDays($licenseExpiryDate);
 
