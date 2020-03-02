@@ -70,7 +70,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'] = ['Cookie Gruppe'];
 /*************** Fieldpalette otherScripts ***************/
 $GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Andere Skripte'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Ohne <script/>-Tag. jQuery kann über $ genutzt werden'];
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden'];
 
 /*************** End Fieldpalette otherScripts ***************/
 

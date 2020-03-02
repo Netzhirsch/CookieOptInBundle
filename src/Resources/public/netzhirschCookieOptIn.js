@@ -116,7 +116,7 @@
 				let otherScripts = data.otherScripts;
 				if (otherScripts !== null) {
 					otherScripts.forEach(function (otherScript) {
-						eval(otherScript.cookieToolsCode);
+						$('body').append(otherScript.cookieToolsCode);
 					});
 				}
 				let content = $('body');
