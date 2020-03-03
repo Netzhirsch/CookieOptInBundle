@@ -14,7 +14,7 @@
  `composer require netzhirsch/cookie-opt-in-bundle`
  
  ### Contao
- * Installtool aufrufen https://example.tld/conato/install
+ * Installtool aufrufen https://example.tld/contao/install
  * Module hinzufügen
  * Opt In Bar Modul im Layout einbinden
  * Revoke Modul im Layout oder in einem Artikel einbinden
