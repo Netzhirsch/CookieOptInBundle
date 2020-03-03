@@ -2,7 +2,7 @@
 use Contao\StringUtil;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 
-/********************************************************* Revoke Modul ***********************************************/
+/** Revoke Modul ***********************************************/
 
 $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
 
@@ -39,9 +39,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateRevoke'] = [
 	'sql' => "varchar(64) NULL default '' ",
 ];
 
-/********************************************************* Ende Revoke Modul ******************************************/
+/** Ende Revoke Modul ******************************************/
 
-/********************************************************* Bar Modul **************************************************/
+/** Bar Modul **************************************************/
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	name

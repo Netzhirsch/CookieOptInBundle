@@ -22,10 +22,9 @@ class ConsentController extends AbstractController
 	public function indexAction()
 	{
 		/* @var \Symfony\Bundle\FrameworkBundle\Controller\string $entityManerString */
-		$entityManerString = 'doctrine.orm.entity_manager';
-		$em = $this->get($entityManerString);
+		$entityManerString = 'database_connection';
 		/* @var Connection $conn */
-		$conn = $em->getConnection();
+		$conn = $this->get($entityManerString);
 		/** @noinspection SqlResolve */
 		$sql = "SELECT * FROM tl_consentDirectory";
 		$stmt = $conn->prepare($sql);

@@ -1,7 +1,6 @@
 <?php
 
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
-use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 
 $dc = &$GLOBALS['TL_DCA']['tl_settings'];
 
@@ -22,11 +21,10 @@ $arrFields = [
         'eval'      => [
 				'rgxp'=>'alnum',
 				'tl_class' => 'w50',
-				'alwaysSave' => true,
-				'submitOnChange' => true,
+				'alwaysSave' => true
 		],
         'sql'       => "varchar(64) NOT NULL default ''",
-		'load_callback' => [['tl_settings_ncoi','getLicenseKey']]
+		'save_callback' => [['tl_settings_ncoi','saveLicenseData']]
     ],
 	'ncoi_license_expiry_date' => [
 			'label' => &$GLOBALS['TL_LANG']['tl_settings']['ncoi_license_expiry_date'],
@@ -37,62 +35,29 @@ $arrFields = [
 					'alwaysSave' => true,
 					'readonly' => true
 			],
-			'sql' => "varchar(64) NULL NULL default ''",
-			'load_callback' => [['tl_settings_ncoi','getLicenseExpiryDate']]
+			'sql' => "varchar(64) NULL NULL default ''"
 	],
 ];
 
 $dc['fields'] = array_merge($dc['fields'], $arrFields);
 
 class tl_settings_ncoi {
-	/**
-	 * @param $licenseExpiryDate
-	 *
-	 * @return DateTime|string|null
-	 * @throws Exception
-	 */
-	public function getLicenseExpiryDate($licenseExpiryDate) {
-		$licenseKey = Config::get('ncoi_license_key');
-		if (empty($licenseKey))
-			$licenseExpiryDate = PageLayoutListener::getTrialPeriod()->format('d.m.Y');
 
-		if (!empty($licenseKey)) {
-
-			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
-			if ($licenseAPIResponse->getSuccess()) {
-				$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
-
-				$licenseExpiryDate =  date_create_from_format('Y-m-d', $licenseExpiryDate);
-				// real in settings
-				Config::persist('ncoi_license_expiry_date', $licenseExpiryDate->format('Y-m-d'));
-
-				// just view in settings
-				return $licenseExpiryDate->format('d.m.Y');
-			} else {
-				$licenseExpiryDate = PageLayoutListener::getTrialPeriod()->format('d.m.Y');
-			}
-		}
-
-		return $licenseExpiryDate;
-	}
-
-	public function getLicenseKey($licenseKey) {
+	public function saveLicenseData($licenseKey) {
 		if (!empty($licenseKey)){
-
 			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
 			if ($licenseAPIResponse->getSuccess()) {
 				$licenseKey = $licenseAPIResponse->getLicenseKey();
+				$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
 
-				// real in settings
 				Config::persist('ncoi_license_key', $licenseKey);
-
-				// just view in settings
+				Config::persist('ncoi_license_expiry_date', $licenseExpiryDate);
 				return $licenseKey;
-			} else {
-				$licenseKey = '';
 			}
 		}
 
-		return $licenseKey;
+		Config::persist('ncoi_license_key', "");
+		Config::persist('ncoi_license_expiry_date', "");
+		return "";
 	}
 }

@@ -29,10 +29,10 @@ $arrFields = [
 				'exclude'   => true,
 				'inputType' => 'text',
 				'eval'      => [
-					'tl_class' => 'w50',
-					'submitOnChange' => true,
+					'tl_class' => 'w50'
 				],
 				'sql'       => "varchar(64) NOT NULL default ''",
+				'save_callback' => [['tl_page_extend','saveLicenseData']]
 		],
 		'ncoi_license_expiry_date' => [
 			'label' => &$GLOBALS['TL_LANG']['tl_page']['ncoi_license_expiry_date'],
@@ -46,8 +46,6 @@ $arrFields = [
 		],
 ];
 
-$GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'] = [['tl_page_extend','getLicenseData']];
-
 $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] = ['tl_page_extend','showLicenseWarning'];
 
 $GLOBALS['TL_DCA']['tl_page']['fields'] = array_merge($GLOBALS['TL_DCA']['tl_page']['fields'], $arrFields);
@@ -55,17 +53,13 @@ $GLOBALS['TL_DCA']['tl_page']['fields'] = array_merge($GLOBALS['TL_DCA']['tl_pag
 class tl_page_extend extends tl_page {
 
 	/**
+	 * @param          $licenseKey
 	 * @param DC_Table $dca
 	 *
-	 * @throws Exception
 	 */
-	public function getLicenseData(DC_Table $dca) {
-
+	public function saveLicenseData($licenseKey, DC_Table $dca) {
 		if (in_array($dca->id, $dca->rootIds)) {
-
 			$pageModel = PageModel::findById($dca->id);
-			$licenseKey = $pageModel->__get('ncoi_license_key');
-			$licenseExpiryDate = null;
 
 			if (!empty($licenseKey)) {
 				$domain = $pageModel->__get('dns');
@@ -81,10 +75,14 @@ class tl_page_extend extends tl_page {
 					$pageModel->__set('ncoi_license_key',$licenseKey);
 					$pageModel->__set('ncoi_license_expiry_date',$licenseExpiryDate);
 					$pageModel->save();
-
 				}
+			} else {
+				$pageModel->__set('ncoi_license_key','');
+				$pageModel->__set('ncoi_license_expiry_date', '');
+				$pageModel->save();
 			}
 		}
+		return $licenseKey;
 	}
 
 	/**
