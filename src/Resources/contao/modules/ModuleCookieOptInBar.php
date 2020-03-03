@@ -180,17 +180,17 @@ class ModuleCookieOptInBar extends Module
 	{
 		if ($defaultCss == "1") {
 
-			$parser = new Less_Parser();
+
 			$dir = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR;
 
-			self::parseLessToCss($parser,$dir,'netzhirschCookieOptIn.less','netzhirschCookieOptIn.css');
+			self::parseLessToCss($dir,'netzhirschCookieOptIn.less','netzhirschCookieOptIn.css');
 
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
 			if ($cssTemplateStyle == 'dark'){
-				self::parseLessToCss($parser,$dir,'netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css');
+				self::parseLessToCss($dir,'netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInDarkVersion.css|static';
 			} elseif 	($cssTemplateStyle == 'light') {
-				self::parseLessToCss($parser,$dir,'netzhirschCookieOptInLightVersion.less','netzhirschCookieOptInLightVersion.css');
+				self::parseLessToCss($dir,'netzhirschCookieOptInLightVersion.less','netzhirschCookieOptInLightVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInLightVersion.css|static';
 			}
 		}
@@ -207,12 +207,12 @@ class ModuleCookieOptInBar extends Module
 	}
 
 	/**
-	 * @param Less_Parser $parser
 	 * @param             $dir
 	 * @param             $lessFile
 	 * @param             $cssFile
 	 */
-	private static function parseLessToCss(Less_Parser $parser,$dir,$lessFile,$cssFile){
+	private static function parseLessToCss($dir,$lessFile,$cssFile){
+		$parser = new Less_Parser();
 		try {
 			$parser->parseFile($dir . $lessFile);
 			try {
