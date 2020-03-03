@@ -44,7 +44,6 @@ class ModuleCookieOptInBar extends Module
 	}
 
 	/**
-	 * @return |null
 	 * @throws Less_Exception_Parser
 	 */
 	public function compile(){
@@ -55,7 +54,6 @@ class ModuleCookieOptInBar extends Module
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
 		
-		//Contao 4.4 ab 4.8 über EventListener
 		self::setCssJs($this->__get('defaultCss'),$this->__get('cssTemplateStyle'));
 		
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
@@ -166,6 +164,8 @@ class ModuleCookieOptInBar extends Module
 		$cookies = $request->getCurrentRequest()->cookies;
 		
 		$netzhirschOptInCookie = $cookies->get('_netzhirsch_cookie_opt_in');
+
+		/** @noinspection PhpComposerExtensionStubsInspection */
 		return json_decode($netzhirschOptInCookie);
 	}
 
@@ -182,16 +182,17 @@ class ModuleCookieOptInBar extends Module
 
 			$parser = new Less_Parser();
 			$dir = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR;
-			$parser->parseFile( $dir.'netzhirschCookieOptIn.less' );
 
-			$css = $parser->getCss();
-			file_put_contents('bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css',$css);
+			self::parseLessToCss($parser,$dir,'netzhirschCookieOptIn.less','netzhirschCookieOptIn.css');
 
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
-			if ($cssTemplateStyle == 'dark')
+			if ($cssTemplateStyle == 'dark'){
+				self::parseLessToCss($parser,$dir,'netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInDarkVersion.css|static';
-			elseif 	($cssTemplateStyle == 'light')
+			} elseif 	($cssTemplateStyle == 'light') {
+				self::parseLessToCss($parser,$dir,'netzhirschCookieOptInLightVersion.less','netzhirschCookieOptInLightVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInLightVersion.css|static';
+			}
 		}
 		$jqueryIsLoaded = false;
 		foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
@@ -203,5 +204,26 @@ class ModuleCookieOptInBar extends Module
 			$GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/node_modules/jquery/dist/jquery.min.js|static';
 		}
 		$GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
+	}
+
+	/**
+	 * @param Less_Parser $parser
+	 * @param             $dir
+	 * @param             $lessFile
+	 * @param             $cssFile
+	 */
+	private static function parseLessToCss(Less_Parser $parser,$dir,$lessFile,$cssFile){
+		try {
+			$parser->parseFile($dir . $lessFile);
+			try {
+				$css = $parser->getCss();
+				file_put_contents('bundles/netzhirschcookieoptin/'.$cssFile,$css);
+			} catch (Exception $e) {
+				System::log($e.' old css will just as default', __METHOD__, TL_ERROR);
+			}
+		} catch (Less_Exception_Parser $e) {
+			System::log($e.' old css will just as default', __METHOD__, TL_ERROR);
+		}
+
 	}
 }

@@ -29,7 +29,6 @@
 		width:400px;
 		max-width:90%;
 		max-height:50%;
-		background:white;
 		border-radius:3px;
 		padding:0.5rem;
 		overflow-y:auto;
@@ -111,26 +110,14 @@
 					float:left;
 					width:100%;
 					padding:0 1rem;
-					color:white;
 					text-decoration:none;
-					background:rgba(0,0,0,0.5);
+
 					height:2rem;
 					line-height:2rem;
 					text-align:center;
 					border-radius:3px;
 					transition:background .25s ease-in-out;
-				
-					&:hover {
-						background:rgba(0,0,0,0.6);
-					}
-				}
-				
-				&.ncoi---link-primary a {
-					background:#090;
-					
-					&:hover {
-						background:darken(#090,10);
-					}
+
 				}
 			}
 		}
@@ -151,14 +138,9 @@
 				.bb;
 				padding:0.15rem;
 				flex:0 1 auto;
-				color:rgba(0,0,0,.5);
 				text-decoration:none;
 				line-height:1;
 				font-size:.7rem;
-			}
-			
-			.ncoi---link:hover {
-				color:black;
 			}
 		}
 		
@@ -173,8 +155,7 @@
 				float:left;
 				table-layout: fixed;
 				width:100%;
-				background:rgba(0,0,0,.05);
-				
+
 				tbody {
 					border-top:1px solid;
 					
@@ -183,8 +164,6 @@
 					}
 					
 					tr {
-						background-color:transparent;
-						
 						&.border-top {
 							border-top:1px solid;
 						}
@@ -238,7 +217,6 @@ label.ncoi---sliding {
 	i {
 		display:inline-block;
 		.bb;
-		background:rgba(0,0,0,.5);
 		height:1.5rem;
 		width:3rem;
 		border-radius:.75rem;
@@ -252,7 +230,6 @@ label.ncoi---sliding {
 			height:1rem;
 			width:1rem;
 			content:'';
-			background:white;
 			border-radius:.5rem;
 			transition:margin 0.25s ease-in-out;
 		}
@@ -260,14 +237,12 @@ label.ncoi---sliding {
 }
 
 [type=checkbox].ncoi---sliding:checked + label.ncoi---sliding i {
-	background:#090;
-	
+
 	&:before {
 		margin-left:1.5rem;
 	}
 }
 
 [type=checkbox].ncoi---sliding:disabled + label.ncoi---sliding i {
-	background:rgba(0,0,0,.2);
 	cursor:not-allowed;
 }

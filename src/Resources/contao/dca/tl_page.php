@@ -6,8 +6,6 @@
 use Contao\PageModel;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener;
-use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
-
 
 $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
 
@@ -68,33 +66,24 @@ class tl_page_extend extends tl_page {
 			$pageModel = PageModel::findById($dca->id);
 			$licenseKey = $pageModel->__get('ncoi_license_key');
 			$licenseExpiryDate = null;
-			if (empty($licenseKey))
-				$licenseExpiryDate = PageLayoutListener::getTrialPeriod();
 
 			if (!empty($licenseKey)) {
-				$dns = $pageModel->__get('dns');
-				if (empty($dns))
-					$dns = $_SERVER['HTTP_HOST'];
+				$domain = $pageModel->__get('dns');
+				if (empty($domain))
+					$domain = $_SERVER['HTTP_HOST'];
 
-				$response = LicenseController::callAPI($dns);
+				$licenseAPIResponse = LicenseController::callAPI($domain);
 
-				if ($response !== 'false') {
-					$licenseExpiryDate = $response->dateOfExpiry;
-
-					$licenseExpiryDate =  date_create_from_format('Y-m-d', $licenseExpiryDate);
-
-					$licenseKey = $response->licenseKey;
+				if ($licenseAPIResponse->getSuccess()) {
+					$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
+					$licenseKey = $licenseAPIResponse->getLicenseKey();
 
 					$pageModel->__set('ncoi_license_key',$licenseKey);
+					$pageModel->__set('ncoi_license_expiry_date',$licenseExpiryDate);
 					$pageModel->save();
 
 				}
 			}
-			if (!empty($licenseExpiryDate)) {
-				$pageModel->__set('ncoi_license_expiry_date',$licenseExpiryDate->format('d.m.Y'));
-				$pageModel->save();
-			}
-
 		}
 	}
 
@@ -110,13 +99,11 @@ class tl_page_extend extends tl_page {
 		$message = '';
 		foreach ($rootPoints as $rootPoint) {
 
-			$domain = $rootPoint->__get('dns');
 			$licenseKey = $rootPoint->__get('ncoi_license_key');
 			$licenseExpiryDate = $rootPoint->__get('ncoi_license_expiry_date');
 
-			if (!empty($domain) && !empty($licenseKey) && !empty($licenseExpiryDate)) {
-				$message .= '<div class="ncoi---backend--message-page">'.GetSystemMessagesListener::getMessage($licenseKey,$licenseExpiryDate,$domain).'</div>';
-			}
+			$domain = (!empty($rootPoint->__get('dns'))) ? $rootPoint->__get('dns') : $_SERVER['HTTP_HOST'];
+			$message .= '<div class="ncoi---backend--message-page">'.GetSystemMessagesListener::getMessage($licenseKey,$licenseExpiryDate,$domain).'</div>';
 
 		}
 		if (empty($message))

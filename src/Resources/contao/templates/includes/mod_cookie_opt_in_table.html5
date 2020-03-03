@@ -34,6 +34,7 @@
 			<?php echo '"'; ?>
 			<?php echo ' title="'.$tool->cookieToolsProvider.'"'; ?>
 			<?php echo 'target="_blank"'; ?>
+			<?php echo ' class="ncoi---link"'; ?>
 			<?php echo '>'; ?>
 			<?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
 			<?php echo '</a>' ?>

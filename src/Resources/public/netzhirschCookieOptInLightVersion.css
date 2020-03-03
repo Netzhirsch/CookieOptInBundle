@@ -1,42 +1,269 @@
+.bb {
+  box-sizing: border-box;
+}
+.m0 {
+  margin: 0;
+}
+.p0 {
+  padding: 0;
+}
 .ncoi---behind {
-	background: rgba(0,0,0,0.21);
+  display: flex;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1000000;
+  justify-content: center;
+  align-items: center;
 }
-.ncoi---scroll ,.ncoi---scroll--overflow {
-	background: rgba(255, 255, 255, 0.8);
+.ncoi---behind.ncoi---left {
+  justify-content: flex-start;
 }
-.ncoi---scroll--overflow .ncoi---container__opacity {
-	background: inherit;
+.ncoi---behind.ncoi---right {
+  justify-content: flex-end;
 }
-.ncoi---behind .ncoi---container .ncoi---content{
-	color: #000000;
+.ncoi---behind.ncoi---top {
+  align-items: flex-start;
 }
-.ncoi--table a{
-	color: #000000;
+.ncoi---behind.ncoi---bottom {
+  align-items: flex-end;
 }
-.ncoi---behind .ncoi---container .ncoi---content .ncoi---actions .ncoi--link {
-	background: #9f9f9f;
-	color: #000000;
+.ncoi---behind .ncoi---container {
+  display: block;
+  float: left;
+  box-sizing: border-box;
+  width: 400px;
+  max-width: 90%;
+  max-height: 50%;
+  border-radius: 3px;
+  padding: 0.5rem;
+  overflow-y: auto;
 }
- .ncoi---behind .ncoi---container .ncoi---content .ncoi---actions  .ncoi---link--primary{
-	background: #000000;
-	color: #ffffff;
+@media (max-height: 767px) {
+  .ncoi---behind .ncoi---container {
+    max-height: 90%;
+  }
 }
-.ncoi---behind .ncoi---container .ncoi---content .ncoi---footer .ncoi--link{
-	color: #a2a2a2;
+.ncoi---behind .ncoi---container .ncoi---headline {
+  display: block;
+  float: left;
+  width: 100%;
+  box-sizing: border-box;
+  padding: .35rem .5rem;
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  margin: 0;
+  font-weight: bold;
 }
-.ncoi---slider {
-	background-color: #ccc;
+.ncoi---behind .ncoi---container .ncoi---hint {
+  display: block;
+  float: left;
+  width: 100%;
+  box-sizing: border-box;
+  padding: .35rem .5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin: 0;
 }
-.ncoi---slider:before {
-	background-color: #fff;
+.ncoi---behind .ncoi---container .ncoi---cookie-groups {
+  display: flex;
+  float: left;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  padding: 0.5rem 0;
+  margin: 0.5rem 0;
 }
-input:checked + .ncoi---slider {
-	background-color: #037c2b;
+.ncoi---behind .ncoi---container .ncoi---cookie-groups .ncoi---cookie-group {
+  display: block;
+  float: left;
+  box-sizing: border-box;
+  padding: 0.5rem 1rem;
 }
-.ncoi---disabled input:checked + .ncoi---slider {
-	background-color: #9f9f9f;
+.ncoi---behind .ncoi---container .ncoi---cookie-groups .ncoi---cookie-group .ncoi---cookie-group-inner {
+  display: block;
+  float: left;
+  box-sizing: border-box;
+  width: 100%;
 }
-.ncoi---button {
-	background: #5bb5cb;
-	color: white;
+.ncoi---behind .ncoi---container .ncoi---actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 0.25rem;
+  box-sizing: border-box;
+}
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action {
+  display: block;
+  float: left;
+  box-sizing: border-box;
+  padding: 0.25rem;
+  flex: 0 1 auto;
+}
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action a {
+  box-sizing: border-box;
+  display: block;
+  float: left;
+  width: 100%;
+  padding: 0 1rem;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.5);
+  height: 2rem;
+  line-height: 2rem;
+  text-align: center;
+  border-radius: 3px;
+  transition: background 0.25s ease-in-out;
+}
+.ncoi---behind .ncoi---container .ncoi---footer {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0.35rem;
+  box-sizing: border-box;
+}
+.ncoi---behind .ncoi---container .ncoi---footer .ncoi---link,
+.ncoi---behind .ncoi---container .ncoi---footer .ncoi---split {
+  display: block;
+  float: left;
+  box-sizing: border-box;
+  padding: 0.15rem;
+  flex: 0 1 auto;
+  color: rgba(0, 0, 0, 0.5);
+  text-decoration: none;
+  line-height: 1;
+  font-size: .7rem;
+}
+.ncoi---behind .ncoi---container .ncoi---table {
+  display: block;
+  float: left;
+  box-sizing: border-box;
+  width: 100%;
+  padding: .5rem;
+}
+.ncoi---behind .ncoi---container .ncoi---table table {
+  float: left;
+  table-layout: fixed;
+  width: 100%;
+}
+.ncoi---behind .ncoi---container .ncoi---table table tbody {
+  border-top: 1px solid;
+}
+.ncoi---behind .ncoi---container .ncoi---table table tbody:first-child {
+  border: none;
+}
+.ncoi---behind .ncoi---container .ncoi---table table tbody tr.border-top {
+  border-top: 1px solid;
+}
+.ncoi---behind .ncoi---container .ncoi---table table tbody tr th,
+.ncoi---behind .ncoi---container .ncoi---table table tbody tr td {
+  padding: .30rem .50rem;
+  font-size: 0.8rem;
+  line-height: 1.2rem;
+  word-wrap: break-word;
+}
+.ncoi---behind.ncoi---left .ncoi---container {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.ncoi---behind.ncoi---right .ncoi---container {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.ncoi---behind.ncoi---top .ncoi---container {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.ncoi---behind.ncoi---bottom .ncoi---container {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.ncoi---hidden {
+  display: none !important;
+}
+[type=checkbox].ncoi---sliding {
+  display: none;
+}
+label.ncoi---sliding {
+  display: flex;
+  float: left;
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 1rem;
+  line-height: 1;
+  align-items: center;
+  cursor: pointer;
+}
+label.ncoi---sliding i {
+  display: inline-block;
+  box-sizing: border-box;
+  height: 1.5rem;
+  width: 3rem;
+  border-radius: .75rem;
+  margin-right: .5rem;
+  padding: .25rem;
+  transition: background 0.25s ease-in-out;
+}
+label.ncoi---sliding i:before {
+  display: block;
+  float: left;
+  height: 1rem;
+  width: 1rem;
+  content: '';
+  border-radius: .5rem;
+  transition: margin 0.25s ease-in-out;
+}
+[type=checkbox].ncoi---sliding:checked + label.ncoi---sliding i:before {
+  margin-left: 1.5rem;
+}
+[type=checkbox].ncoi---sliding:disabled + label.ncoi---sliding i {
+  cursor: not-allowed;
+}
+.ncoi---behind .ncoi---container {
+  background: white;
+}
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action a {
+  color: white;
+}
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action a:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary a {
+  background: #090;
+}
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary a:hover {
+  background: #006600;
+}
+.ncoi---behind .ncoi---footer .ncoi---link:hover {
+  color: black;
+}
+.ncoi---behind .ncoi---table table {
+  background: rgba(0, 0, 0, 0.05);
+}
+.ncoi---behind .ncoi---table table tbody tr {
+  background-color: transparent;
+}
+label.ncoi---sliding i {
+  background: rgba(0, 0, 0, 0.5);
+}
+label.ncoi---sliding i:before {
+  background: white;
+}
+[type=checkbox].ncoi---sliding:checked + label.ncoi---sliding i {
+  background: #090;
+}
+[type=checkbox].ncoi---sliding:disabled + label.ncoi---sliding i {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
 }

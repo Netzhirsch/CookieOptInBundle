@@ -39,7 +39,6 @@
   width: 400px;
   max-width: 90%;
   max-height: 50%;
-  background: white;
   border-radius: 3px;
   padding: 0.5rem;
   overflow-y: auto;
@@ -117,23 +116,12 @@
   float: left;
   width: 100%;
   padding: 0 1rem;
-  color: white;
   text-decoration: none;
-  background: rgba(0, 0, 0, 0.5);
   height: 2rem;
   line-height: 2rem;
   text-align: center;
   border-radius: 3px;
   transition: background 0.25s ease-in-out;
-}
-.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action a:hover {
-  background: rgba(0, 0, 0, 0.6);
-}
-.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary a {
-  background: #090;
-}
-.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary a:hover {
-  background: #006600;
 }
 .ncoi---behind .ncoi---container .ncoi---footer {
   display: flex;
@@ -151,13 +139,9 @@
   box-sizing: border-box;
   padding: 0.15rem;
   flex: 0 1 auto;
-  color: rgba(0, 0, 0, 0.5);
   text-decoration: none;
   line-height: 1;
   font-size: .7rem;
-}
-.ncoi---behind .ncoi---container .ncoi---footer .ncoi---link:hover {
-  color: black;
 }
 .ncoi---behind .ncoi---container .ncoi---table {
   display: block;
@@ -170,16 +154,12 @@
   float: left;
   table-layout: fixed;
   width: 100%;
-  background: rgba(0, 0, 0, 0.05);
 }
 .ncoi---behind .ncoi---container .ncoi---table table tbody {
   border-top: 1px solid;
 }
 .ncoi---behind .ncoi---container .ncoi---table table tbody:first-child {
   border: none;
-}
-.ncoi---behind .ncoi---container .ncoi---table table tbody tr {
-  background-color: transparent;
 }
 .ncoi---behind .ncoi---container .ncoi---table table tbody tr.border-top {
   border-top: 1px solid;
@@ -226,7 +206,6 @@ label.ncoi---sliding {
 label.ncoi---sliding i {
   display: inline-block;
   box-sizing: border-box;
-  background: rgba(0, 0, 0, 0.5);
   height: 1.5rem;
   width: 3rem;
   border-radius: .75rem;
@@ -240,17 +219,12 @@ label.ncoi---sliding i:before {
   height: 1rem;
   width: 1rem;
   content: '';
-  background: white;
   border-radius: .5rem;
   transition: margin 0.25s ease-in-out;
-}
-[type=checkbox].ncoi---sliding:checked + label.ncoi---sliding i {
-  background: #090;
 }
 [type=checkbox].ncoi---sliding:checked + label.ncoi---sliding i:before {
   margin-left: 1.5rem;
 }
 [type=checkbox].ncoi---sliding:disabled + label.ncoi---sliding i {
-  background: rgba(0, 0, 0, 0.2);
   cursor: not-allowed;
 }

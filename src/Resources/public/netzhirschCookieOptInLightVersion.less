@@ -1,0 +1,68 @@
+.ncoi---behind {
+	.ncoi---container {
+		background:white;
+
+		.ncoi---actions {
+			.ncoi---action  {
+				a {
+					background:rgba(0,0,0,0.5);
+					color:white;
+
+					&:hover {
+						background:rgba(0,0,0,0.6);
+					}
+				}
+
+
+				&.ncoi---link-primary a {
+					background:#090;
+
+					&:hover {
+						background:darken(#090,10);
+					}
+				}
+			}
+		}
+	}
+
+	.ncoi---footer,.ncoi---table {
+
+		.ncoi---link,.ncoi---split {
+			color:rgba(0,0,0,.5);
+		}
+
+		.ncoi---link:hover {
+			color:black;
+		}
+	}
+
+	.ncoi---table {
+		table {
+			background:rgba(0,0,0,.05);
+
+			tbody {
+				tr {
+					background-color:transparent;
+				}
+			}
+		}
+	}
+}
+label.ncoi---sliding {
+	i {
+		background:rgba(0,0,0,.5);
+
+		&:before {
+			background:white;
+		}
+	}
+}
+
+[type=checkbox].ncoi---sliding:checked + label.ncoi---sliding i {
+	background:#090;
+}
+
+[type=checkbox].ncoi---sliding:disabled + label.ncoi---sliding i {
+	background:rgba(0,0,0,.2);
+	cursor:not-allowed;
+}

@@ -44,7 +44,7 @@ $arrFields = [
 
 $dc['fields'] = array_merge($dc['fields'], $arrFields);
 
-class tl_settings_ncoi extends tl_settings{
+class tl_settings_ncoi {
 	/**
 	 * @param $licenseExpiryDate
 	 *
@@ -58,9 +58,9 @@ class tl_settings_ncoi extends tl_settings{
 
 		if (!empty($licenseKey)) {
 
-			$response = LicenseController::callAPI($_SERVER['HTTP_HOST']);
-			if ($response !== 'false') {
-				$licenseExpiryDate = $response->dateOfExpiry;
+			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+			if ($licenseAPIResponse->getSuccess()) {
+				$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
 
 				$licenseExpiryDate =  date_create_from_format('Y-m-d', $licenseExpiryDate);
 				// real in settings
@@ -79,9 +79,9 @@ class tl_settings_ncoi extends tl_settings{
 	public function getLicenseKey($licenseKey) {
 		if (!empty($licenseKey)){
 
-			$response = LicenseController::callAPI($_SERVER['HTTP_HOST']);
-			if ($response !== 'false') {
-				$licenseKey = $response->licenseKey;
+			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+			if ($licenseAPIResponse->getSuccess()) {
+				$licenseKey = $licenseAPIResponse->getLicenseKey();
 
 				// real in settings
 				Config::persist('ncoi_license_key', $licenseKey);

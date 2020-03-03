@@ -5,9 +5,9 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 
 
 use Contao\Config;
+use Netzhirsch\CookieOptInBundle\LicenseAPIResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Contao\PageModel;
-use DateTime;
 use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,18 +26,22 @@ class LicenseController extends AbstractController
 	 * @throws Exception
 	 */
 	public function licenseAction() {
-		$licenseKey = Config::get('ncoi_license_key');
-		$licenseExpiryDate = Config::get('ncoi_license_expiry_date');
-		if (empty($licenseKey) && empty($licenseExpiryDate)) {
-			$rootPages = PageModel::findByType('root');
-			foreach ($rootPages as $rootPage) {
-				$domain = $rootPage->__get('dns');
-				$licenseExpiryDate = self::callAPI($domain);
-				self::setLicense($licenseExpiryDate,$domain,$rootPage);
+
+		$rootPages = PageModel::findByType('root');
+		foreach ($rootPages as $rootPage) {
+			$domain = ($rootPage->__get('dns')) ? $rootPage->__get('dns') : $_SERVER['HTTP_HOST'];
+			if (!empty($domain) || !empty($rootPage->__get('ncoi_license_key'))) {
+				$licenseAPIResponse = self::callAPI($domain);
+				if ($licenseAPIResponse->getSuccess())
+					self::setLicense($licenseAPIResponse->getDateOfExpiry(), $licenseAPIResponse->getLicenseKey(), $rootPage);
 			}
-		} else {
-			$licenseExpiryDate = self::callAPI($_SERVER['HTTP_HOST']);
-			self::setLicense($licenseExpiryDate,$_SERVER['HTTP_HOST']);
+		}
+
+		$licenseKey = Config::get('ncoi_license_key');
+		if (!empty($licenseKey)) {
+			$licenseAPIResponse = self::callAPI($_SERVER['HTTP_HOST']);
+			if ($licenseAPIResponse->getSuccess())
+				self::setLicense($licenseAPIResponse->getDateOfExpiry(),$licenseAPIResponse->getLicenseKey());
 		}
 
 		/** @noinspection PhpParamsInspection */
@@ -45,54 +49,61 @@ class LicenseController extends AbstractController
 	}
 
 	/**
-	 * @param $licenseExpiryDate
-	 * @param $domain
+	 * @param           $licenseExpiryDate
+	 * @param           $licenseKey
 	 * @param PageModel $rootPage
 	 *
-	 * @throws Exception
 	 */
-	public static function setLicense($licenseExpiryDate,$domain,$rootPage = null) {
+	public static function setLicense($licenseExpiryDate,$licenseKey,$rootPage = null) {
 
-		if (!empty($licenseExpiryDate)) {
-			$date = new DateTime();
-			$licenseExpiryDate = $date->setTimestamp($licenseExpiryDate);
+		if (empty($licenseExpiryDate))
+			return;
 
-			$licenseKey = LicenseController::getHash($domain, $licenseExpiryDate);
-
-			if (empty($rootPage)) {
-				Config::persist('ncoi_license_key', $licenseKey);
-				Config::persist('ncoi_license_expiry_date', $licenseExpiryDate->format('Y-m-d'));
-			} else {
-				$rootPage->__set('ncoi_license_key',$licenseKey);
-				$rootPage->__set('ncoi_license_expiry_date',$licenseExpiryDate->format('Y-m-d'));
-				$rootPage->save();
-			}
+		if (empty($rootPage)) {
+			Config::persist('ncoi_license_key', $licenseKey);
+			Config::persist('ncoi_license_expiry_date', $licenseExpiryDate);
+		} else {
+			$rootPage->__set('ncoi_license_key',$licenseKey);
+			$rootPage->__set('ncoi_license_expiry_date',$licenseExpiryDate);
+			$rootPage->save();
 		}
 	}
 
+	/** @noinspection PhpComposerExtensionStubsInspection ext-curl,ext-json is required in bundle composer.json phpStorm don't check that*/
+	/**
+	 * @param $domain
+	 *
+	 * @return LicenseAPIResponse
+	 */
 	public static function callAPI($domain) {
-		$response = null;
-		$curl = curl_init('https://buero.netzhirsch.de/license/verify/'.$domain);
+		$licenseAPIResponse = new LicenseAPIResponse();
+
+		$curl = curl_init('https://buero.netzhirsch.de/license/verify/' . $domain);
 		//response as string
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		//to set HTTP-POST-request
 		curl_setopt($curl, CURLOPT_POST, true);
 		$response = curl_exec($curl);
-		if ($response !== "false") {
+		if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
 			$response = json_decode($response);
+			if ($response->success) {
+				$licenseAPIResponse->setSuccess(true);
+				$licenseAPIResponse->setDateOfExpiry($response->dateOfExpiry);
+				$licenseAPIResponse->setLicenseKey($response->licenseKey);
+			}
 		}
 
 		curl_close($curl);
-		return $response;
+		return $licenseAPIResponse;
 	}
 
 	/**
 	 * @param          $domain
-	 * @param DateTime $licenseExpiryDate
+	 * @param $licenseExpiryDate
 	 *
 	 * @return string
 	 */
-	public static function getHash($domain,DateTime $licenseExpiryDate){
-		return hash('sha256',$domain.'-'.$licenseExpiryDate->format('Y-m-d'));
+	public static function getHash($domain,$licenseExpiryDate){
+		return hash('sha256',$domain.'-'.$licenseExpiryDate);
 	}
 }

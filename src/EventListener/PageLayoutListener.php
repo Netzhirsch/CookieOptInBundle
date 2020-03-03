@@ -28,17 +28,19 @@ class PageLayoutListener {
 		$licenseKey = (!empty($pageModel->__get('ncoi_license_key'))) ? $pageModel->__get('ncoi_license_key') : Config::get('ncoi_license_key');
 		$licenseExpiryDate = (!empty($pageModel->__get('ncoi_license_expiry_date'))) ? $pageModel->__get('ncoi_license_expiry_date') : Config::get('ncoi_license_expiry_date');
 
-		if (!self::checkLicense($licenseKey,$licenseExpiryDate,$_SERVER['HTTP_HOST']) && empty(self::checkLicenseRemainingTrialPeriod())) {
-
-			$licenseExpiryDate = LicenseController::callAPI($_SERVER['HTTP_HOST']);
-			if (empty($licenseExpiryDate)) {
-
-				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
-				$removeModules = true;
-			} else {
-
-				LicenseController::setLicense($licenseExpiryDate,$_SERVER['HTTP_HOST']);
+		if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST']) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
+			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+			if ($licenseAPIResponse->getSuccess()) {
+				$rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
+				$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
+				$licenseKey = $licenseAPIResponse->getLicenseKey();
+				LicenseController::setLicense($licenseExpiryDate,$licenseKey,$rootPage);
 			}
+		}
+
+		if (!self::checkLicense($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST']) && empty(self::checkLicenseRemainingTrialPeriod())) {
+			$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
+			$removeModules = true;
 		}
 
 		$moduleIds = [];
@@ -70,6 +72,7 @@ class PageLayoutListener {
 
 		$netzhirschOptInCookie = $_COOKIE['_netzhirsch_cookie_opt_in'];
 
+		/** @noinspection PhpComposerExtensionStubsInspection */
 		$netzhirschOptInCookie = json_decode($netzhirschOptInCookie);
 
 		$paletteModule = FieldPaletteModel::findByPid($modulBar->id);
@@ -138,8 +141,10 @@ class PageLayoutListener {
 	}
 
 	/**
-	 * @param string   $licenseKey
+	 * @param string $licenseKey
 	 * @param string $licenseExpiryDate
+	 *
+	 * @param        $domain
 	 *
 	 * @return bool
 	 * @throws Exception
@@ -148,30 +153,31 @@ class PageLayoutListener {
 
 		if (empty($licenseKey) || empty($licenseExpiryDate))
 			return false;
-		
-		/** @var DateInterval $licenseExpiryTimeDiff */
-		$licenseExpiryTimeDiff = self::getLicenseRemainingExpiryDays($licenseExpiryDate);
-
-		if ($licenseExpiryTimeDiff !== false) {
-			if($licenseExpiryTimeDiff->invert == 0) {
-				return false;
-			}
-		}
 
 		// in Frontend Y-m-d in Backend d.m.Y
-		if (strpos($licenseExpiryDate, '.') === false) {
-			$licenseExpiryDate = date_create_from_format('Y-m-d', $licenseExpiryDate);
-		} else {
-			$licenseExpiryDate = date_create_from_format('d.m.Y', $licenseExpiryDate);
-		}
+		$licenseExpiryDate = date("Y-m-d", strtotime($licenseExpiryDate));
+		if ($licenseExpiryDate < date("Y-m-d"))
+			return false;
 
+		return self::checkHash($licenseKey, $licenseExpiryDate, $domain);
+	}
+
+	/**
+	 * @param       $licenseKey
+	 * @param       $licenseExpiryDate
+	 * @param       $domain
+	 *
+	 * @return bool
+	 */
+	private static function checkHash($licenseKey, $licenseExpiryDate, $domain) {
 		$hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
 
 		//all possible subdomains
 		$domainLevels = explode(".", $domain);
 
 		foreach ($domainLevels as $key => $domainLevel) {
-			if (count($domainLevels) < 2) break;
+			if (count($domainLevels) < 2)
+				break;
 			unset($domainLevels[$key]);
 			$domain = implode(".", $domainLevels);
 			$hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
@@ -185,14 +191,15 @@ class PageLayoutListener {
 	}
 
 	/**
-	 * @param string $licenseExpiryDate
+	 * @param DateTime $licenseExpiryDate
 	 *
 	 * @return DateInterval|false
 	 * @throws Exception
 	 */
-	public static function getLicenseRemainingExpiryDays($licenseExpiryDate) {
+	public static function getLicenseRemainingExpiryDays(DateTime $licenseExpiryDate) {
+
 		$today = new DateTime('now');
-		$licenseExpiryDate = date_create_from_format('d.m.Y', $licenseExpiryDate);
+
 		return date_diff($licenseExpiryDate, $today);
 	}
 
