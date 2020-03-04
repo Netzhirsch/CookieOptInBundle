@@ -48,7 +48,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Faceb
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Analyse Template'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
-	['Tracking Id','z.B. UA-123456789-1 für Google Analytics oder z.B. mein-matomo-server.de für Matomo'];
+	['Tracking Id','z.B. UA-123456789-1 für Google Analytics'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =
 	['Tracking Server Url ','z.B. mein-matomo-server.de für Matomo'];
@@ -61,7 +61,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'] =
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'] = ['Zweck','Bitte geben Sie den Zweck des Cookies an.'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'] =
-	['Technischer Name','z.B. _gat_gtag_UA_41577019_1,_fbp Wichtig zum löschen der Cookies'];
+	['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum löschen der Cookies'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'] = ['Cookie Gruppe'];
 
