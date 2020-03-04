@@ -72,10 +72,26 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 // setCookieVersion check for right modul
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_extend','setCookieVersion']];
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = $GLOBALS['TL_DCA']['tl_module']['fields']['headline'];
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
+		'label' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
+		'explanation' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
+		'exclude'   => true,
+		'inputType' => 'inputUnit',
+		'options' => [
+			'h2',
+			'h3',
+			'h4',
+			'h5'
+		],
+		'eval' => [
+				'tl_class'=>'w50 clr',
+				'alwaysSave' => true
+		],
+		'sql' => "text NULL default ''",
+		'load_callback' => [['tl_module_extend','getDefaultHeadline']]
+];
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar']['load_callback'] = [['tl_module_extend','getDefaultHeadline']];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 		'label' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
@@ -466,7 +482,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
 ];
 
 class tl_module_extend extends tl_module {
-	
+
 	public function getDefaultQuestionHintDefault($value){
 
 		if (empty($value))
@@ -492,7 +508,7 @@ class tl_module_extend extends tl_module {
 	}
 
 	public function getDefaultHeadline($value){
-		if ($value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"h2";}')
+		if (empty($value))
 			return $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBarDefault'];
 		else
 			return $value;
