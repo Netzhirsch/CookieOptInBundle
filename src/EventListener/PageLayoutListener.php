@@ -104,9 +104,11 @@ class PageLayoutListener {
 		if (empty($modul)) {
 			//module in this layout
 			$module = ModuleModel::findMultipleByIds($modId);
-			foreach ($module as $modul) {
-				if ($modul->type == 'cookieOptInBar') {
-					$modulBar = $modul;
+			if (!empty($module)) {
+				foreach ($module as $modul) {
+					if ($modul->type == 'cookieOptInBar') {
+						$modulBar = $modul;
+					}
 				}
 			}
 		}
@@ -247,21 +249,24 @@ class PageLayoutListener {
 	 * @return array
 	 */
 	private function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
-		$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
-		foreach ($layoutModules as $key => $layoutModule) {
-			if (!empty($layoutModule['enable'])) {
-				$mod = ModuleModel::findById($layoutModule['mod']);
-				if ($mod->type == 'cookieOptInBar') {
-					if ($removeModules)
+		
+		if (!empty($layoutModules)) {
+			$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
+			foreach ($layoutModules as $key => $layoutModule) {
+				if (!empty($layoutModule['enable'])) {
+					$mod = ModuleModel::findById($layoutModule['mod']);
+					if ($mod->type == 'cookieOptInBar') {
+						if ($removeModules)
+							unset($layoutModules[$key]);
+						else
+							$moduleIds[] = $mod->id;
+					} elseif ($mod->type == 'cookieOptInRevoke' && $removeModules) {
 						unset($layoutModules[$key]);
-					else
-						$moduleIds[] = $mod->id;
-				} elseif ($mod->type == 'cookieOptInRevoke' && $removeModules) {
-					unset($layoutModules[$key]);
+					}
 				}
 			}
+			$layoutOrPage->__set('modules', serialize($layoutModules));
 		}
-		$layoutOrPage->__set('modules', serialize($layoutModules));
 
 		return $moduleIds;
 	}
