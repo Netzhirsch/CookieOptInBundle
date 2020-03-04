@@ -113,17 +113,10 @@
 			},
 			success: function (data) {
 				let tools = data.tools;
-				let otherScripts = data.otherScripts;
-				if (otherScripts !== null) {
-					otherScripts.forEach(function (otherScript) {
-						$('body').append(otherScript.cookieToolsCode);
-					});
-				}
-				let content = $('body');
+				let body = $('body');
 				tools.forEach(function (tool) {
 					let toolName = tool.cookieToolsSelect;
 					if (toolName.localeCompare('googleAnalytics') === 0) {
-						console.log('tracking google');
 						$.getScript('https://www.googletagmanager.com/gtag/js?id=' + tool.cookieToolsTrackingId);
 						window.dataLayer = window.dataLayer || [];
 						function gtag(){dataLayer.push(arguments);}
@@ -165,11 +158,17 @@
 							g.defer = true;
 							g.src = u + 'matomo.js';
 							s.parentNode.insertBefore(g, s);
-							content.append('<img id="matomoTracking"  src="http://matomo/matomo.php?idsite='+tool.cookieToolsTrackingId+'&amp;rec=1" alt=""/>').appendHTML;
+							body.append('<img id="matomoTracking"  src="http://matomo/matomo.php?idsite='+tool.cookieToolsTrackingId+'&amp;rec=1" alt=""/>').appendHTML;
 
 						})();
 					}
 				});
+				let otherScripts = data.otherScripts;
+				if (otherScripts !== null) {
+					otherScripts.forEach(function (otherScript) {
+						body.append(otherScript.cookieToolsCode);
+					});
+				}
 			}
 		});
 	}
