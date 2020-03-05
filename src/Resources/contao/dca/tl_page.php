@@ -7,8 +7,12 @@ use Contao\PageModel;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener;
 
-$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
-
+// on root page
+if (empty($GLOBALS['_GET']))
+	$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
+else
+	$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackendPage.css|static';
+	
 $root = 'rootfallback';
 
 $replace = '{ncoi_license_legend},ncoi_license_key,ncoi_license_expiry_date,ncoi_license_protected;{global_legend';

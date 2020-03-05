@@ -10,6 +10,12 @@
 #table_fieldpalette_cookieTools_paginate, #table_fieldpalette_otherScripts_paginate,#table_fieldpalette_cookieTools_length,#table_fieldpalette_cookieTools_filter,#table_fieldpalette_otherScripts_length,#table_fieldpalette_otherScripts_filter,#table_fieldpalette_cookieTools_info,#table_fieldpalette_otherScripts_info {
 	display: none;
 }
+.ncoi---backend--message-page p,b{
+	padding-left: 37px;
+}
+.ncoi---backend--message-page p b {
+	padding-left: 0;
+}
 .tl_error,.tl_info{
-	background-position: left 2px !important;
+	background-position: 16px 11px !important;
 }

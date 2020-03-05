@@ -54,7 +54,7 @@ class GetSystemMessagesListener
 		if (empty($domain)){
 			$domain = $_SERVER['HTTP_HOST'];
 		}
-		$domainString = "<p>Für Ihre Domain: ".$domain.'</p>';
+		$domainString = "Für Ihre Domain: ".$domain.'<br/>';
 
 		if (empty($licenseKey) || empty($licenseExpiryDate)) {
 			$dateInterval = PageLayoutListener::checkLicenseRemainingTrialPeriod();

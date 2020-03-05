@@ -179,18 +179,14 @@ class ModuleCookieOptInBar extends Module
 	public static function setCssJs($defaultCss,$cssTemplateStyle)
 	{
 		if ($defaultCss == "1") {
-
-
-			$dir = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR;
-
-			self::parseLessToCss($dir,'netzhirschCookieOptIn.less','netzhirschCookieOptIn.css');
+			self::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css');
 
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
 			if ($cssTemplateStyle == 'dark'){
-				self::parseLessToCss($dir,'netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css');
+				self::parseLessToCss('netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInDarkVersion.css|static';
 			} elseif 	($cssTemplateStyle == 'light') {
-				self::parseLessToCss($dir,'netzhirschCookieOptInLightVersion.less','netzhirschCookieOptInLightVersion.css');
+				self::parseLessToCss('netzhirschCookieOptInLightVersion.less','netzhirschCookieOptInLightVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInLightVersion.css|static';
 			}
 		}
@@ -207,11 +203,11 @@ class ModuleCookieOptInBar extends Module
 	}
 
 	/**
-	 * @param             $dir
 	 * @param             $lessFile
 	 * @param             $cssFile
 	 */
-	private static function parseLessToCss($dir,$lessFile,$cssFile){
+	public static function parseLessToCss($lessFile,$cssFile){
+		$dir = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR;
 		$parser = new Less_Parser();
 		try {
 			$parser->parseFile($dir . $lessFile);
