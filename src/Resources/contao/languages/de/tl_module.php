@@ -17,7 +17,11 @@ $GLOBALS['TL_LANG']['tl_module']['questionHint'] = ['Hinweistext in der Cookie B
 
 $GLOBALS['TL_LANG']['tl_module']['saveButton'] = ['Speichern-Button','Bitte geben Sie die Beschriftung des Speichern-Buttons ein.'];
 
-$GLOBALS['TL_LANG']['tl_module']['saveAllButton'] = ['Alle annehmen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookies annimmt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'];
+$GLOBALS['TL_LANG']['tl_module']['saveButtonDefault'] = 'Speichern';
+
+$GLOBALS['TL_LANG']['tl_module']['saveAllButtonDefault'] = 'Alle annehmen';
+
+$GLOBALS['TL_LANG']['tl_module']['saveAllButton'] = ['Alle Annehmen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookies annimmt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'];
 
 $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBar'] = ['Überschrift'];
 
@@ -38,7 +42,10 @@ $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie Gruppen'];
 
-
+$GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
+	'Essenziell',
+	'Analyse',
+];
 /*************** Fieldpalette Tools ***************/
 
 $GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools'];

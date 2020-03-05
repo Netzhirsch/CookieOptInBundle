@@ -24,8 +24,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['revokeButton'] = [
 		'mandatory' => true,
 		'tl_class' => 'w50 clr',
 		'maxlength' => 255,
+		'alwaysSave' => true
 	],
-	'sql' => "varchar(255) NOT NULL default 'Cookie-Entscheidung ändern'",
+	'sql' => "varchar(255) NULL default ''",
+	'load_callback' => [['tl_module_extend','getDefaultRevokeButton']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateRevoke'] = [
@@ -111,9 +113,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
 		'exclude'   => true,
 		'inputType' => 'text',
 		'eval' => [
-				'tl_class' => 'w50'
+				'tl_class' => 'w50',
+				'alwaysSave' => true
 		],
-		'sql' => "varchar(255) NOT NULL DEFAULT 'Speichern' ",
+	'sql' => "text NULL default ''",
+	'load_callback' => [['tl_module_extend','getDefaultSaveButton']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
@@ -121,9 +125,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
 		'exclude'   => true,
 		'inputType' => 'text',
 		'eval' => [
-				'tl_class' => 'w50'
+				'tl_class' => 'w50',
+				'alwaysSave' => true
 		],
-		'sql' => "varchar(255) NOT NULL DEFAULT 'Alle annehmen'",
+	'sql' => "text NULL default ''",
+	'load_callback' => [['tl_module_extend','getDefaultsaveAllButton']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
@@ -133,7 +139,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	'inputType' => 'textarea',
 	'eval' => [
 			'alwaysSave' => true,
-			'tl_class'	=>	'long'
+			'tl_class'	=>	'long',
 	],
 	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
 	'sql' => "text  NULL default ''",
@@ -171,6 +177,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
 		'tl_class'  =>  'long clr',
 		'submitOnChange' => true,
 		'doNotCopy' => true,
+		'alwaysSave' => true
 	],
 	'sql' => "blob NULL default '' ",
 	'load_callback' => [['tl_module_extend','getDefaultGroups']]
@@ -483,6 +490,30 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
 
 class tl_module_extend extends tl_module {
 
+	public function getDefaultRevokeButton($value){
+
+		if (empty($value))
+			$value = $GLOBALS['TL_LANG']['tl_module']['revokeButtonDefault'];
+
+		return $value;
+	}
+	
+	public function getDefaultSaveButton($value){
+
+		if (empty($value))
+			$value = $GLOBALS['TL_LANG']['tl_module']['saveButtonDefault'];
+
+		return $value;
+	}
+	
+	public function getDefaultsaveAllButton($value){
+
+		if (empty($value))
+			$value = $GLOBALS['TL_LANG']['tl_module']['saveAllButtonDefault'];
+
+		return $value;
+	}
+	
 	public function getDefaultQuestionHintDefault($value){
 
 		if (empty($value))
@@ -502,7 +533,7 @@ class tl_module_extend extends tl_module {
 	public function getDefaultGroups($value){
 
 		if (empty($value))
-			$value = [$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['cookieGroup']['essential']];
+			$value = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
 
 		return $value;
 	}
@@ -534,10 +565,7 @@ class tl_module_extend extends tl_module {
 		$cookieToolGroups = $modul->cookieGroups;
 		$cookieToolGroups = StringUtil::deserialize($cookieToolGroups);
 		if (empty($cookieToolGroups)){
-			$cookieToolGroups = [
-				'Essenziell',
-				'Analyse',
-			];
+			$cookieToolGroups = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
 		}
 		return $cookieToolGroups;
 	}
@@ -550,15 +578,17 @@ class tl_module_extend extends tl_module {
 		$netzhirschCookieFieldModel = null;
 		$csrfCookieFieldModel = null;
 		$phpSessIdCookieFieldModel = null;
-		foreach ($fieldPalettes as $fieldPalette) {
-			if ($fieldPalette->cookieToolsTechnicalName == '_netzhirsch_cookie_opt_in') {
-				$netzhirschCookieFieldModel = $fieldPalette;
-			} elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_contao_csrf_token') {
-				$csrfCookieFieldModel = $fieldPalette;
-			} elseif ($fieldPalette->cookieToolsTechnicalName == 'PHPSESSID') {
-				$phpSessIdCookieFieldModel = $fieldPalette;
+		if (!empty($fieldPalettes)) {
+			foreach ($fieldPalettes as $fieldPalette) {
+				if ($fieldPalette->cookieToolsTechnicalName == '_netzhirsch_cookie_opt_in') {
+					$netzhirschCookieFieldModel = $fieldPalette;
+				} elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_contao_csrf_token') {
+					$csrfCookieFieldModel = $fieldPalette;
+				} elseif ($fieldPalette->cookieToolsTechnicalName == 'PHPSESSID') {
+					$phpSessIdCookieFieldModel = $fieldPalette;
+				}
+	
 			}
-
 		}
 		if (empty($netzhirschCookieFieldModel)) {
 			$netzhirschCookieFieldModel = new FieldPaletteModel();
@@ -576,8 +606,8 @@ class tl_module_extend extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolsProvider = '';
 			$netzhirschCookieFieldModel->cookieToolsTrackingId = '1';
 			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
-			$netzhirschCookieFieldModel->cookieToolsUse = 'Dient zum bestimmen welche Cookie angenommen oder abgelehnt wurden';
-			$netzhirschCookieFieldModel->cookieToolGroup = 'Essenziell';
+			$netzhirschCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
+			$netzhirschCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'];
 			
 			$netzhirschCookieFieldModel->save();
 		}
@@ -600,9 +630,8 @@ class tl_module_extend extends tl_module {
 			$csrfCookieFieldModel->cookieToolsProvider = '';
 			$csrfCookieFieldModel->cookieToolsTrackingId = '1';
 			$csrfCookieFieldModel->cookieToolsSelect = '-';
-			$csrfCookieFieldModel->cookieToolsUse = 'Dient der Sicherheit der Website vor Cross-Site-Request-Forgery
-		Angriffen. Nach dem Schließen des Browsers wird das Cookie wieder gelöscht';
-			$csrfCookieFieldModel->cookieToolGroup = 'Essenziell';
+			$csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
+			$csrfCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'];
 			
 			$csrfCookieFieldModel->save();
 		}
@@ -624,13 +653,8 @@ class tl_module_extend extends tl_module {
 			$phpSessIdCookieFieldModel->cookieToolsProvider = '';
 			$phpSessIdCookieFieldModel->cookieToolsTrackingId = '1';
 			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
-			$phpSessIdCookieFieldModel->cookieToolsUse = 'Cookie von PHP (Programmiersprache), PHP Daten-Identifikator.
-		Enthält nur einen Verweis auf die aktuelle Sitzung. Im Browser des Nutzers werden keine Informationen
-		gespeichert und dieses Cookie kann nur von der aktuellen Website genutzt werden. Dieses Cookie wird vor
-		allem in Formularen benutzt, um die Benutzerfreundlichkeit zu erhöhen. In Formulare eingegebene Daten werden
-		z. B. kurzzeitig gespeichert, wenn ein Eingabefehler durch den Nutzer vorliegt und dieser eine Fehlermeldung
-		erhält. Ansonsten müssten alle Daten erneut eingegeben werden.';
-			$phpSessIdCookieFieldModel->cookieToolGroup = 'Essenziell';
+			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'];
+			$phpSessIdCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'];
 			
 			$phpSessIdCookieFieldModel->save();
 			

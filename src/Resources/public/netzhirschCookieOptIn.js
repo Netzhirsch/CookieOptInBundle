@@ -17,7 +17,7 @@
 
 		$('#ncoi---allowed').on('click', function (e) {
 			e.preventDefault();
-			$('.ncoi---behind').addClass('ncoi---hidden');
+			$( ".ncoi---behind" ).fadeOut(800, function() {});
 			track();
 		});
 
@@ -31,7 +31,7 @@
 
 		$('#ncoi---revoke').on('click',function (e) {
 			e.preventDefault();
-			$('.ncoi---behind').removeClass('ncoi---hidden');
+			$('.ncoi---behind').removeClass('ncoi---hidden').removeAttr('style');
 			$('#FBTracking').remove();
 			$('#matomoTracking').remove();
 		});

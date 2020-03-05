@@ -78,7 +78,7 @@
 								</a>
 							</div>
 							<div class="ncoi---action ncoi---link ncoi---infos-show">
-								<a id="ncoi---infos--show" href="#" title="Informationen anzeigen">
+								<a id="ncoi---infos--show" href="#" title="<?=$tlLang['info']?>">
 									<span class="ncoi---infos--show-active ncoi---hidden">
 										<?php echo $tlLang['info'].' '.$tlLang['hidden']; ?>
 									</span>
