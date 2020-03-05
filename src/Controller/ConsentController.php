@@ -44,15 +44,14 @@ class ConsentController extends AbstractController
 			$data[] = [
 					'Nr.'                  => $zeilenNummer++,
 					'Datum'                => $consent['date'],
+					'Domain'                => $consent['domain'],
 					'IP'                => $consent['ip'],
 					'Cookie Namen' => $consent['cookieToolsName'],
 					'Technische Cookie Namen' => $consent['cookieToolsTechnicalName'],
 			];
 		}
-
-		/* @var \Symfony\Bundle\FrameworkBundle\Controller\string $controllerString */
-		$controllerString = 'serializer';
-		$serielleData = $this->get($controllerString)->encode($data, 'csv', [CsvEncoder::DELIMITER_KEY => ';',]);
+		$serializer = new CsvEncoder();
+		$serielleData = $serializer->encode($data, 'csv', [CsvEncoder::DELIMITER_KEY => ';',]);
 		if (!empty($serielleData)) {
 			$response = new Response($serielleData);
 			$response->headers->set('Content-Type', 'text/csv');

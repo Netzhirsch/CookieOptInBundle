@@ -197,10 +197,10 @@ class CookieController extends AbstractController
 		
 		if (empty($ipInDB)){
 			/** @noinspection SqlResolve */
-			$sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date) VALUES(?,?,?,?)";
+			$sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain) VALUES(?,?,?,?,?)";
 		} else {
 			/** @noinspection SqlResolve */
-			$sql = "UPDATE tl_consentDirectory SET ip = ? ,cookieToolsName = ?, cookieToolsTechnicalName = ? ,date = ? WHERE ip = ?";
+			$sql = "UPDATE tl_consentDirectory SET ip = ? ,cookieToolsName = ?, cookieToolsTechnicalName = ? ,date = ?, domain = ? WHERE ip = ?";
 		}
 		
 		$stmt = $conn->prepare($sql);
@@ -221,9 +221,10 @@ class CookieController extends AbstractController
 		$stmt->bindValue(2, implode(', ', $cookieNames));
 		$stmt->bindValue(3, implode(', ', $cookieTechnicalName));
 		$stmt->bindValue(4, date('Y-m-d H:i'));
+		$stmt->bindValue(5, $_SERVER['HTTP_HOST']);
 		
 		if (!empty($ipInDB))
-			$stmt->bindValue(5, $ipCurrentUser);
+			$stmt->bindValue(6, $ipCurrentUser);
 		
 		$stmt->execute();
 		

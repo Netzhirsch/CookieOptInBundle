@@ -31,18 +31,20 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 		'label' => array
 		(
 			'fields'                  => [
-				'ip',
 				'date',
+				'domain',
+				'ip',
 				'cookieToolsName',
 				'cookieToolsTechnicalName',
 			],
 			'headerFields' => [
-				'ip',
 				'date',
+				'domain',
+				'ip',
 				'cookieToolsName',
 				'cookieToolsTechnicalName',
 			],
-			'format' => "%s, %s, %s, %s",
+			'format' => "%s, %s, %s, %s, %s",
 			'showColumns'             => true,
 		),
 		'global_operations' => [
@@ -64,13 +66,9 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 	),
 	'palettes' => array
 	(
-	'default'                     => 'ip,cookieToolsName,cookieToolsTechnicalName,date'
+	'default'                     => 'date,domain,ip,cookieToolsName,cookieToolsTechnicalName,'
 	),
 	'fields' => [
-		'id' => array
-		(
-			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
-		),
 		'date' => array
 		(
 			'exclude'                 => true,
@@ -79,6 +77,18 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 			'search'                  => true,
 			'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
 			'sql'                     => "varchar(255) NOT NULL default ''"
+		),
+		'domain' => [
+			'exclude'                 => true,
+			'label' => &$GLOBALS['TL_LANG']['tl_consentDirectory']['domain'],
+			'inputType'               => 'text',
+			'search'                  => true,
+			'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(255) NOT NULL default ''"
+		],
+		'id' => array
+		(
+			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
 		),
 		'ip' => array
 		(
