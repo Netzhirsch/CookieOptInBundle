@@ -49,23 +49,23 @@ class GetSystemMessagesListener
 	 */
 	public static function getMessage($licenseKey,$licenseExpiryDate,$domain = null) {
 
-		$kontaktString = "Bitte kontaktieren Sie Netzhirsch unter <a href=\"tel:045138943740\">0451 / 38 94 37 40</a> oder <a href=\"mailto:netzhirsch@netzhirsch.de\">netzhirsch@netzhirsch.de</a>, um einen Lizenzschlüssel zu erwerben.";
+		$kontaktString = $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['contact'];
 
 		if (empty($domain)){
 			$domain = $_SERVER['HTTP_HOST'];
 		}
-		$domainString = "Für Ihre Domain: ".$domain.'<br/>';
+		$domainString = $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['domain'].$domain.'<br/>';
 
 		if (empty($licenseKey) || empty($licenseExpiryDate)) {
 			$dateInterval = PageLayoutListener::checkLicenseRemainingTrialPeriod();
 			if (empty($dateInterval)) {
-				return '<p class="tl_error">Der Probemonat für das Netzhirsch Cookie Opt In Bundle ist abgelaufen.<br><b>' .$domainString.
+				return '<p class="tl_error">'.$GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['errorTrial'].'<br><b>' .$domainString.
 					   $kontaktString .
 					   '</b></p>';
 			} else {
-				return '<p class="tl_info">Noch ' .
+				return '<p class="tl_info">'.$GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['infoTrialStart'].' ' .
 					   $dateInterval->d .
-					   ' Tage vom Probemonat für das Netzhirsch Cookie Opt In Bundle übrig.<br><b>' .$domainString.
+					$GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['infoTrialEnd'].'<br><b>' .$domainString.
 					   $kontaktString .
 					   '</b></p>';
 			}
@@ -75,37 +75,38 @@ class GetSystemMessagesListener
 
 			$expireIn = '';
 
+		$expireInLang = $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['infoLicenseRemainingDate'];
+
 			if ($timeRemaining->m < 2) {
 
 				if(($timeRemaining->d == 0))
-					$expireIn = ' weniger als 24 Stunden';
+					$expireIn = $expireInLang['lessHours'];
 
 				if($timeRemaining->y > 0)
-					$expireIn .= ngettext(' einem Jahr', ' '.$timeRemaining->y.' Jahre', $timeRemaining->y);
+					$expireIn .= ngettext($expireInLang['oneYear'], ' '.$timeRemaining->y.$expireInLang['years'], $timeRemaining->y);
 
 				if($timeRemaining->y > 0 && ($timeRemaining->m > 0 || $timeRemaining->d > 0))
-					$expireIn .= ' und';
+					$expireIn .= $expireInLang['and'];
 
 				if($timeRemaining->m > 0)
-					$expireIn .= ngettext(' einem Monat', ' '.$timeRemaining->m.' Monaten', $timeRemaining->m);
+					$expireIn .= ngettext($expireInLang['oneMonth'], ' '.$timeRemaining->m.$expireInLang['months'], $timeRemaining->m);
 
 				if($timeRemaining->y == 0 && $timeRemaining->m > 0 && $timeRemaining->d > 0)
-					$expireIn .= ' und';
+					$expireIn .= $expireInLang['and'];
 
 				if(($timeRemaining->d > 0) )
-					$expireIn .= ngettext(' einem Tag', ' '.$timeRemaining->d.' Tagen', $timeRemaining->d);
+					$expireIn .= ngettext($expireInLang['oneDay'], ' '.$timeRemaining->d.$expireInLang['days'], $timeRemaining->d);
 			}
 
 			if (!empty($expireIn)){
-				/** @noinspection HtmlUnknownTarget */
-				$button = '<p><a href="/contao/license"><button>erneuern</button></a></p>';
-				return '<p class="tl_info">Ihre Lizenz für das Netzhirsch Cookie Opt In Bundle erlischt in'.$expireIn.'.<br><b>'.$domainString.$button.
+				$button = '<p><a href="/contao/license"><button>'.$expireInLang['button'].'</button></a></p>';
+				return '<p class="tl_info">'.$expireInLang['message'].$expireIn.'.<br><b>'.$domainString.$button.
 					   '</b></p>';
 			}
 
 
 		} else {
-			return '<p class="tl_error">Keine gültige Lizenz für das Netzhirsch Cookie Opt In Bundle.<br><b>' .$domainString.
+			return '<p class="tl_error">'.$GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['errorLicense'].'<br><b>' .$domainString.
 				   $kontaktString .
 				   '</b></p>';
 		}
