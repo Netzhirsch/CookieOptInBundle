@@ -1,4 +1,5 @@
 src/Resources/public/node_modules
 src/Resources/public/package-lock.json
+src/Resources/public/netzhirschCookieOptIn.css
 src/Resources/public/netzhirschCookieOptInLightVersion.css
 src/Resources/public/netzhirschCookieOptInDarkVersion.css

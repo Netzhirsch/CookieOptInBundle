@@ -95,6 +95,20 @@ $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" Browser
 
 $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Standard CSS laden','Die CSS-Datei des Cookie Opt In Bar-Moduls laden.'];
 
+$GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];
+
+$GLOBALS['TL_LANG']['tl_module']['topLeft'] = 'Oben links';
+$GLOBALS['TL_LANG']['tl_module']['topCenter'] = 'Oben mitte';
+$GLOBALS['TL_LANG']['tl_module']['topRight'] = 'Oben rechts';
+
+$GLOBALS['TL_LANG']['tl_module']['centerLeft'] = 'Mitte links';
+$GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'Mitte mitte';
+$GLOBALS['TL_LANG']['tl_module']['centerRight'] = 'Mitte rechts';
+
+$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'Unten links';
+$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'Unten mitte';
+$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'Unten rechts';
+
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle'] = ['Template Style'];
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['dark'] = 'dunkel';

@@ -66,8 +66,9 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,excludePages
 	;respectToNotTrack
 	;templateBar
-	,cssTemplateStyle
 	,defaultCss
+	,cssTemplateStyle
+	,position
 	,animation
 	;isNewCookieVersion
 ';
@@ -459,9 +460,31 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
 	'inputType' => 'checkbox',
 	'default' => '1',
 	'eval' => [
-		'tl_class'  =>  'w50 clr',
+		'tl_class'  =>  'long clr',
 	],
-	'sql' => "varchar(255) NULL default '' ",
+	'sql' => "varchar(1) NULL default '' ",
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['position'],
+	'exclude'   => true,
+	'inputType' => 'select',
+	'default' => 'centerCenter',
+	'options' => [
+		'topLeft' => $GLOBALS['TL_LANG']['tl_module']['topLeft'],
+		'topCenter' => $GLOBALS['TL_LANG']['tl_module']['topCenter'],
+		'topRight' => $GLOBALS['TL_LANG']['tl_module']['topRight'],
+		'centerLeft' => $GLOBALS['TL_LANG']['tl_module']['centerLeft'],
+		'centerCenter' => $GLOBALS['TL_LANG']['tl_module']['centerCenter'],
+		'centerRight' => $GLOBALS['TL_LANG']['tl_module']['centerRight'],
+		'bottomLeft' => $GLOBALS['TL_LANG']['tl_module']['bottomLeft'],
+		'bottomCenter' => $GLOBALS['TL_LANG']['tl_module']['bottomCenter'],
+		'bottomRight' => $GLOBALS['TL_LANG']['tl_module']['bottomRight'],
+	],
+	'eval' => [
+		'tl_class'  =>  'w50',
+	],
+	'sql' => "varchar(64) NULL default '' ",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
@@ -473,7 +496,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
 		'light' => &$GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'],
 	],
 	'eval' => [
-		'tl_class'  =>  'w50 clr',
+		'tl_class'  =>  'w50',
 	],
 	'sql' => "varchar(255) NULL default '' ",
 ];
@@ -498,8 +521,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 		'shrink' => $GLOBALS['TL_LANG']['tl_module']['shrink']
 	],
 	'eval' => [
-		'includeBlankOption' => true,
-		'tl_class'  =>  'w50 clr',
+		'tl_class'  =>  'w50',
 	],
 	'sql' => "varchar(64) NULL default '' ",
 ];

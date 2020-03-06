@@ -11,7 +11,11 @@
 }
 
 .ncoi---behind {
-	align-items: center;
+
+	&.ncoi---hidden--page-load {
+		display: none;
+	}
+
 	background: rgba(0, 0, 0, 0.21);
 	display: flex;
 	position: fixed;
@@ -24,21 +28,51 @@
 	z-index: 1000000;
 	justify-content: center;
 
-	&.ncoi---left {
-		justify-content: flex-start;
+	&.ncoi---topLeft {
+		align-items: flex-start;
+		justify-content: left;
 	}
 
-	&.ncoi---right {
+	&.ncoi---topCenter {
+		align-items: flex-start;
+		justify-content: center;
+	}
+
+	&.ncoi---topRight {
+		align-items: flex-start;
 		justify-content: flex-end;
 	}
 
-	&.ncoi---top {
-		align-items: flex-start;
+	&.ncoi---centerLeft {
+		align-items: center;
+		justify-content: left;
 	}
 
-	&.ncoi---bottom {
-		align-items: flex-end;
+	&.ncoi---centerCenter {
+		align-items: center;
+		justify-content: center;
 	}
+
+	&.ncoi---centerRight {
+		align-items: center;
+		justify-content: flex-end;
+	}
+
+	&.ncoi---bottomLeft {
+		align-items: flex-end;
+		justify-content: left;
+	}
+
+	&.ncoi---bottomCenter {
+		align-items: flex-end;
+		justify-content: center;
+	}
+
+	&.ncoi---bottomRight {
+		align-items: flex-end;
+		justify-content: flex-end;
+	}
+
 
 	.ncoi---container {
 		display: block;

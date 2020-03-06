@@ -31,7 +31,8 @@
 
 		$('#ncoi---revoke').on('click',function (e) {
 			e.preventDefault();
-			$('.ncoi---behind').removeClass('ncoi---hidden');
+			$('.ncoi---behind').removeClass('ncoi---hidden--page-load')
+				.removeClass('ncoi---hidden');
 			$('#FBTracking').remove();
 			$('#matomoTracking').remove();
 		});
