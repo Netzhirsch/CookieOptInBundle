@@ -20,7 +20,7 @@
 	"support": {
 		"email": "netzhirsch@netzhirsch.de",
 		"issues": "https://github.com/Netzhirsch/CookieOptInBundle/issues",
-		"wiki": "https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html",
+		"wiki": "https://github.com/Netzhirsch/CookieOptInBundle/wiki",
 		"source": "https://github.com/Netzhirsch/CookieOptInBundle"
 	},
 	"require": {

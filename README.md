@@ -10,11 +10,16 @@
  * Contao ^4.4
 
 ## Getting Started
- * Im Contao Manager das Bundle hinzufügen.
- * Installtool aufrufen https://example.tld/contao/install
- * Module hinzufügen
- * Opt In Bar Modul im Layout einbinden
- * Revoke Modul im Layout oder in einem Artikel einbinden
+ 1. Contao Manager
+    * Bundle suchen und installieren
+ 1. Installtool
+    * Datenbank updaten
+ 1. Contao Backend
+    * Modul **Cookie Opt In Bar** erstellen und im Seitenlayout einbinden
+    * Modul **Cookie Opt In Revoke** erstellen und z.B. in einem Artikel einbinden
  
 ## Lizenzierung
-Bitte kontaktieren Sie Netzhirsch unter <a href="tel:045138943740">0451 / 38 94 37 40</a> oder <a href="mailto:netzhirsch@netzhirsch.de">netzhirsch@netzhirsch.de</a>, um einen Lizenzschlüssel zu erwerben.
+Bitte kontaktieren Sie Netzhirsch unter <a href="tel:+4945138943740">0451 / 38 94 37 40</a> oder <a href="mailto:netzhirsch@netzhirsch.de">netzhirsch@netzhirsch.de</a>, um einen Lizenzschlüssel zu erwerben.
+
+## Weitere Infos
+https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html
