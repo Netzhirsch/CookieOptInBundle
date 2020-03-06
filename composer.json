@@ -1,6 +1,7 @@
 {
 	"name": "netzhirsch/cookie-opt-in-bundle",
 	"description": "Netzhirsch Cookie Opt In",
+	"version": "dev",
 	"keywords": [
 		"contao",
 		"cookie",

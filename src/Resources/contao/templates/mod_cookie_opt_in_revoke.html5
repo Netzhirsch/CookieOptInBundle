@@ -7,6 +7,7 @@
 	id="<?php echo $id ?>"
 	class="netzhirschCookieOptIn ncoi---mod-missing <?php echo $class ?>"
 	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
+	data-ncoi-animation="<?= $this->arrData['animation']?>"
 >
 	<div
 			id="ncoi-allowed"

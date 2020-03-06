@@ -250,8 +250,8 @@ class PageLayoutListener {
 	 */
 	private function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
 		
+		$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
 		if (!empty($layoutModules)) {
-			$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
 			foreach ($layoutModules as $key => $layoutModule) {
 				if (!empty($layoutModule['enable'])) {
 					$mod = ModuleModel::findById($layoutModule['mod']);
@@ -265,7 +265,7 @@ class PageLayoutListener {
 					}
 				}
 			}
-			$layoutOrPage->__set('modules', serialize($layoutModules));
+		$layoutOrPage->__set('modules', serialize($layoutModules));
 		}
 
 		return $moduleIds;

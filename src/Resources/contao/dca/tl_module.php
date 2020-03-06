@@ -68,6 +68,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	;templateBar
 	,cssTemplateStyle
 	,defaultCss
+	,animation
 	;isNewCookieVersion
 ';
 
@@ -488,6 +489,21 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
 	'sql' => "varchar(64) NULL default '' ",
 ];
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['animation'],
+	'exclude'   => true,
+	'inputType' => 'select',
+	'options' => [
+		'go-up' => $GLOBALS['TL_LANG']['tl_module']['go-up'],
+		'shrink' => $GLOBALS['TL_LANG']['tl_module']['shrink']
+	],
+	'eval' => [
+		'includeBlankOption' => true,
+		'tl_class'  =>  'w50 clr',
+	],
+	'sql' => "varchar(64) NULL default '' ",
+];
+
 class tl_module_extend extends tl_module {
 
 	public function getDefaultRevokeButton($value){
@@ -607,7 +623,7 @@ class tl_module_extend extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolsTrackingId = '1';
 			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
 			$netzhirschCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
-			$netzhirschCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'];
+			$netzhirschCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$netzhirschCookieFieldModel->save();
 		}
@@ -631,7 +647,7 @@ class tl_module_extend extends tl_module {
 			$csrfCookieFieldModel->cookieToolsTrackingId = '1';
 			$csrfCookieFieldModel->cookieToolsSelect = '-';
 			$csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
-			$csrfCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'];
+			$csrfCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$csrfCookieFieldModel->save();
 		}
@@ -654,7 +670,7 @@ class tl_module_extend extends tl_module {
 			$phpSessIdCookieFieldModel->cookieToolsTrackingId = '1';
 			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
 			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'];
-			$phpSessIdCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'];
+			$phpSessIdCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$phpSessIdCookieFieldModel->save();
 			

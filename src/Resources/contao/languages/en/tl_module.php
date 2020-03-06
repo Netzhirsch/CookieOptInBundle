@@ -46,6 +46,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
 	'essential',
 	'analysis',
 ];
+$GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essential';
 /*************** Fieldpalette Tools ***************/
 
 $GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools'];
@@ -115,3 +116,9 @@ $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'] = 'light';
 
 $GLOBALS['TL_LANG']['tl_module']['templateBar'] =
 	['Template' , 'The template name must begin with mod_cookie_opt_in_bar.'];
+
+$GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'By clicking on the buttons in the frontend'];
+
+$GLOBALS['TL_LANG']['tl_module']['shrink'] = 'shrink';
+
+$GLOBALS['TL_LANG']['tl_module']['go-up'] = 'go-up';

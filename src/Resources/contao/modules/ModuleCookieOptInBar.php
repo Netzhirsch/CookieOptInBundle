@@ -151,6 +151,8 @@ class ModuleCookieOptInBar extends Module
 		$data['saveButton'] = $this->__get('saveButton');
 		$data['saveAllButton'] = $this->__get('saveAllButton');
 
+		$data['animation'] = $this->__get('animation');
+		
 		$this->Template->setData($data);
 	}
 	

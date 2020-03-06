@@ -74,6 +74,8 @@ class ModuleCookieOptInRevoke extends Module
 		if (empty($moduleBarInLayout))
 			$data['moduleMissing'] = 'bar modul not in layout';
 		
+		$data['animation'] = $cookieOptInBarModule->__get('animation');
+		
 		$this->Template->setData($data);
 	}
 }

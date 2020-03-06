@@ -1,7 +1,7 @@
 (function($){
 	$(document).ready(function () {
-
 		let errorMessage = '';
+
 		$('.ncoi---mod-missing').each(function () {
 			errorMessage = $(this).data('ncoi-mod-missing');
 			if(errorMessage.localeCompare('') !== 0)
@@ -17,7 +17,7 @@
 
 		$('#ncoi---allowed').on('click', function (e) {
 			e.preventDefault();
-			$( ".ncoi---behind" ).fadeOut(800, function() {});
+			$('.ncoi---behind').addClass('ncoi---hidden');
 			track();
 		});
 
@@ -31,7 +31,7 @@
 
 		$('#ncoi---revoke').on('click',function (e) {
 			e.preventDefault();
-			$('.ncoi---behind').removeClass('ncoi---hidden').removeAttr('style');
+			$('.ncoi---behind').removeClass('ncoi---hidden');
 			$('#FBTracking').remove();
 			$('#matomoTracking').remove();
 		});
