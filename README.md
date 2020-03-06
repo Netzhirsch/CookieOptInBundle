@@ -10,10 +10,7 @@
  * Contao ^4.4
 
 ## Getting Started
- ### Console
- `composer require netzhirsch/cookie-opt-in-bundle`
- 
- ### Contao
+ * Im Contao Manager das Bundle hinzufügen.
  * Installtool aufrufen https://example.tld/contao/install
  * Module hinzufügen
  * Opt In Bar Modul im Layout einbinden
