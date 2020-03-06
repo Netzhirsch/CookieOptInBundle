@@ -265,7 +265,7 @@ class PageLayoutListener {
 					}
 				}
 			}
-		$layoutOrPage->__set('modules', serialize($layoutModules));
+			$layoutOrPage->__set('modules', serialize($layoutModules));
 		}
 
 		return $moduleIds;

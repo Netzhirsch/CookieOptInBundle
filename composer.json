@@ -1,5 +1,6 @@
 {
 	"name": "netzhirsch/cookie-opt-in-bundle",
+	"version": "dev",
 	"description": "Sie können das Contao Cookie Opt In Bundle ganz einfach über den Contao Manager installieren. Danach legen Sie zwei Frontend-Module an. Zum einen benötigen Sie ein Modul vom Typ Cookie Opt In Bar. Das ist das Hauptmodul, dass das Cookie-Popup (oder Cookie-Overlay oder Cookiebar) bereitstellt. Wenn Sie dieses Modul über ein Seitenlayout einbinden, stellen Sie sicher, dass es auf allen Seiten aktiv ist. Innerhalb dieses Moduls können Sie alle Cookies, Cookie-Gruppen und sonstige Einstellungen vornehmen. Außerdem benötigen Sie ein Modul vom Typ Cookie Opt In Revoke. Dieses stellt einen Link bereit, über den die Webseitenbesucher ihre Einstellungen bezüglich der Cookies wieder ändern können. Ein Klick auf diesen Link bewirkt, dass das Cookie-Popup wieder erscheint. Sie können dieses Modul auf allen üblichen Wegen einbinden.",
 	"keywords": [
 		"contao",

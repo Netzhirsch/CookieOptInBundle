@@ -118,9 +118,9 @@ $GLOBALS['TL_LANG']['tl_module']['centerLeft'] = 'Center left';
 $GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'Center center';
 $GLOBALS['TL_LANG']['tl_module']['centerRight'] = 'Center right';
 
-$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'Unten left';
-$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'Unten center';
-$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'Unten right';
+$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'Bottom left';
+$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'Bottom center';
+$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'Bottom right';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle'] = ['Template style'];
 
