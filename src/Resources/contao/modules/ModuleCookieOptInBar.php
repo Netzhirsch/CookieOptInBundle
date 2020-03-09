@@ -53,7 +53,6 @@ class ModuleCookieOptInBar extends Module
 
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
-		
 		self::setCssJs($this->__get('defaultCss'),$this->__get('cssTemplateStyle'));
 		
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
@@ -182,6 +181,7 @@ class ModuleCookieOptInBar extends Module
 	 */
 	public static function setCssJs($defaultCss,$cssTemplateStyle)
 	{
+
 		if ($defaultCss == "1") {
 			self::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css');
 
@@ -209,21 +209,16 @@ class ModuleCookieOptInBar extends Module
 	/**
 	 * @param             $lessFile
 	 * @param             $cssFile
+	 *
+	 * @throws Exception
 	 */
 	public static function parseLessToCss($lessFile,$cssFile){
-		$dir = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR;
-		$parser = new Less_Parser();
-		try {
-			$parser->parseFile($dir . $lessFile);
-			try {
-				$css = $parser->getCss();
-				file_put_contents('bundles/netzhirschcookieoptin/'.$cssFile,$css);
-			} catch (Exception $e) {
-				System::log($e.' old css will just as default', __METHOD__, TL_ERROR);
-			}
-		} catch (Less_Exception_Parser $e) {
-			System::log($e.' old css will just as default', __METHOD__, TL_ERROR);
-		}
+		$filepath = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR. $lessFile;
+		if (!file_exists($filepath)) {
+			$parser = new Less_Parser();
+			$css = $parser->getCss();
+			file_put_contents('bundles/netzhirschcookieoptin/'.$cssFile,$css);
 
+		}
 	}
 }
