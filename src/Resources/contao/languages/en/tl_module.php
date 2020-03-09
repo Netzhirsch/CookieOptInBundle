@@ -128,6 +128,8 @@ $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['dark'] = 'dark';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'] = 'light';
 
+$GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Width' , 'in pixels'];
+
 $GLOBALS['TL_LANG']['tl_module']['templateBar'] =
 	['Template' , 'The template name must begin with mod_cookie_opt_in_bar.'];
 

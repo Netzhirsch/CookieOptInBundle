@@ -68,6 +68,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	;templateBar
 	,defaultCss
 	,cssTemplateStyle
+	,maxWidth
 	,position
 	,animation
 	;isNewCookieVersion
@@ -497,8 +498,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
+		'alwaysSave' => false,
 	],
 	'sql' => "varchar(255) NULL default '' ",
+	'save_callback' => [['tl_module_extend','setCssFromLess']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
@@ -526,7 +529,92 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 	'sql' => "varchar(64) NULL default '' ",
 ];
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['maxWidth'],
+	'exclude'   => true,
+	'inputType' => 'inputUnit',
+	'options' => [
+			'px',
+			'em',
+			'rem',
+			'%',
+			'vw',
+	],
+	'eval' => [
+		'tl_class'  =>  'w50',
+		'rgxp' => [
+			'natural' => true
+		],
+		'alwaysSave' => false,
+
+	],
+	'sql' => "varchar(64) NULL default '' ",
+	'load_callback' => [['tl_module_extend','getDefaultMaxWidth']],
+	'save_callback' => [['tl_module_extend','setMaxWidth']]
+];
+
 class tl_module_extend extends tl_module {
+
+	public function getDefaultMaxWidth($value){
+
+		if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')
+			$value = 'a:2:{s:5:"value";s:3:"400";s:4:"unit";s:2:"px";}';
+
+		return $value;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return mixed
+	 * @throws Exception
+	 */
+	public function setMaxWidth($value){
+
+		self::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$value);
+		return $value;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return mixed
+	 * @throws Less_Exception_Parser
+	 */
+	public function setCssFromLess($value) {
+		$styleSheet = 'netzhirschCookieOptIn';
+		if ($value == 'dark') {
+			$styleSheet .= 'DarkVersion';
+		}else {
+			$styleSheet .= 'LightVersion';
+		}
+		self::parseLessToCss($styleSheet.'.less',$styleSheet.'.css',$value);
+		return $value;
+	}
+
+	/**
+	 * @param             $lessFile
+	 * @param             $cssFile
+	 *
+	 * @param null        $maxWidth
+	 *
+	 * @throws Less_Exception_Parser
+	 * @throws Exception
+	 */
+	public static function parseLessToCss($lessFile,$cssFile,$maxWidth = null){
+		$path = dirname(__DIR__,5).DIRECTORY_SEPARATOR.'web'.DIRECTORY_SEPARATOR.'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
+
+		$parser = new Less_Parser();
+		$parser->parseFile($path.$lessFile);
+		$array = StringUtil::deserialize($maxWidth);
+		$maxWidth = $array['value'];
+		$maxWidth .= $array['unit'];
+		$parser->ModifyVars(['maxWidth' => $maxWidth]);
+		$css = $parser->getCss();
+
+		file_put_contents($path.$cssFile,$css);
+
+	}
 
 	public function getDefaultRevokeButton($value){
 

@@ -9,10 +9,8 @@ use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
-use Exception;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
-use Less_Parser;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -53,6 +51,7 @@ class ModuleCookieOptInBar extends Module
 
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
+		
 		self::setCssJs($this->__get('defaultCss'),$this->__get('cssTemplateStyle'));
 		
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
@@ -176,21 +175,18 @@ class ModuleCookieOptInBar extends Module
 	 * @param $defaultCss
 	 * @param $cssTemplateStyle
 	 *
+	 *
 	 * @throws Less_Exception_Parser
-	 * @throws Exception
 	 */
 	public static function setCssJs($defaultCss,$cssTemplateStyle)
 	{
 
 		if ($defaultCss == "1") {
-			self::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css');
 
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
 			if ($cssTemplateStyle == 'dark'){
-				self::parseLessToCss('netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInDarkVersion.css|static';
 			} elseif 	($cssTemplateStyle == 'light') {
-				self::parseLessToCss('netzhirschCookieOptInLightVersion.less','netzhirschCookieOptInLightVersion.css');
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInLightVersion.css|static';
 			}
 		}
@@ -206,19 +202,5 @@ class ModuleCookieOptInBar extends Module
 		$GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
 	}
 
-	/**
-	 * @param             $lessFile
-	 * @param             $cssFile
-	 *
-	 * @throws Exception
-	 */
-	public static function parseLessToCss($lessFile,$cssFile){
-		$filepath = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR. $lessFile;
-		if (!file_exists($filepath)) {
-			$parser = new Less_Parser();
-			$css = $parser->getCss();
-			file_put_contents('bundles/netzhirschcookieoptin/'.$cssFile,$css);
 
-		}
-	}
 }
