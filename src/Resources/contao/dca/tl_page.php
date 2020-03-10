@@ -3,6 +3,7 @@
  * Extend default palette
  */
 //Contao 4.9 need rootfallback and root
+use Contao\Config;
 use Contao\PageModel;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener;
@@ -60,6 +61,7 @@ class tl_page_extend extends tl_page {
 	 * @param          $licenseKey
 	 * @param DC_Table $dca
 	 *
+	 * @return string
 	 */
 	public function saveLicenseData($licenseKey, DC_Table $dca) {
 		if (in_array($dca->id, $dca->rootIds)) {
@@ -101,8 +103,8 @@ class tl_page_extend extends tl_page {
 		$message = '';
 		foreach ($rootPoints as $rootPoint) {
 
-			$licenseKey = $rootPoint->__get('ncoi_license_key');
-			$licenseExpiryDate = $rootPoint->__get('ncoi_license_expiry_date');
+			$licenseKey = (empty($rootPoint->__get('ncoi_license_key'))) ? Config::get('ncoi_license_key') : $rootPoint->__get('ncoi_license_key');
+			$licenseExpiryDate = (empty($rootPoint->__get('ncoi_license_expiry_date'))) ? Config::get('ncoi_license_expiry_date') : $rootPoint->__get('ncoi_license_expiry_date');
 
 			$domain = (!empty($rootPoint->__get('dns'))) ? $rootPoint->__get('dns') : $_SERVER['HTTP_HOST'];
 			$message .= '<div class="ncoi---backend--message-page">'.GetSystemMessagesListener::getMessage($licenseKey,$licenseExpiryDate,$domain).'</div>';

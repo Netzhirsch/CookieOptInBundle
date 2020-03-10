@@ -174,9 +174,6 @@ class ModuleCookieOptInBar extends Module
 	/**
 	 * @param $defaultCss
 	 * @param $cssTemplateStyle
-	 *
-	 *
-	 * @throws Less_Exception_Parser
 	 */
 	public static function setCssJs($defaultCss,$cssTemplateStyle)
 	{

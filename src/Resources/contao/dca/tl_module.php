@@ -595,7 +595,6 @@ class tl_module_extend extends tl_module {
 	/**
 	 * @param             $lessFile
 	 * @param             $cssFile
-	 *
 	 * @param null        $maxWidth
 	 *
 	 * @throws Less_Exception_Parser
