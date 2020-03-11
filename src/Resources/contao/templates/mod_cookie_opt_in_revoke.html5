@@ -13,7 +13,7 @@
 			id="ncoi-allowed"
 			class="netzhirschCookieOptInContainer">
 
-		<a id="ncoi---revoke" class="ncoi---revoke--button" href="#" title="Entscheidnung ändern">
+		<a id="ncoi---revoke" class="ncoi---revoke--button" href="#" title="<?= $this->arrData['revokeButton']?>">
 			<?php echo $this->arrData['revokeButton'] ?>
 		</a>
 		<div class="netzhirschCookieOptInFooter">
