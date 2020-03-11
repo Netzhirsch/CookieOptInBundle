@@ -67,6 +67,16 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'] =
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'] = ['Zweck','Bitte geben Sie den Zweck des Cookies an.'];
 
+$GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'] = 'Wird verwendet, um festzustellen, welches Cookie akzeptiert oder abgelehnt wurde.';
+
+$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'] = 'Essenziell';
+
+$GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Dient zum Schutz der Website vor Fälschungen von standortübergreifenden Anfragen
+. Nach dem Schließen des Browsers wird das Cookie wieder gelöscht';
+
+$GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'] = 'Cookie von PHP (Programmiersprache), PHP Daten-Identifikator. Enthält nur einen Verweis auf die aktuelle Sitzung. Im Browser des Nutzers werden keine Informationen gespeichert und dieses Cookie kann nur von der aktuellen Website genutzt werden. Dieses Cookie wird vor allem in Formularen benutzt, um die Benutzerfreundlichkeit zu erhöhen. In Formulare eingegebene Daten werden z. B. kurzzeitig gespeichert, wenn ein Eingabefehler durch den Nutzer vorliegt und dieser eine Fehlermeldung erhält. Ansonsten müssten alle Daten erneut eingegeben werden.';
+
+
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'] =
 	['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum löschen der Cookies'];
 
