@@ -311,16 +311,16 @@ label.ncoi---sliding {
 }
 
 .ncoi---behind {
+		transition: opacity 1s ease-in-out 0s, visibility 0s linear 0s;
 
 	.ncoi---container {
 		transition: transform 1s ease-in-out 0s;
 	}
 
 	&.ncoi---hidden {
-		animation-name: backgroundFadeOut;
-		animation-duration: 1s;
-		animation-fill-mode: both;
-		animation-timing-function: ease-in-out;
+	transition: opacity 1s ease-in-out 0s, visibility 0s linear 1s;
+		visibility:hidden;
+		opacity:0;
 
 		&.ncoi---hidden--shrink {
 
@@ -345,16 +345,5 @@ label.ncoi---sliding {
 
 	[type=checkbox].ncoi---sliding:disabled + label.ncoi---sliding i {
 		cursor: not-allowed;
-	}
-}
-
-@keyframes backgroundFadeOut {
-	0% {
-		opacity: 1;
-		visibility: visible;
-	}
-	100% {
-		opacity: 0;
-		visibility: hidden;
 	}
 }
