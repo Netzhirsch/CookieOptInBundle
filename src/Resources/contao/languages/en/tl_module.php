@@ -110,17 +110,17 @@ $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Load standard CSS','Load the 
 
 $GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];
 
-$GLOBALS['TL_LANG']['tl_module']['topLeft'] = 'Top left';
-$GLOBALS['TL_LANG']['tl_module']['topCenter'] = 'Top center';
-$GLOBALS['TL_LANG']['tl_module']['topRight'] = 'Top right';
+$GLOBALS['TL_LANG']['tl_module']['topLeft'] = 'left top';
+$GLOBALS['TL_LANG']['tl_module']['topCenter'] = 'left center';
+$GLOBALS['TL_LANG']['tl_module']['topRight'] = 'left bottom';
 
-$GLOBALS['TL_LANG']['tl_module']['centerLeft'] = 'Center left';
-$GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'Center center';
-$GLOBALS['TL_LANG']['tl_module']['centerRight'] = 'Center right';
+$GLOBALS['TL_LANG']['tl_module']['centerLeft'] = 'center top';
+$GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'center center';
+$GLOBALS['TL_LANG']['tl_module']['centerRight'] = 'center bottom';
 
-$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'Bottom left';
-$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'Bottom center';
-$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'Bottom right';
+$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'right top';
+$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'right center';
+$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'right bottom';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle'] = ['Template style'];
 

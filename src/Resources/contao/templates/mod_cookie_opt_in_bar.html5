@@ -16,7 +16,9 @@
 
 <?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
 
-<div class="ncoi---behind <?php echo $class ?> ncoi---hidden--<?= $this->arrData['animation']?> ncoi---<?= $this->arrData['position']?>">
+<?php $animation = (!empty($this->arrData['animation']) ? 'ncoi---hidden--'.$this->arrData['animation'] : '') ?>
+
+<div class="ncoi---behind <?php echo $class ?> <?= $animation?> ncoi---<?= $this->arrData['position']?>">
 	<div
 			id="<?php echo $id ?>"
 			class="ncoi---container ncoi---container__scrollUp ncoi---mod-missing"

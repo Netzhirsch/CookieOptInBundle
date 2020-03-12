@@ -33,10 +33,7 @@ $GLOBALS['TL_LANG']['tl_module']['infoHint'] = ['Informationen','Bitte geben Sie
 
 $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = 'In dieser Übersicht können Sie, einzelne Cookies einer Kategorie oder ganze Kategorien an- und abwählen. Ausserdem erhalten Sie weitere Informationen zu den verfügbaren Cookies.';
 
-$GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] =
-	[
-		'Alle gesetzten Cookies zurücksetzen','Bei datenschutzrelevanten Änderung aktivieren. Jeder Besuch bekommt anschließend erneut die Cookie Bar angezeigt.'
-];
+$GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] = ['Alle gesetzten Cookies zurücksetzen','Sie sollten diese Option bei datenschutzrelevanten Änderung aktivieren. Jeder Besucher bekommt anschließend erneut die Cookie Bar angezeigt.'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
@@ -103,21 +100,21 @@ $GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Cookie Bar auf folgenden Se
 
 $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" Browser-Einstellung respektieren','Wenn diese Browser-Einstellung gesetzt ist, wird die Cookie Bar nicht eingeblendet.'];
 
-$GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Standard CSS laden','Die CSS-Datei des Cookie Opt In Bar-Moduls laden.'];
+$GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Standard-CSS laden','Die CSS-Datei des Cookie Opt In Bar-Moduls laden.'];
 
 $GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];
 
-$GLOBALS['TL_LANG']['tl_module']['topLeft'] = 'Oben links';
-$GLOBALS['TL_LANG']['tl_module']['topCenter'] = 'Oben mitte';
-$GLOBALS['TL_LANG']['tl_module']['topRight'] = 'Oben rechts';
+$GLOBALS['TL_LANG']['tl_module']['topLeft'] = 'left top';
+$GLOBALS['TL_LANG']['tl_module']['topCenter'] = 'left center';
+$GLOBALS['TL_LANG']['tl_module']['topRight'] = 'left bottom';
 
-$GLOBALS['TL_LANG']['tl_module']['centerLeft'] = 'Mitte links';
-$GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'Mitte mitte';
-$GLOBALS['TL_LANG']['tl_module']['centerRight'] = 'Mitte rechts';
+$GLOBALS['TL_LANG']['tl_module']['centerLeft'] = 'center top';
+$GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'center center';
+$GLOBALS['TL_LANG']['tl_module']['centerRight'] = 'center bottom';
 
-$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'Unten links';
-$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'Unten mitte';
-$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'Unten rechts';
+$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'right top';
+$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'right center';
+$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'right bottom';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle'] = ['Template Style'];
 
@@ -125,7 +122,7 @@ $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['dark'] = 'dunkel';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'] = 'hell';
 
-$GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Breite'];
+$GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Breite','Bitte geben Sie die Breite der Cookie Bar an.'];
 
 $GLOBALS['TL_LANG']['tl_module']['templateBar'] = ['Template' , 'Der Template-Name muss mit mod_cookie_opt_in_bar beginnen.'];
 
