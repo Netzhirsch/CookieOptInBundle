@@ -6,17 +6,24 @@
 <?php if(
 			(
 				$this->arrData['netzhirschCookieIsSet']
-				&& !$this->arrData['netzhirschCookieIsVersionNew']
-			)
-			|| $this->arrData['isExcludePage']
+&& !$this->arrData['netzhirschCookieIsVersionNew']
+)
+|| $this->arrData['isExcludePage']
 ):?>
-	<?php $class = "ncoi---hidden" ?>
-	<?php $class .= " ncoi---hidden--page-load" ?>
+<?php $class = "ncoi---hidden" ?>
 <?php endif; ?>
+
+<?php if (!empty($this->arrData['animation'])):?>
+<?php $class .= " ncoi---animation" ?>
+<?php else: ?>
+<?php $class .= " ncoi---animation-no" ?>
+<?php endif; ?>
+
+<?php $animation = (!empty($this->arrData['animation']) ? 'ncoi---hidden--'.$this->arrData['animation'] : '') ?>
+
 
 <?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
 
-<?php $animation = (!empty($this->arrData['animation']) ? 'ncoi---hidden--'.$this->arrData['animation'] : '') ?>
 
 <div class="ncoi---behind <?php echo $class ?> <?= $animation?> ncoi---<?= $this->arrData['position']?>">
 	<div
@@ -27,76 +34,76 @@
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
 	>
-					<?php echo $this->arrData['headlineCookieOptInBar'] ?>
-					<div class="ncoi---hint">
-						<?php echo $this->arrData['questionHint'] ?>
+		<?php echo $this->arrData['headlineCookieOptInBar'] ?>
+		<div class="ncoi---hint">
+			<?php echo $this->arrData['questionHint'] ?>
+		</div>
+		<div class="ncoi---hint ncoi---hidden">
+			<?php echo $this->arrData['infoHint'] ?>
+		</div>
+		<div class="ncoi---table ncoi---hidden">
+			<?php if(!empty($this->arrData['cookieTools'])) : ?>
+			<table>
+				<?php if(!empty($this->arrData['cookieTools'])) : ?>
+				<?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
+				<?php include('includes/mod_cookie_opt_in_table.html5') ?>
+				<?php endforeach;?>
+				<?php endif;?>
+			</table>
+			<?php endif;?>
+		</div>
+		<div id="ncoi---cookie-groups" class="ncoi---cookie-groups">
+			<?php foreach($this->arrData['cookieGroups'] as $cookieGroup): ?>
+			<div class="ncoi---cookie-group">
+				<div class="ncoi---cookie-group-inner">
+					<div class="ncoi---slider-container">
+						<input
+								type="checkbox"
+								id="<?=$cookieGroup?>"
+								value="<?=$cookieGroup?>"
+								class="ncoi---sliding"
+						<?=(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) ? 'checked' : ''?>
+						<?=($cookieGroup == $tlLang['essential']) ? 'disabled' : ''?>
+						/>
+						<label class="ncoi---sliding" for="<?=$cookieGroup?>"><i></i><span><?=$cookieGroup?></span></label>
 					</div>
-					<div class="ncoi---hint ncoi---hidden">
-						<?php echo $this->arrData['infoHint'] ?>
-					</div>
-					<div class="ncoi---table ncoi---hidden">
-						<?php if(!empty($this->arrData['cookieTools'])) : ?>
-						<table>
-							<?php if(!empty($this->arrData['cookieTools'])) : ?>
-								<?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
-									<?php include('includes/mod_cookie_opt_in_table.html5') ?>
-								<?php endforeach;?>
-							<?php endif;?>
-						</table>
-						<?php endif;?>
-					</div>
-					<div id="ncoi---cookie-groups" class="ncoi---cookie-groups">
-						<?php foreach($this->arrData['cookieGroups'] as $cookieGroup): ?>
-							<div class="ncoi---cookie-group">
-								<div class="ncoi---cookie-group-inner">
-									<div class="ncoi---slider-container">
-										<input
-											type="checkbox"
-											id="<?=$cookieGroup?>"
-											value="<?=$cookieGroup?>"
-											class="ncoi---sliding"
-											<?=(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) ? 'checked' : ''?>
-											<?=($cookieGroup == $tlLang['essential']) ? 'disabled' : ''?>
-										/>
-										<label class="ncoi---sliding" for="<?=$cookieGroup?>"><i></i><span><?=$cookieGroup?></span></label>
-									</div>
-								</div>
-							</div>
-						<?php endforeach; ?>
-					</div>
-						<div class="ncoi---actions">
-							<?php $classSave = '' ?>
-							<?php if (count($this->arrData['cookieGroups']) > 1) : ?>
-								<div class="ncoi---action ncoi---link ncoi---link-primary">
-									<a id="ncoi---allowed--all" class="" href="#" title="<?php echo$this->arrData['saveAllButton'] ?>">
-										<?php echo $this->arrData['saveAllButton'] ?>
-									</a>
-								</div>
-							<?php else : ?>
-								<?php $classSave .= ' ncoi---link-primary' ?>
-							<?php endif ?>
-							<div class="ncoi---action ncoi---link<?=$classSave?>">
-								<a id="ncoi---allowed" href="#" title="<?php echo $this->arrData['saveButton'] ?>">
-									<?php echo $this->arrData['saveButton'] ?>
-								</a>
-							</div>
-							<div class="ncoi---action ncoi---link ncoi---infos-show">
-								<a id="ncoi---infos--show" href="#" title="<?=$tlLang['info']?>">
+				</div>
+			</div>
+			<?php endforeach; ?>
+		</div>
+		<div class="ncoi---actions">
+			<?php $classSave = '' ?>
+			<?php if (count($this->arrData['cookieGroups']) > 1) : ?>
+			<div class="ncoi---action ncoi---link ncoi---link-primary">
+				<a id="ncoi---allowed--all" class="" href="#" title="<?php echo$this->arrData['saveAllButton'] ?>">
+					<?php echo $this->arrData['saveAllButton'] ?>
+				</a>
+			</div>
+			<?php else : ?>
+			<?php $classSave .= ' ncoi---link-primary' ?>
+			<?php endif ?>
+			<div class="ncoi---action ncoi---link<?=$classSave?>">
+				<a id="ncoi---allowed" href="#" title="<?php echo $this->arrData['saveButton'] ?>">
+					<?php echo $this->arrData['saveButton'] ?>
+				</a>
+			</div>
+			<div class="ncoi---action ncoi---link ncoi---infos-show">
+				<a id="ncoi---infos--show" href="#" title="<?=$tlLang['info']?>">
 									<span class="ncoi---infos--show-active ncoi---hidden">
 										<?php echo $tlLang['info'].' '.$tlLang['hidden']; ?>
 									</span>
-									<span class="ncoi---infos--show-deactivate">
+					<span class="ncoi---infos--show-deactivate">
 										<?php echo $tlLang['info'] ?>
 									</span>
-								</a>
-							</div>
-						</div>
-						<?php if(!empty($this->arrData['impress']) && !empty($this->arrData['impress'])) :?>
-							<div class="ncoi---footer">
-								<?php echo $this->arrData['impress'] ?>
-								<span class="ncoi---split"> | </span>
-								<?php echo $this->arrData['privacyPolicy'] ?>
-							</div>
-						<?php endif; ?>
-				</div>
+				</a>
+			</div>
+		</div>
+		<?php if(!empty($this->arrData['impress']) && !empty($this->arrData['impress'])) :?>
+		<div class="ncoi---footer">
+			<?php echo $this->arrData['impress'] ?>
+			<span class="ncoi---split"> | </span>
+			<?php echo $this->arrData['privacyPolicy'] ?>
+		</div>
+		<?php endif; ?>
+	</div>
 </div>

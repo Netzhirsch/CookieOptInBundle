@@ -83,58 +83,58 @@ $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_nc
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
-		'label' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
-		'explanation' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
-		'exclude'   => true,
-		'inputType' => 'inputUnit',
-		'options' => [
-			'h2',
-			'h3',
-			'h4',
-			'h5'
-		],
-		'eval' => [
-				'tl_class'=>'w50 clr',
-				'alwaysSave' => true
-		],
-		'sql' => "text NULL default ''",
-		'load_callback' => [['tl_module_ncoi','getDefaultHeadline']]
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
+	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
+	'exclude'   => true,
+	'inputType' => 'inputUnit',
+	'options' => [
+		'h2',
+		'h3',
+		'h4',
+		'h5'
+	],
+	'eval' => [
+		'tl_class'=>'w50 clr',
+		'alwaysSave' => true
+	],
+	'sql' => "text NULL default ''",
+	'load_callback' => [['tl_module_ncoi','getDefaultHeadline']]
 ];
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
-		'label' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
-		'explanation' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
-		'exclude'   => true,
-		'inputType' => 'textarea',
-		'eval' => [
-				'tl_class'=>'long clr',
-				'alwaysSave' => true,
-		],
-		'sql' => "text NULL default ''",
-		'load_callback' => [['tl_module_ncoi','getDefaultQuestionHintDefault']]
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
+	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
+	'exclude'   => true,
+	'inputType' => 'textarea',
+	'eval' => [
+		'tl_class'=>'long clr',
+		'alwaysSave' => true,
+	],
+	'sql' => "text NULL default ''",
+	'load_callback' => [['tl_module_ncoi','getDefaultQuestionHintDefault']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
-		'label' => &$GLOBALS['TL_LANG']['tl_module']['saveButton'],
-		'exclude'   => true,
-		'inputType' => 'text',
-		'eval' => [
-				'tl_class' => 'w50',
-				'alwaysSave' => true
-		],
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['saveButton'],
+	'exclude'   => true,
+	'inputType' => 'text',
+	'eval' => [
+		'tl_class' => 'w50',
+		'alwaysSave' => true
+	],
 	'sql' => "text NULL default ''",
 	'load_callback' => [['tl_module_ncoi','getDefaultSaveButton']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
-		'label' => &$GLOBALS['TL_LANG']['tl_module']['saveAllButton'],
-		'exclude'   => true,
-		'inputType' => 'text',
-		'eval' => [
-				'tl_class' => 'w50',
-				'alwaysSave' => true
-		],
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['saveAllButton'],
+	'exclude'   => true,
+	'inputType' => 'text',
+	'eval' => [
+		'tl_class' => 'w50',
+		'alwaysSave' => true
+	],
 	'sql' => "text NULL default ''",
 	'load_callback' => [['tl_module_ncoi','getDefaultsaveAllButton']]
 ];
@@ -145,8 +145,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	'exclude'   => true,
 	'inputType' => 'textarea',
 	'eval' => [
-			'alwaysSave' => true,
-			'tl_class'	=>	'long',
+		'alwaysSave' => true,
+		'tl_class'	=>	'long',
 	],
 	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
 	'sql' => "text  NULL default ''",
@@ -475,15 +475,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
 	'inputType' => 'select',
 	'default' => 'centerCenter',
 	'options' => [
-		'topLeft' => $GLOBALS['TL_LANG']['tl_module']['topLeft'],
-		'topCenter' => $GLOBALS['TL_LANG']['tl_module']['topCenter'],
-		'topRight' => $GLOBALS['TL_LANG']['tl_module']['topRight'],
-		'centerLeft' => $GLOBALS['TL_LANG']['tl_module']['centerLeft'],
+		'leftTop' => $GLOBALS['TL_LANG']['tl_module']['leftTop'],
+		'leftCenter' => $GLOBALS['TL_LANG']['tl_module']['leftCenter'],
+		'leftBottom' => $GLOBALS['TL_LANG']['tl_module']['leftBottom'],
+		'centerTop' => $GLOBALS['TL_LANG']['tl_module']['centerTop'],
 		'centerCenter' => $GLOBALS['TL_LANG']['tl_module']['centerCenter'],
-		'centerRight' => $GLOBALS['TL_LANG']['tl_module']['centerRight'],
-		'bottomLeft' => $GLOBALS['TL_LANG']['tl_module']['bottomLeft'],
-		'bottomCenter' => $GLOBALS['TL_LANG']['tl_module']['bottomCenter'],
-		'bottomRight' => $GLOBALS['TL_LANG']['tl_module']['bottomRight'],
+		'centerBottom' => $GLOBALS['TL_LANG']['tl_module']['centerBottom'],
+		'rightTop' => $GLOBALS['TL_LANG']['tl_module']['rightTop'],
+		'rightCenter' => $GLOBALS['TL_LANG']['tl_module']['rightCenter'],
+		'rightBottom' => $GLOBALS['TL_LANG']['tl_module']['rightBottom'],
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
@@ -529,6 +529,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 	'eval' => [
 		'tl_class'  =>  'w50',
 		'includeBlankOption' => true,
+		'trailingSlash' => true
 	],
 	'sql' => "varchar(64) NULL default '' ",
 ];
@@ -538,26 +539,26 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 	'exclude'   => true,
 	'inputType' => 'inputUnit',
 	'options' => [
-			'px',
-			'%',
-			'em',
-			'rem',
-			'vw',
-			'vh',
-			'vmin',
-			'vmax',
-			'ex',
-			'pt',
-			'pc',
-			'in',
-			'cm',
-			'mm',
+		'px',
+		'%',
+		'em',
+		'rem',
+		'vw',
+		'vh',
+		'vmin',
+		'vmax',
+		'ex',
+		'pt',
+		'pc',
+		'in',
+		'cm',
+		'mm',
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
 		'rgxp' => 'natural',
 		'alwaysSave' => false,
-
+	
 	],
 	'sql' => "varchar(64) NULL default '' ",
 	'load_callback' => [['tl_module_ncoi','getDefaultMaxWidth']],
@@ -565,15 +566,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 ];
 
 class tl_module_ncoi extends tl_module {
-
+	
 	public function getDefaultMaxWidth($value){
-
+		
 		if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')
 			$value = 'a:2:{s:5:"value";s:3:"400";s:4:"unit";s:2:"px";}';
-
+		
 		return $value;
 	}
-
+	
 	/**
 	 * @param $value
 	 *
@@ -581,11 +582,11 @@ class tl_module_ncoi extends tl_module {
 	 * @throws Less_Exception_Parser
 	 */
 	public function setMaxWidth($value){
-
+		
 		Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$value);
 		return $value;
 	}
-
+	
 	/**
 	 * @param $value
 	 *
@@ -599,60 +600,60 @@ class tl_module_ncoi extends tl_module {
 		}else {
 			$styleSheet .= 'LightVersion';
 		}
-		Helper::parseLessToCss($styleSheet.'.less',$styleSheet.'.css',$value);
+		Helper::parseLessToCss($styleSheet.'.less',$styleSheet.'.css');
 		return $value;
 	}
-
+	
 	public function getDefaultRevokeButton($value){
-
+		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['revokeButtonDefault'];
-
+		
 		return $value;
 	}
 	
 	public function getDefaultSaveButton($value){
-
+		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['saveButtonDefault'];
-
+		
 		return $value;
 	}
 	
 	public function getDefaultsaveAllButton($value){
-
+		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['saveAllButtonDefault'];
-
+		
 		return $value;
 	}
 	
 	public function getDefaultQuestionHintDefault($value){
-
+		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['questionHintDefault'];
-
+		
 		return $value;
 	}
-
+	
 	public function getDefaultInfoHintDefault($value){
-
+		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'];
-
+		
 		return $value;
 	}
-
+	
 	public function getDefaultGroups($value){
-
+		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
-
+		
 		return $value;
 	}
-
+	
 	public function getDefaultHeadline($value){
-		if (empty($value))
+		if (empty($value) || $value == 'a:2:{s:4:"unit";s:2:"h2";s:5:"value";s:0:"";}')
 			return $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBarDefault'];
 		else
 			return $value;
@@ -700,7 +701,7 @@ class tl_module_ncoi extends tl_module {
 				} elseif ($fieldPalette->cookieToolsTechnicalName == 'PHPSESSID') {
 					$phpSessIdCookieFieldModel = $fieldPalette;
 				}
-	
+				
 			}
 		}
 		if (empty($netzhirschCookieFieldModel)) {
@@ -773,18 +774,18 @@ class tl_module_ncoi extends tl_module {
 			
 		}
 		
-	if (!empty($fieldValue)) {
-		$fieldValues = StringUtil::deserialize($fieldValue);
-		$fieldValues[] = [
-			$netzhirschCookieFieldModel->id,
-			$csrfCookieFieldModel->id,
-			$phpSessIdCookieFieldModel->id,
-		];
-		$fieldValue = serialize($fieldValues);
-	} else {
-		$fieldValue = $netzhirschCookieFieldModel->id;
-	}
-	
-	return $fieldValue;
+		if (!empty($fieldValue)) {
+			$fieldValues = StringUtil::deserialize($fieldValue);
+			$fieldValues[] = [
+				$netzhirschCookieFieldModel->id,
+				$csrfCookieFieldModel->id,
+				$phpSessIdCookieFieldModel->id,
+			];
+			$fieldValue = serialize($fieldValues);
+		} else {
+			$fieldValue = $netzhirschCookieFieldModel->id;
+		}
+		
+		return $fieldValue;
 	}
 }

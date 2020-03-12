@@ -22,7 +22,7 @@ class ModuleCookieOptInBar extends Module
 	 * @var string
 	 */
 	protected $strTemplate = 'mod_cookie_opt_in_bar';
-
+	
 	/**
 	 * @return string
 	 */
@@ -41,7 +41,7 @@ class ModuleCookieOptInBar extends Module
 		}
 		return parent::generate();
 	}
-
+	
 	/**
 	 * @throws Less_Exception_Parser
 	 */
@@ -49,7 +49,7 @@ class ModuleCookieOptInBar extends Module
 		
 		$this->strTemplate = 'mod_cookie_opt_in_bar';
 		$tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['module'];
-
+		
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
 		
@@ -64,7 +64,7 @@ class ModuleCookieOptInBar extends Module
 		$data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
 		$data['cookieGroupsSelected'][] = $tlLang['cookieGroup']['essential'];
 		$data['cookieGroups'][] = $tlLang['cookieGroup']['essential'];
-
+		
 		foreach ($data['cookieTools'] as $cookieTool) {
 			foreach ($netzhirschOptInCookie->cookieIds as $cookieId) {
 				if ($cookieId == $cookieTool->id) {
@@ -146,11 +146,11 @@ class ModuleCookieOptInBar extends Module
 		
 		if (empty($cookieOptInRevokeModuleInLayout))
 			$data['moduleMissing'] = 'revoke modul not in layout';
-
+		
 		$data['saveButton'] = $this->__get('saveButton');
 		$data['saveAllButton'] = $this->__get('saveAllButton');
-
-		$data['animation'] = 'no-animation';
+		
+		$data['animation'] = '';
 		if (!empty($this->__get('animation')))
 			$data['animation'] = $this->__get('animation');
 		
@@ -169,11 +169,11 @@ class ModuleCookieOptInBar extends Module
 		$cookies = $request->getCurrentRequest()->cookies;
 		
 		$netzhirschOptInCookie = $cookies->get('_netzhirsch_cookie_opt_in');
-
+		
 		/** @noinspection PhpComposerExtensionStubsInspection */
 		return json_decode($netzhirschOptInCookie);
 	}
-
+	
 	/**
 	 * @param $defaultCss
 	 * @param $cssTemplateStyle
@@ -183,14 +183,14 @@ class ModuleCookieOptInBar extends Module
 	 */
 	public static function setCssJs($defaultCss,$cssTemplateStyle,$maxWidth)
 	{
-
+		
 		if ($defaultCss == "1") {
 			$path = dirname(__DIR__,5).DIRECTORY_SEPARATOR.'web'.DIRECTORY_SEPARATOR.'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
 			if (!file_exists($path.'netzhirschCookieOptIn.css')) {
 				Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$maxWidth);
 			}
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
-
+			
 			if ($cssTemplateStyle == 'dark'){
 				if (!file_exists($path.'netzhirschCookieOptInDarkVersion.css')) {
 					Helper::parseLessToCss('netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css',$maxWidth);
@@ -214,6 +214,4 @@ class ModuleCookieOptInBar extends Module
 		}
 		$GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
 	}
-
-
 }

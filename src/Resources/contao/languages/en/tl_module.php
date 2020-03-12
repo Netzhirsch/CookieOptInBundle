@@ -36,7 +36,7 @@ $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = 'In this overview you can 
 $GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] =
 	[
 		'Reset all cookies set','Activate in the event of a change relevant to data protection. The cookie bar is displayed again each time you visit.'
-];
+	];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
@@ -110,17 +110,17 @@ $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Load standard CSS','Load the 
 
 $GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];
 
-$GLOBALS['TL_LANG']['tl_module']['topLeft'] = 'left top';
-$GLOBALS['TL_LANG']['tl_module']['topCenter'] = 'left center';
-$GLOBALS['TL_LANG']['tl_module']['topRight'] = 'left bottom';
+$GLOBALS['TL_LANG']['tl_module']['leftTop'] = 'left top';
+$GLOBALS['TL_LANG']['tl_module']['leftCenter'] = 'left center';
+$GLOBALS['TL_LANG']['tl_module']['leftBottom'] = 'left bottom';
 
-$GLOBALS['TL_LANG']['tl_module']['centerLeft'] = 'center top';
+$GLOBALS['TL_LANG']['tl_module']['centerTop'] = 'center top';
 $GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'center center';
-$GLOBALS['TL_LANG']['tl_module']['centerRight'] = 'center bottom';
+$GLOBALS['TL_LANG']['tl_module']['centerBottom'] = 'center bottom';
 
-$GLOBALS['TL_LANG']['tl_module']['bottomLeft'] = 'right top';
-$GLOBALS['TL_LANG']['tl_module']['bottomCenter'] = 'right center';
-$GLOBALS['TL_LANG']['tl_module']['bottomRight'] = 'right bottom';
+$GLOBALS['TL_LANG']['tl_module']['rightTop'] = 'right top';
+$GLOBALS['TL_LANG']['tl_module']['rightCenter'] = 'right center';
+$GLOBALS['TL_LANG']['tl_module']['rightBottom'] = 'right bottom';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle'] = ['Template style'];
 

@@ -29,24 +29,24 @@
 	z-index: 1000000;
 	justify-content: center;
 
-	&.ncoi---topLeft {
+	&.ncoi---leftTop {
 		align-items: flex-start;
-		justify-content: left;
+		justify-content: flex-start;
 	}
 
-	&.ncoi---topCenter {
+	&.ncoi---leftCenter {
+		align-items: center;
+		justify-content: flex-start;
+	}
+
+	&.ncoi---leftBottom {
+		align-items: flex-end;
+		justify-content: flex-start;
+	}
+
+	&.ncoi---centerTop {
 		align-items: flex-start;
 		justify-content: center;
-	}
-
-	&.ncoi---topRight {
-		align-items: flex-start;
-		justify-content: flex-end;
-	}
-
-	&.ncoi---centerLeft {
-		align-items: center;
-		justify-content: left;
 	}
 
 	&.ncoi---centerCenter {
@@ -54,22 +54,22 @@
 		justify-content: center;
 	}
 
-	&.ncoi---centerRight {
-		align-items: center;
-		justify-content: flex-end;
-	}
-
-	&.ncoi---bottomLeft {
-		align-items: flex-end;
-		justify-content: left;
-	}
-
-	&.ncoi---bottomCenter {
+	&.ncoi---centerBottom {
 		align-items: flex-end;
 		justify-content: center;
 	}
 
-	&.ncoi---bottomRight {
+	&.ncoi---rightTop {
+		align-items: flex-start;
+		justify-content: flex-end;
+	}
+
+	&.ncoi---rightCenter {
+		align-items: center;
+		justify-content: flex-end;
+	}
+
+	&.ncoi---rightBottom {
 		align-items: flex-end;
 		justify-content: flex-end;
 	}
@@ -303,7 +303,7 @@ label.ncoi---sliding {
 			float: left;
 			height: 1rem;
 			width: 1rem;
-			content: '';
+			content:"";
 			border-radius: .5rem;
 			transition: margin 0.25s ease-in-out;
 		}
@@ -311,31 +311,43 @@ label.ncoi---sliding {
 }
 
 .ncoi---behind {
+
+	&.ncoi---animation-no {
+		&.ncoi---hidden {
+			visibility:hidden;
+			opacity:0;
+		}
+	}
+
+	&.ncoi---animation {
 		transition: opacity 1s ease-in-out 0s, visibility 0s linear 0s;
 
-	.ncoi---container {
-		transition: transform 1s ease-in-out 0s;
-	}
-
-	&.ncoi---hidden {
-	transition: opacity 1s ease-in-out 0s, visibility 0s linear 1s;
-		visibility:hidden;
-		opacity:0;
-
-		&.ncoi---hidden--shrink {
-
-			.ncoi---container {
-				transform: scale(0);
-			}
+		.ncoi---container {
+			transition: transform 1s ease-in-out 0s;
 		}
 
-		&.ncoi---hidden--go-up {
+		&.ncoi---hidden {
+			transition: opacity 1s ease-in-out 0s, visibility 0s linear 1s;
+			visibility:hidden;
+			opacity:0;
 
-			.ncoi---container {
-				transform: translateY(-50%);
+			&.ncoi---hidden--shrink {
+
+				.ncoi---container {
+					transform: scale(0);
+				}
+			}
+
+			&.ncoi---hidden--go-up {
+
+				.ncoi---container {
+					transform: translateY(-50%);
+				}
 			}
 		}
 	}
+
+
 
 	[type=checkbox].ncoi---sliding:checked + label.ncoi---sliding i {
 
