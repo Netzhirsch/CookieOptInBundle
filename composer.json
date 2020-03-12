@@ -1,6 +1,5 @@
 {
 	"name": "netzhirsch/cookie-opt-in-bundle",
-	"version": "dev",
 	"description": "Cookie Bar für Contao CMS. Cookies werden erst nach einer Einwilligung gesetzt. Einwilligungen werden aufgezeichnet und könne vom Besucher widerrufen werden. Einzelne Cookie und oder ganze Gruppen können angenommen bzw. abgelehnt werden.",
 	"keywords": [
 		"contao",
@@ -38,7 +37,6 @@
 	"autoload": {
 		"classmap": [
 			"src/ContaoManager/Plugin.php",
-			"src/Resources/contao/dca/",
 			"src/Resources/contao/"
 		],
 		"psr-4": {
@@ -46,6 +44,7 @@
 		},
 		"exclude-from-classmap": [
 			"src/Resources/contao/config/",
+			"src/Resources/contao/dca/",
 			"src/Resources/contao/languages/",
 			"src/Resources/contao/templates/"
 		]
