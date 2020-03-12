@@ -161,7 +161,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
 		'tl_class'  =>  'long clr',
 	],
 	'default' => '0',
-	'sql' => "int(4) NULL",
+	'sql' => "tinyint(1) NULL",
 ];
 
 
@@ -456,7 +456,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['respectToNotTrack'] = [
 	'eval' => [
 		'tl_class'  =>  'long clr',
 	],
-	'sql' => "varchar(3) NULL default '' ",
+	'sql' => "tinyint(1) NULL default '0' ",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
@@ -466,7 +466,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
 	'eval' => [
 		'tl_class'  =>  'long clr',
 	],
-	'sql' => "varchar(1) NULL default '1' ",
+	'sql' => "tinyint(1) NULL default '1' ",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
@@ -554,9 +554,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
-		'rgxp' => [
-			'natural' => true
-		],
+		'rgxp' => 'natural',
 		'alwaysSave' => false,
 
 	],
