@@ -21,10 +21,9 @@ class ConsentController extends AbstractController
 	 */
 	public function indexAction()
 	{
-		/* @var \Symfony\Bundle\FrameworkBundle\Controller\string $entityManerString */
-		$entityManerString = 'database_connection';
 		/* @var Connection $conn */
-		$conn = $this->get($entityManerString);
+		/** @noinspection PhpParamsInspection */
+		$conn = $this->get('database_connection');
 		/** @noinspection SqlResolve */
 		$sql = "SELECT * FROM tl_consentDirectory";
 		$stmt = $conn->prepare($sql);
@@ -62,9 +61,8 @@ class ConsentController extends AbstractController
 			$response->headers->set('Content-Length', strlen($serielleData));
 			return $response;
 		} else {
-			/* @var \Symfony\Bundle\FrameworkBundle\Controller\string $controllerString */
-			$controllerString = 'contao_backend';
-			return $this->redirectToRoute($controllerString);
+			/** @noinspection PhpParamsInspection */
+			return $this->redirectToRoute('contao_backend');
 		}
 	}
 	

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netzhirsch\CookieOptInBundle;
+namespace Netzhirsch\CookieOptInBundle\Classes;
 
 
 class LicenseAPIResponse

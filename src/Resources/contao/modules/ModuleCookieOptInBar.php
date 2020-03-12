@@ -11,6 +11,7 @@ use Contao\StringUtil;
 use Contao\System;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
+use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -52,7 +53,7 @@ class ModuleCookieOptInBar extends Module
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
 		
-		self::setCssJs($this->__get('defaultCss'),$this->__get('cssTemplateStyle'));
+		self::setCssJs($this->__get('defaultCss'),$this->__get('cssTemplateStyle'),$this->__get('maxWidth'));
 		
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
 		
@@ -174,16 +175,29 @@ class ModuleCookieOptInBar extends Module
 	/**
 	 * @param $defaultCss
 	 * @param $cssTemplateStyle
+	 * @param $maxWidth
+	 *
+	 * @throws Less_Exception_Parser
 	 */
-	public static function setCssJs($defaultCss,$cssTemplateStyle)
+	public static function setCssJs($defaultCss,$cssTemplateStyle,$maxWidth)
 	{
 
 		if ($defaultCss == "1") {
-
+			$path = dirname(__DIR__,5).DIRECTORY_SEPARATOR.'web'.DIRECTORY_SEPARATOR.'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
+			if (!file_exists($path.'netzhirschCookieOptIn.css')) {
+				Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$maxWidth);
+			}
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
+
 			if ($cssTemplateStyle == 'dark'){
+				if (!file_exists($path.'netzhirschCookieOptInDarkVersion.css')) {
+					Helper::parseLessToCss('netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css',$maxWidth);
+				}
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInDarkVersion.css|static';
 			} elseif 	($cssTemplateStyle == 'light') {
+				if (!file_exists($path.'netzhirschCookieOptInLightVersion.css')) {
+					Helper::parseLessToCss('netzhirschCookieOptInLightVersion.less','netzhirschCookieOptInLightVersion.css',$maxWidth);
+				}
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInLightVersion.css|static';
 			}
 		}

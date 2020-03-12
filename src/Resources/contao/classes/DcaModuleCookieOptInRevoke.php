@@ -1,6 +1,6 @@
 <?php
 
-namespace Netzhirsch\CookieOptInBundle;
+namespace Netzhirsch\CookieOptInBundle\Classes;
 
 use Contao\Backend;
 

@@ -37,7 +37,7 @@ $arrFields = [
 					'tl_class' => 'w50'
 				],
 				'sql'       => "varchar(64) NOT NULL default ''",
-				'save_callback' => [['tl_page_extend','saveLicenseData']]
+				'save_callback' => [['tl_page_ncoi','saveLicenseData']]
 		],
 		'ncoi_license_expiry_date' => [
 			'label' => &$GLOBALS['TL_LANG']['tl_page']['ncoi_license_expiry_date'],
@@ -51,11 +51,11 @@ $arrFields = [
 		],
 ];
 
-$GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] = ['tl_page_extend','showLicenseWarning'];
+$GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] = ['tl_page_ncoi','showLicenseWarning'];
 
 $GLOBALS['TL_DCA']['tl_page']['fields'] = array_merge($GLOBALS['TL_DCA']['tl_page']['fields'], $arrFields);
 
-class tl_page_extend extends tl_page {
+class tl_page_ncoi extends tl_page {
 
 	/**
 	 * @param          $licenseKey

@@ -1,6 +1,10 @@
 <?php
+
+use Contao\DC_Table;
+use Contao\ModuleModel;
 use Contao\StringUtil;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
+use Netzhirsch\CookieOptInBundle\Classes\Helper;
 
 /** Revoke Modul ***********************************************/
 
@@ -27,7 +31,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['revokeButton'] = [
 		'alwaysSave' => true
 	],
 	'sql' => "varchar(255) NULL default ''",
-	'load_callback' => [['tl_module_extend','getDefaultRevokeButton']]
+	'load_callback' => [['tl_module_ncoi','getDefaultRevokeButton']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateRevoke'] = [
@@ -75,7 +79,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 ';
 
 // setCookieVersion check for right modul
-$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_extend','setCookieVersion']];
+$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_ncoi','setCookieVersion']];
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
@@ -94,7 +98,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 				'alwaysSave' => true
 		],
 		'sql' => "text NULL default ''",
-		'load_callback' => [['tl_module_extend','getDefaultHeadline']]
+		'load_callback' => [['tl_module_ncoi','getDefaultHeadline']]
 ];
 
 
@@ -108,7 +112,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 				'alwaysSave' => true,
 		],
 		'sql' => "text NULL default ''",
-		'load_callback' => [['tl_module_extend','getDefaultQuestionHintDefault']]
+		'load_callback' => [['tl_module_ncoi','getDefaultQuestionHintDefault']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
@@ -120,7 +124,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
 				'alwaysSave' => true
 		],
 	'sql' => "text NULL default ''",
-	'load_callback' => [['tl_module_extend','getDefaultSaveButton']]
+	'load_callback' => [['tl_module_ncoi','getDefaultSaveButton']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
@@ -132,7 +136,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
 				'alwaysSave' => true
 		],
 	'sql' => "text NULL default ''",
-	'load_callback' => [['tl_module_extend','getDefaultsaveAllButton']]
+	'load_callback' => [['tl_module_ncoi','getDefaultsaveAllButton']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
@@ -146,7 +150,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	],
 	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
 	'sql' => "text  NULL default ''",
-	'load_callback' => [['tl_module_extend','getDefaultInfoHintDefault']]
+	'load_callback' => [['tl_module_ncoi','getDefaultInfoHintDefault']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
@@ -183,7 +187,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
 		'alwaysSave' => true
 	],
 	'sql' => "blob NULL default '' ",
-	'load_callback' => [['tl_module_extend','getDefaultGroups']]
+	'load_callback' => [['tl_module_ncoi','getDefaultGroups']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
@@ -193,7 +197,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 	'foreignKey'   => 'tl_fieldpalette.id',
 	'relation'     => ['type' => 'hasMany', 'load' => 'eager'],
 	'sql'          => "blob NULL",
-	'load_callback' => [['tl_module_extend','getNetzhirschCookie']],
+	'load_callback' => [['tl_module_ncoi','getNetzhirschCookie']],
 	'fieldpalette' => [
 		'config' => [
 			'hidePublished' => true,
@@ -288,7 +292,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'],
 				'exclude'   => true,
 				'inputType' => 'select',
-				'options_callback' => ['tl_module_extend','getGroups'],
+				'options_callback' => ['tl_module_ncoi','getGroups'],
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
@@ -376,7 +380,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'],
 				'exclude'   => true,
 				'inputType' => 'select',
-				'options_callback' => ['tl_module_extend','getGroups'],
+				'options_callback' => ['tl_module_ncoi','getGroups'],
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
@@ -459,11 +463,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['defaultCss'],
 	'exclude'   => true,
 	'inputType' => 'checkbox',
-	'default' => '1',
 	'eval' => [
 		'tl_class'  =>  'long clr',
 	],
-	'sql' => "varchar(1) NULL default '' ",
+	'sql' => "varchar(1) NULL default '1' ",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
@@ -501,7 +504,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
 		'alwaysSave' => false,
 	],
 	'sql' => "varchar(255) NULL default '' ",
-	'save_callback' => [['tl_module_extend','setCssFromLess']]
+	'save_callback' => [['tl_module_ncoi','setCssFromLess']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
@@ -535,10 +538,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 	'inputType' => 'inputUnit',
 	'options' => [
 			'px',
+			'%',
 			'em',
 			'rem',
-			'%',
 			'vw',
+			'vh',
+			'vmin',
+			'vmax',
+			'ex',
+			'pt',
+			'pc',
+			'in',
+			'cm',
+			'mm',
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
@@ -549,11 +561,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 
 	],
 	'sql' => "varchar(64) NULL default '' ",
-	'load_callback' => [['tl_module_extend','getDefaultMaxWidth']],
-	'save_callback' => [['tl_module_extend','setMaxWidth']]
+	'load_callback' => [['tl_module_ncoi','getDefaultMaxWidth']],
+	'save_callback' => [['tl_module_ncoi','setMaxWidth']]
 ];
 
-class tl_module_extend extends tl_module {
+class tl_module_ncoi extends tl_module {
 
 	public function getDefaultMaxWidth($value){
 
@@ -567,11 +579,11 @@ class tl_module_extend extends tl_module {
 	 * @param $value
 	 *
 	 * @return mixed
-	 * @throws Exception
+	 * @throws Less_Exception_Parser
 	 */
 	public function setMaxWidth($value){
 
-		self::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$value);
+		Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$value);
 		return $value;
 	}
 
@@ -588,31 +600,8 @@ class tl_module_extend extends tl_module {
 		}else {
 			$styleSheet .= 'LightVersion';
 		}
-		self::parseLessToCss($styleSheet.'.less',$styleSheet.'.css',$value);
+		Helper::parseLessToCss($styleSheet.'.less',$styleSheet.'.css',$value);
 		return $value;
-	}
-
-	/**
-	 * @param             $lessFile
-	 * @param             $cssFile
-	 * @param null        $maxWidth
-	 *
-	 * @throws Less_Exception_Parser
-	 * @throws Exception
-	 */
-	public static function parseLessToCss($lessFile,$cssFile,$maxWidth = null){
-		$path = dirname(__DIR__,5).DIRECTORY_SEPARATOR.'web'.DIRECTORY_SEPARATOR.'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
-
-		$parser = new Less_Parser();
-		$parser->parseFile($path.$lessFile);
-		$array = StringUtil::deserialize($maxWidth);
-		$maxWidth = $array['value'];
-		$maxWidth .= $array['unit'];
-		$parser->ModifyVars(['maxWidth' => $maxWidth]);
-		$css = $parser->getCss();
-
-		file_put_contents($path.$cssFile,$css);
-
 	}
 
 	public function getDefaultRevokeButton($value){

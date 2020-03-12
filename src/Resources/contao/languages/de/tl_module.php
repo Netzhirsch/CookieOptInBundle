@@ -21,7 +21,7 @@ $GLOBALS['TL_LANG']['tl_module']['saveButtonDefault'] = 'Speichern';
 
 $GLOBALS['TL_LANG']['tl_module']['saveAllButtonDefault'] = 'Alle annehmen';
 
-$GLOBALS['TL_LANG']['tl_module']['saveAllButton'] = ['Alle Annehmen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookies annimmt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'];
+$GLOBALS['TL_LANG']['tl_module']['saveAllButton'] = ['Alle annehmen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookies annimmt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'];
 
 $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBar'] = ['Überschrift'];
 
@@ -125,12 +125,12 @@ $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['dark'] = 'dunkel';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'] = 'hell';
 
-$GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Breite' , 'in Pixel'];
+$GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Breite'];
 
 $GLOBALS['TL_LANG']['tl_module']['templateBar'] = ['Template' , 'Der Template-Name muss mit mod_cookie_opt_in_bar beginnen.'];
 
 $GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'Bei klick auf die Buttons im Frontend'];
 
-$GLOBALS['TL_LANG']['tl_module']['shrink'] = 'schrumpfen';
+$GLOBALS['TL_LANG']['tl_module']['shrink'] = 'rein-/rauszoomen';
 
-$GLOBALS['TL_LANG']['tl_module']['go-up'] = 'auffahren';
+$GLOBALS['TL_LANG']['tl_module']['go-up'] = 'ein-/ausfahren';

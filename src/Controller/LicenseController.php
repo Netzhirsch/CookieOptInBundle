@@ -5,7 +5,7 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 
 
 use Contao\Config;
-use Netzhirsch\CookieOptInBundle\LicenseAPIResponse;
+use Netzhirsch\CookieOptInBundle\Classes\LicenseAPIResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Contao\PageModel;
 use Exception;

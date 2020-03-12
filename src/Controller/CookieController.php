@@ -80,10 +80,9 @@ class CookieController extends AbstractController
 			'cookieVersion' => $cookieVersion,
 			'cookieIds' => $cookieIds,
 		];
-		/* @var \Symfony\Bundle\FrameworkBundle\Controller\string $entityManerString */
-		$entityManerString = 'database_connection';
 		/* @var Connection $conn */
-		$conn = $this->get($entityManerString);
+		/** @noinspection PhpParamsInspection */
+		$conn = $this->get('database_connection');
 		/** @noinspection SqlResolve */
 		$sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsTechnicalName = ? AND pid = ?";
 		$stmt = $conn->prepare($sql);
@@ -102,7 +101,6 @@ class CookieController extends AbstractController
 	
 	/**
 	 * @param $modId
-	 * @param null $cookieIds
 	 * @return mixed
 	 * @throws DBALException
 	 */
@@ -110,9 +108,8 @@ class CookieController extends AbstractController
 		
 		$response = [];
 		
-		/* @var \Symfony\Bundle\FrameworkBundle\Controller\string $entityManerString */
-		$entityManerString = 'database_connection';
-		$conn = $this->get($entityManerString);
+		/** @noinspection PhpParamsInspection */
+		$conn = $this->get('database_connection');
 		/* @var Connection $conn */
 		/** @noinspection SqlResolve */
 		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_module WHERE type = ? AND id = ?";
@@ -181,12 +178,11 @@ class CookieController extends AbstractController
 	 */
 	private function changeConsent($cookieData)
 	{
-		/* @var \Symfony\Bundle\FrameworkBundle\Controller\string $entityManerString */
-		$entityManerString = 'request_stack';
-		$requestStack = $this->get($entityManerString);
-		$entityManerString = 'database_connection';
+		/** @noinspection PhpParamsInspection */
+		$requestStack = $this->get('request_stack');
 		/* @var Connection $conn */
-		$conn = $this->get($entityManerString);
+		/** @noinspection PhpParamsInspection */
+		$conn = $this->get('database_connection');
 		$ipCurrentUser = $requestStack->getCurrentRequest()->getClientIp();
 		/** @noinspection SqlResolve */
 		$sql = "SELECT ip FROM tl_consentDirectory WHERE ip = ?";
