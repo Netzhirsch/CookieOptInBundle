@@ -528,8 +528,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
-		'includeBlankOption' => true,
-		'trailingSlash' => true
+		'includeBlankOption' => true
 	],
 	'sql' => "varchar(64) NULL default '' ",
 ];
