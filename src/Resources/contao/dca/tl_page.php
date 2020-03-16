@@ -101,15 +101,24 @@ class tl_page_ncoi extends tl_page {
 		}
 		$rootPoints = PageModel::findByType('root');
 		$message = '';
+		$domainNoDuplicate = [];
+		$licenseExpiryDate = null;
+		$licenseKey = null;
 		foreach ($rootPoints as $rootPoint) {
 
 			$licenseKey = (empty($rootPoint->__get('ncoi_license_key'))) ? Config::get('ncoi_license_key') : $rootPoint->__get('ncoi_license_key');
 			$licenseExpiryDate = (empty($rootPoint->__get('ncoi_license_expiry_date'))) ? Config::get('ncoi_license_expiry_date') : $rootPoint->__get('ncoi_license_expiry_date');
 
 			$domain = (!empty($rootPoint->__get('dns'))) ? $rootPoint->__get('dns') : $_SERVER['HTTP_HOST'];
-			$message .= '<div class="ncoi---backend--message-page">'.GetSystemMessagesListener::getMessage($licenseKey,$licenseExpiryDate,$domain).'</div>';
-
+			if (!in_array($domain, $domainNoDuplicate)) {
+				$domainNoDuplicate[] = $domain;
+			}
 		}
+
+		foreach ($domainNoDuplicate as $domain) {
+			$message .= '<div class="ncoi---backend--message-page">'.GetSystemMessagesListener::getMessage($licenseKey,$licenseExpiryDate,$domain).'</div>';
+		}
+		
 		if (empty($message))
 			return;
 

@@ -19,6 +19,7 @@ class GetSystemMessagesListener
 		$licenseKey = null;
 		$messages = '';
 		$domain = null;
+		$domainNoDuplicate = [];
 		foreach ($rootPoints as $rootPoint) {
 			$licenseKey = $rootPoint->__get('ncoi_license_key');
 			if (empty($licenseKey)) {
@@ -28,8 +29,12 @@ class GetSystemMessagesListener
 				$licenseExpiryDate = $rootPoint->__get('ncoi_license_expiry_date');
 			}
 			$domain = $rootPoint->__get('dns');
-			if (!empty($domain))
-				$messages .= self::getMessage($licenseKey,$licenseExpiryDate,$domain);
+			if (!in_array($domain, $domainNoDuplicate)) {
+				$domainNoDuplicate[] = $domain;
+			}
+		}
+		foreach ($domainNoDuplicate as $domain) {
+			$messages .= self::getMessage($licenseKey,$licenseExpiryDate,$domain);
 		}
 		if (empty($domain))
 			$messages .= self::getMessage($licenseKey,$licenseExpiryDate);
