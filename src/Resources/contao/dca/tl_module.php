@@ -229,6 +229,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolsSelect' => [
@@ -242,6 +243,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 					'-' => '-'
 				],
 				'sql' => "varchar(32) default '' ",
+				'eval' => [
+					'tl_class'  =>  'long clr'
+				],
 			],
 			'cookieToolsTechnicalName' => [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'],
@@ -250,6 +254,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolsTrackingId' => [
@@ -259,6 +264,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolsTrackingServerUrl' => [
@@ -266,18 +272,27 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
+				'eval' => [
+					'tl_class'  =>  'long clr'
+				]
 			],
 			'cookieToolsProvider' => [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsProvider'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
+				'eval' => [
+					'tl_class'  =>  'long clr'
+				]
 			],
 			'cookieToolsPrivacyPolicyUrl' => [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
+				'eval' => [
+					'tl_class'  =>  'long clr'
+				]
 			],
 			'cookieToolsUse' => [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'],
@@ -285,7 +300,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'inputType' => 'textarea',
 				'sql' => "text NULL default '' ",
 				'eval' => [
-					'mandatory' => true
+					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolGroup' => [
@@ -296,6 +312,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			]
 		],
@@ -340,7 +357,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
-					'mandatory' => true
+					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolsUse' => [
@@ -349,7 +367,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'inputType' => 'textarea',
 				'sql' => "text NULL default '' ",
 				'eval' => [
-					'mandatory' => true
+					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolsPrivacyPolicyUrl' => [
@@ -357,6 +376,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
+				'eval' => [
+					'tl_class'  =>  'long clr'
+				],
 			],
 			'cookieToolsTechnicalName' => [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'],
@@ -365,6 +387,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolsName' => [
@@ -374,6 +397,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolGroup' => [
@@ -384,6 +408,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 			'cookieToolsCode' => [
@@ -396,6 +421,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 					'allowHtml' => true,
 					'rte' => 'ace',
 					'preserveTags' => true,
+					'tl_class'  =>  'long clr'
 				],
 			],
 		],

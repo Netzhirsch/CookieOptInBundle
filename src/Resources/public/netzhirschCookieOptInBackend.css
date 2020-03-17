@@ -13,3 +13,9 @@
 .tl_error,.tl_info{
 	background-position: left 2px !important;
 }
+#tl_fieldpalette .fieldpalette-form-container {
+	overflow-y: scroll !important;
+}
+#tl_fieldpalette .tl_submit_container {
+	position: inherit !important;
+}
