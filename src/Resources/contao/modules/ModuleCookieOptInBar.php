@@ -210,7 +210,7 @@ class ModuleCookieOptInBar extends Module
 			}
 		}
 		if (!$jqueryIsLoaded) {
-			$GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/node_modules/jquery/dist/jquery.min.js|static';
+			$GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
 		}
 		$GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
 	}
