@@ -33,11 +33,14 @@ class GetSystemMessagesListener
 				$domainNoDuplicate[] = $domain;
 			}
 		}
-		foreach ($domainNoDuplicate as $domain) {
-			$messages .= self::getMessage($licenseKey,$licenseExpiryDate,$domain);
-		}
-		if (empty($domain))
-			$messages .= self::getMessage($licenseKey,$licenseExpiryDate);
+		if (empty($domainNoDuplicate)) {
+            $messages .= self::getMessage($licenseKey,$licenseExpiryDate);
+        } else {
+            foreach ($domainNoDuplicate as $domain) {
+                $messages .= self::getMessage($licenseKey,$licenseExpiryDate,$domain);
+            }
+        }
+
 
 		return $messages;
 	}
