@@ -1,4 +1,4 @@
-#ctrl_cookieGroups li:nth-child(1) :nth-child(3), #ctrl_cookieGroups li:nth-child(2) button:nth-child(3) {
+#ctrl_cookieGroups li:nth-child(1) :nth-child(3) {
 	display: none;
 }
 #tl_module_cookieTools_1 .delete
