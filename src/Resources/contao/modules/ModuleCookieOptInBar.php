@@ -155,7 +155,7 @@ class ModuleCookieOptInBar extends Module
 			$data['animation'] = $this->__get('animation');
 		
 		$data['position'] = $this->__get('position');
-		
+
 		$this->Template->setData($data);
 	}
 	

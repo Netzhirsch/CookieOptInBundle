@@ -201,13 +201,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 	'fieldpalette' => [
 		'config' => [
 			'hidePublished' => true,
-			'notSortable' => true
+			'notSortable' => false
 		],
 		'list'     => [
 			'label' => [
 				'fields' => ['cookieToolsName','cookieToolGroup'],
 				'format' => '%s <span style="color:#b3b3b3;padding-left:3px">[%s]</span>',
 			],
+            'fields' => ['cookieToolGroup'],
+            'flag' => 1,
+            'panelLayout' => [
+                'sort' => true
+            ],
+            'mode' => 2
 		],
 		'palettes' => [
 			'default' =>
@@ -338,7 +344,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'fields' => ['cookieToolsName','cookieToolGroup'],
 				'format' => '%s <span style="color:#b3b3b3;padding-left:3px">[%s]</span>',
 			),
-			'flag' => 12,
+			'flag' => 11,
 		),
 		'palettes' => [
 			'default' =>
