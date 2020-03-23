@@ -21,7 +21,9 @@ $GLOBALS['TL_LANG']['tl_module']['saveButtonDefault'] = 'Save';
 
 $GLOBALS['TL_LANG']['tl_module']['saveAllButtonDefault'] = 'Save all';
 
-$GLOBALS['TL_LANG']['tl_module']['saveAllButton'] = ['Accept All button','Please enter the label of the button that accepts all cookies. If there are only essential cookies, this button is hidden.'];
+$GLOBALS['TL_LANG']['tl_module']['saveAllButton'] = ['Accept all button','Please enter the label of the button that accepts all cookies. If there are only essential cookies, this button is hidden.'];
+
+$GLOBALS['TL_LANG']['tl_module']['highlightSaveAllButton'] = ['Accept all button highlighting'];
 
 $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBar'] = ['Heading'];
 

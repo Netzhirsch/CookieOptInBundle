@@ -56,6 +56,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,questionHint
 	,saveButton
 	,saveAllButton
+	,highlightSaveAllButton
 	;infoHint
 	;align
 	,space
@@ -137,6 +138,17 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
 	],
 	'sql' => "text NULL default ''",
 	'load_callback' => [['tl_module_ncoi','getDefaultsaveAllButton']]
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['highlightSaveAllButton'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval' => [
+        'tl_class'  =>  'w50',
+        'alwaysSave' => true
+    ],
+    'sql' => "varchar(1) NOT NULL DEFAULT 1",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
@@ -702,7 +714,8 @@ class tl_module_ncoi extends tl_module {
 		}
 		return $dca;
 	}
-	
+
+
 	public function getGroups(DC_Table $dca)
 	{
 		$fieldPaletteModel = FieldPaletteModel::findById($dca->id);

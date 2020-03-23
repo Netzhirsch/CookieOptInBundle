@@ -72,15 +72,19 @@
 			<?php endforeach; ?>
 		</div>
 		<div class="ncoi---actions">
+			<?php $primary = ' ncoi---link-primary' ?>
+			<?php if($this->arrData['highlightSaveAllButton'] == 0) : ?>
+			    <?php $primary = '' ?>
+            <?php endif ?>
 			<?php $classSave = '' ?>
 			<?php if (count($this->arrData['cookieGroups']) > 1) : ?>
-			<div class="ncoi---action ncoi---link ncoi---link-primary">
+			<div class="ncoi---action ncoi---link <?=$primary?>">
 				<a id="ncoi---allowed--all" class="" href="#" title="<?php echo$this->arrData['saveAllButton'] ?>">
 					<?php echo $this->arrData['saveAllButton'] ?>
 				</a>
 			</div>
 			<?php else : ?>
-			<?php $classSave .= ' ncoi---link-primary' ?>
+			<?php $classSave .= $primary ?>
 			<?php endif ?>
 			<div class="ncoi---action ncoi---link<?=$classSave?>">
 				<a id="ncoi---allowed" href="#" title="<?php echo $this->arrData['saveButton'] ?>">

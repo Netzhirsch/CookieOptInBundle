@@ -5,6 +5,7 @@ $GLOBALS['TL_HOOKS']['getSystemMessages'][] = [Netzhirsch\CookieOptInBundle\Even
 
 $GLOBALS['TL_HOOKS']['getPageLayout'][] = [Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener::class, 'onGetPageLayoutListener'];
 
+
 /**
  * Add back end modules
  */
