@@ -133,3 +133,5 @@ $GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'Bei Klick auf die
 $GLOBALS['TL_LANG']['tl_module']['shrink'] = 'rein-/rauszoomen';
 
 $GLOBALS['TL_LANG']['tl_module']['go-up'] = 'ein-/ausfahren';
+
+$GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'] = 'schrumpfen und drehen';

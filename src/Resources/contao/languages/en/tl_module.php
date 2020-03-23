@@ -137,6 +137,8 @@ $GLOBALS['TL_LANG']['tl_module']['templateBar'] =
 
 $GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'By clicking on the buttons in the frontend'];
 
+$GLOBALS['TL_LANG']['tl_module']['go-up'] = 'go-up';
+
 $GLOBALS['TL_LANG']['tl_module']['shrink'] = 'shrink';
 
-$GLOBALS['TL_LANG']['tl_module']['go-up'] = 'go-up';
+$GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'] = 'shrink and rotate';

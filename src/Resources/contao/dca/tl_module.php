@@ -567,7 +567,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 	'inputType' => 'select',
 	'options' => [
 		'go-up' => $GLOBALS['TL_LANG']['tl_module']['go-up'],
-		'shrink' => $GLOBALS['TL_LANG']['tl_module']['shrink']
+		'shrink' => $GLOBALS['TL_LANG']['tl_module']['shrink'],
+        'shrink-and-rotate' => $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate']
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
