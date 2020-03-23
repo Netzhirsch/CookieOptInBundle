@@ -145,8 +145,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
-        'tl_class'  =>  'w50',
-        'alwaysSave' => true
+        'tl_class'  =>  'w50'
     ],
     'sql' => "varchar(1) NOT NULL DEFAULT 1",
 ];

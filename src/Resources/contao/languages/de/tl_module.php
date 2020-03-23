@@ -57,7 +57,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
 	['Tracking Id','z.B. UA-123456789-1 für Google Analytics'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =
-	['Tracking Server Url ','z.B. mein-matomo-server.de für Matomo'];
+	['Tracking Server Url ','z.B. https://netzhirsch.matomo.cloud/ für Matomo'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsProvider'] = ['Anbieter'];
 

@@ -131,27 +131,21 @@
 					 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', tool.cookieToolsTrackingId);fbq('track', 'PageView');
 					}
 					if (toolName.localeCompare('matomo') === 0) {
-						var _paq = window._paq || [];
-						/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-						if (!$.isPlainObject(_paq)) {
-							_paq.push(['trackPageView']);
-							_paq.push(['enableLinkTracking']);
-						}
-						(function () {
-							var u = "//"+tool.cookieToolsTrackingServerUrl+"/";
-							if (!$.isPlainObject(_paq)) {
-								_paq.push(['setTrackerUrl', u + 'matomo.php']);
-								_paq.push(['setSiteId', '2']);
-							}
-							var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-							g.type = 'text/javascript';
-							g.async = true;
-							g.defer = true;
-							g.src = u + 'matomo.js';
-							s.parentNode.insertBefore(g, s);
-							body.append('<img id="matomoTracking"  src="http://matomo/matomo.php?idsite='+tool.cookieToolsTrackingId+'&amp;rec=1" alt=""/>').appendHTML;
-
-						})();
+						let url = tool.cookieToolsTrackingServerUrl;
+						if (url.slice(-1) !== '/')
+							url += '/';
+						body.append("<script type=\"text/javascript\">" +
+							"var _paq = window._paq || [];" +
+							"_paq.push(['trackPageView']);" +
+							"_paq.push(['enableLinkTracking']);" +
+							"(function() {" +
+							"var u = '"+url+"';" +
+							"_paq.push(['setTrackerUrl', u+'matomo.php']);" +
+							"_paq.push(['setSiteId', '"+tool.cookieToolsTrackingId+"']);" +
+							"var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];" +
+							"g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);" +
+							"})();" +
+							"</script>");
 					}
 				});
 				let otherScripts = data.otherScripts;
