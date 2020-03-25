@@ -133,6 +133,7 @@ class CookieController extends AbstractController
 			'cookieToolsSelect',
 			'cookieToolsUse',
 			'cookieToolGroup',
+			'cookieToolExpiredTime',
 		];
 		$sql = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
 		$sql .= ' WHERE pid = ? AND pfield = ?';
@@ -153,6 +154,7 @@ class CookieController extends AbstractController
 			'cookieToolsUse',
 			'cookieToolsCode',
 			'cookieToolsCode',
+			'cookieToolExpiredTime',
 			'cookieToolGroup',
 		];
 		$sql = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";

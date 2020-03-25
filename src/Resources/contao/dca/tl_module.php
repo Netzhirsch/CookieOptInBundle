@@ -229,7 +229,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 		],
 		'palettes' => [
 			'default' =>
-				'cookieToolsName,
+				'
+				cookieToolsName,
 				cookieToolsSelect,
 				cookieToolsTechnicalName,
 				cookieToolsTrackingId,
@@ -237,7 +238,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				cookieToolsProvider,
 				cookieToolsPrivacyPolicyUrl,
 				cookieToolsUse,
-				cookieToolGroup',
+				cookieToolGroup,
+				cookieToolExpiredTime
+				',
 		],
 		'fields' => [
 			'cookieToolsName' => [
@@ -332,7 +335,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 					'mandatory' => true,
 					'tl_class'  =>  'long clr'
 				],
-			]
+			],
+            'cookieToolExpiredTime' => [
+                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'],
+                'exclude'   => true,
+                'inputType' => 'text',
+                'eval' => [
+                    'mandatory' => true,
+                    'rgxp'=>'natural',
+                    'tl_class'=>'long',
+                ],
+                'default' => '1',
+                'sql' => "int(2) NULL ",
+            ]
 		],
 	],
 ];
@@ -360,13 +375,16 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 		),
 		'palettes' => [
 			'default' =>
-				'cookieToolsProvider,
-				cookieToolsUse,
-				cookieToolsPrivacyPolicyUrl,
-				cookieToolsTechnicalName,
+				'
 				cookieToolsName,
+				cookieToolsTechnicalName,
+				cookieToolsProvider,
+				cookieToolsPrivacyPolicyUrl,
+				cookieToolsUse,
 				cookieToolGroup,
-				cookieToolsCode',
+				cookieToolExpiredTime,
+				cookieToolsCode
+				',
 		],
 		'fields' => [
 			'cookieToolsProvider' => [
@@ -429,6 +447,18 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 					'tl_class'  =>  'long clr'
 				],
 			],
+            'cookieToolExpiredTime' => [
+                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'],
+                'exclude'   => true,
+                'inputType' => 'text',
+                'eval' => [
+                    'mandatory' => true,
+                    'rgxp'=>'natural',
+                    'tl_class'=>'long',
+                ],
+                'default' => '1',
+                'sql' => "int(2) NULL ",
+            ],
 			'cookieToolsCode' => [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'],
 				'exclude'   => true,
@@ -454,10 +484,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieExpiredTime'] = [
 		'mandatory' => true,
 		'rgxp'=>'natural',
 		'tl_class'=>'long',
-		'maxval' => '99'
+        'alwaysSave' => true
 	],
-	'default' => '1',
 	'sql' => "int(2) NULL ",
+    'load_callback' => [['tl_module_ncoi','getCookieExpiredTime']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
@@ -755,7 +785,6 @@ class tl_module_ncoi extends tl_module {
 		}
 		if (empty($netzhirschCookieFieldModel)) {
 			$netzhirschCookieFieldModel = new FieldPaletteModel();
-			
 			$netzhirschCookieFieldModel->pid = $id;
 			$netzhirschCookieFieldModel->ptable = 'tl_module';
 			$netzhirschCookieFieldModel->pfield = 'cookieTools';
@@ -768,14 +797,17 @@ class tl_module_ncoi extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$netzhirschCookieFieldModel->cookieToolsProvider = '';
 			$netzhirschCookieFieldModel->cookieToolsTrackingId = '1';
+			$netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
 			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
 			$netzhirschCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
 			$netzhirschCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$netzhirschCookieFieldModel->save();
-		}
-		
-		
+		} elseif (!isset($netzhirschCookieFieldModel->cookieToolExpiredTime)) {
+            $netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
+            $netzhirschCookieFieldModel->save();
+        }
+
 		if (empty($csrfCookieFieldModel)) {
 			
 			$csrfCookieFieldModel = new FieldPaletteModel();
@@ -792,12 +824,16 @@ class tl_module_ncoi extends tl_module {
 			$csrfCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$csrfCookieFieldModel->cookieToolsProvider = '';
 			$csrfCookieFieldModel->cookieToolsTrackingId = '1';
+            $csrfCookieFieldModel->cookieToolExpiredTime = '30';
 			$csrfCookieFieldModel->cookieToolsSelect = '-';
 			$csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
 			$csrfCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$csrfCookieFieldModel->save();
-		}
+		} elseif (!isset($csrfCookieFieldModel->cookieToolExpiredTime)) {
+            $csrfCookieFieldModel->cookieToolExpiredTime = '30';
+            $csrfCookieFieldModel->save();
+        }
 		
 		if (empty($phpSessIdCookieFieldModel)) {
 			
@@ -815,13 +851,17 @@ class tl_module_ncoi extends tl_module {
 			$phpSessIdCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$phpSessIdCookieFieldModel->cookieToolsProvider = '';
 			$phpSessIdCookieFieldModel->cookieToolsTrackingId = '1';
+            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '30';
 			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
 			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'];
 			$phpSessIdCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$phpSessIdCookieFieldModel->save();
 			
-		}
+		} elseif (!isset($phpSessIdCookieFieldModel->cookieToolExpiredTime)) {
+            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '30';
+            $phpSessIdCookieFieldModel->save();
+        }
 		
 		if (!empty($fieldValue)) {
 			$fieldValues = StringUtil::deserialize($fieldValue);
@@ -836,5 +876,10 @@ class tl_module_ncoi extends tl_module {
 		}
 		
 		return $fieldValue;
+	}
+
+    public function getCookieExpiredTime($value)
+    {
+        return (empty($value)) ? "30" : $value;
 	}
 }

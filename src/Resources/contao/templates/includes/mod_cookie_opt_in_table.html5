@@ -24,6 +24,15 @@
 			<?php echo $tool->cookieToolsProvider; ?>
 		</td>
 	</tr>
+	</tr>
+	<tr>
+		<th>
+			<?php echo $tlLang['cookieToolExpiredTime']; ?>
+		</th>
+		<td>
+			<?php echo $tool->cookieToolExpiredTime; ?>
+		</td>
+	</tr>
 	<tr>
 		<th>
 			<?php echo $tlLang['privacyPolicy']; ?>

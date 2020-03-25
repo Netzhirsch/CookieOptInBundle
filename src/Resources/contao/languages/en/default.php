@@ -17,7 +17,8 @@ $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn'] = [
 				'allowed' => 'allowed',
 				'essential' => 'essential',
 				'info' => 'info',
-				'hidden' => 'hide'
+				'hidden' => 'hide',
+                'cookieToolExpiredTime' => 'expire in days'
 		]
 ];
 $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn'] = [

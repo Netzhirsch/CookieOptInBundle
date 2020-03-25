@@ -98,7 +98,10 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript code','With s
 
 /*************** End Fieldpalette otherScripts ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Expiration in months','Please specify the duration of the cookie. The cookie bar is then displayed again.'];
+$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Expiration in days','Please specify the duration of the cookie. The cookie bar is then displayed again.'];
+
+$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Expiration in days','Please specify the duration of the cookie.'];
+
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Data protection'];
 
