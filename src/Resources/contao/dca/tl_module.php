@@ -345,7 +345,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                     'rgxp'=>'natural',
                     'tl_class'=>'long',
                 ],
-                'default' => '1',
                 'sql' => "int(2) NULL ",
             ]
 		],
@@ -456,7 +455,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
                     'rgxp'=>'natural',
                     'tl_class'=>'long',
                 ],
-                'default' => '1',
                 'sql' => "int(2) NULL ",
             ],
 			'cookieToolsCode' => [

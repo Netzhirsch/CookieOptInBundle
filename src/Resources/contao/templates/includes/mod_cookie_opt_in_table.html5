@@ -17,6 +17,16 @@
 		</td>
 	</tr>
 	<tr>
+	</tr>
+	<tr>
+		<th>
+			<?php echo $tlLang['cookieToolsTechnicalName']; ?>
+		</th>
+		<td class="ncoi---cookieToolsTechnicalName">
+			<?php echo $tool->cookieToolsTechnicalName; ?>
+		</td>
+	</tr>
+	<tr>
 		<th>
 			<?php echo $tlLang['provider']; ?>
 		</th>
