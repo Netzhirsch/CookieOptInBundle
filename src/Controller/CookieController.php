@@ -4,7 +4,6 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
-use Exception;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,49 +13,53 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CookieController extends AbstractController
 {
-	
-	/**
-	 * @Route("/cookie/allowed", name="cookie_allowed")
-	 * @param Request $request
-	 * @return JsonResponse
-	 * @throws DBALException
-	 * @throws Exception
-	 */
+
+    /**
+     * @Route("/cookie/allowed", name="cookie_allowed")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws DBALException
+     */
 	public function allowedAction(Request $request)
 	{
-		$selected = $request->get('selected');
-		
-		$cookieDatabase = $this->getModulData($selected['modId']);
+		$data = $request->get('data');
+        $newConsent = $data['newConsent'];
+
+		$cookieDatabase = $this->getModulData($data['modId']);
 		$cookiesToDelete = [];
 		$cookiesToSet = [];
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
-			if (!in_array($cookieTool['id'],$selected['cookieIds'])) {
+			if (!in_array($cookieTool['id'],$data['cookieIds'])) {
 				$cookiesToDelete[] = $cookieTool;
 			} else {
 				$cookiesToSet['cookieTools'][] = $cookieTool;
 			}
 		}
+        if (!isset($cookiesToSet['otherScripts'])) {
+            $cookiesToSet['otherScripts'] = [];
+        }
 		foreach ($cookieDatabase['otherScripts'] as $otherScripts) {
-			if (!in_array($otherScripts['id'],$selected['cookieIds'])) {
+			if (!in_array($otherScripts['id'],$data['cookieIds'])) {
 				$cookiesToDelete[] = $otherScripts;
 			}else {
 				$cookiesToSet['otherScripts'][] = $otherScripts;
 			}
 		}
-		
+
 		if (!empty($cookiesToDelete))
 			PageLayoutListener::deleteCookie($cookiesToDelete);
-		
+
 		$this->setNetzhirschCookie(
 			true,
-			$selected['cookieIds'],
-			$selected['modId'],
+			$data['cookieIds'],
+			$data['modId'],
 			$cookieDatabase['cookieVersion'],
 			$cookieDatabase['cookieExpiredTime']
 		);
-		
-		$this->changeConsent($cookiesToSet);
-		
+
+        if ($newConsent)
+		    $this->changeConsent($cookiesToSet,$data['modId']);
+
 		$response = [
 			'tools' => $cookiesToSet['cookieTools'],
 			'otherScripts' => $cookiesToSet['otherScripts'],
@@ -82,8 +85,8 @@ class CookieController extends AbstractController
 		];
 		/* @var Connection $conn */
 		/** @noinspection PhpParamsInspection */
-		$conn = $this->get('database_connection');
-		/** @noinspection SqlResolve */
+        /** @noinspection MissingService */
+        $conn = $this->get('database_connection');
 		$sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsTechnicalName = ? AND pid = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, '_netzhirsch_cookie_opt_in');
@@ -109,9 +112,9 @@ class CookieController extends AbstractController
 		$response = [];
 		
 		/** @noinspection PhpParamsInspection */
+        /** @noinspection MissingService */
 		$conn = $this->get('database_connection');
 		/* @var Connection $conn */
-		/** @noinspection SqlResolve */
 		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_module WHERE type = ? AND id = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, 'cookieOptInBar');
@@ -173,32 +176,50 @@ class CookieController extends AbstractController
 		
 		return $response;
 	}
-	
-	/**
-	 * @param $cookieData
-	 * @throws DBALException
-	 */
-	private function changeConsent($cookieData)
+
+    /**
+     * @param $cookieData
+     * @param $modId
+     * @throws DBALException
+     */
+	private function changeConsent($cookieData,$modId)
 	{
 		/** @noinspection PhpParamsInspection */
 		$requestStack = $this->get('request_stack');
 		/* @var Connection $conn */
 		/** @noinspection PhpParamsInspection */
-		$conn = $this->get('database_connection');
-		$ipCurrentUser = $requestStack->getCurrentRequest()->getClientIp();
-		/** @noinspection SqlResolve */
-		$sql = "SELECT ip FROM tl_consentDirectory WHERE ip = ?";
+        /** @noinspection MissingService */
+        $conn = $this->get('database_connection');
+
+        $sql = "SELECT ipFormatSave FROM tl_module WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $modId);
+        $stmt->execute();
+        $ipFormatSave = $stmt->fetchColumn();
+        $ipCurrentUser = $requestStack->getCurrentRequest()->getClientIp();
+        if ($ipCurrentUser == '::1')
+            $ipCurrentUser = '127.0.0.1';
+
+        if (!empty($ipFormatSave) && $ipFormatSave != 'uncut') {
+            $ipCurrentUser = explode('.',$ipCurrentUser);
+            end($ipCurrentUser);
+            $lastIndex = key($ipCurrentUser);
+            $ipCurrentUser[$lastIndex] = '*';
+            if ($ipFormatSave == 'anon')
+                $ipCurrentUser[--$lastIndex] = '*';
+
+            $ipCurrentUser = implode('.',$ipCurrentUser);
+        }
+        $sql = "SELECT ip FROM tl_consentDirectory WHERE ip = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, $ipCurrentUser);
 		$stmt->execute();
 		$ipInDB = $stmt->fetchColumn();
 		
 		if (empty($ipInDB)){
-			/** @noinspection SqlResolve */
-			$sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain) VALUES(?,?,?,?,?)";
+            $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain) VALUES(?,?,?,?,?)";
 		} else {
-			/** @noinspection SqlResolve */
-			$sql = "UPDATE tl_consentDirectory SET ip = ? ,cookieToolsName = ?, cookieToolsTechnicalName = ? ,date = ?, domain = ? WHERE ip = ?";
+            $sql = "UPDATE tl_consentDirectory SET ip = ? ,cookieToolsName = ?, cookieToolsTechnicalName = ? ,date = ?, domain = ? WHERE ip = ?";
 		}
 		
 		$stmt = $conn->prepare($sql);
@@ -211,20 +232,22 @@ class CookieController extends AbstractController
 			$cookieNames[] = $cookieTool['cookieToolsName'];
 			$cookieTechnicalName[] = $cookieTool['cookieToolsTechnicalName'];
 		}
-		$otherScripts = $cookieData['otherScripts'];
-		foreach ($otherScripts as $otherScript) {
-			$cookieNames[] = $otherScript['cookieToolsName'];
-			$cookieTechnicalName[] = $otherScript['cookieToolsTechnicalName'];
-		}
-		$stmt->bindValue(2, implode(', ', $cookieNames));
-		$stmt->bindValue(3, implode(', ', $cookieTechnicalName));
-		$stmt->bindValue(4, date('Y-m-d H:i'));
-		$stmt->bindValue(5, $_SERVER['HTTP_HOST']);
-		
-		if (!empty($ipInDB))
-			$stmt->bindValue(6, $ipCurrentUser);
-		
-		$stmt->execute();
-		
+        if (isset($cookieData['otherScripts'])) {
+            $otherScripts = $cookieData['otherScripts'];
+            foreach ($otherScripts as $otherScript) {
+                $cookieNames[] = $otherScript['cookieToolsName'];
+                $cookieTechnicalName[] = $otherScript['cookieToolsTechnicalName'];
+            }
+            $stmt->bindValue(2, implode(', ', $cookieNames));
+            $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
+            $stmt->bindValue(4, date('Y-m-d H:i'));
+            $stmt->bindValue(5, $_SERVER['HTTP_HOST']);
+
+            if (!empty($ipInDB))
+                $stmt->bindValue(6, $ipCurrentUser);
+
+            $stmt->execute();
+        }
+
 	}
 }

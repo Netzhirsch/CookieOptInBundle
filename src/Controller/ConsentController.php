@@ -23,9 +23,9 @@ class ConsentController extends AbstractController
 	{
 		/* @var Connection $conn */
 		/** @noinspection PhpParamsInspection */
-		$conn = $this->get('database_connection');
-		/** @noinspection SqlResolve */
-		$sql = "SELECT * FROM tl_consentDirectory";
+        /** @noinspection MissingService */
+        $conn = $this->get('database_connection');
+        $sql = "SELECT * FROM tl_consentDirectory";
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
 		$consents = $stmt->fetchAll();

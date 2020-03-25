@@ -12,13 +12,13 @@
 			$('[data-ncoi-allowed]').data('ncoi-allowed') === 1
 			&& $('[data-ncoi-is-version-new]').data('ncoi-is-version-new') === 0
 		) {
-			track();
+			track(0);
 		}
 
 		$('#ncoi---allowed').on('click', function (e) {
 			e.preventDefault();
 			$('.ncoi---behind').addClass('ncoi---hidden');
-			track();
+			track(1);
 		});
 
 		$('#ncoi---allowed--all').on('click', function (e) {
@@ -26,7 +26,7 @@
 			$('.ncoi---behind').addClass('ncoi---hidden');
 			$('.ncoi---cookie-group input').prop('checked',true);
 			$('.ncoi---sliding').prop('checked',true);
-			track();
+			track(1);
 		});
 
 		$('#ncoi---revoke').on('click',function (e) {
@@ -91,26 +91,27 @@
 //		return false;
 //	}
 
-	function track(){
-		let selected = {
+	function track(newConsent){
+		let data = {
 			cookieIds : [{}],
-			modId : {}
+			modId : {},
+			newConsent : newConsent
 		};
 		let cookieSelected = $('.ncoi---cookie');
 		Object.keys(cookieSelected).forEach(function(key) {
 			if (key.localeCompare('length') !== 0 && key.localeCompare('prevObject') !== 0) {
 				if ($(cookieSelected[key]).prop('checked')) {
-					selected.cookieIds.push($(cookieSelected[key]).data('cookie-id'))
+					data.cookieIds.push($(cookieSelected[key]).data('cookie-id'))
 				}
 			}
 		});
-		selected.modId = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
+		data.modId = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
 		$.ajax({
 			dataType: "json",
 			type: 'POST',
 			url: '/cookie/allowed',
 			data: {
-				selected : selected
+				data : data
 			},
 			success: function (data) {
 				let tools = data.tools;

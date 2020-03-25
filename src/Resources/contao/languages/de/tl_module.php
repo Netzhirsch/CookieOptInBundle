@@ -133,7 +133,12 @@ $GLOBALS['TL_LANG']['tl_module']['templateBar'] = ['Template' , 'Der Template-Na
 $GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'Bei Klick auf die Buttons im Frontend.'];
 
 $GLOBALS['TL_LANG']['tl_module']['shrink'] = 'rein-/rauszoomen';
-
 $GLOBALS['TL_LANG']['tl_module']['go-up'] = 'ein-/ausfahren';
-
 $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'] = 'schrumpfen und drehen';
+
+$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP Speicherung'];
+
+$GLOBALS['TL_LANG']['tl_module']['uncut'] = 'ungekürzt';
+$GLOBALS['TL_LANG']['tl_module']['pseudo'] = 'pseudonymisiert';
+$GLOBALS['TL_LANG']['tl_module']['anon'] = 'anonymisiert';
+

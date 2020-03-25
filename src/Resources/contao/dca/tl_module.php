@@ -77,6 +77,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,position
 	,animation
 	;isNewCookieVersion
+	;ipFormatSave
 ';
 
 // setCookieVersion check for right modul
@@ -637,6 +638,21 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 	'sql' => "varchar(64) NULL default '' ",
 	'load_callback' => [['tl_module_ncoi','getDefaultMaxWidth']],
 	'save_callback' => [['tl_module_ncoi','setMaxWidth']]
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'],
+    'exclude'   => true,
+    'inputType' => 'select',
+    'options' => [
+        'uncut' => $GLOBALS['TL_LANG']['tl_module']['uncut'],
+        'pseudo' => $GLOBALS['TL_LANG']['tl_module']['pseudo'],
+        'anon' => $GLOBALS['TL_LANG']['tl_module']['anon']
+    ],
+    'eval' => [
+        'tl_class'  =>  'w50',
+    ],
+    'sql' => "varchar(64) NULL default '' ",
 ];
 
 class tl_module_ncoi extends tl_module {
