@@ -106,7 +106,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
-    'xlabel' => [['tl_module_ncoi','getHintLink']],
 	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
 	'exclude'   => true,
 	'inputType' => 'textarea',
@@ -657,10 +656,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
 
 class tl_module_ncoi extends tl_module {
 
-    public function getHintLink()
-    {
-        return '<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank" title="Anleitung">Anleitung</a> ';
-    }
 	public function getDefaultMaxWidth($value){
 		
 		if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')

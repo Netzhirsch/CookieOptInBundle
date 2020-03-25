@@ -47,7 +47,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
 ];
 /*************** Fieldpalette Tools ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools'];
+$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Hier finden Sie eine Hilfestellung</a>'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Facebook Pixel'];
 
