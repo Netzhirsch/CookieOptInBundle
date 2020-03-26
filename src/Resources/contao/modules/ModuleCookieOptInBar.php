@@ -5,7 +5,6 @@ namespace Netzhirsch\CookieOptInBundle;
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
 use Contao\Module;
-use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
@@ -135,17 +134,6 @@ class ModuleCookieOptInBar extends Module
 				$data['isExcludePage'] = true;
 			}
 		}
-		
-		$cookieOptInRevokeModule = ModuleModel::findByType('cookieOptInRevoke');
-		$cookieOptInRevokeModuleInLayout = null;
-		foreach ($cookieOptInRevokeModule as $cookieOptInRevokeModul) {
-			if ($cookieOptInRevokeModul->pid == $this->pid) {
-				$cookieOptInRevokeModuleInLayout = $cookieOptInRevokeModul;
-			}
-		}
-		
-		if (empty($cookieOptInRevokeModuleInLayout))
-			$data['moduleMissing'] = 'revoke modul not in layout';
 		
 		$data['saveButton'] = $this->__get('saveButton');
 		$data['saveAllButton'] = $this->__get('saveAllButton');

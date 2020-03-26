@@ -143,6 +143,7 @@ $GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'By clicking on th
 $GLOBALS['TL_LANG']['tl_module']['go-up'] = 'go-up';
 $GLOBALS['TL_LANG']['tl_module']['shrink'] = 'shrink';
 $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'] = 'shrink and rotate';
+$GLOBALS['TL_LANG']['tl_module']['hinge'] = 'hinge';
 
 $GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP storage'];
 

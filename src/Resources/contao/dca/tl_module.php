@@ -594,7 +594,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 	'options' => [
 		'go-up' => $GLOBALS['TL_LANG']['tl_module']['go-up'],
 		'shrink' => $GLOBALS['TL_LANG']['tl_module']['shrink'],
-        'shrink-and-rotate' => $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate']
+        'shrink-and-rotate' => $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'],
+        'hinge' => $GLOBALS['TL_LANG']['tl_module']['hinge'],
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',

@@ -326,6 +326,10 @@ label.ncoi---sliding {
 			transition: transform 1s ease-in-out 0s;
 		}
 
+		.ncoi---container {
+			transform-origin:top left;
+		}
+
 		&.ncoi---hidden {
 			transition: opacity 1s ease-in-out 0s, visibility 0s linear 1s;
 			visibility:hidden;
@@ -348,6 +352,12 @@ label.ncoi---sliding {
 
 				.ncoi---container {
 					transform:rotate(360deg) scale(0);
+				}
+			}
+			&.ncoi---hidden--hinge {
+
+				.ncoi---container {
+					transform:rotate(45deg);
 				}
 			}
 		}
