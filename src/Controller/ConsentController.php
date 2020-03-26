@@ -44,6 +44,7 @@ class ConsentController extends AbstractController
 					'Nr.'                  => $zeilenNummer++,
 					'Datum'                => $consent['date'],
 					'Domain'                => $consent['domain'],
+					'URL'                => $consent['url'],
 					'IP'                => $consent['ip'],
 					'Cookie Namen' => $consent['cookieToolsName'],
 					'Technische Cookie Namen' => $consent['cookieToolsTechnicalName'],
