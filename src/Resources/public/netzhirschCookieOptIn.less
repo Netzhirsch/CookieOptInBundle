@@ -313,6 +313,7 @@ label.ncoi---sliding {
 .ncoi---behind {
 
 	&.ncoi---animation-no {
+		
 		&.ncoi---hidden {
 			visibility:hidden;
 			opacity:0;
@@ -325,9 +326,12 @@ label.ncoi---sliding {
 		.ncoi---container {
 			transition: transform 1s ease-in-out 0s;
 		}
-
-		.ncoi---container {
-			transform-origin:top left;
+			
+		&.ncoi---hidden--hinge {
+			
+			.ncoi---container {
+				transform-origin:top left;
+			}
 		}
 
 		&.ncoi---hidden {
