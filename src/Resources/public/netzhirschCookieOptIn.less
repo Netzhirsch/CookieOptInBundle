@@ -312,13 +312,6 @@ label.ncoi---sliding {
 
 .ncoi---behind {
 
-	&.ncoi---transition {
-
-		&.ncoi---hidden {
-			visibility:hidden;
-			opacity:0;
-		}
-	}
 
 	&.ncoi---animation-no {
 		&.ncoi---hidden {
@@ -368,6 +361,16 @@ label.ncoi---sliding {
 					transform:rotate(45deg);
 				}
 			}
+		}
+	}
+	&.ncoi---transition {
+
+		&.ncoi---animation {
+			transition: inherit;
+		}
+		&.ncoi---hidden {
+			visibility:hidden;
+			opacity:0;
 		}
 	}
 
