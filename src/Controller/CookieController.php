@@ -25,7 +25,7 @@ class CookieController extends AbstractController
 		$data = $request->get('data');
         $newConsent = $data['newConsent'];
 
-		$cookieDatabase = $this->getModulData($data['modId']);
+		$cookieDatabase = $this->getModulData($data['modID']);
 		$cookiesToDelete = [];
 		$cookiesToSet = [];
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
@@ -52,13 +52,13 @@ class CookieController extends AbstractController
 		$this->setNetzhirschCookie(
 			true,
 			$data['cookieIds'],
-			$data['modId'],
+			$data['modID'],
 			$cookieDatabase['cookieVersion'],
 			$cookieDatabase['cookieExpiredTime']
 		);
 
         if ($newConsent)
-		    $this->changeConsent($cookiesToSet,$data['modId']);
+		    $this->changeConsent($cookiesToSet,$data['modID']);
 
 		$response = [
 			'tools' => $cookiesToSet['cookieTools'],
@@ -71,12 +71,12 @@ class CookieController extends AbstractController
 	/**
 	 * @param $allowed
 	 * @param $cookieIds
-	 * @param $modId
+	 * @param $modID
 	 * @param $cookieVersion
 	 * @param $cookieExpiredTime
 	 * @throws DBALException
 	 */
-	private function setNetzhirschCookie($allowed,$cookieIds,$modId,$cookieVersion,$cookieExpiredTime){
+	private function setNetzhirschCookie($allowed,$cookieIds,$modID,$cookieVersion,$cookieExpiredTime){
 		
 		$netzhirschOptInCookie = [
 			'allowed' => $allowed,
@@ -90,7 +90,7 @@ class CookieController extends AbstractController
 		$sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsTechnicalName = ? AND pid = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, '_netzhirsch_cookie_opt_in');
-		$stmt->bindValue(2, $modId);
+		$stmt->bindValue(2, $modID);
 		$stmt->execute();
 		$cookieToolsTechnicalName = $stmt->fetch();
 		$cookieToolsTechnicalName = $cookieToolsTechnicalName['cookieToolsTechnicalName'];
@@ -103,11 +103,11 @@ class CookieController extends AbstractController
 	}
 	
 	/**
-	 * @param $modId
+	 * @param $modID
 	 * @return mixed
 	 * @throws DBALException
 	 */
-	private function getModulData($modId){
+	private function getModulData($modID){
 		
 		$response = [];
 		
@@ -118,7 +118,7 @@ class CookieController extends AbstractController
 		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_module WHERE type = ? AND id = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, 'cookieOptInBar');
-		$stmt->bindValue(2, $modId);
+		$stmt->bindValue(2, $modID);
 		$stmt->execute();
 		$data = $stmt->fetch();
 		
@@ -131,7 +131,7 @@ class CookieController extends AbstractController
 			'cookieToolsTechnicalName',
 			'cookieToolsPrivacyPolicyUrl',
 			'cookieToolsProvider',
-			'cookieToolsTrackingId',
+			'cookieToolsTrackingID',
 			'cookieToolsTrackingServerUrl',
 			'cookieToolsSelect',
 			'cookieToolsUse',
@@ -142,7 +142,7 @@ class CookieController extends AbstractController
 		$sql .= ' WHERE pid = ? AND pfield = ?';
 		$stmt = $conn->prepare($sql);
 		
-		$stmt->bindValue(1, $modId);
+		$stmt->bindValue(1, $modID);
 		$stmt->bindValue(2, 'cookieTools');
 		
 		$stmt->execute();
@@ -165,7 +165,7 @@ class CookieController extends AbstractController
 		
 		$stmt = $conn->prepare($sql);
 		
-		$stmt->bindValue(1, $modId);
+		$stmt->bindValue(1, $modID);
 		$stmt->bindValue(2, 'otherScripts');
 		
 		$stmt->execute();
@@ -179,10 +179,10 @@ class CookieController extends AbstractController
 
     /**
      * @param $cookieData
-     * @param $modId
+     * @param $modID
      * @throws DBALException
      */
-	private function changeConsent($cookieData,$modId)
+	private function changeConsent($cookieData,$modID)
 	{
 		/** @noinspection PhpParamsInspection */
 		$requestStack = $this->get('request_stack');
@@ -193,7 +193,7 @@ class CookieController extends AbstractController
 
         $sql = "SELECT ipFormatSave FROM tl_module WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $modId);
+        $stmt->bindValue(1, $modID);
         $stmt->execute();
         $ipFormatSave = $stmt->fetchColumn();
         $ipCurrentUser = $requestStack->getCurrentRequest()->getClientIp();

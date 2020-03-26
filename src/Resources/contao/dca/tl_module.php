@@ -233,7 +233,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				cookieToolsName,
 				cookieToolsSelect,
 				cookieToolsTechnicalName,
-				cookieToolsTrackingId,
+				cookieToolsTrackingID,
 				cookieToolsTrackingServerUrl,
 				cookieToolsProvider,
 				cookieToolsPrivacyPolicyUrl,
@@ -278,8 +278,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 					'tl_class'  =>  'long clr'
 				],
 			],
-			'cookieToolsTrackingId' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'],
+			'cookieToolsTrackingID' => [
+				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingID'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -805,7 +805,7 @@ class tl_module_ncoi extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolsTechnicalName = '_netzhirsch_cookie_opt_in';
 			$netzhirschCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$netzhirschCookieFieldModel->cookieToolsProvider = '';
-			$netzhirschCookieFieldModel->cookieToolsTrackingId = '1';
+			$netzhirschCookieFieldModel->cookieToolsTrackingID = '1';
 			$netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
 			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
 			$netzhirschCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
@@ -832,7 +832,7 @@ class tl_module_ncoi extends tl_module {
 			$csrfCookieFieldModel->cookieToolsTechnicalName = 'csrf_contao_csrf_token';
 			$csrfCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$csrfCookieFieldModel->cookieToolsProvider = '';
-			$csrfCookieFieldModel->cookieToolsTrackingId = '1';
+			$csrfCookieFieldModel->cookieToolsTrackingID = '1';
             $csrfCookieFieldModel->cookieToolExpiredTime = '30';
 			$csrfCookieFieldModel->cookieToolsSelect = '-';
 			$csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
@@ -859,7 +859,7 @@ class tl_module_ncoi extends tl_module {
 			$phpSessIdCookieFieldModel->cookieToolsTechnicalName = 'PHPSESSID';
 			$phpSessIdCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$phpSessIdCookieFieldModel->cookieToolsProvider = '';
-			$phpSessIdCookieFieldModel->cookieToolsTrackingId = '1';
+			$phpSessIdCookieFieldModel->cookieToolsTrackingID = '1';
             $phpSessIdCookieFieldModel->cookieToolExpiredTime = '30';
 			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
 			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'];

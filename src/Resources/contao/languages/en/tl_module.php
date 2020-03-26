@@ -2,7 +2,7 @@
 
 /*************** Revoke Modul ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['revokeButton'] = ['Button-Text','Please enter the text of the Revoke button.'];
+$GLOBALS['TL_LANG']['tl_module']['revokeButton'] = ['Button-Text','Please enter the text of the revoke button.'];
 
 $GLOBALS['TL_LANG']['tl_module']['revokeButtonDefault'] = 'Change cookie decision';
 
@@ -31,7 +31,7 @@ $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBarDefault'] = 'a:2:{s:5:"v
 
 $GLOBALS['TL_LANG']['tl_module']['questionHintDefault'] = 'We use cookies on our website. Some of them are essential, while others help us improve this website and your experience.';
 
-$GLOBALS['TL_LANG']['tl_module']['infoHint'] = ['information','Please enter the information text by clicking on the "Info" button.'];
+$GLOBALS['TL_LANG']['tl_module']['infoHint'] = ['information','Please enter the information text by clicking on the "info" button.'];
 
 $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = 'In this overview you can select and deselect individual cookies of a category or entire categories. You will also receive more information about the cookies available.';
 
@@ -51,22 +51,22 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
 $GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essential';
 /*************** Fieldpalette Tools ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Here you can find help</a>'];
+$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Here you can find help.</a>'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie name','e.g. facebook pixel'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Analyse template'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
-	['Tracking Id','z.B. UA-123456789-1 for google analytics'];
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingID'] =
+	['Tracking ID','z.B. UA-123456789-1 for google analytics'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =
-    ['Tracking Server Url ','Only for e.g. https://netzhirsch.matomo.cloud/'];
+    ['Tracking Server URL ','Only for e.g. https://netzhirsch.matomo.cloud/'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsProvider'] = ['Providers'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'] =
-	['Data protection url','z.B. https://policies.google.com/privacy'];
+	['Data protection URL','z.B. https://policies.google.com/privacy'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'] = ['Use','Please indicate the purpose of the cookie.'];
 
@@ -80,9 +80,9 @@ $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse']
 $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'] = 'essential';
 
 $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Serves to protect the website from cross-site request forgery
-Attacks. After closing the browser, the cookie is deleted again';
+attacks. After closing the browser, the cookie is deleted again.';
 
-$GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'] = 'PHP cookie (programming language), PHP data identifier.
+$GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'PHP cookie (programming language), PHP data identifier.
 Contains only a reference to the current session. There is no information in the user\'s browser
 saved and this cookie can only be used by the current website. This cookie is used
 all used in forms to increase usability. Data entered in forms will be
@@ -94,7 +94,7 @@ receives. Otherwise all data would have to be entered again';
 /*************** Fieldpalette otherScripts ***************/
 $GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Other scripts'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript code','With script tag. jQuery can be used via $'];
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript code','With script tag. jQuery can be used via $.'];
 
 /*************** End Fieldpalette otherScripts ***************/
 
@@ -107,7 +107,7 @@ $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Data protection'];
 
 $GLOBALS['TL_LANG']['tl_module']['impress'] = ['Impress'];
 
-$GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Do not display cookie bar on the following pages'];
+$GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Do not display cookie bar on the following pages.'];
 
 $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" respect browser settings \',\' If this browser setting is set, the cookie bar will not be shown.'];
 
@@ -138,7 +138,7 @@ $GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Width' , 'in pixels'];
 $GLOBALS['TL_LANG']['tl_module']['templateBar'] =
 	['Template' , 'The template name must begin with mod_cookie_opt_in_bar.'];
 
-$GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'By clicking on the buttons in the frontend'];
+$GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'By clicking on the buttons in the frontend.'];
 
 $GLOBALS['TL_LANG']['tl_module']['go-up'] = 'go-up';
 $GLOBALS['TL_LANG']['tl_module']['shrink'] = 'shrink';

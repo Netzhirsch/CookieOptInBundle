@@ -94,7 +94,7 @@
 	function track(newConsent){
 		let data = {
 			cookieIds : [{}],
-			modId : {},
+			modID : {},
 			newConsent : newConsent
 		};
 		let cookieSelected = $('.ncoi---cookie');
@@ -105,7 +105,7 @@
 				}
 			}
 		});
-		data.modId = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
+		data.modID = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
 		$.ajax({
 			dataType: "json",
 			type: 'POST',
@@ -119,17 +119,17 @@
 				tools.forEach(function (tool) {
 					let toolName = tool.cookieToolsSelect;
 					if (toolName.localeCompare('googleAnalytics') === 0) {
-						$.getScript('https://www.googletagmanager.com/gtag/js?id=' + tool.cookieToolsTrackingId);
+						$.getScript('https://www.googletagmanager.com/gtag/js?id=' + tool.cookieToolsTrackingID);
 						window.dataLayer = window.dataLayer || [];
 						function gtag(){dataLayer.push(arguments);}
 
 						gtag('js', new Date());
 
-						gtag('config', tool.cookieToolsTrackingId);
+						gtag('config', tool.cookieToolsTrackingID);
 					}
 					if (toolName.localeCompare('facebookPixel') === 0) {
 						<!-- Facebook Pixel Code -->
-					 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', tool.cookieToolsTrackingId);fbq('track', 'PageView');
+					 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', tool.cookieToolsTrackingID);fbq('track', 'PageView');
 					}
 					if (toolName.localeCompare('matomo') === 0) {
 						let url = tool.cookieToolsTrackingServerUrl;
@@ -142,7 +142,7 @@
 							"(function() {" +
 							"var u = '"+url+"';" +
 							"_paq.push(['setTrackerUrl', u+'matomo.php']);" +
-							"_paq.push(['setSiteId', '"+tool.cookieToolsTrackingId+"']);" +
+							"_paq.push(['setSiteId', '"+tool.cookieToolsTrackingID+"']);" +
 							"var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];" +
 							"g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);" +
 							"})();" +

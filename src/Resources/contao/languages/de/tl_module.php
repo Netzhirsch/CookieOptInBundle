@@ -33,9 +33,9 @@ $GLOBALS['TL_LANG']['tl_module']['questionHintDefault'] = 'Wir nutzen Cookies au
 
 $GLOBALS['TL_LANG']['tl_module']['infoHint'] = ['Informationen','Bitte geben Sie den Informationstext beim Klick auf den Button "Infos" ein.'];
 
-$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = 'In dieser Übersicht können Sie, einzelne Cookies einer Kategorie oder ganze Kategorien an- und abwählen. Ausserdem erhalten Sie weitere Informationen zu den verfügbaren Cookies.';
+$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = 'In dieser Übersicht können Sie, einzelne Cookies einer Kategorie oder ganze Kategorien an- und abwählen. Außerdem erhalten Sie weitere Informationen zu den verfügbaren Cookies.';
 
-$GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] = ['Alle gesetzten Cookies zurücksetzen','Sie sollten diese Option bei datenschutzrelevanten Änderung aktivieren. Jeder Besucher bekommt anschließend erneut die Cookie Bar angezeigt.'];
+$GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] = ['Alle gesetzten Cookies zurücksetzen','Sie sollten diese Option bei datenschutzrelevanten Änderungen aktivieren. Jeder Besucher bekommt anschließend erneut die Cookie Bar angezeigt.'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
@@ -47,22 +47,22 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
 ];
 /*************** Fieldpalette Tools ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Hier finden Sie eine Hilfestellung</a>'];
+$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Hier finden Sie eine Hilfestellung.</a>'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Facebook Pixel'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Analyse Template'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
-	['Tracking Id','z.B. UA-123456789-1 für Google Analytics'];
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingID'] =
+	['Tracking ID','z.B. UA-123456789-1 für Google Analytics'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =
-	['Tracking Server Url ','Nur für Matomo z.B. https://netzhirsch.matomo.cloud/'];
+	['Tracking Server URL ','Nur für Matomo z.B. https://netzhirsch.matomo.cloud/'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsProvider'] = ['Anbieter'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'] =
-	['Datenschutzerklärung Url','z.B. https://policies.google.com/privacy'];
+	['Datenschutzerklärung URL','z.B. https://policies.google.com/privacy'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'] = ['Zweck','Bitte geben Sie den Zweck des Cookies an.'];
 
@@ -73,11 +73,11 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'] = 'Essenziell';
 $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Dient zum Schutz der Website vor Fälschungen von standortübergreifenden Anfragen
 . Nach dem Schließen des Browsers wird das Cookie wieder gelöscht';
 
-$GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'] = 'Cookie von PHP (Programmiersprache), PHP Daten-Identifikator. Enthält nur einen Verweis auf die aktuelle Sitzung. Im Browser des Nutzers werden keine Informationen gespeichert und dieses Cookie kann nur von der aktuellen Website genutzt werden. Dieses Cookie wird vor allem in Formularen benutzt, um die Benutzerfreundlichkeit zu erhöhen. In Formulare eingegebene Daten werden z. B. kurzzeitig gespeichert, wenn ein Eingabefehler durch den Nutzer vorliegt und dieser eine Fehlermeldung erhält. Ansonsten müssten alle Daten erneut eingegeben werden.';
+$GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'Cookie von PHP (Programmiersprache), PHP Daten-Identifikator. Enthält nur einen Verweis auf die aktuelle Sitzung. Im Browser des Nutzers werden keine Informationen gespeichert und dieses Cookie kann nur von der aktuellen Website genutzt werden. Dieses Cookie wird vor allem in Formularen benutzt, um die Benutzerfreundlichkeit zu erhöhen. In Formulare eingegebene Daten werden z. B. kurzzeitig gespeichert, wenn ein Eingabefehler durch den Nutzer vorliegt und dieser eine Fehlermeldung erhält. Ansonsten müssten alle Daten erneut eingegeben werden.';
 
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'] =
-	['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum löschen der Cookies'];
+	['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'] = ['Cookie Gruppe'];
 
@@ -88,7 +88,7 @@ $GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essenziell';
 /*************** Fieldpalette otherScripts ***************/
 $GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Andere Skripte'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden'];
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'];
 
 /*************** End Fieldpalette otherScripts ***************/
 
@@ -100,7 +100,7 @@ $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Datenschutzerklärung'];
 
 $GLOBALS['TL_LANG']['tl_module']['impress'] = ['Impressum'];
 
-$GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Cookie Bar auf folgenden Seiten nicht anzeigen'];
+$GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Cookie Bar auf folgenden Seiten nicht anzeigen.'];
 
 $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" Browser-Einstellung respektieren','Wenn diese Browser-Einstellung gesetzt ist, wird die Cookie Bar nicht eingeblendet.'];
 
