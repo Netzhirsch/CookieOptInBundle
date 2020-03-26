@@ -33,6 +33,7 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 			'fields'                  => [
 				'date',
 				'domain',
+				'url',
 				'ip',
 				'cookieToolsName',
 				'cookieToolsTechnicalName',
@@ -66,7 +67,7 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 	),
 	'palettes' => array
 	(
-	'default'                     => 'date,domain,ip,cookieToolsName,cookieToolsTechnicalName,'
+	'default'                     => 'date,domain,url,ip,cookieToolsName,cookieToolsTechnicalName,'
 	),
 	'fields' => [
 		'date' => array
@@ -81,6 +82,14 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 		'domain' => [
 			'exclude'                 => true,
 			'label' => &$GLOBALS['TL_LANG']['tl_consentDirectory']['domain'],
+			'inputType'               => 'text',
+			'search'                  => true,
+			'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(255) NOT NULL default ''"
+		],
+		'url' => [
+			'exclude'                 => true,
+			'label' => &$GLOBALS['TL_LANG']['tl_consentDirectory']['url'],
 			'inputType'               => 'text',
 			'search'                  => true,
 			'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),

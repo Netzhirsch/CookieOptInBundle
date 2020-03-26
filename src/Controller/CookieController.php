@@ -196,35 +196,52 @@ class CookieController extends AbstractController
         $stmt->bindValue(1, $modID);
         $stmt->execute();
         $ipFormatSave = $stmt->fetchColumn();
-        $ipCurrentUser = $requestStack->getCurrentRequest()->getClientIp();
-        if ($ipCurrentUser == '::1')
-            $ipCurrentUser = '127.0.0.1';
+
+        //Besucher Infos
+        $currentRequest = $requestStack->getCurrentRequest();
+        $userInfo = [
+            'ip' => '',
+            'consentURL' => ''
+        ];
+        if (!empty($currentRequest)) {
+
+            $userInfo['ip'] = $currentRequest->getClientIp();
+            if ($userInfo['ip'] == '::1')
+                $userInfo['ip'] = '127.0.0.1';
+
+            $headers = $currentRequest->headers;
+            if (!empty($headers)) {
+                $referer = $headers->get('referer');
+                if (!empty($referer))
+                    $userInfo['consentURL'] = $referer;
+            }
+        }
 
         if (!empty($ipFormatSave) && $ipFormatSave != 'uncut') {
-            $ipCurrentUser = explode('.',$ipCurrentUser);
-            end($ipCurrentUser);
-            $lastIndex = key($ipCurrentUser);
-            $ipCurrentUser[$lastIndex] = '*';
+            $userInfo['ip'] = explode('.',$userInfo['ip']);
+            end($userInfo['ip']);
+            $lastIndex = key($userInfo['ip']);
+            $userInfo['ip'][$lastIndex] = '*';
             if ($ipFormatSave == 'anon')
-                $ipCurrentUser[--$lastIndex] = '*';
+                $userInfo['ip'][--$lastIndex] = '*';
 
-            $ipCurrentUser = implode('.',$ipCurrentUser);
+            $userInfo['ip'] = implode('.',$userInfo['ip']);
         }
         $sql = "SELECT ip FROM tl_consentDirectory WHERE ip = ?";
 		$stmt = $conn->prepare($sql);
-		$stmt->bindValue(1, $ipCurrentUser);
+		$stmt->bindValue(1, $userInfo['ip']);
 		$stmt->execute();
 		$ipInDB = $stmt->fetchColumn();
-		
+
 		if (empty($ipInDB)){
-            $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain) VALUES(?,?,?,?,?)";
+            $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url) VALUES(?,?,?,?,?,?)";
 		} else {
-            $sql = "UPDATE tl_consentDirectory SET ip = ? ,cookieToolsName = ?, cookieToolsTechnicalName = ? ,date = ?, domain = ? WHERE ip = ?";
+            $sql = "UPDATE tl_consentDirectory SET ip = ? ,cookieToolsName = ?, cookieToolsTechnicalName = ? ,date = ?, domain = ?, url = ? WHERE ip = ?";
 		}
-		
+
 		$stmt = $conn->prepare($sql);
-		
-		$stmt->bindValue(1, $ipCurrentUser);
+
+		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
 		$cookieTools = $cookieData['cookieTools'];
@@ -238,16 +255,17 @@ class CookieController extends AbstractController
                 $cookieNames[] = $otherScript['cookieToolsName'];
                 $cookieTechnicalName[] = $otherScript['cookieToolsTechnicalName'];
             }
-            $stmt->bindValue(2, implode(', ', $cookieNames));
-            $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
-            $stmt->bindValue(4, date('Y-m-d H:i'));
-            $stmt->bindValue(5, $_SERVER['HTTP_HOST']);
-
-            if (!empty($ipInDB))
-                $stmt->bindValue(6, $ipCurrentUser);
-
-            $stmt->execute();
         }
+        $stmt->bindValue(2, implode(', ', $cookieNames));
+        $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
+        $stmt->bindValue(4, date('Y-m-d H:i'));
+        $stmt->bindValue(5, $_SERVER['HTTP_HOST']);
+        $stmt->bindValue(6, $userInfo['consentURL']);
+
+        if (!empty($ipInDB))
+            $stmt->bindValue(7, $userInfo['ip']);
+
+        $stmt->execute();
 
 	}
 }
