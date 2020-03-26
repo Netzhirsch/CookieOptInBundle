@@ -49,16 +49,19 @@ class CookieController extends AbstractController
 		if (!empty($cookiesToDelete))
 			PageLayoutListener::deleteCookie($cookiesToDelete);
 
-		$this->setNetzhirschCookie(
-			true,
-			$data['cookieIds'],
-			$data['modID'],
-			$cookieDatabase['cookieVersion'],
-			$cookieDatabase['cookieExpiredTime']
-		);
+        if ($newConsent) {
 
-        if ($newConsent)
-		    $this->changeConsent($cookiesToSet,$data['modID']);
+            $cookieId = $this->changeConsent($cookiesToSet,$data['modID']);
+
+            $this->setNetzhirschCookie(
+                true,
+                $data['cookieIds'],
+                $data['modID'],
+                $cookieDatabase['cookieVersion'],
+                $cookieDatabase['cookieExpiredTime'],
+                $cookieId
+            );
+        }
 
 		$response = [
 			'tools' => $cookiesToSet['cookieTools'],
@@ -76,12 +79,13 @@ class CookieController extends AbstractController
 	 * @param $cookieExpiredTime
 	 * @throws DBALException
 	 */
-	private function setNetzhirschCookie($allowed,$cookieIds,$modID,$cookieVersion,$cookieExpiredTime){
+	private function setNetzhirschCookie($allowed,$cookieIds,$modID,$cookieVersion,$cookieExpiredTime,$cookieId){
 		
 		$netzhirschOptInCookie = [
 			'allowed' => $allowed,
 			'cookieVersion' => $cookieVersion,
 			'cookieIds' => $cookieIds,
+            'cookieId' => $cookieId
 		];
 		/* @var Connection $conn */
 		/** @noinspection PhpParamsInspection */
@@ -180,6 +184,7 @@ class CookieController extends AbstractController
     /**
      * @param $cookieData
      * @param $modID
+     * @return string
      * @throws DBALException
      */
 	private function changeConsent($cookieData,$modID)
@@ -201,7 +206,8 @@ class CookieController extends AbstractController
         $currentRequest = $requestStack->getCurrentRequest();
         $userInfo = [
             'ip' => '',
-            'consentURL' => ''
+            'consentURL' => '',
+            'cookieId' => null,
         ];
         if (!empty($currentRequest)) {
 
@@ -215,6 +221,16 @@ class CookieController extends AbstractController
                 if (!empty($referer))
                     $userInfo['consentURL'] = $referer;
             }
+
+            $cookieSet = $currentRequest->cookies;
+            if (!empty($cookieSet)) {
+                $cookieSet = $cookieSet->get('_netzhirsch_cookie_opt_in');
+                if (!empty($cookieSet)) {
+                    /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
+                    $cookieId = json_decode($cookieSet);
+                    $userInfo['cookieId'] = intval($cookieId->cookieId);
+                }
+            }
         }
 
         if (!empty($ipFormatSave) && $ipFormatSave != 'uncut') {
@@ -227,17 +243,8 @@ class CookieController extends AbstractController
 
             $userInfo['ip'] = implode('.',$userInfo['ip']);
         }
-        $sql = "SELECT ip FROM tl_consentDirectory WHERE ip = ?";
-		$stmt = $conn->prepare($sql);
-		$stmt->bindValue(1, $userInfo['ip']);
-		$stmt->execute();
-		$ipInDB = $stmt->fetchColumn();
 
-		if (empty($ipInDB)){
-            $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url) VALUES(?,?,?,?,?,?)";
-		} else {
-            $sql = "UPDATE tl_consentDirectory SET ip = ? ,cookieToolsName = ?, cookieToolsTechnicalName = ? ,date = ?, domain = ?, url = ? WHERE ip = ?";
-		}
+        $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url,pid) VALUES(?,?,?,?,?,?,?)";
 
 		$stmt = $conn->prepare($sql);
 
@@ -261,11 +268,12 @@ class CookieController extends AbstractController
         $stmt->bindValue(4, date('Y-m-d H:i'));
         $stmt->bindValue(5, $_SERVER['HTTP_HOST']);
         $stmt->bindValue(6, $userInfo['consentURL']);
-
-        if (!empty($ipInDB))
-            $stmt->bindValue(7, $userInfo['ip']);
+        $stmt->bindValue(6, $userInfo['consentURL']);
+        $stmt->bindValue(7, ($userInfo['cookieId']) == '' ? null : $userInfo['cookieId']);
 
         $stmt->execute();
+
+        return $conn->lastInsertId();
 
 	}
 }

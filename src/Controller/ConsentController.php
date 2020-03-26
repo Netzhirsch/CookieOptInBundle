@@ -37,17 +37,17 @@ class ConsentController extends AbstractController
 		$csvName .= '-'.$datum->format('Y-m-d');
 		$csvName .= ".csv";
 		
-		$zeilenNummer = 1;
 		$data = [];
 		foreach ($consents as $key => $consent) {
 			$data[] = [
-					'Nr.'                  => $zeilenNummer++,
-					'Datum'                => $consent['date'],
-					'Domain'                => $consent['domain'],
-					'URL'                => $consent['url'],
-					'IP'                => $consent['ip'],
-					'Cookie Namen' => $consent['cookieToolsName'],
-					'Technische Cookie Namen' => $consent['cookieToolsTechnicalName'],
+                'ID' => $consent['id'],
+                'PID' => $consent['pid'],
+                'Datum' => $consent['date'],
+                'Domain' => $consent['domain'],
+                'URL' => $consent['url'],
+                'IP' => $consent['ip'],
+                'Cookie Namen' => $consent['cookieToolsName'],
+                'Technische Cookie Namen' => $consent['cookieToolsTechnicalName'],
 			];
 		}
 		$serializer = new CsvEncoder();
