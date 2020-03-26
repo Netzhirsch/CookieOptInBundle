@@ -363,11 +363,9 @@ label.ncoi---sliding {
 			}
 		}
 	}
-	&.ncoi---transition {
+	&.ncoi---no-transition, &.ncoi---no-transition * {
+		transition: none !important;
 
-		&.ncoi---animation {
-			transition: inherit;
-		}
 		&.ncoi---hidden {
 			visibility:hidden;
 			opacity:0;

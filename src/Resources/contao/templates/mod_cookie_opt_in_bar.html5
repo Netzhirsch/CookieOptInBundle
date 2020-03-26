@@ -2,7 +2,7 @@
 <?php $class = $this->arrData['class'] ?>
 <?php $id = str_replace(' id=','',$id)?>
 <?php $id = str_replace('"','',$id)?>
-<?php $class = "ncoi---transition" ?>
+<?php $class = "ncoi---no-transition" ?>
 <?php if(
 			(
 				$this->arrData['netzhirschCookieIsSet']

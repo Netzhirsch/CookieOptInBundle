@@ -1,8 +1,8 @@
 (function($){
 	$(document).ready(function () {
-		let errorMessage = '';
-		$('.ncoi---behind').removeClass('ncoi---transition');
+		$('.ncoi---behind').removeClass('ncoi---no-transition');
 
+		let errorMessage = '';
 		$('.ncoi---mod-missing').each(function () {
 			errorMessage = $(this).data('ncoi-mod-missing');
 			if(errorMessage.localeCompare('') !== 0)
