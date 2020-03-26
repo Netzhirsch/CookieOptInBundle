@@ -29,8 +29,8 @@ class LicenseController extends AbstractController
 
 		$rootPages = PageModel::findByType('root');
 		foreach ($rootPages as $rootPage) {
-			$domain = ($rootPage->__get('dns')) ? $rootPage->__get('dns') : $_SERVER['HTTP_HOST'];
-			if (!empty($domain) || !empty($rootPage->__get('ncoi_license_key'))) {
+			if (!empty($rootPage->__get('ncoi_license_key'))) {
+			    $domain = ($rootPage->__get('dns')) ? $rootPage->__get('dns') : $_SERVER['HTTP_HOST'];
 				$licenseAPIResponse = self::callAPI($domain);
 				if ($licenseAPIResponse->getSuccess())
 					self::setLicense($licenseAPIResponse->getDateOfExpiry(), $licenseAPIResponse->getLicenseKey(), $rootPage);

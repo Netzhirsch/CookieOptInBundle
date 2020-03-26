@@ -221,7 +221,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'format' => '%s <span style="color:#b3b3b3;padding-left:3px">[%s]</span>',
 			],
             'fields' => ['cookieToolGroup'],
-            'flag' => 1,
+            'flag' => 11,
             'panelLayout' => [
                 'sort' => true
             ],
@@ -284,7 +284,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
-					'mandatory' => true,
 					'tl_class'  =>  'long clr'
 				],
 			],
@@ -361,7 +360,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 	'fieldpalette' => [
 		'config' => [
 			'hidePublished' => true,
-			'notSortable' => true,
 		],
 		'list'     => array
 		(
@@ -392,7 +390,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
-					'mandatory' => true,
 					'tl_class'  =>  'long clr'
 				],
 			],
@@ -805,7 +802,6 @@ class tl_module_ncoi extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolsTechnicalName = '_netzhirsch_cookie_opt_in';
 			$netzhirschCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$netzhirschCookieFieldModel->cookieToolsProvider = '';
-			$netzhirschCookieFieldModel->cookieToolsTrackingID = '1';
 			$netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
 			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
 			$netzhirschCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
@@ -832,15 +828,14 @@ class tl_module_ncoi extends tl_module {
 			$csrfCookieFieldModel->cookieToolsTechnicalName = 'csrf_contao_csrf_token';
 			$csrfCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$csrfCookieFieldModel->cookieToolsProvider = '';
-			$csrfCookieFieldModel->cookieToolsTrackingID = '1';
-            $csrfCookieFieldModel->cookieToolExpiredTime = '30';
+            $csrfCookieFieldModel->cookieToolExpiredTime = '0';
 			$csrfCookieFieldModel->cookieToolsSelect = '-';
 			$csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
 			$csrfCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$csrfCookieFieldModel->save();
 		} elseif (!isset($csrfCookieFieldModel->cookieToolExpiredTime)) {
-            $csrfCookieFieldModel->cookieToolExpiredTime = '30';
+            $csrfCookieFieldModel->cookieToolExpiredTime = '0';
             $csrfCookieFieldModel->save();
         }
 		
@@ -859,16 +854,15 @@ class tl_module_ncoi extends tl_module {
 			$phpSessIdCookieFieldModel->cookieToolsTechnicalName = 'PHPSESSID';
 			$phpSessIdCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$phpSessIdCookieFieldModel->cookieToolsProvider = '';
-			$phpSessIdCookieFieldModel->cookieToolsTrackingID = '1';
-            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '30';
+            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
 			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
-			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionId']['cookieToolsUse'];
+			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
 			$phpSessIdCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
 			
 			$phpSessIdCookieFieldModel->save();
 			
 		} elseif (!isset($phpSessIdCookieFieldModel->cookieToolExpiredTime)) {
-            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '30';
+            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
             $phpSessIdCookieFieldModel->save();
         }
 		

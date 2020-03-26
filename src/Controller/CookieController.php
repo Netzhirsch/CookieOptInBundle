@@ -100,7 +100,7 @@ class CookieController extends AbstractController
 		$cookieToolsTechnicalName = $cookieToolsTechnicalName['cookieToolsTechnicalName'];
 		
 		$expiredDate = new DateTime();
-		$cookieExpiredTime = strtotime('+'.$cookieExpiredTime.' month',$expiredDate->getTimestamp());
+		$cookieExpiredTime = strtotime('+'.$cookieExpiredTime.' day',$expiredDate->getTimestamp());
 		
 		/** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
 		setcookie($cookieToolsTechnicalName, json_encode($netzhirschOptInCookie),$cookieExpiredTime,'/',$_SERVER['HTTP_HOST']);

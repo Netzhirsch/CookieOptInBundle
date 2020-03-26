@@ -22,7 +22,7 @@
 		<th>
 			<?php echo $tlLang['cookieToolsTechnicalName']; ?>
 		</th>
-		<td class="ncoi---cookieToolsTechnicalName">
+		<td>
 			<?php echo $tool->cookieToolsTechnicalName; ?>
 		</td>
 	</tr>
