@@ -1,6 +1,7 @@
 (function($){
 	$(document).ready(function () {
 		let errorMessage = '';
+		$('.ncoi---behind').removeClass('ncoi---transition');
 
 		$('.ncoi---mod-missing').each(function () {
 			errorMessage = $(this).data('ncoi-mod-missing');

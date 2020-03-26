@@ -2,7 +2,7 @@
 <?php $class = $this->arrData['class'] ?>
 <?php $id = str_replace(' id=','',$id)?>
 <?php $id = str_replace('"','',$id)?>
-<?php $class = "" ?>
+<?php $class = "ncoi---transition" ?>
 <?php if(
 			(
 				$this->arrData['netzhirschCookieIsSet']
@@ -10,7 +10,7 @@
 )
 || $this->arrData['isExcludePage']
 ):?>
-<?php $class = "ncoi---hidden" ?>
+<?php $class .= " ncoi---hidden" ?>
 <?php endif; ?>
 
 <?php if (!empty($this->arrData['animation'])):?>
