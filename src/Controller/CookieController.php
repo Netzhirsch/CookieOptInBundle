@@ -4,10 +4,12 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Netzhirsch\CookieOptInBundle\Classes\CookieData;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -28,6 +30,7 @@ class CookieController extends AbstractController
 		$cookieDatabase = $this->getModulData($data['modID']);
 		$cookiesToDelete = [];
 		$cookiesToSet = [];
+		$external = [];
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
 			if (!in_array($cookieTool['id'],$data['cookieIds'])) {
 				$cookiesToDelete[] = $cookieTool;
@@ -51,15 +54,16 @@ class CookieController extends AbstractController
 
         if ($newConsent) {
 
-            $cookieId = $this->changeConsent($cookiesToSet,$data['modID']);
-
+            $cookieData = new CookieData();
+            $cookieData->setId($this->changeConsent($cookiesToSet,$data['modID']));
+            $cookieDatabase['cookieVersion'] = "test";
+            $cookieData->setVersion(intval($cookieDatabase['cookieVersion']));
+            $cookieData->setTools($data['cookieIds']);
+            $cookieData->setExternal($external);
             $this->setNetzhirschCookie(
-                true,
-                $data['cookieIds'],
+                $cookieData,
                 $data['modID'],
-                $cookieDatabase['cookieVersion'],
-                $cookieDatabase['cookieExpiredTime'],
-                $cookieId
+                $cookieDatabase['cookieExpiredTime']
             );
         }
 
@@ -70,23 +74,15 @@ class CookieController extends AbstractController
 		
 		return new JsonResponse($response);
 	}
-	
-	/**
-	 * @param $allowed
-	 * @param $cookieIds
-	 * @param $modID
-	 * @param $cookieVersion
-	 * @param $cookieExpiredTime
-	 * @throws DBALException
-	 */
-	private function setNetzhirschCookie($allowed,$cookieIds,$modID,$cookieVersion,$cookieExpiredTime,$cookieId){
+
+    /**
+     * @param CookieData $cookieData
+     * @param $modID
+     * @param $cookieExpiredTime
+     * @throws DBALException
+     */
+	private function setNetzhirschCookie($cookieData,$modID,$cookieExpiredTime){
 		
-		$netzhirschOptInCookie = [
-			'allowed' => $allowed,
-			'cookieVersion' => $cookieVersion,
-			'cookieIds' => $cookieIds,
-            'cookieId' => $cookieId
-		];
 		/* @var Connection $conn */
 		/** @noinspection PhpParamsInspection */
         /** @noinspection MissingService */
@@ -98,10 +94,16 @@ class CookieController extends AbstractController
 		$stmt->execute();
 		$cookieToolsTechnicalName = $stmt->fetch();
 		$cookieToolsTechnicalName = $cookieToolsTechnicalName['cookieToolsTechnicalName'];
-		
+
 		$expiredDate = new DateTime();
 		$cookieExpiredTime = strtotime('+'.$cookieExpiredTime.' day',$expiredDate->getTimestamp());
-		
+
+		$netzhirschOptInCookie = [
+			'cookieVersion' => $cookieData->getVersion(),
+			'cookieIds' => $cookieData->getTools(),
+            'cookieId' => $cookieData->getId(),
+            'external' => $cookieData->getExternal()
+		];
 		/** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
 		setcookie($cookieToolsTechnicalName, json_encode($netzhirschOptInCookie),$cookieExpiredTime,'/',$_SERVER['HTTP_HOST']);
 	}
@@ -221,16 +223,8 @@ class CookieController extends AbstractController
                 if (!empty($referer))
                     $userInfo['consentURL'] = $referer;
             }
-
-            $cookieSet = $currentRequest->cookies;
-            if (!empty($cookieSet)) {
-                $cookieSet = $cookieSet->get('_netzhirsch_cookie_opt_in');
-                if (!empty($cookieSet)) {
-                    /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
-                    $cookieId = json_decode($cookieSet);
-                    $userInfo['cookieId'] = intval($cookieId->cookieId);
-                }
-            }
+            $cookieData = self::getUserCookie($requestStack);
+            $userInfo['cookieId'] = $cookieData['cookieId'];
         }
 
         if (!empty($ipFormatSave) && $ipFormatSave != 'uncut') {
@@ -276,4 +270,33 @@ class CookieController extends AbstractController
         return $conn->lastInsertId();
 
 	}
+
+    /**
+     * @param RequestStack $requestStack
+     * @return array
+     */
+	public static function getUserCookie($requestStack)
+    {
+        $cookieData = [
+            'cookieId' => null,
+            'externalMedia' => [
+                'youtube' => false
+            ]
+        ];
+        if (!empty($requestStack)) {
+            $currentRequest = $requestStack->getCurrentRequest();
+            if (!empty($currentRequest)) {
+                $cookieSet = $currentRequest->cookies;
+                if (!empty($cookieSet)) {
+                    $cookieSet = $cookieSet->get('_netzhirsch_cookie_opt_in');
+                    if (!empty($cookieSet)) {
+                        /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
+                        $cookieId = json_decode($cookieSet);
+                        $cookieId->cookieId = intval($cookieId->cookieId);
+                    }
+                }
+            }
+        }
+        return $cookieData;
+    }
 }

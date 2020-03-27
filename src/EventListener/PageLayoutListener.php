@@ -86,7 +86,7 @@ class PageLayoutListener {
 		if (self::doNotTrackBrowserSetting($modulBar, $cookieTools))
 			return;
 
-		if (empty($netzhirschOptInCookie) || !$netzhirschOptInCookie->allowed) {
+		if (empty($netzhirschOptInCookie)) {
 			self::deleteCookie($cookieTools);
 
 			return;

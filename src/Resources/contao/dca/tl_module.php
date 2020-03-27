@@ -78,6 +78,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,animation
 	;isNewCookieVersion
 	;ipFormatSave
+	;external
 ';
 
 // setCookieVersion check for right modul
@@ -646,6 +647,21 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
     ],
     'eval' => [
         'tl_class'  =>  'w50',
+    ],
+    'sql' => "varchar(64) NULL default '' ",
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['external'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['external'],
+    'exclude'   => true,
+    'inputType' => 'optionWizard',
+    'options' => [
+        'youtube' => $GLOBALS['TL_LANG']['tl_module']['youtube'],
+        'googleMaps' => $GLOBALS['TL_LANG']['tl_module']['googleMaps'],
+    ],
+    'eval' => [
+        'tl_class'  =>  'w50',
+        'multiple' => true
     ],
     'sql' => "varchar(64) NULL default '' ",
 ];

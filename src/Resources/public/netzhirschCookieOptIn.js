@@ -10,8 +10,7 @@
 		});
 
 		if (
-			$('[data-ncoi-allowed]').data('ncoi-allowed') === 1
-			&& $('[data-ncoi-is-version-new]').data('ncoi-is-version-new') === 0
+			$('[data-ncoi-is-version-new]').data('ncoi-is-version-new') === 0
 		) {
 			track(0);
 		}
@@ -72,6 +71,11 @@
 					$(this).prop('checked',allChecked);
 			});
 
+		});
+		$('.ncoi---release').on('click',function (e) {
+			e.preventDefault();
+			let iframe = atob(($(this).parents('.ncoi---blocked').find('script').text().trim()));
+			$('.ncoi---release').replaceWith(iframe);
 		});
 		//  only for testing
 		// console.log(getCookie('_netzhirsch_cookie_opt_in'));

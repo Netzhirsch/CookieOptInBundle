@@ -143,3 +143,8 @@ $GLOBALS['TL_LANG']['tl_module']['uncut'] = 'ungekürzt';
 $GLOBALS['TL_LANG']['tl_module']['pseudo'] = 'pseudonymisiert';
 $GLOBALS['TL_LANG']['tl_module']['anon'] = 'anonymisiert';
 
+$GLOBALS['TL_LANG']['tl_module']['external'] = ['Extern'];
+
+$GLOBALS['TL_LANG']['tl_module']['youtube'] = 'Youtube';
+$GLOBALS['TL_LANG']['tl_module']['googleMaps'] = 'Google Maps';
+

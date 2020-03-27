@@ -29,7 +29,6 @@
 	<div
 			id="<?php echo $id ?>"
 			class="ncoi---container ncoi---container__scrollUp ncoi---mod-missing"
-			data-ncoi-allowed="<?php echo $this->arrData['cookies-allowed']?>"
 			data-ncoi-is-version-new="<?php echo $this->arrData['netzhirschCookieIsVersionNew']?>"
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"

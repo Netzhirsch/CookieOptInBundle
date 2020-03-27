@@ -89,9 +89,6 @@ class ModuleCookieOptInBar extends Module
 		if ($netzhirschOptInCookie->cookieVersion < $this->__get('cookieVersion'))
 			$data['netzhirschCookieIsVersionNew'] = "1";
 		
-		if (!empty($netzhirschOptInCookie->allowed))
-			$data['cookies-allowed'] = $netzhirschOptInCookie->allowed;
-		
 		if (!empty($this->headlineCookieOptInBar)) {
 			$headlineData = StringUtil::deserialize($this->headlineCookieOptInBar);
 			$data['headlineCookieOptInBar'] = "<".$headlineData['unit']." class=\"ncoi---headline\">".$headlineData['value']."</".$headlineData['unit'].">";
