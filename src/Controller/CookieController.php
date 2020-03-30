@@ -30,7 +30,6 @@ class CookieController extends AbstractController
 		$cookieDatabase = $this->getModulData($data['modID']);
 		$cookiesToDelete = [];
 		$cookiesToSet = [];
-		$external = [];
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
 			if (!in_array($cookieTool['id'],$data['cookieIds'])) {
 				$cookiesToDelete[] = $cookieTool;
@@ -56,10 +55,8 @@ class CookieController extends AbstractController
 
             $cookieData = new CookieData();
             $cookieData->setId($this->changeConsent($cookiesToSet,$data['modID']));
-            $cookieDatabase['cookieVersion'] = "test";
             $cookieData->setVersion(intval($cookieDatabase['cookieVersion']));
-            $cookieData->setTools($data['cookieIds']);
-            $cookieData->setExternal($external);
+            $cookieData->setOtherCookieIds($data['cookieIds']);
             $this->setNetzhirschCookie(
                 $cookieData,
                 $data['modID'],
@@ -99,10 +96,9 @@ class CookieController extends AbstractController
 		$cookieExpiredTime = strtotime('+'.$cookieExpiredTime.' day',$expiredDate->getTimestamp());
 
 		$netzhirschOptInCookie = [
-			'cookieVersion' => $cookieData->getVersion(),
-			'cookieIds' => $cookieData->getTools(),
             'cookieId' => $cookieData->getId(),
-            'external' => $cookieData->getExternal()
+			'cookieIds' => $cookieData->getOtherCookieIds(),
+			'cookieVersion' => $cookieData->getVersion(),
 		];
 		/** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
 		setcookie($cookieToolsTechnicalName, json_encode($netzhirschOptInCookie),$cookieExpiredTime,'/',$_SERVER['HTTP_HOST']);
@@ -224,7 +220,7 @@ class CookieController extends AbstractController
                     $userInfo['consentURL'] = $referer;
             }
             $cookieData = self::getUserCookie($requestStack);
-            $userInfo['cookieId'] = $cookieData['cookieId'];
+            $userInfo['cookieId'] = $cookieData->getId();
         }
 
         if (!empty($ipFormatSave) && $ipFormatSave != 'uncut') {
@@ -245,18 +241,10 @@ class CookieController extends AbstractController
 		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
-		$cookieTools = $cookieData['cookieTools'];
-		foreach ($cookieTools as $cookieTool) {
+		foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
 			$cookieNames[] = $cookieTool['cookieToolsName'];
 			$cookieTechnicalName[] = $cookieTool['cookieToolsTechnicalName'];
 		}
-        if (isset($cookieData['otherScripts'])) {
-            $otherScripts = $cookieData['otherScripts'];
-            foreach ($otherScripts as $otherScript) {
-                $cookieNames[] = $otherScript['cookieToolsName'];
-                $cookieTechnicalName[] = $otherScript['cookieToolsTechnicalName'];
-            }
-        }
         $stmt->bindValue(2, implode(', ', $cookieNames));
         $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
         $stmt->bindValue(4, date('Y-m-d H:i'));
@@ -273,16 +261,11 @@ class CookieController extends AbstractController
 
     /**
      * @param RequestStack $requestStack
-     * @return array
+     * @return CookieData
      */
 	public static function getUserCookie($requestStack)
     {
-        $cookieData = [
-            'cookieId' => null,
-            'externalMedia' => [
-                'youtube' => false
-            ]
-        ];
+        $cookieData = new CookieData();
         if (!empty($requestStack)) {
             $currentRequest = $requestStack->getCurrentRequest();
             if (!empty($currentRequest)) {
@@ -292,7 +275,9 @@ class CookieController extends AbstractController
                     if (!empty($cookieSet)) {
                         /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
                         $cookieId = json_decode($cookieSet);
-                        $cookieId->cookieId = intval($cookieId->cookieId);
+                        $cookieData->setId(intval($cookieId->cookieId));
+                        $cookieData->setVersion($cookieId->cookieVersion);
+                        $cookieData->setOtherCookieIds($cookieId->cookieIds);
                     }
                 }
             }

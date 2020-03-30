@@ -1,3 +1,10 @@
+<?php
+//    phpStorm kennt variablen hier nicht
+    if (!isset($tool)) {
+        $tool = null;
+        $cookieGroup = null;
+    }
+?>
 <tbody>
 	<tr>
 		<?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
@@ -33,7 +40,6 @@
 		<td>
 			<?php echo $tool->cookieToolsProvider; ?>
 		</td>
-	</tr>
 	</tr>
 	<tr>
 		<th>
@@ -77,9 +83,10 @@
 				id="<?=$tool->id?>"
 				value="<?=$cookieGroup?>"
 				class="ncoi---cookie ncoi---sliding"
-				data-group="<?=$tool->cookieToolGroup;?>"
+				data-group="<?= $tool->cookieToolGroup; ?>"
 				data-cookie-id="<?=$tool->id;?>"
-				<?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) || in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'checked' : ''?>
+                data-block-class="ncoi---<?=$tool->cookieToolsSelect;?>"
+				<?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'checked' : ''?>
 				<?=($tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'disabled' : ''?>
 			/>
 			<label class="ncoi---sliding" for="<?=$tool->id?>"><i></i><span><?=$cookieGroup?></span></label>

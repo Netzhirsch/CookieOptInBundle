@@ -8,7 +8,9 @@ $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn'] = [
 				'privacyPolicy' => 'Datenschutzerklärung',
 		],
 		'cookieGroup' => [
-				'essential' => 'Essenziell'
+				'essential' => 'Essenziell',
+				'analyse' => 'Analyse',
+				'externalMedia' => 'Externe Medien'
 		],
 		'template' => [
 				'tools' => 'Tools',
@@ -19,6 +21,7 @@ $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn'] = [
 				'use' => 'Zweck',
 				'allowed' => 'Erlaubt',
 				'essential' => 'Essenziell',
+				'externalMedia' => 'Externe Medien',
 				'info' => 'Info',
 				'hidden' => 'ausblenden',
                 'cookieToolExpiredTime' => 'Ablauf in Tagen',

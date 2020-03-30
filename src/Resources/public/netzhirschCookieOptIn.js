@@ -1,4 +1,48 @@
 (function($){
+	function checkExternalMedia() {
+		let blockedElement = $('.ncoi---blocked');
+		let html = '';
+		let isSetIFrames = false;
+		if ( $('[data-external-media]').prop('checked')) {
+				isSetIFrames = true;
+				$('iframe').removeClass('ncoi---hidden');
+				if (blockedElement.hasClass('ncoi---hidden')) {
+					blockedElement.removeClass('ncoi---hidden');
+				} else {
+					let iframes = $('.ncoi---iframes');
+					// nur ein script tag zur Zeit
+					iframes.each(function () {
+						html = atob($(this).find('script').text().trim());
+						$(this).addClass('ncoi---hidden');
+						$(this).after(html);
+					});
+				}
+		} else {
+			$('iframe').addClass('ncoi---hidden');
+			blockedElement.removeClass('ncoi---hidden');
+		}
+
+		if (!isSetIFrames) {
+			let cookiesInput = $('table tbody .ncoi---cookie');
+			cookiesInput.each(function () {
+				if ($(this).prop('checked')) {
+
+					let blockClass = '.' + $(this).data('block-class');
+					let blockClassElement = $(blockClass);
+
+					//jedes Element separat
+					blockClassElement.each(function () {
+						if ($(this).find('.ncoi---release').length > 0) {
+							html = atob(($(this).find('script').text().trim()));
+							$(this).addClass('ncoi---hidden');
+							$(this).after(html);
+						}
+					});
+				}
+			});
+		}
+	}
+
 	$(document).ready(function () {
 		$('.ncoi---behind').removeClass('ncoi---no-transition');
 
@@ -18,6 +62,7 @@
 		$('#ncoi---allowed').on('click', function (e) {
 			e.preventDefault();
 			$('.ncoi---behind').addClass('ncoi---hidden');
+			checkExternalMedia();
 			track(1);
 		});
 
@@ -26,6 +71,7 @@
 			$('.ncoi---behind').addClass('ncoi---hidden');
 			$('.ncoi---cookie-group input').prop('checked',true);
 			$('.ncoi---sliding').prop('checked',true);
+			checkExternalMedia();
 			track(1);
 		});
 
@@ -74,29 +120,41 @@
 		});
 		$('.ncoi---release').on('click',function (e) {
 			e.preventDefault();
-			let iframe = atob(($(this).parents('.ncoi---blocked').find('script').text().trim()));
-			$('.ncoi---release').replaceWith(iframe);
+			let parent = $(this).parents('.ncoi---blocked');
+			let input = parent.find('input');
+
+			if (input.prop('checked')) {
+				input.prop('checked',false);
+				let blockClass = '.' + input.data('block-class');
+				$(blockClass).find('.ncoi---release').trigger('click');
+				$('[data-block-class="'+input.data('block-class')+'"]').prop('checked',true);
+				track(1);
+			} else {
+				let html = atob((parent.find('script').text().trim()));
+				parent.addClass('ncoi---hidden');
+				parent.after(html);
+			}
 		});
 		//  only for testing
-		// console.log(getCookie('_netzhirsch_cookie_opt_in'));
+		console.log(getCookie('_netzhirsch_cookie_opt_in'));
 	});
 
 //  only for testing
-// 	function getCookie(cname) {
-// 		let name = cname + "=";
-// 		let decodedCookie = decodeURIComponent(document.cookie);
-// 		let ca = decodedCookie.split(';');
-// 		for(let i = 0; i <ca.length; i++) {
-// 			let c = ca[i];
-// 			while (c.charAt(0).localeCompare(' ') === 0 ) {
-// 				c = c.substring(1);
-// 			}
-// 			if (c.indexOf(name) === 0) {
-// 				return c.substring(name.length, c.length);
-// 			}
-// 		}
-// 		return false;
-// 	}
+	function getCookie(cname) {
+		let name = cname + "=";
+		let decodedCookie = decodeURIComponent(document.cookie);
+		let ca = decodedCookie.split(';');
+		for(let i = 0; i <ca.length; i++) {
+			let c = ca[i];
+			while (c.charAt(0).localeCompare(' ') === 0 ) {
+				c = c.substring(1);
+			}
+			if (c.indexOf(name) === 0) {
+				return c.substring(name.length, c.length);
+			}
+		}
+		return false;
+	}
 
 	function track(newConsent){
 		let data = {

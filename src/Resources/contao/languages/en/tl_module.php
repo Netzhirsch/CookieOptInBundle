@@ -47,6 +47,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie groups'];
 $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
 	'essential',
 	'analysis',
+    'external media'
 ];
 $GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essential';
 /*************** Fieldpalette Tools ***************/

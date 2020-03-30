@@ -44,6 +44,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie Gruppen'];
 $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
 	'Essenziell',
 	'Analyse',
+    'Externe Medien'
 ];
 /*************** Fieldpalette Tools ***************/
 
@@ -51,7 +52,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Facebook Pixel'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Analyse Template'];
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Type'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingID'] =
 	['Tracking ID','z.B. UA-123456789-1 für Google Analytics'];
@@ -143,7 +144,7 @@ $GLOBALS['TL_LANG']['tl_module']['uncut'] = 'ungekürzt';
 $GLOBALS['TL_LANG']['tl_module']['pseudo'] = 'pseudonymisiert';
 $GLOBALS['TL_LANG']['tl_module']['anon'] = 'anonymisiert';
 
-$GLOBALS['TL_LANG']['tl_module']['external'] = ['Extern'];
+$GLOBALS['TL_LANG']['tl_module']['external'] = ['Extern','Über Artikel eingebunde HTML Elemente mit Iframe werden nur bei Einwilligung geladen'];
 
 $GLOBALS['TL_LANG']['tl_module']['youtube'] = 'Youtube';
 $GLOBALS['TL_LANG']['tl_module']['googleMaps'] = 'Google Maps';

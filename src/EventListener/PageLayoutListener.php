@@ -44,8 +44,8 @@ class PageLayoutListener {
 		}
 
 		$moduleIds = [];
-		$moduleIds = $this->checkModules($layout, $removeModules, $moduleIds);
-		$moduleIds = $this->checkModules($pageModel, $removeModules, $moduleIds);
+		$moduleIds = self::checkModules($layout, $removeModules, $moduleIds);
+		$moduleIds = self::checkModules($pageModel, $removeModules, $moduleIds);
 		$moduleIds = array_unique($moduleIds);
 
 		if ($removeModules) {
@@ -250,7 +250,7 @@ class PageLayoutListener {
 	 *
 	 * @return array
 	 */
-	private function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
+	public static function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
 		
 		$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
 		if (!empty($layoutModules)) {

@@ -63,6 +63,7 @@
 								class="ncoi---sliding"
 						<?=(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) ? 'checked' : ''?>
 						<?=($cookieGroup == $tlLang['essential']) ? 'disabled' : ''?>
+						<?=($cookieGroup == $tlLang['externalMedia']) ? 'data-external-media="1"' : ''?>
 						/>
 						<label class="ncoi---sliding" for="<?=$cookieGroup?>"><i></i><span><?=$cookieGroup?></span></label>
 					</div>

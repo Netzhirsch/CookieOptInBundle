@@ -17,14 +17,10 @@ class CookieData
     private $version;
 
     /**
-     * @var array $tools
+     * @var array $otherCookieIds
      */
-    private $tools;
+    private $otherCookieIds;
 
-    /**
-     * @var array $external
-     */
-    private $external;
 
     /**
      * @return int
@@ -61,32 +57,16 @@ class CookieData
     /**
      * @return array
      */
-    public function getTools()
+    public function getOtherCookieIds()
     {
-        return $this->tools;
+        return $this->otherCookieIds;
     }
 
     /**
-     * @param array $tools
+     * @param array $otherCookieIds
      */
-    public function setTools($tools)
+    public function setOtherCookieIds($otherCookieIds)
     {
-        $this->tools = $tools;
-    }
-
-    /**
-     * @return array
-     */
-    public function getExternal()
-    {
-        return $this->external;
-    }
-
-    /**
-     * @param array $external
-     */
-    public function setExternal($external)
-    {
-        $this->external = $external;
+        $this->otherCookieIds = $otherCookieIds;
     }
 }
