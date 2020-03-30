@@ -110,17 +110,17 @@ class ParseFrontendTemplateListener
             $blockClass = 'ncoi---'.$iframeTypInHtml;
             switch($iframeTypInHtml) {
                 case 'youtube':
-                    $htmlDisclaimer .= 'Durch das Laden dieses Video stimmen Sie den Datenschutzbedingungen von <a href="https://policies.google.com/privacy">YouTube</a> zu.';
+                    $htmlDisclaimer .= 'Durch das Laden dieses Video stimmen Sie den Datenschutzbedingungen von <a href="https://policies.google.com/privacy" target="_blank">YouTube</a> zu.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
                     $htmlReleaseAll = '<label class="ncoi--release-all">Youtube immer laden<input type="checkbox" name="'.$blockClass.'" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
                     break;
                 case 'googleMaps':
-                    $htmlDisclaimer .= 'Durch das Laden dieser Karte stimmen Sie den Datenschutzbedingungen von <a href="https://policies.google.com/privacy">Google LLC</a> zu.';
+                    $htmlDisclaimer .= 'Durch das Laden dieser Karte stimmen Sie den Datenschutzbedingungen von <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a> zu.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
                     $htmlReleaseAll = '<label class="ncoi--release-all">Google Maps immer laden<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
                     break;
                 case 'vimeo':
-                    $htmlDisclaimer .= 'Durch das Laden dieser Karte stimmen Sie den Datenschutzbedingungen von <a href="https://vimeo.com/privacy">Vimeo</a> LLC zu.';
+                    $htmlDisclaimer .= 'Durch das Laden dieser Karte stimmen Sie den Datenschutzbedingungen von <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a> LLC zu.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
                     $htmlReleaseAll = '<label class="ncoi--release-all">Vimeo immer laden<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"></label>';
                     break;
