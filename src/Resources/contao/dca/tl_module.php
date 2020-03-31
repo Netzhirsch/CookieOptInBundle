@@ -260,12 +260,12 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'inputType' => 'select',
 				'options'   => [
 					'googleAnalytics' => 'Google Analytics',
-					'facebookPixel' => 'Facebook pixel',
+					'facebookPixel' => 'Facebook Pixel',
 					'matomo' => 'Matomo',
-                    'youtube' => 'YouTube',
-                    'googleMaps' => 'Google Maps',
-                    'vimeo' => 'Vimeo',
-                    'iframe' => 'iFrame',
+					'youtube' => 'YouTube',
+					'googleMaps' => 'Google Maps',
+					'vimeo' => 'Vimeo',
+					'iframe' => 'iFrame',
 					'-' => '-'
 				],
 				'sql' => "varchar(32) default '' ",
