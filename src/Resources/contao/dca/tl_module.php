@@ -76,8 +76,8 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,maxWidth
 	,position
 	,animation
-	;isNewCookieVersion
 	;ipFormatSave
+	;isNewCookieVersion
 	;external
 ';
 
