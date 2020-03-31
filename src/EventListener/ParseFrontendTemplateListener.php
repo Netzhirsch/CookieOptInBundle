@@ -34,6 +34,7 @@ class ParseFrontendTemplateListener
             $requestStack = $container->get('request_stack');
 
             $iframeTypInHtml = 'iframe';
+            $privacyPolicy = null;
             if (!empty($requestStack)) {
 
                 if (strpos($buffer, 'www.youtube') !== false) {
@@ -75,7 +76,7 @@ class ParseFrontendTemplateListener
                         $layout = LayoutModel::findById($pageModel->layout);
                         $moduleIds = StringUtil::deserialize($layout->modules);
 
-                        $sql = "SELECT id,cookieGroups FROM tl_module WHERE type = ? ";
+                        $sql = "SELECT id,cookieGroups,privacyPolicy FROM tl_module WHERE type = ? ";
                         /** @var Statement $stmt */
                         $stmt = $conn->prepare($sql);
                         $stmt->bindValue(1, 'cookieOptInBar');
@@ -88,6 +89,11 @@ class ParseFrontendTemplateListener
                                     foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                                         if ($module['id'] == $externalMediaCookieInDB['pid']) {
                                             $isConsentBackend[] = $externalMediaCookieInDB['cookieToolsSelect'];
+
+                                            if (!empty(PageModel::findById($module['privacyPolicy']))) {
+                                                $privacyPolicy = PageModel::findById($module['privacyPolicy']);
+                                                $privacyPolicy = $privacyPolicy->getFrontendUrl();
+                                            }
                                         }
                                     }
                                 }
@@ -110,23 +116,24 @@ class ParseFrontendTemplateListener
             $blockClass = 'ncoi---'.$iframeTypInHtml;
             switch($iframeTypInHtml) {
                 case 'youtube':
-                    $htmlDisclaimer .= 'Durch das Laden dieses Video stimmen Sie den Datenschutzbedingungen von <a href="https://policies.google.com/privacy" target="_blank">YouTube</a> zu.';
+                    $htmlDisclaimer .=  $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://policies.google.com/privacy" target="_blank">YouTube</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">Youtube immer laden<input type="checkbox" name="'.$blockClass.'" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<label class="ncoi--release-all">Youtube '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input type="checkbox" name="'.$blockClass.'" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
                     break;
                 case 'googleMaps':
-                    $htmlDisclaimer .= 'Durch das Laden dieser Karte stimmen Sie den Datenschutzbedingungen von <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a> zu.';
+                    $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['map'].' <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">Google Maps immer laden<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<label class="ncoi--release-all">Google Maps '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
                     break;
                 case 'vimeo':
-                    $htmlDisclaimer .= 'Durch das Laden dieser Karte stimmen Sie den Datenschutzbedingungen von <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a> LLC zu.';
+                    $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">Vimeo immer laden<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<label class="ncoi--release-all">Vimeo '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"></label>';
                     break;
                 case 'iframe':
-                    $htmlDisclaimer .= 'Durch das Laden dieses IFrames stimmen Sie den Datenschutzbedingungen von '.$_SERVER['HTTP_HOST'].' zu.';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">IFrames immer laden<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    global $objPage;
+                    $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['iframe'].' <a href="/'.$privacyPolicy.'" target="_blank">'.$objPage->rootTitle.'</a>.';
+                    $htmlReleaseAll = '<label class="ncoi--release-all">IFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
             }
 
             $isIFrameTypInDB = false;
@@ -156,7 +163,7 @@ class ParseFrontendTemplateListener
             $htmlConsentBoxEnd = '</div>';
 
             $htmlConsentLink = '<div class="ncoi---blocked-link"><a href="#" class="ncoi---release" title="erlauben">';
-            $htmlConsentLinkEnd = 'laden</a></div>';
+            $htmlConsentLinkEnd = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</a></div>';
 
             $htmlDisclaimer .= '</div>';
 
