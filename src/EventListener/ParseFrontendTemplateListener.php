@@ -24,19 +24,23 @@ class ParseFrontendTemplateListener
     {
         //IFrame als HTML Element eingebunden
         if ($template == 'ce_html' && strpos($buffer, '<iframe') !== false) {
+
             // Block Entscheidungsvariablen
-            $isConsentBackend = [];
-            $buffer = str_replace('" frameborder="0"','?'.time().'" frameborder="0"',$buffer);
-            $buffer = str_replace('" width="600"','?'.time().'" width="600"',$buffer);
             $isUserCookieDontAllowMedia = false;
+            $blockedIFrames = [];
+
             //Datenbank und User Cookie
             $container = System::getContainer();
             $requestStack = $container->get('request_stack');
 
+            //Frontendvariablen
             $iframeTypInHtml = 'iframe';
-            $privacyPolicy = null;
+            $privacyPolicyLink = '';
+
+            //Wenn null werden alle IFrames angezeigt.
             if (!empty($requestStack)) {
 
+                //Type des IFrames suchen damit danach in der Datenbank gesucht werden kann
                 if (strpos($buffer, 'www.youtube') !== false) {
                     $iframeTypInHtml = 'youtube';
                 }elseif (strpos($buffer, 'player.vimeo') !== false) {
@@ -45,7 +49,7 @@ class ParseFrontendTemplateListener
                     $iframeTypInHtml = 'googleMaps';
                 }
 
-                //Suche nach dem media cookies.
+                //Suche nach dem IFrame.
                 /** @noinspection MissingService */
                 $conn = $container->get('database_connection');
                 $sql = "SELECT id,pid,cookieToolsSelect FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
@@ -56,7 +60,7 @@ class ParseFrontendTemplateListener
                 $stmt->execute();
                 $externalMediaCookiesInDB = $stmt->fetchAll();
 
-                //Hat der User ein dieses Cookie gesetzt
+                //Im Cookie gesetzten IFrame finden, damit dieses nicht blocked werden kann.
                 $cookieData = CookieController::getUserCookie($requestStack);
                 foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                     if (!empty($cookieData->getOtherCookieIds()) && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())) {
@@ -65,7 +69,8 @@ class ParseFrontendTemplateListener
                     }
                 }
 
-                //Gibt es im Backend dieses Media Cookie
+                //Feststellen ob IFrame laut Backend geblocked werden soll
+                // und Datenschutz url finden
                 $attributes = $requestStack->getCurrentRequest()->attributes;
                 if (!empty($attributes)) {
                     /** @var PageModel $pageModel */
@@ -88,11 +93,11 @@ class ParseFrontendTemplateListener
                                 if ($module['id'] == $moduleId['mod']) {
                                     foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                                         if ($module['id'] == $externalMediaCookieInDB['pid']) {
-                                            $isConsentBackend[] = $externalMediaCookieInDB['cookieToolsSelect'];
+                                            $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
 
                                             if (!empty(PageModel::findById($module['privacyPolicy']))) {
-                                                $privacyPolicy = PageModel::findById($module['privacyPolicy']);
-                                                $privacyPolicy = $privacyPolicy->getFrontendUrl();
+                                                $privacyPolicyLink = PageModel::findById($module['privacyPolicy']);
+                                                $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
                                             }
                                         }
                                     }
@@ -103,15 +108,15 @@ class ParseFrontendTemplateListener
                 }
             }
 
-            //eigene Container immer mit ausgeben, damit über JavaScript wieder angenommen werden kann.
+            //eigene Container immer mit ausgeben, damit über JavaScript .ncoi---hidden setzten kann.
             $htmlDisclaimer = '<div class="ncoi---blocked-disclaimer">';
             $htmlIcon = '';
-            $htmlReleaseAll  = '';
+            // alle icons liegen im gleich Ordner
+            // root der bundle assets
             $iconPath = 'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR;
 
             /**
              * IFrame spezifisches HTML
-             * check IFrame in DB
              */
             $blockClass = 'ncoi---'.$iframeTypInHtml;
             switch($iframeTypInHtml) {
@@ -131,52 +136,61 @@ class ParseFrontendTemplateListener
                     $htmlReleaseAll = '<label class="ncoi--release-all">Vimeo '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"></label>';
                     break;
                 case 'iframe':
+                default:
                     global $objPage;
-                    $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['iframe'].' <a href="/'.$privacyPolicy.'" target="_blank">'.$objPage->rootTitle.'</a>.';
+                    $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['iframe'].' <a href="/'.$privacyPolicyLink.'" target="_blank">'.$objPage->rootTitle.'</a>.';
                     $htmlReleaseAll = '<label class="ncoi--release-all">IFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    break;
             }
+            $htmlDisclaimer .= '</div>';
 
+            // Wenn IFrame nicht im Backend, kann nur das IFrame zurückgegeben werden.
             $isIFrameTypInDB = false;
-            if (in_array($iframeTypInHtml,$isConsentBackend))
+            if (in_array($iframeTypInHtml,$blockedIFrames))
                 $isIFrameTypInDB = true;
 
-            if (!$isIFrameTypInDB) {
+            if (!$isIFrameTypInDB)
                 return $buffer;
-            }
+
+            //$blockclass im JS um blocked Container ein. und auszublenden
             $class = 'ncoi---blocked ncoi---iframes '.$blockClass;
 
-            if ($isUserCookieDontAllowMedia) {
+            //User möchte das IFrame sehen
+            if ($isUserCookieDontAllowMedia)
                 $class .= ' ncoi---hidden';
-            }
 
-            // Abmessungen des Block Container
+            // Abmessungen des Block Container, damit es die gleiche Göße wie das IFrame hat.
             $height = substr($buffer, strpos($buffer, 'height'), 11);
             $height = substr($height, 8, 3);
 
             $width = substr($buffer, strpos($buffer, 'width'), 11);
             $width = substr($width, 7, 3);
 
+            //Umschliedender Container damit Kinder zentiert werden könne
             $htmlContainer = '<div class="'.$class.'" style="height:' . $height . 'px; width:' . $width . 'px" >';
             $htmlContainerEnd = '</div>';
 
+            //Container für alle Inhalte
             $htmlConsentBox = '<div class="ncoi---consent-box">';
             $htmlConsentBoxEnd = '</div>';
 
+            //Damit JS das IFrame wieder laden kann
             $htmlConsentLink = '<div class="ncoi---blocked-link"><a href="#" class="ncoi---release" title="erlauben">';
             $htmlConsentLinkEnd = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</a></div>';
 
-            $htmlDisclaimer .= '</div>';
-
+            //Damit JS das IFrame wieder von base64 in ein HTML IFrame umwandel kann.
             $iframe = '<script type="text/template">' . base64_encode($buffer) . '</script>';
 
             $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlConsentLink . $htmlIcon . $htmlConsentLinkEnd . $htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
 
+            //User möchte das IFrame sehen, aber vielleicht auch über JS wieder blocken
             if ($isUserCookieDontAllowMedia) {
                 return $buffer.$newBuffer;
             } else {
                 return $newBuffer;
             }
         }
+        // nichts ändern
         return $buffer;
     }
 }

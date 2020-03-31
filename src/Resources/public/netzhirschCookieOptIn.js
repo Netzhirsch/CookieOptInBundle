@@ -1,7 +1,10 @@
 (function($){
+	//ausführung beim Speicher der Entscheidung
 	function checkExternalMedia() {
+
 		let blockedElement = $('.ncoi---blocked');
-		let html = '';
+
+		// Wenn Gruppe checked oder unchecked nicht einzele Cookies prüfen
 		let isSetIFrames = false;
 		if ( $('[data-external-media]').prop('checked')) {
 				isSetIFrames = true;
@@ -12,7 +15,7 @@
 					let iframes = $('.ncoi---iframes');
 					// nur ein script tag zur Zeit
 					iframes.each(function () {
-						html = atob($(this).find('script').text().trim());
+						let html = atob($(this).find('script').text().trim());
 						$(this).addClass('ncoi---hidden');
 						$(this).after(html);
 					});
@@ -26,17 +29,16 @@
 			let cookiesInput = $('table tbody .ncoi---cookie');
 			cookiesInput.each(function () {
 				if ($(this).prop('checked')) {
-
+					//Klasses des Blockconainter aus input data-block-class auslesen
 					let blockClass = '.' + $(this).data('block-class');
 					let blockClassElement = $(blockClass);
 
-					//jedes Element separat
+					// Nur gefunden BlockContainer werden bearbeitet
+					// jedes Element separat
 					blockClassElement.each(function () {
-						if ($(this).find('.ncoi---release').length > 0) {
-							html = atob(($(this).find('script').text().trim()));
-							$(this).addClass('ncoi---hidden');
-							$(this).after(html);
-						}
+						let html = atob(($(this).find('script').text().trim()));
+						$(this).addClass('ncoi---hidden');
+						$(this).after(html);
 					});
 				}
 			});
@@ -44,6 +46,7 @@
 	}
 
 	$(document).ready(function () {
+		// falls CSS zu spät eingunden wird
 		$('.ncoi---behind').removeClass('ncoi---no-transition');
 
 		let errorMessage = '';
@@ -118,43 +121,52 @@
 			});
 
 		});
+
 		$('.ncoi---release').on('click',function (e) {
 			e.preventDefault();
+			//Um richtige Chechbox zu finden
+			//und um Blockcontainer vielleicht auszublenden und IFrame anzuhängen
 			let parent = $(this).parents('.ncoi---blocked');
 			let input = parent.find('input');
 
 			if (input.prop('checked')) {
-				input.prop('checked',false);
-				let blockClass = '.' + input.data('block-class');
-				$(blockClass).find('.ncoi---release').trigger('click');
+				//In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
 				$('[data-block-class="'+input.data('block-class')+'"]').prop('checked',true);
 				track(1);
+
+				let parents = $('.'+input.data('block-class'));
+				parents.each(function () {
+					let html = atob(($(this).find('script').text().trim()));
+					$(this).addClass('ncoi---hidden');
+					$(this).after(html);
+				})
 			} else {
+
 				let html = atob((parent.find('script').text().trim()));
 				parent.addClass('ncoi---hidden');
 				parent.after(html);
 			}
 		});
 		//  only for testing
-		console.log(getCookie('_netzhirsch_cookie_opt_in'));
+		// console.log(getCookie('_netzhirsch_cookie_opt_in'));
 	});
 
 //  only for testing
-	function getCookie(cname) {
-		let name = cname + "=";
-		let decodedCookie = decodeURIComponent(document.cookie);
-		let ca = decodedCookie.split(';');
-		for(let i = 0; i <ca.length; i++) {
-			let c = ca[i];
-			while (c.charAt(0).localeCompare(' ') === 0 ) {
-				c = c.substring(1);
-			}
-			if (c.indexOf(name) === 0) {
-				return c.substring(name.length, c.length);
-			}
-		}
-		return false;
-	}
+// 	function getCookie(cname) {
+// 		let name = cname + "=";
+// 		let decodedCookie = decodeURIComponent(document.cookie);
+// 		let ca = decodedCookie.split(';');
+// 		for(let i = 0; i <ca.length; i++) {
+// 			let c = ca[i];
+// 			while (c.charAt(0).localeCompare(' ') === 0 ) {
+// 				c = c.substring(1);
+// 			}
+// 			if (c.indexOf(name) === 0) {
+// 				return c.substring(name.length, c.length);
+// 			}
+// 		}
+// 		return false;
+// 	}
 
 	function track(newConsent){
 		let data = {
