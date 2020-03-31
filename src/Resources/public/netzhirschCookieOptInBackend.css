@@ -19,3 +19,6 @@
 #tl_fieldpalette .tl_submit_container {
 	position: inherit !important;
 }
+#tl_fieldpalette #saveNclose, #tl_fieldpalette #sbtog {
+	display: none;
+}
