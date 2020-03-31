@@ -54,7 +54,7 @@ class CookieController extends AbstractController
         if ($newConsent) {
 
             $cookieData = new CookieData();
-            $cookieData->setId($this->changeConsent($cookiesToSet,$data['modID']));
+            $cookieData->setId($this->changeConsent($cookiesToSet,$data['modID'],$cookieDatabase));
             $cookieData->setVersion(intval($cookieDatabase['cookieVersion']));
             $cookieData->setOtherCookieIds($data['cookieIds']);
             $this->setNetzhirschCookie(
@@ -182,10 +182,11 @@ class CookieController extends AbstractController
     /**
      * @param $cookieData
      * @param $modID
+     * @param $cookieDatabase
      * @return string
      * @throws DBALException
      */
-	private function changeConsent($cookieData,$modID)
+	private function changeConsent($cookieData,$modID,$cookieDatabase)
 	{
 		/** @noinspection PhpParamsInspection */
 		$requestStack = $this->get('request_stack');
@@ -241,9 +242,8 @@ class CookieController extends AbstractController
 		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
-        $cookiesDataFromDb = $this->getModulData($modID);
 		foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
-            foreach ($cookiesDataFromDb['cookieTools'] as $cookieDataFromDb) {
+            foreach ($cookieDatabase['cookieTools'] as $cookieDataFromDb) {
                 if ($cookieDataFromDb['id'] == $cookieTool) {
                     $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
                     $cookieTechnicalName[] = $cookieDataFromDb['cookieToolsTechnicalName'];
