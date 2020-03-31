@@ -48,7 +48,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
 ];
 /*************** Fieldpalette Tools ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Hier finden Sie eine Hilfestellung.</a>'];
+$GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Klicken Sie hier für eine Hilfestellung.</a>'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Facebook Pixel'];
 
@@ -131,21 +131,20 @@ $GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Breite','Bitte geben Sie die Br
 
 $GLOBALS['TL_LANG']['tl_module']['templateBar'] = ['Template' , 'Der Template-Name muss mit mod_cookie_opt_in_bar beginnen.'];
 
-$GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'Bei Klick auf die Buttons im Frontend.'];
+$GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'Bei Klick auf die Buttons im Frontend'];
 
 $GLOBALS['TL_LANG']['tl_module']['shrink'] = 'rein-/rauszoomen';
 $GLOBALS['TL_LANG']['tl_module']['go-up'] = 'ein-/ausfahren';
 $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'] = 'schrumpfen und drehen';
 $GLOBALS['TL_LANG']['tl_module']['hinge'] = 'Scharnier';
 
-$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP Speicherung'];
+$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP-Speicherung'];
 
 $GLOBALS['TL_LANG']['tl_module']['uncut'] = 'ungekürzt';
 $GLOBALS['TL_LANG']['tl_module']['pseudo'] = 'pseudonymisiert';
 $GLOBALS['TL_LANG']['tl_module']['anon'] = 'anonymisiert';
 
-$GLOBALS['TL_LANG']['tl_module']['external'] = ['Extern','Über Artikel eingebunde HTML Elemente mit Iframe werden nur bei Einwilligung geladen'];
+$GLOBALS['TL_LANG']['tl_module']['external'] = ['Extern','Über Artikel eingebundene HTML Elemente mit iFrame werden nur bei Einwilligung geladen.'];
 
 $GLOBALS['TL_LANG']['tl_module']['youtube'] = 'Youtube';
 $GLOBALS['TL_LANG']['tl_module']['googleMaps'] = 'Google Maps';
-
