@@ -241,9 +241,14 @@ class CookieController extends AbstractController
 		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
+        $cookiesDataFromDb = $this->getModulData($modID);
 		foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
-			$cookieNames[] = $cookieTool['cookieToolsName'];
-			$cookieTechnicalName[] = $cookieTool['cookieToolsTechnicalName'];
+            foreach ($cookiesDataFromDb['cookieTools'] as $cookieDataFromDb) {
+                if ($cookieDataFromDb['id'] == $cookieTool) {
+                    $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
+                    $cookieTechnicalName[] = $cookieDataFromDb['cookieToolsTechnicalName'];
+                }
+            }
 		}
         $stmt->bindValue(2, implode(', ', $cookieNames));
         $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
