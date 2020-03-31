@@ -1,8 +1,5 @@
 <?php
-
-
 namespace Netzhirsch\CookieOptInBundle\EventListener;
-
 
 use Contao\LayoutModel;
 use Contao\PageModel;
@@ -119,27 +116,28 @@ class ParseFrontendTemplateListener
              * iFrame spezifisches HTML
              */
             $blockClass = 'ncoi---'.$iframeTypInHtml;
+	        $id = uniqid();
             switch($iframeTypInHtml) {
                 case 'youtube':
                     $htmlDisclaimer .=  $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://policies.google.com/privacy" target="_blank">YouTube</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">Youtube '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input type="checkbox" name="'.$blockClass.'" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>Youtube '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
                 case 'googleMaps':
                     $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['map'].' <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">Google Maps '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>Google Maps '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
                 case 'vimeo':
                     $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">Vimeo '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>Vimeo '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
                 case 'iframe':
                 default:
                     global $objPage;
                     $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['iframe'].' <a href="/'.$privacyPolicyLink.'" target="_blank">'.$objPage->rootTitle.'</a>.';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">iFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>iFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
             }
             $htmlDisclaimer .= '</div>';
@@ -175,8 +173,8 @@ class ParseFrontendTemplateListener
             $htmlConsentBoxEnd = '</div>';
 
             //Damit JS das iFrame wieder laden kann
-            $htmlConsentLink = '<div class="ncoi---blocked-link"><a href="#" class="ncoi---release" title="erlauben">';
-            $htmlConsentLinkEnd = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</a></div>';
+            $htmlConsentLink = '<div class="ncoi---blocked-link"><a href="#" class="ncoi---release">';
+            $htmlConsentLinkEnd = '<span>' . $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</span></a></div>';
 
             //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
             $iframe = '<script type="text/template">' . base64_encode($buffer) . '</script>';
