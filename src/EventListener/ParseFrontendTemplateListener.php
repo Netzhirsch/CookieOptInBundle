@@ -22,7 +22,7 @@ class ParseFrontendTemplateListener
      */
     public function onParseFrontendTemplate($buffer, $template)
     {
-        //IFrame als HTML Element eingebunden
+        //iFrame als HTML Element eingebunden
         if ($template == 'ce_html' && strpos($buffer, '<iframe') !== false) {
 
             // Block Entscheidungsvariablen
@@ -37,10 +37,10 @@ class ParseFrontendTemplateListener
             $iframeTypInHtml = 'iframe';
             $privacyPolicyLink = '';
 
-            //Wenn null werden alle IFrames angezeigt.
+            //Wenn null werden alle iFrames angezeigt.
             if (!empty($requestStack)) {
 
-                //Type des IFrames suchen damit danach in der Datenbank gesucht werden kann
+                //Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
                 if (strpos($buffer, 'www.youtube') !== false) {
                     $iframeTypInHtml = 'youtube';
                 }elseif (strpos($buffer, 'player.vimeo') !== false) {
@@ -49,7 +49,7 @@ class ParseFrontendTemplateListener
                     $iframeTypInHtml = 'googleMaps';
                 }
 
-                //Suche nach dem IFrame.
+                //Suche nach dem iFrame.
                 /** @noinspection MissingService */
                 $conn = $container->get('database_connection');
                 $sql = "SELECT id,pid,cookieToolsSelect FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
@@ -60,7 +60,7 @@ class ParseFrontendTemplateListener
                 $stmt->execute();
                 $externalMediaCookiesInDB = $stmt->fetchAll();
 
-                //Im Cookie gesetzten IFrame finden, damit dieses nicht blocked werden kann.
+                //Im Cookie gesetzten iFrame finden, damit dieses nicht blocked werden kann.
                 $cookieData = CookieController::getUserCookie($requestStack);
                 foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                     if (!empty($cookieData->getOtherCookieIds()) && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())) {
@@ -69,7 +69,7 @@ class ParseFrontendTemplateListener
                     }
                 }
 
-                //Feststellen ob IFrame laut Backend geblocked werden soll
+                //Feststellen ob iFrame laut Backend geblocked werden soll
                 // und Datenschutz url finden
                 $attributes = $requestStack->getCurrentRequest()->attributes;
                 if (!empty($attributes)) {
@@ -116,7 +116,7 @@ class ParseFrontendTemplateListener
             $iconPath = 'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR;
 
             /**
-             * IFrame spezifisches HTML
+             * iFrame spezifisches HTML
              */
             $blockClass = 'ncoi---'.$iframeTypInHtml;
             switch($iframeTypInHtml) {
@@ -139,12 +139,12 @@ class ParseFrontendTemplateListener
                 default:
                     global $objPage;
                     $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['iframe'].' <a href="/'.$privacyPolicyLink.'" target="_blank">'.$objPage->rootTitle.'</a>.';
-                    $htmlReleaseAll = '<label class="ncoi--release-all">IFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
+                    $htmlReleaseAll = '<label class="ncoi--release-all">iFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'<input name="'.$blockClass.'" type="checkbox" class="ncoi---blocked" data-block-class="'.$blockClass.'"></label>';
                     break;
             }
             $htmlDisclaimer .= '</div>';
 
-            // Wenn IFrame nicht im Backend, kann nur das IFrame zurückgegeben werden.
+            // Wenn iFrame nicht im Backend, kann nur das iFrame zurückgegeben werden.
             $isIFrameTypInDB = false;
             if (in_array($iframeTypInHtml,$blockedIFrames))
                 $isIFrameTypInDB = true;
@@ -155,11 +155,11 @@ class ParseFrontendTemplateListener
             //$blockclass im JS um blocked Container ein. und auszublenden
             $class = 'ncoi---blocked ncoi---iframes '.$blockClass;
 
-            //User möchte das IFrame sehen
+            //User möchte das iFrame sehen
             if ($isUserCookieDontAllowMedia)
                 $class .= ' ncoi---hidden';
 
-            // Abmessungen des Block Container, damit es die gleiche Göße wie das IFrame hat.
+            // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
             $height = substr($buffer, strpos($buffer, 'height'), 11);
             $height = substr($height, 8, 3);
 
@@ -174,16 +174,16 @@ class ParseFrontendTemplateListener
             $htmlConsentBox = '<div class="ncoi---consent-box">';
             $htmlConsentBoxEnd = '</div>';
 
-            //Damit JS das IFrame wieder laden kann
+            //Damit JS das iFrame wieder laden kann
             $htmlConsentLink = '<div class="ncoi---blocked-link"><a href="#" class="ncoi---release" title="erlauben">';
             $htmlConsentLinkEnd = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</a></div>';
 
-            //Damit JS das IFrame wieder von base64 in ein HTML IFrame umwandel kann.
+            //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
             $iframe = '<script type="text/template">' . base64_encode($buffer) . '</script>';
 
             $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlConsentLink . $htmlIcon . $htmlConsentLinkEnd . $htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
 
-            //User möchte das IFrame sehen, aber vielleicht auch über JS wieder blocken
+            //User möchte das iFrame sehen, aber vielleicht auch über JS wieder blocken
             if ($isUserCookieDontAllowMedia) {
                 return $buffer.$newBuffer;
             } else {

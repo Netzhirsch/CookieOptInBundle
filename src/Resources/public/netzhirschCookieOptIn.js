@@ -128,7 +128,7 @@
 		$('.ncoi---release').on('click',function (e) {
 			e.preventDefault();
 			//Um richtige Chechbox zu finden
-			//und um Blockcontainer vielleicht auszublenden und IFrame anzuhängen
+			//und um Blockcontainer vielleicht auszublenden und iFrame anzuhängen
 			let parent = $(this).parents('.ncoi---blocked');
 			let input = parent.find('input');
 			if (input.prop('checked')) {

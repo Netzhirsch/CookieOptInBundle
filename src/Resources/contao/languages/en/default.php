@@ -25,7 +25,7 @@ $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn'] = [
         'iframes' => [
             'video' => 'By loading this video, you give your consent to the privacy terms of',
             'map' => 'By loading, this card, you give your consent to the privacy terms of',
-            'iframe' => 'By loading this IFrame, you give your consent to the privacy terms of',
+            'iframe' => 'By loading this iFrame, you give your consent to the privacy terms of',
             'alwaysLoad' => 'always load',
             'load' => 'load'
         ]
