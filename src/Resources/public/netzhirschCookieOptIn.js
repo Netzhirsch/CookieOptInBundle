@@ -8,23 +8,20 @@
 		let isSetIFrames = false;
 		if ( $('[data-external-media]').prop('checked')) {
 				isSetIFrames = true;
-				$('iframe').removeClass('ncoi---hidden');
-				if (blockedElement.hasClass('ncoi---hidden')) {
-					blockedElement.removeClass('ncoi---hidden');
-				} else {
+				//nur Iframe setzten wenn nötig
+				if (!blockedElement.hasClass('ncoi---hidden')) {
 					let iframes = $('.ncoi---iframes');
 					// nur ein script tag zur Zeit
 					iframes.each(function () {
-						let html = atob($(this).find('script').text().trim());
-						$(this).addClass('ncoi---hidden');
-						$(this).after(html);
+						addIframe($(this));
 					});
+				} else {
+					isSetIFrames = false;
 				}
 		} else {
 			$('iframe').addClass('ncoi---hidden');
 			blockedElement.removeClass('ncoi---hidden');
 		}
-
 		if (!isSetIFrames) {
 			let cookiesInput = $('table tbody .ncoi---cookie');
 			cookiesInput.each(function () {
@@ -36,12 +33,18 @@
 					// Nur gefunden BlockContainer werden bearbeitet
 					// jedes Element separat
 					blockClassElement.each(function () {
-						let html = atob(($(this).find('script').text().trim()));
-						$(this).addClass('ncoi---hidden');
-						$(this).after(html);
+						addIframe($(this));
 					});
 				}
 			});
+		}
+	}
+
+	function addIframe(parent){
+		if (!parent.hasClass('ncoi---hidden')) {
+			let html = atob((parent.find('script').text().trim()));
+			parent.addClass('ncoi---hidden');
+			parent.after(html);
 		}
 	}
 
@@ -128,7 +131,6 @@
 			//und um Blockcontainer vielleicht auszublenden und IFrame anzuhängen
 			let parent = $(this).parents('.ncoi---blocked');
 			let input = parent.find('input');
-
 			if (input.prop('checked')) {
 				//In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
 				$('[data-block-class="'+input.data('block-class')+'"]').prop('checked',true);
@@ -136,15 +138,10 @@
 
 				let parents = $('.'+input.data('block-class'));
 				parents.each(function () {
-					let html = atob(($(this).find('script').text().trim()));
-					$(this).addClass('ncoi---hidden');
-					$(this).after(html);
+					addIframe($(this));
 				})
 			} else {
-
-				let html = atob((parent.find('script').text().trim()));
-				parent.addClass('ncoi---hidden');
-				parent.after(html);
+				addIframe(parent);
 			}
 		});
 		//  only for testing
