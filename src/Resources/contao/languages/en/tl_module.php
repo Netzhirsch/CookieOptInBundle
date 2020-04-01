@@ -146,13 +146,7 @@ $GLOBALS['TL_LANG']['tl_module']['shrink'] = 'shrink';
 $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'] = 'shrink and rotate';
 $GLOBALS['TL_LANG']['tl_module']['hinge'] = 'hinge';
 
-$list = '
-<ul class="tl_help tl_tip ncoi---list--list">
-    <li>uncut: IP address is saved uncut (192.168.100.1).</li>
-    <li>pseudonymisiert: The last group of the IP address is removed (192.168.100.*).</li>
-    <li>anonymisiert: The last two groups of the IP address are removed (192.168.*.*).</li>
-</ul>';
-$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP storage',$list];
+$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP storage','Select the type of logging of the IP addresses.'];
 
 $GLOBALS['TL_LANG']['tl_module']['uncut'] = 'uncut';
 $GLOBALS['TL_LANG']['tl_module']['pseudo'] = 'pseudonymisiert';
