@@ -1,12 +1,14 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
+use Contao\FrontendIndex;
+use Contao\PageModel;
 use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Netzhirsch\CookieOptInBundle\Classes\CookieData;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Contao\CoreBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -19,7 +21,7 @@ class CookieController extends AbstractController
     /**
      * @Route("/cookie/allowed", name="cookie_allowed")
      * @param Request $request
-     * @return JsonResponse
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws DBALException
      */
 	public function allowedAction(Request $request)
@@ -63,12 +65,22 @@ class CookieController extends AbstractController
                 $cookieDatabase['cookieExpiredTime']
             );
         }
+        /**
+         * no JS
+         */
+        $noScript = $request->get('noScript');
+        if ($noScript) {
+            $this->initializeContaoFramework();
+            $currentPageId = $request->get('currentPageId');
+            $pageModel = PageModel::findById($currentPageId);
+            /** @noinspection PhpParamsInspection */
+            return $this->redirect('/'.$pageModel->getFrontendUrl());
+        }
 
 		$response = [
 			'tools' => $cookiesToSet['cookieTools'],
 			'otherScripts' => $cookiesToSet['otherScripts'],
 		];
-		
 		return new JsonResponse($response);
 	}
 

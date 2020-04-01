@@ -125,6 +125,7 @@ class ModuleCookieOptInBar extends Module
 		$data['isExcludePage'] = false;
 		global $objPage;
 		$currentPageId = $objPage->id;
+		$data['currentPageId'] = $currentPageId;
 		$excludePages = StringUtil::deserialize($this->arrData['excludePages']);
 		foreach ($excludePages as $excludePage) {
 			if ($currentPageId == $excludePage) {

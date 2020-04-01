@@ -6,6 +6,7 @@ use Contao\Config;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 use DateInterval;
 use DateTime;
 use Exception;
