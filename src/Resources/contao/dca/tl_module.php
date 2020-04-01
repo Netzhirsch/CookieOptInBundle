@@ -650,7 +650,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
         'anon' => $GLOBALS['TL_LANG']['tl_module']['anon']
     ],
     'eval' => [
-        'tl_class'  =>  'w50',
+        'tl_class'  =>  'w50 ncoi---list--container',
     ],
     'sql' => "varchar(64) NULL default '' ",
 ];

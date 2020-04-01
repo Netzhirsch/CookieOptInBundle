@@ -138,7 +138,13 @@ $GLOBALS['TL_LANG']['tl_module']['go-up'] = 'ein-/ausfahren';
 $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'] = 'schrumpfen und drehen';
 $GLOBALS['TL_LANG']['tl_module']['hinge'] = 'Scharnier';
 
-$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP-Speicherung'];
+$list = '
+<ul class="tl_help tl_tip ncoi---list--list">
+    <li>ungekürzt: IP-Adresse wird ungekürzt gespeichert (192.168.100.1).</li>
+    <li>pseudonymisiert: Die letzte Gruppe der IP-Adresse wird entfernt (192.168.100.*).</li>
+    <li>anonymisiert: Die zwei letzten Gruppen der IP-Adresse werden entfernt (192.168.*.*).</li>
+</ul>';
+$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP-Speicherung',$list];
 
 $GLOBALS['TL_LANG']['tl_module']['uncut'] = 'ungekürzt';
 $GLOBALS['TL_LANG']['tl_module']['pseudo'] = 'pseudonymisiert';
