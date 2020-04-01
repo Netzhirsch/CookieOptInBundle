@@ -651,7 +651,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
     ],
     'eval' => [
         'tl_class'  =>  'w50 ncoi---list--container',
+        'helpwizard' => true,
     ],
+    'explanation'   => 'ipFormatSaveExplanation',
     'sql' => "varchar(64) NULL default '' ",
 ];
 

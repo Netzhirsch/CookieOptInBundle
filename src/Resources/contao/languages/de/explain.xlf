@@ -1,0 +1,42 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="src/Resources/contao/languages/en/explain.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="XPL.ipFormatSaveExplanation.0.0">
+        <source>colspan</source>
+        <target>colspan</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.0.0">
+        <source>uncut</source>
+        <target>ungekürzt</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.0.1">
+        <source>IP address is saved uncut (192.168.100.1).</source>
+        <target>IP-Adresse wird ungekürzt gespeichert (192.168.100.1).</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.1.0">
+        <source>colspan</source>
+        <target>colspan</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.1.0">
+        <source>pseudonymised</source>
+        <target>pseudonymisiert</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.1.1">
+        <source>The last group of the IP address is removed (192.168.100.*).</source>
+        <target>Die letzte Gruppe der IP-Adresse wird entfernt (192.168.100.*).</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.2.0">
+        <source>colspan</source>
+        <target>colspan</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.2.0">
+        <source>anonymized</source>
+        <target>anonymisiert</target>
+      </trans-unit>
+      <trans-unit id="XPL.ipFormatSaveExplanation.2.1">
+        <source>The last two groups of the IP address are removed (192.168.*.*).</source>
+        <target>Die zwei letzten Gruppen der IP-Adresse werden entfernt (192.168.*.*).</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
