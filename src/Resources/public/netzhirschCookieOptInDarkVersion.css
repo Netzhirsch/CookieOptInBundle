@@ -2,17 +2,17 @@
   background: black;
   color: white;
 }
-.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action a {
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action button {
   background: rgba(255, 255, 255, 0.5);
   color: white;
 }
-.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action a:hover {
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action button:hover {
   background: rgba(255, 255, 255, 0.6);
 }
-.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary a {
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary button {
   background: #090;
 }
-.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary a:hover {
+.ncoi---behind .ncoi---container .ncoi---actions .ncoi---action.ncoi---link-primary button:hover {
   background: #006600;
 }
 .ncoi---behind .ncoi---footer .ncoi---link,

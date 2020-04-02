@@ -81,12 +81,14 @@
 			<input
 				type="checkbox"
 				id="<?=$tool->id?>"
-				value="<?=$cookieGroup?>"
+				value="<?=$tool->id?>"
+                form="cookieBar"
+                name="data[cookieIds][]"
 				class="ncoi---cookie ncoi---sliding"
 				data-group="<?= $tool->cookieToolGroup; ?>"
 				data-cookie-id="<?=$tool->id;?>"
                 data-block-class="ncoi---<?=$tool->cookieToolsSelect;?>"
-				<?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'checked' : ''?>
+                <?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'checked' : ''?>
 				<?=($tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'disabled' : ''?>
 			/>
 			<label class="ncoi---sliding" for="<?=$tool->id?>"><i></i><span><?=$cookieGroup?></span></label>

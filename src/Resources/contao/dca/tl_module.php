@@ -234,7 +234,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				cookieToolsName,
 				cookieToolsSelect,
 				cookieToolsTechnicalName,
-				cookieToolsTrackingID,
+				cookieToolsTrackingId,
 				cookieToolsTrackingServerUrl,
 				cookieToolsProvider,
 				cookieToolsPrivacyPolicyUrl,
@@ -283,8 +283,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 					'tl_class'  =>  'long clr'
 				],
 			],
-			'cookieToolsTrackingID' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingID'],
+			'cookieToolsTrackingId' => [
+				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -885,7 +885,6 @@ class tl_module_ncoi extends tl_module {
 		} else {
 			$fieldValue = $netzhirschCookieFieldModel->id;
 		}
-		
 		return $fieldValue;
 	}
 

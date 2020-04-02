@@ -60,79 +60,98 @@ class ModuleCookieOptInBar extends Module
 			return null;
 		
 		$netzhirschOptInCookie = self::getCookieData(System::getContainer());
-		$data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
+        $data['cookieGroupsSelected'] = [];
+        if (!empty($netzhirschOptInCookie->groups))
+		    $data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
 		$data['cookieGroupsSelected'][] = $tlLang['cookieGroup']['essential'];
 		$data['cookieGroups'][] = $tlLang['cookieGroup']['essential'];
-		
+
+        $data['noScriptTracking'] = [];
+		global $objPage;
 		foreach ($data['cookieTools'] as $cookieTool) {
-			foreach ($netzhirschOptInCookie->cookieIds as $cookieId) {
-				if ($cookieId == $cookieTool->id) {
-					if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroupsSelected'])) {
-						$data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
-					}
-				}
-			}
+            if (!empty($netzhirschOptInCookie)) {
+                foreach ($netzhirschOptInCookie->cookieIds as $cookieId) {
+                    if ($cookieId == $cookieTool->id) {
+                        if (!$netzhirschOptInCookie->isJavaScript) {
+                            if ($cookieTool->cookieToolsSelect == 'facebookPixel')
+                                $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id='.$cookieTool->cookieToolsTrackingId.'&ev=PageView&noscript=1"
+      />';
+                            elseif ($cookieTool->cookieToolsSelect == 'googleAnalytics')
+                                $data['noScriptTracking'][] = '<img src="http://www.google-analytics.com/collect?v=1&t=pageview&tid='.$cookieTool->cookieToolsTrackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
+                            elseif ($cookieTool->cookieToolsSelect == 'matomo')
+                                $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$cookieTool->cookieToolsTrackingId.'&amp;rec=1" style="border:0" alt="" />;
+';
+                        }
+                        if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroupsSelected'])) {
+                            $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
+                        }
+                    }
+                }
+            }
 			if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroups']) && $cookieTool->cookieToolGroup != 'essential' && $cookieTool->cookieToolGroup != 'Essenziell') {
 				$data['cookieGroups'][] = $cookieTool->cookieToolGroup;
 			}
-			
+
 		}
-		
-		$data['cookiesSelected'] = '';
-		$data['cookiesSelected'] = $netzhirschOptInCookie->cookieIds;
+
+		$data['cookiesSelected'] = [];
+        if (!empty($netzhirschOptInCookie->cookieIds))
+		    $data['cookiesSelected'] = $netzhirschOptInCookie->cookieIds;
 		$data['id'] = $this->id;
 		$data['netzhirschCookieIsSet'] = false;
 		if (!empty($netzhirschOptInCookie))
 			$data['netzhirschCookieIsSet'] = true;
-		
+
 		$data['netzhirschCookieIsVersionNew'] = "0";
 		if ($netzhirschOptInCookie->cookieVersion < $this->__get('cookieVersion'))
 			$data['netzhirschCookieIsVersionNew'] = "1";
-		
+
 		if (!empty($this->headlineCookieOptInBar)) {
 			$headlineData = StringUtil::deserialize($this->headlineCookieOptInBar);
 			$data['headlineCookieOptInBar'] = "<".$headlineData['unit']." class=\"ncoi---headline\">".$headlineData['value']."</".$headlineData['unit'].">";
 		}
-		
+
 		$questionHint = $this->arrData['questionHint'];
 		if (!empty($questionHint))
 			$data['questionHint'] = $questionHint;
-		
+
 		$impress = PageModel::findById($this->__get('impress'));
 		if (!empty($impress)) {
 			$impress = $impress->getFrontendUrl();
 			$impress = '<a class="ncoi---link" href="'.$impress.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
 			$data['impress'] = $impress;
 		}
-		
+
 		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));
 		if (!empty($privacyPolicy)) {
 			$privacyPolicy = $privacyPolicy->getFrontendUrl();
 			$privacyPolicy = '<a class="ncoi---link" href="'.$privacyPolicy.'" title ="'.$tlLang['privacyPolicy'].'"> '.$tlLang['privacyPolicy'].' </a>';
 			$data['privacyPolicy'] = $privacyPolicy;
 		}
-		
+
 		$infoTitle = $this->arrData['infoTitle'];
 		if (!empty($infoTitle)) {
 			$infoTitle = StringUtil::deserialize($infoTitle);
 			$data['infoTitle'] = "<".$infoTitle['unit'].">".$infoTitle['value']."</".$infoTitle['unit'].">";
 		}
-		
+
 		$infoHint = $this->arrData['infoHint'];
 		if (!empty($infoHint))
 			$data['infoHint'] = $infoHint;
-		
+
 		$data['isExcludePage'] = false;
-		global $objPage;
 		$currentPageId = $objPage->id;
-		$data['currentPageId'] = $currentPageId;
+		$data['currentPage'] = $_SERVER['REDIRECT_URL'];
 		$excludePages = StringUtil::deserialize($this->arrData['excludePages']);
-		foreach ($excludePages as $excludePage) {
-			if ($currentPageId == $excludePage) {
-				$data['isExcludePage'] = true;
-			}
-		}
-		
+        if (!empty($excludePages)) {
+            foreach ($excludePages as $excludePage) {
+                if ($currentPageId == $excludePage) {
+                    $data['isExcludePage'] = true;
+                }
+            }
+        }
+
 		$data['saveButton'] = $this->__get('saveButton');
 		$data['saveAllButton'] = $this->__get('saveAllButton');
 		

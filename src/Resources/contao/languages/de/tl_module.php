@@ -54,7 +54,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Faceb
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Type'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingID'] =
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
 	['Tracking ID','z.B. UA-123456789-1 für Google Analytics'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =

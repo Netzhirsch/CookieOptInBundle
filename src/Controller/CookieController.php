@@ -1,8 +1,6 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
-use Contao\FrontendIndex;
-use Contao\PageModel;
 use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
@@ -10,6 +8,7 @@ use Netzhirsch\CookieOptInBundle\Classes\CookieData;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Contao\CoreBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,15 +20,33 @@ class CookieController extends AbstractController
     /**
      * @Route("/cookie/allowed", name="cookie_allowed")
      * @param Request $request
-     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @return JsonResponse|RedirectResponse
      * @throws DBALException
      */
 	public function allowedAction(Request $request)
 	{
-		$data = $request->get('data');
+        $data = $request->get('data');
         $newConsent = $data['newConsent'];
-
 		$cookieDatabase = $this->getModulData($data['modID']);
+        //nur ohne JS gefüllt
+        if (!$data['isJavaScript']) {
+            if (!isset($data['cookieIds']))
+                $data['cookieIds'] = [];
+            foreach ($data['cookieGroups'] as $cookieGroup) {
+                foreach ($cookieDatabase['cookieTools'] as $cookieInDB) {
+                    if (!empty($data['all']))
+                        $data['cookieIds'][] = $cookieInDB['id'];
+                    elseif ($cookieGroup == $cookieInDB['cookieToolGroup'])
+                        $data['cookieIds'][] = $cookieInDB['id'];
+                }
+                foreach ($cookieDatabase['otherScripts'] as $cookieInDB) {
+                    if (!empty($data['all']))
+                        $data['cookieIds'][] = $cookieInDB['id'];
+                    elseif ($cookieGroup == $cookieInDB['cookieToolGroup'])
+                        $data['cookieIds'][] = $cookieInDB['id'];
+                }
+            }
+        }
 		$cookiesToDelete = [];
 		$cookiesToSet = [];
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
@@ -59,22 +76,15 @@ class CookieController extends AbstractController
             $cookieData->setId($this->changeConsent($cookiesToSet,$data['modID'],$cookieDatabase));
             $cookieData->setVersion(intval($cookieDatabase['cookieVersion']));
             $cookieData->setOtherCookieIds($data['cookieIds']);
+            $cookieData->setIsJavaScript($data['isJavaScript']);
             $this->setNetzhirschCookie(
                 $cookieData,
                 $data['modID'],
                 $cookieDatabase['cookieExpiredTime']
             );
         }
-        /**
-         * no JS
-         */
-        $noScript = $request->get('noScript');
-        if ($noScript) {
-            $this->initializeContaoFramework();
-            $currentPageId = $request->get('currentPageId');
-            $pageModel = PageModel::findById($currentPageId);
-            /** @noinspection PhpParamsInspection */
-            return $this->redirect('/'.$pageModel->getFrontendUrl());
+        if (!$data['isJavaScript']) {
+            return $this->redirectToPageBefore($data['currentPage']);
         }
 
 		$response = [
@@ -92,17 +102,7 @@ class CookieController extends AbstractController
      */
 	private function setNetzhirschCookie($cookieData,$modID,$cookieExpiredTime){
 		
-		/* @var Connection $conn */
-		/** @noinspection PhpParamsInspection */
-        /** @noinspection MissingService */
-        $conn = $this->get('database_connection');
-		$sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsTechnicalName = ? AND pid = ?";
-		$stmt = $conn->prepare($sql);
-		$stmt->bindValue(1, '_netzhirsch_cookie_opt_in');
-		$stmt->bindValue(2, $modID);
-		$stmt->execute();
-		$cookieToolsTechnicalName = $stmt->fetch();
-		$cookieToolsTechnicalName = $cookieToolsTechnicalName['cookieToolsTechnicalName'];
+		$cookieToolsTechnicalName = $this->getNetzhirschTechnicalCookieName($modID);
 
 		$expiredDate = new DateTime();
 		$cookieExpiredTime = strtotime('+'.$cookieExpiredTime.' day',$expiredDate->getTimestamp());
@@ -111,6 +111,7 @@ class CookieController extends AbstractController
             'cookieId' => $cookieData->getId(),
 			'cookieIds' => $cookieData->getOtherCookieIds(),
 			'cookieVersion' => $cookieData->getVersion(),
+            'isJavaScript' => $cookieData->isJavaScript()
 		];
 		/** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
 		setcookie($cookieToolsTechnicalName, json_encode($netzhirschOptInCookie),$cookieExpiredTime,'/',$_SERVER['HTTP_HOST']);
@@ -278,27 +279,122 @@ class CookieController extends AbstractController
 
     /**
      * @param RequestStack $requestStack
+     * @param Request $request
      * @return CookieData
      */
-	public static function getUserCookie($requestStack)
+	public static function getUserCookie($requestStack = null,$request = null)
     {
         $cookieData = new CookieData();
-        if (!empty($requestStack)) {
+
+        if (empty($requestStack) && empty($request))
+            return $cookieData;
+
+        $currentRequest = $request;
+        if (empty($currentRequest))
             $currentRequest = $requestStack->getCurrentRequest();
-            if (!empty($currentRequest)) {
-                $cookieSet = $currentRequest->cookies;
+
+        if (!empty($currentRequest)) {
+            $cookieSet = $currentRequest->cookies;
+            if (!empty($cookieSet)) {
+                $cookieSet = $cookieSet->get('_netzhirsch_cookie_opt_in');
                 if (!empty($cookieSet)) {
-                    $cookieSet = $cookieSet->get('_netzhirsch_cookie_opt_in');
-                    if (!empty($cookieSet)) {
-                        /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
-                        $cookieId = json_decode($cookieSet);
-                        $cookieData->setId(intval($cookieId->cookieId));
-                        $cookieData->setVersion($cookieId->cookieVersion);
-                        $cookieData->setOtherCookieIds($cookieId->cookieIds);
-                    }
+                    /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
+                    $cookieId = json_decode($cookieSet);
+                    $cookieData->setId(intval($cookieId->cookieId));
+                    $cookieData->setVersion($cookieId->cookieVersion);
+                    $cookieData->setOtherCookieIds($cookieId->cookieIds);
                 }
             }
         }
         return $cookieData;
+    }
+
+    /**
+     * @Route("/cookie/revoke", name="cookie_revoke")
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function revokeAction(Request $request)
+    {
+        setrawcookie('_netzhirsch_cookie_opt_in', 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
+
+        return $this->redirectToPageBefore($request->get('currentPage'));
+    }
+
+    /**
+     * @param $currentPage
+     * @return RedirectResponse
+     */
+    private function redirectToPageBefore($currentPage){
+        $this->initializeContaoFramework();
+        return $this->redirect($currentPage);
+    }
+
+    /**
+     * @param $modID
+     * @return false|mixed
+     * @throws DBALException
+     */
+    private function getNetzhirschTechnicalCookieName($modID)
+    {
+        /* @var Connection $conn */
+        /** @noinspection PhpParamsInspection */
+        /** @noinspection MissingService */
+        $conn = $this->get('database_connection');
+        $sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsTechnicalName = ? AND pid = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, '_netzhirsch_cookie_opt_in');
+        $stmt->bindValue(2, $modID);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+
+    }
+
+    /**
+     * @Route("/cookie/allowed/iframe", name="cookie_allowed_iframe")
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws DBALException
+     */
+    public function allowedIframeAction(Request $request)
+    {
+        $iframe = $request->get('iframe');
+
+        /* @var Connection $conn */
+        /** @noinspection PhpParamsInspection */
+        /** @noinspection MissingService */
+        $conn = $this->get('database_connection');
+        $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?) OR (pid = ? AND cookieToolsTechnicalName = ?) ";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, 99);
+        $stmt->bindValue(2, $iframe);
+        $stmt->bindValue(3, 99);
+        $stmt->bindValue(4, '_netzhirsch_cookie_opt_in');
+        $stmt->execute();
+        $cookies = $stmt->fetchAll();
+        $nhCookie = null;
+        $otherCookie = null;
+        foreach ($cookies as $cookie) {
+            if ($cookie['cookieToolsSelect'] == '-') {
+                $nhCookie = $cookie;
+            } else {
+                $otherCookie = $cookie;
+            }
+        }
+
+        if (!empty($nhCookie) && !empty($otherCookie) ) {
+            $cookieData = self::getUserCookie(null,$request);
+
+            if (!empty($cookieData)) {
+                $otherCookieIds = $cookieData->getOtherCookieIds();
+            } else {
+                $cookieData = new CookieData();
+            }
+            $otherCookieIds[] = $otherCookie['id'];
+            $cookieData->setOtherCookieIds($otherCookieIds);
+            $this->setNetzhirschCookie($cookieData,99,$nhCookie['cookieToolExpiredTime']);
+        }
+
+        return $this->redirectToPageBefore($request->get('currentPage'));
     }
 }

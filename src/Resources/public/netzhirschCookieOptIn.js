@@ -51,6 +51,9 @@
 	$(document).ready(function () {
 		// falls CSS zu spät eingunden wird
 		$('.ncoi---behind').removeClass('ncoi---no-transition');
+		// no script bekommt keine checkbox
+		// checked ist der default
+		$('.ncoi--release-all').removeClass('ncoi---hidden');
 
 		let errorMessage = '';
 		$('.ncoi---mod-missing').each(function () {
@@ -169,7 +172,8 @@
 		let data = {
 			cookieIds : [{}],
 			modID : {},
-			newConsent : newConsent
+			newConsent : newConsent,
+			isJavaScript : 1
 		};
 		let cookieSelected = $('.ncoi---cookie');
 		Object.keys(cookieSelected).forEach(function(key) {

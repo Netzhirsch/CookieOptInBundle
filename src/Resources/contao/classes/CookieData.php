@@ -21,6 +21,10 @@ class CookieData
      */
     private $otherCookieIds;
 
+    /**
+     * @var bool $isJavaScript
+     */
+    private $isJavaScript;
 
     /**
      * @return int
@@ -68,5 +72,21 @@ class CookieData
     public function setOtherCookieIds($otherCookieIds)
     {
         $this->otherCookieIds = $otherCookieIds;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isJavaScript()
+    {
+        return $this->isJavaScript;
+    }
+
+    /**
+     * @param bool $isJavaScript
+     */
+    public function setIsJavaScript($isJavaScript)
+    {
+        $this->isJavaScript = $isJavaScript;
     }
 }

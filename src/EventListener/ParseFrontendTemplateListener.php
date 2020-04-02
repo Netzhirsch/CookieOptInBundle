@@ -121,23 +121,23 @@ class ParseFrontendTemplateListener
                 case 'youtube':
                     $htmlDisclaimer .=  $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://policies.google.com/privacy" target="_blank">YouTube</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
-                    $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>Youtube '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Youtube '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
                 case 'googleMaps':
                     $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['map'].' <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
-                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>Google Maps '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
                 case 'vimeo':
                     $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a>.';
                     $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
-                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>Vimeo '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
                 case 'iframe':
                 default:
                     global $objPage;
                     $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['iframe'].' <a href="/'.$privacyPolicyLink.'" target="_blank">'.$objPage->rootTitle.'</a>.';
-                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding"><i></i><span>iFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                    $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
                     break;
             }
             $htmlDisclaimer .= '</div>';
@@ -172,14 +172,18 @@ class ParseFrontendTemplateListener
             $htmlConsentBox = '<div class="ncoi---consent-box">';
             $htmlConsentBoxEnd = '</div>';
 
+            $htmlForm = '<!--suppress HtmlUnknownTarget --><form action="/cookie/allowed/iframe" method="post">';
+            $htmlFormEnd = '</form>';
             //Damit JS das iFrame wieder laden kann
-            $htmlConsentLink = '<div class="ncoi---blocked-link"><a href="#" class="ncoi---release">';
-            $htmlConsentLinkEnd = '<span>' . $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</span></a></div>';
+            $htmlConsentButton = '<div class="ncoi---blocked-link">
+<button type="submit" name="iframe" value="'.$iframeTypInHtml.'" class="ncoi---release">';
+            $htmlConsentButtonEnd = '<span>' . $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</span></button></div>';
+            $htmlInput = '<input class="ncoi---no-script--hidden" type="text" name="currentPage" value="'.$_SERVER['HTTP_REFERER'].'">';
 
             //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
             $iframe = '<script type="text/template">' . base64_encode($buffer) . '</script>';
 
-            $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlConsentLink . $htmlIcon . $htmlConsentLinkEnd . $htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
+            $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInput .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
 
             //User möchte das iFrame sehen, aber vielleicht auch über JS wieder blocken
             if ($isUserCookieDontAllowMedia) {

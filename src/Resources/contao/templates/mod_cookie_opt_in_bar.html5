@@ -34,40 +34,32 @@
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
 	>
 		<?php echo $this->arrData['headlineCookieOptInBar'] ?>
-		<div class="ncoi---hint">
-			<?php echo $this->arrData['questionHint'] ?>
-		</div>
-		<div class="ncoi---hint ncoi---hidden">
-			<?php echo $this->arrData['infoHint'] ?>
-		</div>
-        <?php $action = '/cookie/allowed?noScript=1&currentPageId='.$this->arrData['currentPageId']; ?>
-        <form action="<?=$action?>" method="post">
-            <input type="text" value="<?=$this->arrData['currentPageId']?>" class="ncoi---noScript--hidden">
-            <div class="ncoi---table ncoi---hidden">
-                <?php if(!empty($this->arrData['cookieTools'])) : ?>
-                <table>
+        <!--suppress HtmlUnknownTarget -->
+        <form id="cookieBar" name="cookieBar" action="/cookie/allowed" method="post">
+            <input id="infos--show" name="infos--show" type="checkbox" class="ncoi---no-script--hidden">
+                <div class="ncoi---hint ncoi---hint-question">
+                    <?php echo $this->arrData['questionHint'] ?>
+                </div>
+                <div class="ncoi---hint ncoi---hint-info ncoi---hidden">
+                    <?php echo $this->arrData['infoHint'] ?>
+                </div>
+                <div class="ncoi---table ncoi---hidden">
                     <?php if(!empty($this->arrData['cookieTools'])) : ?>
-                    <?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
-                    <?php include('includes/mod_cookie_opt_in_table.html5') ?>
-                    <?php endforeach;?>
+                    <table>
+                        <?php if(!empty($this->arrData['cookieTools'])) : ?>
+                        <?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
+                        <?php include('includes/mod_cookie_opt_in_table.html5') ?>
+                        <?php endforeach;?>
+                        <?php endif;?>
+                    </table>
                     <?php endif;?>
-                </table>
-                <?php endif;?>
-            </div>
+                </div>
             <div id="ncoi---cookie-groups" class="ncoi---cookie-groups">
                 <?php foreach($this->arrData['cookieGroups'] as $cookieGroup): ?>
                 <div class="ncoi---cookie-group">
                     <div class="ncoi---cookie-group-inner">
                         <div class="ncoi---slider-container">
-                            <input
-                                    type="checkbox"
-                                    id="<?=$cookieGroup?>"
-                                    value="<?=$cookieGroup?>"
-                                    class="ncoi---sliding"
-                            <?=(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) ? 'checked' : ''?>
-                            <?=($cookieGroup == $tlLang['essential']) ? 'disabled' : ''?>
-                            <?=($cookieGroup == $tlLang['externalMedia']) ? 'data-external-media="1"' : ''?>
-                            />
+                            <input type="checkbox" id="<?=$cookieGroup?>" value="<?=$cookieGroup?>" class="ncoi---sliding" form="cookieBar" name="data[cookieGroups][<?=$cookieGroup?>]"<?=(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) ? ' checked' : ' '?> <?=($cookieGroup == $tlLang['essential']) ? ' disabled' : ' '?> <?=($cookieGroup == $tlLang['externalMedia']) ? 'data-external-media="1"' : ''?>>
                             <label class="ncoi---sliding" for="<?=$cookieGroup?>"><i></i><span><?=$cookieGroup?></span></label>
                         </div>
                     </div>
@@ -82,7 +74,7 @@
                 <?php $classSave = '' ?>
                 <?php if (count($this->arrData['cookieGroups']) > 1) : ?>
                 <div class="ncoi---action ncoi---link <?=$primary?>">
-                    <button type="submit" id="ncoi---allowed--all" class=""  title="<?php echo$this->arrData['saveAllButton'] ?>">
+                    <button name="data[all]" value="1" type="submit" id="ncoi---allowed--all" title="<?php echo $this->arrData['saveAllButton'] ?>">
                         <?php echo $this->arrData['saveAllButton'] ?>
                     </button>
                 </div>
@@ -90,21 +82,33 @@
                 <?php $classSave .= $primary ?>
                 <?php endif ?>
                 <div class="ncoi---action ncoi---link<?=$classSave?>">
-                    <a type="submit" id="ncoi---allowed" href="#" title="<?php echo $this->arrData['saveButton'] ?>">
+                    <button name="data[save]" value="1" type="submit" id="ncoi---allowed" title="<?php echo $this->arrData['saveButton'] ?>">
                         <?php echo $this->arrData['saveButton'] ?>
-                    </a>
-                </div>
-                <div class="ncoi---action ncoi---link ncoi---infos-show">
-                    <button id="ncoi---infos--show" title="<?=$tlLang['info']?>">
-                                        <span class="ncoi---infos--show-active ncoi---hidden">
-                                            <?php echo $tlLang['info'].' '.$tlLang['hidden']; ?>
-                                        </span>
-                        <span class="ncoi---infos--show-deactivate">
-                                            <?php echo $tlLang['info'] ?>
-                                        </span>
                     </button>
                 </div>
+                <div class="ncoi---action ncoi---link ncoi---infos-show">
+                        <button type="button" id="ncoi---infos--show" title="<?=$tlLang['info']?>">
+                            <label for="infos--show">
+                                            <span class="ncoi---infos--show-active ncoi---hidden">
+                                                <?php echo $tlLang['info'].' '.$tlLang['hidden']; ?>
+                                            </span>
+                            <span class="ncoi---infos--show-deactivate">
+                                                <?php echo $tlLang['info'] ?>
+                                            </span>
+                            </label>
+                        </button>
+                </div>
             </div>
+            <label for="no-script-isJavaScript" class="ncoi---no-script--hidden"></label>
+            <input id="no-script-isJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isJavaScript]" value="0">
+            <label for="no-script-cookieGroups" class="ncoi---no-script--hidden"></label>
+            <input id="no-script-cookieGroups" class="ncoi---no-script--hidden" type="text" name="data[cookieGroups][<?=$tlLang['essential']?>]" value="<?=$tlLang['essential']?>">
+            <label for="no-script-modID" class="ncoi---no-script--hidden"></label>
+            <input id="no-script-modID" class="ncoi---no-script--hidden" type="text" name="data[modID]" value="<?=$this->arrData['id']?>">
+            <label for="no-script-currentPage"></label>
+            <input id="no-script-currentPage" class="ncoi---no-script--hidden" type="text" name="data[currentPage]" value="<?=$this->arrData['currentPage']?>">
+            <label for="no-script-newConsent"></label>
+            <input id="no-script-newConsent" class="ncoi---no-script--hidden" type="text" name="data[newConsent]" value="1">
         </form>
 		<?php if(!empty($this->arrData['impress']) && !empty($this->arrData['impress'])) :?>
 		<div class="ncoi---footer">
@@ -114,4 +118,7 @@
 		</div>
 		<?php endif; ?>
 	</div>
+    <?php foreach ($this->arrData['noScriptTracking'] as $noScriptTracking): ?>
+        <noscript><?=$noScriptTracking?></noscript>
+    <?php endforeach; ?>
 </div>

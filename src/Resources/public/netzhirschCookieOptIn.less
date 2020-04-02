@@ -11,8 +11,29 @@
 	padding:0;
 }
 
+#infos--show:checked {
+	+ .ncoi---hint-question {
+		display: none;
+	}
+	+ .ncoi---hint-question + .ncoi---hint-info {
+		display: block;
+		opacity: 1;
+		visibility: unset;
+	}
+	+ .ncoi---hint-question + .ncoi---hint-info + .ncoi---table {
+		display: block;
+		opacity: 1;
+		visibility: unset;
+	}
+}
+.ncoi---behind,.netzhirschCookieOptIn,.ncoi---consent-box {
+
+	.ncoi---no-script--hidden {
+		display: none;
+	}
+}
 .ncoi---behind {
-	
+
 	&.ncoi---hidden--page-load {
 		height:0;
 	}
@@ -162,14 +183,15 @@
 				padding:0.25rem;
 				flex:0 1 auto;
 				
-				a {
+				button {
 					.bb;
 					display:block;
 					float:left;
 					width:100%;
 					padding:0 1rem;
 					text-decoration:none;
-					
+					border: 0;
+
 					height:2rem;
 					line-height:2rem;
 					text-align:center;
@@ -213,7 +235,7 @@
 			.bb;
 			width:100%;
 			padding:.5rem;
-			
+
 			&.ncoi---hidden {
 				display:none;
 			}
@@ -367,8 +389,9 @@ iframe.ncoi---hidden {
 			padding:.5rem;
 			.bb;
 			
-			a.ncoi---release {
+			button.ncoi---release {
 				.bb;
+				border: 0;
 				display:flex;
 				justify-content:center;
 				align-items:center;
@@ -407,7 +430,11 @@ iframe.ncoi---hidden {
 		.ncoi--release-all {
 			width:auto;
 			padding:.5rem;
-			
+
+			&.ncoi---hidden {
+				display: none;
+			}
+
 			span {
 				color:white;
 				font-size:.7rem;
@@ -481,6 +508,7 @@ iframe.ncoi---hidden {
 		&.ncoi---hidden {
 			visibility:hidden;
 			opacity:0;
+			display: none;
 		}
 	}
 }

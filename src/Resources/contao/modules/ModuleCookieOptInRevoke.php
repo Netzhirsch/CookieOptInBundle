@@ -75,7 +75,9 @@ class ModuleCookieOptInRevoke extends Module
 			$data['moduleMissing'] = 'bar modul not in layout';
 		
 		$data['animation'] = $cookieOptInBarModule->__get('animation');
-		
+
+        $data['currentPage'] = $_SERVER['REDIRECT_URL'];
+
 		$this->Template->setData($data);
 	}
 }
