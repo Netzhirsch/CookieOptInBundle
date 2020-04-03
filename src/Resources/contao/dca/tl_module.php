@@ -258,16 +258,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'],
 				'exclude'   => true,
 				'inputType' => 'select',
-				'options'   => [
-					'googleAnalytics' => 'Google Analytics',
-					'facebookPixel' => 'Facebook Pixel',
-					'matomo' => 'Matomo',
-					'youtube' => 'YouTube',
-					'googleMaps' => 'Google Maps',
-					'vimeo' => 'Vimeo',
-					'iframe' => 'iFrame',
-					'-' => '-'
-				],
+				'options'   => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'],
 				'sql' => "varchar(32) default '' ",
 				'eval' => [
 					'tl_class'  =>  'long clr'
@@ -279,7 +270,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
-					'mandatory' => true,
 					'tl_class'  =>  'long clr'
 				],
 			],

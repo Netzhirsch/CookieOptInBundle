@@ -54,6 +54,17 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Faceb
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Type'];
 
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
+    'googleAnalytics' => 'Google Analytics',
+    'facebookPixel' => 'Facebook Pixel',
+    'matomo' => 'Matomo',
+    'youtube' => 'iFrame [YouTube]',
+    'googleMaps' => 'iFrame [Google Maps]',
+    'vimeo' => 'iFrame [Vimeo]',
+    'iframe' => 'iFrame [Andere]',
+    '-' => '-'
+];
+
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
 	['Tracking ID','z.B. UA-123456789-1 für Google Analytics'];
 

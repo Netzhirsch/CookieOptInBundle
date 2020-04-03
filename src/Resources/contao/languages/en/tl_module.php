@@ -64,6 +64,17 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =
     ['Tracking Server URL ','Only for e.g. https://netzhirsch.matomo.cloud/'];
 
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
+    'googleAnalytics' => 'Google Analytics',
+    'facebookPixel' => 'Facebook Pixel',
+    'matomo' => 'Matomo',
+    'youtube' => 'iFrame [YouTube]',
+    'googleMaps' => 'iFrame [Google Maps]',
+    'vimeo' => 'iFrame [Vimeo]',
+    'iframe' => 'iFrame [Other]',
+    '-' => '-'
+];
+
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsProvider'] = ['Providers'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'] =
