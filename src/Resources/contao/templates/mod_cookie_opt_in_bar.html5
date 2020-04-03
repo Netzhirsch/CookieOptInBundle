@@ -3,20 +3,15 @@
 <?php $id = str_replace(' id=','',$id)?>
 <?php $id = str_replace('"','',$id)?>
 <?php $class = "ncoi---no-transition" ?>
-<?php if(
-			(
-				$this->arrData['netzhirschCookieIsSet']
-&& !$this->arrData['netzhirschCookieIsVersionNew']
-)
-|| $this->arrData['isExcludePage']
-):?>
-<?php $class .= " ncoi---hidden" ?>
+
+<?php if(($this->arrData['netzhirschCookieIsSet'] && !$this->arrData['netzhirschCookieIsVersionNew']) || $this->arrData['isExcludePage']):?>
+    <?php $class .= " ncoi---hidden" ?>
 <?php endif; ?>
 
 <?php if (!empty($this->arrData['animation'])):?>
-<?php $class .= " ncoi---animation" ?>
+    <?php $class .= " ncoi---animation" ?>
 <?php else: ?>
-<?php $class .= " ncoi---animation-no" ?>
+    <?php $class .= " ncoi---animation-no" ?>
 <?php endif; ?>
 
 <?php $animation = (!empty($this->arrData['animation']) ? 'ncoi---hidden--'.$this->arrData['animation'] : '') ?>
@@ -99,23 +94,37 @@
                         </button>
                 </div>
             </div>
+
+            <!--no script-->
             <label for="no-script-isJavaScript" class="ncoi---no-script--hidden"></label>
             <input id="no-script-isJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isJavaScript]" value="0">
+
             <label for="no-script-cookieGroups" class="ncoi---no-script--hidden"></label>
             <input id="no-script-cookieGroups" class="ncoi---no-script--hidden" type="text" name="data[cookieGroups][<?=$tlLang['essential']?>]" value="<?=$tlLang['essential']?>">
+
             <label for="no-script-modID" class="ncoi---no-script--hidden"></label>
             <input id="no-script-modID" class="ncoi---no-script--hidden" type="text" name="data[modID]" value="<?=$this->arrData['id']?>">
+
             <label for="no-script-currentPage"></label>
             <input id="no-script-currentPage" class="ncoi---no-script--hidden" type="text" name="data[currentPage]" value="<?=$this->arrData['currentPage']?>">
+
             <label for="no-script-newConsent"></label>
             <input id="no-script-newConsent" class="ncoi---no-script--hidden" type="text" name="data[newConsent]" value="1">
+            <!--end no script-->
+
         </form>
-		<?php if(!empty($this->arrData['impress']) && !empty($this->arrData['impress'])) :?>
-		<div class="ncoi---footer">
-			<?php echo $this->arrData['impress'] ?>
-			<span class="ncoi---split"> | </span>
-			<?php echo $this->arrData['privacyPolicy'] ?>
-		</div>
+		<?php if(!empty($this->arrData['impress']) || !empty($this->arrData['privacyPolicy'])) :?>
+            <div class="ncoi---footer">
+                <?php if(!empty($this->arrData['impress'])) :?>
+                    <?php echo $this->arrData['impress'] ?>
+                <?php endif; ?>
+                <?php if(!empty($this->arrData['impress']) && !empty($this->arrData['privacyPolicy'])) :?>
+                    <span class="ncoi---split"> | </span>
+                <?php endif; ?>
+                <?php if(!empty($this->arrData['privacyPolicy'])) :?>
+                    <?php echo $this->arrData['privacyPolicy'] ?>
+                <?php endif; ?>
+            </div>
 		<?php endif; ?>
 	</div>
     <?php foreach ($this->arrData['noScriptTracking'] as $noScriptTracking): ?>

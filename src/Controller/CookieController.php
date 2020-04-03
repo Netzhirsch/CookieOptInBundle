@@ -359,16 +359,16 @@ class CookieController extends AbstractController
     public function allowedIframeAction(Request $request)
     {
         $iframe = $request->get('iframe');
-
+        $modID = $request->get('modID');
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
         /** @noinspection MissingService */
         $conn = $this->get('database_connection');
         $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?) OR (pid = ? AND cookieToolsTechnicalName = ?) ";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, 99);
+        $stmt->bindValue(1, $modID);
         $stmt->bindValue(2, $iframe);
-        $stmt->bindValue(3, 99);
+        $stmt->bindValue(3, $modID);
         $stmt->bindValue(4, '_netzhirsch_cookie_opt_in');
         $stmt->execute();
         $cookies = $stmt->fetchAll();
@@ -392,7 +392,7 @@ class CookieController extends AbstractController
             }
             $otherCookieIds[] = $otherCookie['id'];
             $cookieData->setOtherCookieIds($otherCookieIds);
-            $this->setNetzhirschCookie($cookieData,99,$nhCookie['cookieToolExpiredTime']);
+            $this->setNetzhirschCookie($cookieData,$modID,$nhCookie['cookieToolExpiredTime']);
         }
 
         return $this->redirectToPageBefore($request->get('currentPage'));

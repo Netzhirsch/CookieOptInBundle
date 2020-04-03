@@ -33,6 +33,7 @@ class ParseFrontendTemplateListener
             //Frontendvariablen
             $iframeTypInHtml = 'iframe';
             $privacyPolicyLink = '';
+            $modID = null;
 
             //Wenn null werden alle iFrames angezeigt.
             if (!empty($requestStack)) {
@@ -91,6 +92,7 @@ class ParseFrontendTemplateListener
                                     foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                                         if ($module['id'] == $externalMediaCookieInDB['pid']) {
                                             $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
+                                            $modID = $module['id'];
 
                                             if (!empty(PageModel::findById($module['privacyPolicy']))) {
                                                 $privacyPolicyLink = PageModel::findById($module['privacyPolicy']);
@@ -178,12 +180,13 @@ class ParseFrontendTemplateListener
             $htmlConsentButton = '<div class="ncoi---blocked-link">
 <button type="submit" name="iframe" value="'.$iframeTypInHtml.'" class="ncoi---release">';
             $htmlConsentButtonEnd = '<span>' . $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</span></button></div>';
-            $htmlInput = '<input class="ncoi---no-script--hidden" type="text" name="currentPage" value="'.$_SERVER['HTTP_REFERER'].'">';
+            $htmlInputCurrentPage = '<input class="ncoi---no-script--hidden" type="text" name="currentPage" value="'.$_SERVER['REDIRECT_URL'].'">';
+            $htmlInputModID = '<input class="ncoi---no-script--hidden" type="text" name="modID" value="'.$modID.'">';
 
             //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
             $iframe = '<script type="text/template">' . base64_encode($buffer) . '</script>';
 
-            $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInput .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
+            $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
 
             //User möchte das iFrame sehen, aber vielleicht auch über JS wieder blocken
             if ($isUserCookieDontAllowMedia) {
