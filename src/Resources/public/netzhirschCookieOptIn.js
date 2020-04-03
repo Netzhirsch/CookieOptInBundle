@@ -133,7 +133,7 @@
 			//Um richtige Chechbox zu finden
 			//und um Blockcontainer vielleicht auszublenden und iFrame anzuhängen
 			let parent = $(this).parents('.ncoi---blocked');
-			let input = parent.find('input');
+			let input = parent.find('.ncoi---sliding');
 			if (input.prop('checked')) {
 				//In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
 				$('[data-block-class="'+input.data('block-class')+'"]').prop('checked',true);
