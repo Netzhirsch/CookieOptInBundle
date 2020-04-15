@@ -6,7 +6,6 @@ use Contao\Config;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
-use Contao\System;
 use DateInterval;
 use DateTime;
 use Exception;
@@ -127,19 +126,22 @@ class PageLayoutListener {
 
 	public static function deleteCookie(Array $toolTypes) {
 		foreach ($toolTypes as $toolTyp) {
-			$cookieToolsTechnicalName = $toolTyp->cookieToolsTechnicalName;
-			if (empty($cookieToolsTechnicalName))
-				$cookieToolsTechnicalName = $toolTyp['cookieToolsTechnicalName'];
-			$cookieToolsTechnicalNames = explode(',', $cookieToolsTechnicalName);
+            if (is_array($toolTyp))
+                $cookieToolsTechnicalName = $toolTyp['cookieToolsTechnicalName'];
+            else
+                $cookieToolsTechnicalName = $toolTyp->cookieToolsTechnicalName;
+            if (!empty($cookieToolsTechnicalName)) {
+                $cookieToolsTechnicalNames = explode(',', $cookieToolsTechnicalName);
 
-			foreach ($cookieToolsTechnicalNames as $cookieToolsTechnicalName) {
-				$cookieToolGroup = $toolTyp->cookieToolGroup;
-				if (empty($cookieToolGroup))
-					$cookieToolGroup = $toolTyp['cookieToolGroup'];
-				if ($cookieToolGroup != 'Essenziell' && $cookieToolGroup != 'essential') {
-					setrawcookie($cookieToolsTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
-				}
-			}
+                foreach ($cookieToolsTechnicalNames as $cookieToolsTechnicalName) {
+                    $cookieToolGroup = $toolTyp->cookieToolGroup;
+                    if (empty($cookieToolGroup))
+                        $cookieToolGroup = $toolTyp['cookieToolGroup'];
+                    if ($cookieToolGroup != 'Essenziell' && $cookieToolGroup != 'essential') {
+                        setrawcookie($cookieToolsTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
+                    }
+                }
+            }
 		}
 	}
 

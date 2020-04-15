@@ -116,6 +116,8 @@ $GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Cookie Bar auf folgenden Se
 
 $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" Browser-Einstellung respektieren','Wenn diese Browser-Einstellung gesetzt ist, wird die Cookie Bar nicht eingeblendet.'];
 
+$GLOBALS['TL_LANG']['tl_module']['blockSite'] = ['Nutzung der Seite unterbinden','Elemente der Seite können erst angeklickt werden, wenn Cookies aktzeptiert oder abgelehnt wurden.'];
+
 $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Standard-CSS laden','Die CSS-Datei des Cookie Opt In Bar-Moduls laden.'];
 
 $GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];

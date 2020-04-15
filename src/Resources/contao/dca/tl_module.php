@@ -70,6 +70,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,impress
 	,excludePages
 	;respectToNotTrack
+	,blockSite
 	;templateBar
 	,defaultCss
 	,cssTemplateStyle
@@ -78,11 +79,10 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,animation
 	;ipFormatSave
 	;isNewCookieVersion
-	;external
 ';
 
 // setCookieVersion check for right modul
-$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_ncoi','setCookieVersion']];
+$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_ncoi','setCookieVersion'],['tl_module_ncoi','setLessVariables']];
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
@@ -518,9 +518,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['respectToNotTrack'] = [
 	'exclude'   => true,
 	'inputType' => 'checkbox',
 	'eval' => [
-		'tl_class'  =>  'long clr',
+		'tl_class'  =>  'w50',
 	],
 	'sql' => "varchar(1) NULL default '0' ",
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['blockSite'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval' => [
+        'tl_class'  =>  'w50'
+    ],
+    'sql' => "varchar(1) NOT NULL DEFAULT 0",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
@@ -627,7 +637,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 	],
 	'sql' => "varchar(64) NULL default '' ",
 	'load_callback' => [['tl_module_ncoi','getDefaultMaxWidth']],
-	'save_callback' => [['tl_module_ncoi','setMaxWidth']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
@@ -663,12 +672,16 @@ class tl_module_ncoi extends tl_module {
 	 * @return mixed
 	 * @throws Less_Exception_Parser
 	 */
-	public function setMaxWidth($value){
-		
-		Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$value);
-		return $value;
+	public function setLessVariables(DC_Table $dca){
+        $modulId = Input::get('id');
+        $strField = $dca->__get('field');
+        if ($strField == 'isNewCookieVersion') {
+            $cookieOptInBarMod = ModuleModel::findById($modulId);
+            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$cookieOptInBarMod->maxWidth,$cookieOptInBarMod->blockSite);
+        }
+		return $dca;
 	}
-	
+
 	/**
 	 * @param $value
 	 *

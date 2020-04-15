@@ -1,4 +1,5 @@
 @maxWidth:400px;
+@zIndex:0;
 .bb {
 	box-sizing:border-box;
 }
@@ -52,7 +53,7 @@
 	right:0;
 	height:100%;
 	width:100%;
-	z-index:1000000;
+	z-index:@zIndex;
 	justify-content:center;
 	
 	&.ncoi---leftTop {
@@ -106,7 +107,6 @@
 		float:left;
 		.bb;
 		width:@maxWidth;
-		max-width:90%;
 		max-height:50%;
 		border-radius:3px;
 		padding:0.5rem;
