@@ -6,7 +6,8 @@
 
 		// Wenn Gruppe checked oder unchecked nicht einzele Cookies prüfen
 		let isSetIFrames = false;
-		if ( $('[data-external-media]').prop('checked')) {
+		let externalMedia = $('[data-external-media]');
+		if (externalMedia.prop('checked')) {
 				isSetIFrames = true;
 				//nur Iframe setzten wenn nötig
 				if (!blockedElement.hasClass('ncoi---hidden')) {
@@ -18,7 +19,7 @@
 				} else {
 					isSetIFrames = false;
 				}
-		} else {
+		} else if(externalMedia.length > 0) {
 			$('iframe').addClass('ncoi---hidden');
 			blockedElement.removeClass('ncoi---hidden');
 		}
