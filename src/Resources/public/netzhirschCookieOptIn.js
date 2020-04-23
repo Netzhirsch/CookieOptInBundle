@@ -1,44 +1,25 @@
 (function($){
 	//ausführung beim Speicher der Entscheidung
 	function checkExternalMedia() {
-
-		let blockedElement = $('.ncoi---blocked');
-
-		// Wenn Gruppe checked oder unchecked nicht einzele Cookies prüfen
-		let isSetIFrames = false;
-		let externalMedia = $('[data-external-media]');
-		if (externalMedia.prop('checked')) {
-				isSetIFrames = true;
-				//nur Iframe setzten wenn nötig
-				if (!blockedElement.hasClass('ncoi---hidden')) {
-					let iframes = $('.ncoi---iframes');
-					// nur ein script tag zur Zeit
-					iframes.each(function () {
-						addIframe($(this));
-					});
-				} else {
-					isSetIFrames = false;
-				}
-		} else if(externalMedia.length > 0) {
-			$('iframe').addClass('ncoi---hidden');
-			blockedElement.removeClass('ncoi---hidden');
-		}
-		if (!isSetIFrames) {
-			let cookiesInput = $('table tbody .ncoi---cookie');
-			cookiesInput.each(function () {
-				if ($(this).prop('checked')) {
-					//Klasses des Blockconainter aus input data-block-class auslesen
-					let blockClass = '.' + $(this).data('block-class');
-					let blockClassElement = $(blockClass);
-
-					// Nur gefunden BlockContainer werden bearbeitet
-					// jedes Element separat
-					blockClassElement.each(function () {
-						addIframe($(this));
-					});
-				}
-			});
-		}
+		let cookiesInput = $('table tbody .ncoi---cookie');
+		cookiesInput.each(function () {
+			let blockClass = '.' + $(this).data('block-class');
+			let blockClassElement = $(blockClass);
+			if ($(this).prop('checked')) {
+				//Klasses des Blockconainter aus input data-block-class auslesen
+				console.log(blockClassElement);
+				// Nur gefunden BlockContainer werden bearbeitet
+				// jedes Element separat
+				blockClassElement.each(function () {
+					addIframe($(this));
+				});
+			} else {
+				blockClassElement.each(function () {
+					$(this).removeClass('ncoi---hidden');
+					$(this).next('iframe').addClass('ncoi---hidden');
+				});
+			}
+		});
 	}
 
 	function addIframe(parent){

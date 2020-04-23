@@ -29,7 +29,6 @@
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
 	>
 		<?php echo $this->arrData['headlineCookieOptInBar'] ?>
-        <!--suppress HtmlUnknownTarget -->
         <form id="cookieBar" name="cookieBar" action="/cookie/allowed" method="post">
             <input id="infos--show" name="infos--show" type="checkbox" class="ncoi---no-script--hidden">
                 <div class="ncoi---hint ncoi---hint-question">
@@ -95,7 +94,6 @@
                 </div>
             </div>
 
-            <!--no script-->
             <label for="no-script-isJavaScript" class="ncoi---no-script--hidden"></label>
             <input id="no-script-isJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isJavaScript]" value="0">
 
@@ -110,7 +108,6 @@
 
             <label for="no-script-newConsent"></label>
             <input id="no-script-newConsent" class="ncoi---no-script--hidden" type="text" name="data[newConsent]" value="1">
-            <!--end no script-->
 
         </form>
 		<?php if(!empty($this->arrData['impress']) || !empty($this->arrData['privacyPolicy'])) :?>

@@ -9,16 +9,12 @@
 	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 	data-ncoi-animation="<?= $this->arrData['animation']?>"
 >
-	<div>
-        <!--suppress HtmlUnknownTarget phpStorm dont know routes-->
-        <form id="cookieRevoke" name="cookieRevoke" action="/cookie/revoke" method="post">
-            <button type="submit" id="ncoi---revoke" class="ncoi---revoke--button">
-                <?php echo $this->arrData['revokeButton'] ?>
-            </button>
+    <form id="cookieRevoke" name="cookieRevoke" action="/cookie/revoke" method="post">
+        <button type="submit" id="ncoi---revoke" class="ncoi---revoke--button">
+            <?php echo $this->arrData['revokeButton'] ?>
+        </button>
 
-            <label for="currentPage" class="ncoi---no-script--hidden"></label>
-            <input id="currentPage" class="ncoi---no-script--hidden" type="text" name="currentPage" value="<?=$this->arrData['currentPage']?>">
-        </form>
-
-	</div>
+        <label for="currentPage" class="ncoi---no-script--hidden"></label>
+        <input id="currentPage" class="ncoi---no-script--hidden" type="text" name="currentPage" value="<?=$this->arrData['currentPage']?>">
+    </form>
 </div>

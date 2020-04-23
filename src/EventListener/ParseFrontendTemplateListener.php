@@ -43,12 +43,11 @@ class ParseFrontendTemplateListener
                     $iframeTypInHtml = 'youtube';
                 }elseif (strpos($buffer, 'player.vimeo') !== false) {
                     $iframeTypInHtml = 'vimeo';
-                }elseif (strpos($buffer, 'www.google') !== false) {
+                }elseif (strpos($buffer, 'google.com/maps') || strpos($buffer, 'maps.google') !== false) {
                     $iframeTypInHtml = 'googleMaps';
                 }
 
                 //Suche nach dem iFrame.
-                /** @noinspection MissingService */
                 $conn = $container->get('database_connection');
                 $sql = "SELECT id,pid,cookieToolsSelect FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
                 /** @var Statement $stmt */
