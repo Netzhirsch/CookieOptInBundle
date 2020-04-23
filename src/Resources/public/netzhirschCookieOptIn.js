@@ -66,7 +66,7 @@
 			track(1);
 		});
 
-		$('#ncoi---revoke').on('click',function (e) {
+		$('.ncoi---revoke').on('click',function (e) {
 			e.preventDefault();
 			$('.ncoi---behind').removeClass('ncoi---hidden--page-load')
 				.removeClass('ncoi---hidden');

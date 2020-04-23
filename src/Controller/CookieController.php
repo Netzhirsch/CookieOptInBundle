@@ -127,7 +127,6 @@ class CookieController extends AbstractController
 		$response = [];
 		
 		/** @noinspection PhpParamsInspection */
-        /** @noinspection MissingService */
 		$conn = $this->get('database_connection');
 		/* @var Connection $conn */
 		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_module WHERE type = ? AND id = ?";
@@ -205,7 +204,6 @@ class CookieController extends AbstractController
 		$requestStack = $this->get('request_stack');
 		/* @var Connection $conn */
 		/** @noinspection PhpParamsInspection */
-        /** @noinspection MissingService */
         $conn = $this->get('database_connection');
 
         $sql = "SELECT ipFormatSave FROM tl_module WHERE id = ?";
@@ -339,7 +337,6 @@ class CookieController extends AbstractController
     {
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
-        /** @noinspection MissingService */
         $conn = $this->get('database_connection');
         $sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsTechnicalName = ? AND pid = ?";
         $stmt = $conn->prepare($sql);
@@ -362,7 +359,6 @@ class CookieController extends AbstractController
         $modID = $request->get('modID');
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
-        /** @noinspection MissingService */
         $conn = $this->get('database_connection');
         $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?) OR (pid = ? AND cookieToolsTechnicalName = ?) ";
         $stmt = $conn->prepare($sql);

@@ -9,12 +9,7 @@
 	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 	data-ncoi-animation="<?= $this->arrData['animation']?>"
 >
-    <form id="cookieRevoke" name="cookieRevoke" action="/cookie/revoke" method="post">
-        <button type="submit" id="ncoi---revoke" class="ncoi---revoke--button">
-            <?php echo $this->arrData['revokeButton'] ?>
-        </button>
-
-        <label for="currentPage" class="ncoi---no-script--hidden"></label>
-        <input id="currentPage" class="ncoi---no-script--hidden" type="text" name="currentPage" value="<?=$this->arrData['currentPage']?>">
-    </form>
+    <a class="ncoi---revoke--button" href="/cookie/revoke?currentPage=<?=$this->arrData['currentPage']?>">
+        <?php echo $this->arrData['revokeButton'] ?>
+    </a>
 </div>
