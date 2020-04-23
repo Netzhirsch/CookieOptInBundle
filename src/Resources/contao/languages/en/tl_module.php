@@ -125,6 +125,8 @@ $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" respect
 
 $GLOBALS['TL_LANG']['tl_module']['blockSite'] = ['Disable use of the site','Elements of the page can only be clicked on after cookies have been accepted or rejected.'];
 
+$GLOBALS['TL_LANG']['tl_module']['zIndex'] = ['z-index settings','Increase this value if the cookie banner is covered by other elements.'];
+
 $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Load standard CSS','Load the CSS file of the Cookie Opt In Bar module.'];
 
 $GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];

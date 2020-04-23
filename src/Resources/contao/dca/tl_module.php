@@ -70,7 +70,8 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,impress
 	,excludePages
 	;respectToNotTrack
-	,blockSite
+	;blockSite
+	,zIndex
 	;templateBar
 	,defaultCss
 	,cssTemplateStyle
@@ -518,7 +519,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['respectToNotTrack'] = [
 	'exclude'   => true,
 	'inputType' => 'checkbox',
 	'eval' => [
-		'tl_class'  =>  'w50',
+		'tl_class'  =>  'w50 clr',
 	],
 	'sql' => "varchar(1) NULL default '0' ",
 ];
@@ -531,6 +532,18 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
         'tl_class'  =>  'w50'
     ],
     'sql' => "varchar(1) NOT NULL DEFAULT 0",
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['zIndex'] = [
+    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['zIndex'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval' => [
+        'mandatory' => true,
+        'rgxp'=>'natural',
+        'tl_class'=>'w50',
+    ],
+    'sql' => "int(7) NULL DEFAULT '1' ",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
@@ -677,7 +690,7 @@ class tl_module_ncoi extends tl_module {
         $strField = $dca->__get('field');
         if ($strField == 'isNewCookieVersion') {
             $cookieOptInBarMod = ModuleModel::findById($modulId);
-            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$cookieOptInBarMod->maxWidth,$cookieOptInBarMod->blockSite);
+            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$cookieOptInBarMod->maxWidth,$cookieOptInBarMod->blockSite,$cookieOptInBarMod->zIndex);
         }
 		return $dca;
 	}
