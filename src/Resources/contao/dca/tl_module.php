@@ -70,8 +70,8 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,impress
 	,excludePages
 	;respectToNotTrack
-	;blockSite
-	,zIndex
+	;zIndex
+	,blockSite
 	;templateBar
 	,defaultCss
 	,cssTemplateStyle
@@ -524,16 +524,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['respectToNotTrack'] = [
 	'sql' => "varchar(1) NULL default '0' ",
 ];
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['blockSite'],
-    'exclude'   => true,
-    'inputType' => 'checkbox',
-    'eval' => [
-        'tl_class'  =>  'w50'
-    ],
-    'sql' => "varchar(1) NOT NULL DEFAULT 0",
-];
-
 $GLOBALS['TL_DCA']['tl_module']['fields']['zIndex'] = [
     'label' => 	&$GLOBALS['TL_LANG']['tl_module']['zIndex'],
     'exclude'   => true,
@@ -541,10 +531,21 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['zIndex'] = [
     'eval' => [
         'mandatory' => true,
         'rgxp'=>'natural',
-        'tl_class'=>'w50',
+        'tl_class'=>'long clr',
     ],
     'sql' => "int(7) NULL DEFAULT '1' ",
 ];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['blockSite'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval' => [
+        'tl_class'  =>  'long clr'
+    ],
+    'sql' => "varchar(1) NOT NULL DEFAULT 0",
+];
+
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['defaultCss'],
