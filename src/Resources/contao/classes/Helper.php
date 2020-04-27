@@ -31,9 +31,12 @@ class Helper
 
         if (empty($zIndex))
             $zIndex = 1;
-		if ($blockSite == '')
-            $zIndex = 0;
         $parser->ModifyVars(['zIndex' => $zIndex]);
+
+		if ($blockSite == '') {
+            $parser->ModifyVars(['background' => 'none']);
+            $parser->ModifyVars(['pointerEvents' => 'none']);
+        }
 
 		try {
 			$css = $parser->getCss();

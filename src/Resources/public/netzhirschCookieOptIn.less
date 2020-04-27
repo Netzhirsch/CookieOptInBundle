@@ -1,5 +1,7 @@
 @maxWidth:400px;
 @zIndex:0;
+@background:rgba(0, 0, 0, 0.21);
+@pointerEvents:all;
 .bb {
 	box-sizing:border-box;
 }
@@ -38,7 +40,7 @@
 		height:0;
 	}
 	
-	background:rgba(0, 0, 0, 0.21);
+	background:@background;
 	display:flex;
 	position:fixed;
 	left:0;
@@ -49,7 +51,8 @@
 	width:100%;
 	z-index:@zIndex;
 	justify-content:center;
-	
+	pointer-events: @pointerEvents;
+
 	&.ncoi---leftTop {
 		align-items:flex-start;
 		justify-content:flex-start;
@@ -105,7 +108,8 @@
 		border-radius:3px;
 		padding:0.5rem;
 		overflow-y:auto;
-		
+		pointer-events: all;
+
 		@media (max-height:767px) {
 			max-height:90%;
 		}
@@ -190,7 +194,7 @@
 					padding:0 1rem;
 					text-decoration:none;
 					border: 0;
-
+					cursor: pointer;
 					height:2rem;
 					line-height:2rem;
 					text-align:center;
