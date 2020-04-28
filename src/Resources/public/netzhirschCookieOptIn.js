@@ -76,6 +76,8 @@
 
 		$('#ncoi---infos--show').on('click',function (e) {
 			e.preventDefault();
+			$('.ncoi---cookie-groups').toggleClass('ncoi---hidden');
+			$('.ncoi---form').toggleClass('ncoi---inconspicuous');
 			$('.ncoi---hint').toggleClass('ncoi---hidden');
 			$('.ncoi---table').toggleClass('ncoi---hidden');
 			$('.ncoi---infos--show-active').toggleClass('ncoi---hidden');

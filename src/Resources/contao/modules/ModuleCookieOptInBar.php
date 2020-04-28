@@ -51,8 +51,21 @@ class ModuleCookieOptInBar extends Module
 		
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
-		
-		self::setCssJs($this->__get('defaultCss'),$this->__get('cssTemplateStyle'),$this->__get('maxWidth'),$this->__get('blockSite'),$this->__get('zIndex'));
+
+		$maxWidth = $this->__get('maxWidth');
+        $data['inconspicuous'] = false;
+        $array = StringUtil::deserialize($maxWidth);
+        if ($array['value'] == '100' && $array['unit'] == '%') {
+            $data['inconspicuous'] = true;
+        }
+
+		self::setCssJs(
+		    $this->__get('defaultCss'),
+            $this->__get('cssTemplateStyle'),
+            $maxWidth,
+            $this->__get('blockSite')
+            ,$this->__get('zIndex')
+        );
 		
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
 		
@@ -107,8 +120,8 @@ class ModuleCookieOptInBar extends Module
 		if ($netzhirschOptInCookie->cookieVersion < $this->__get('cookieVersion'))
 			$data['netzhirschCookieIsVersionNew'] = "1";
 
-		if (!empty($this->headlineCookieOptInBar)) {
-			$headlineData = StringUtil::deserialize($this->headlineCookieOptInBar);
+        $headlineData = StringUtil::deserialize($this->headlineCookieOptInBar);
+		if (!empty($headlineData['value'])) {
 			$data['headlineCookieOptInBar'] = "<".$headlineData['unit']." class=\"ncoi---headline\">".$headlineData['value']."</".$headlineData['unit'].">";
 		}
 

@@ -110,6 +110,17 @@
 		overflow-y:auto;
 		pointer-events: all;
 
+
+		.ncoi---form {
+			margin: 0;
+
+			&.ncoi---inconspicuous {
+				display:flex;
+				align-items: end;
+				width: 100%;
+			}
+		}
+
 		@media (max-height:767px) {
 			max-height:90%;
 		}
@@ -140,6 +151,10 @@
 			&.ncoi---hidden {
 				display:none;
 			}
+
+			&.ncoi---inconspicuous {
+				flex: 2;
+			}
 		}
 		
 		.ncoi---cookie-groups {
@@ -167,6 +182,10 @@
 					.bb;
 					width:100%;
 				}
+			}
+
+			&.ncoi---hidden {
+				display:none;
 			}
 		}
 		
@@ -207,6 +226,11 @@
 				.ncoi---hidden {
 					display:none;
 				}
+			}
+			&.ncoi---inconspicuous {
+				flex: 1;
+				flex-wrap: unset;
+				padding: 0;
 			}
 		}
 		

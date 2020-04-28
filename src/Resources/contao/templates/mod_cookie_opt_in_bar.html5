@@ -28,10 +28,19 @@
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
 	>
-		<?php echo $this->arrData['headlineCookieOptInBar'] ?>
-        <form id="cookieBar" name="cookieBar" action="/cookie/allowed" method="post">
+		<?=(empty($this->arrData['headlineCookieOptInBar'])?'':$this->arrData['headlineCookieOptInBar']) ?>
+
+        <?php $class = 'ncoi---form'?>
+        <?php if($this->arrData['inconspicuous'] == 1) : ?>
+            <?php $class .= ' ncoi---inconspicuous' ?>
+        <?php endif ?>
+        <form id="cookieBar" class="<?=$class?>" name="cookieBar" action="/cookie/allowed" method="post">
             <input id="infos--show" name="infos--show" type="checkbox" class="ncoi---no-script--hidden">
-                <div class="ncoi---hint ncoi---hint-question">
+            <?php $class = 'ncoi---hint ncoi---question'?>
+            <?php if($this->arrData['inconspicuous'] == 1) : ?>
+                <?php $class .= ' ncoi---inconspicuous' ?>
+            <?php endif ?>
+                <div class="<?=$class?>">
                     <?php echo $this->arrData['questionHint'] ?>
                 </div>
                 <div class="ncoi---hint ncoi---hint-info ncoi---hidden">
@@ -48,7 +57,11 @@
                     </table>
                     <?php endif;?>
                 </div>
-            <div id="ncoi---cookie-groups" class="ncoi---cookie-groups">
+            <?php $class = 'ncoi---cookie-groups'?>
+            <?php if($this->arrData['inconspicuous'] == 1) : ?>
+                <?php $class .= ' ncoi---hidden' ?>
+            <?php endif ?>
+            <div id="ncoi---cookie-groups" class="<?=$class?>">
                 <?php foreach($this->arrData['cookieGroups'] as $cookieGroup): ?>
                 <div class="ncoi---cookie-group">
                     <div class="ncoi---cookie-group-inner">
@@ -60,7 +73,11 @@
                 </div>
                 <?php endforeach; ?>
             </div>
-            <div class="ncoi---actions">
+            <?php $class = 'ncoi---actions'?>
+            <?php if($this->arrData['inconspicuous'] == 1) : ?>
+                <?php $class .= ' ncoi---inconspicuous' ?>
+            <?php endif ?>
+            <div class="<?=$class?>">
                 <?php $primary = ' ncoi---link-primary' ?>
                 <?php if($this->arrData['highlightSaveAllButton'] == 0) : ?>
                     <?php $primary = '' ?>

@@ -99,10 +99,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 	],
 	'eval' => [
 		'tl_class'=>'w50 clr',
-		'alwaysSave' => true
 	],
-	'sql' => "text NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultHeadline']]
+	'sql' => "text NULL default ''"
 ];
 
 
@@ -759,13 +757,6 @@ class tl_module_ncoi extends tl_module {
 			$value = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
 		
 		return $value;
-	}
-	
-	public function getDefaultHeadline($value){
-		if (empty($value) || $value == 'a:2:{s:4:"unit";s:2:"h2";s:5:"value";s:0:"";}')
-			return $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBarDefault'];
-		else
-			return $value;
 	}
 	
 	public function setCookieVersion(DC_Table $dca)
