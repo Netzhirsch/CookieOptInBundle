@@ -20,7 +20,11 @@ class ParseFrontendTemplateListener
     public function onParseFrontendTemplate($buffer, $template)
     {
         //iFrame als HTML Element eingebunden
-        if ($template == 'ce_html' && strpos($buffer, '<iframe') !== false) {
+        if (
+            $template == 'ce_html' && strpos($buffer, '<iframe') !== false
+            || $template == 'ce_youtube' && strpos($buffer, '<iframe') !== false
+            || $template == 'ce_vimeo' && strpos($buffer, '<iframe') !== false
+        ) {
 
             // Block Entscheidungsvariablen
             $isUserCookieDontAllowMedia = false;
@@ -39,7 +43,7 @@ class ParseFrontendTemplateListener
             if (!empty($requestStack)) {
 
                 //Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
-                if (strpos($buffer, 'www.youtube') !== false) {
+                if (strpos($buffer, 'youtube') !== false || strpos($buffer, 'youtu.be') !== false) {
                     $iframeTypInHtml = 'youtube';
                 }elseif (strpos($buffer, 'player.vimeo') !== false) {
                     $iframeTypInHtml = 'vimeo';
