@@ -70,12 +70,15 @@ class ParseFrontendTemplateListener
                     }
                 }
 
-                //Feststellen ob iFrame laut Backend geblocked werden soll
+                //Feststellen ob iFrame laut Backend geblocked werden sollen
                 // und Datenschutz url finden
                 $attributes = $requestStack->getCurrentRequest()->attributes;
                 if (!empty($attributes)) {
                     /** @var PageModel $pageModel */
                     $pageModel = $attributes->get('pageModel');
+                    // Contao 4.4
+                    if (empty($pageModel))
+                        $pageModel = $GLOBALS['objPage'];
                     $moduleIds = PageLayoutListener::checkModules($pageModel, [], []);
 
                     if (empty($moduleIds)) {
