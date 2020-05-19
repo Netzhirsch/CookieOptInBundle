@@ -85,7 +85,7 @@ class GetSystemMessagesListener
 
 		$expireInLang = $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['infoLicenseRemainingDate'];
 
-			if ($timeRemaining->m < 2) {
+			if ($timeRemaining->m < 2 && $timeRemaining->y == 0) {
 
 				if(($timeRemaining->d == 0))
 					$expireIn = $expireInLang['lessHours'];
