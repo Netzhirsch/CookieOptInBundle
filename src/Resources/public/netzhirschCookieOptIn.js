@@ -7,7 +7,6 @@
 			let blockClassElement = $(blockClass);
 			if ($(this).prop('checked')) {
 				//Klasses des Blockconainter aus input data-block-class auslesen
-				console.log(blockClassElement);
 				// Nur gefunden BlockContainer werden bearbeitet
 				// jedes Element separat
 				blockClassElement.each(function () {
@@ -177,38 +176,57 @@
 			success: function (data) {
 				let tools = data.tools;
 				let body = $('body');
+				let googleAnalytics = false;
+				let matomo = false;
+				let templateScriptsGoogle = $('.analytics-decoded-googleAnalytics');
+				let templateScriptsMatomo = $('.analytics-decoded-matomo');
 				if (tools !== null) {
 					tools.forEach(function (tool) {
 						let toolName = tool.cookieToolsSelect;
 						if (toolName.localeCompare('googleAnalytics') === 0) {
-							$.getScript('https://www.googletagmanager.com/gtag/js?id=' + tool.cookieToolsTrackingID);
-							window.dataLayer = window.dataLayer || [];
-							function gtag(){dataLayer.push(arguments);}
+							googleAnalytics = true;
+							let templateScriptsEncodeElement = $('#analytics-encoded-googleAnalytics');
+							if(templateScriptsEncodeElement.length > 0 && templateScriptsGoogle.length === 0) {
+								decodeAfter(templateScriptsEncodeElement);
+							}
+							else if(templateScriptsEncodeElement.length === 0 && templateScriptsGoogle.length === 0) {
+								$.getScript('https://www.googletagmanager.com/gtag/js?id=' + tool.cookieToolsTrackingID);
+								window.dataLayer = window.dataLayer || [];
+								function gtag(){dataLayer.push(arguments);}
 
-							gtag('js', new Date());
+								gtag('js', new Date());
 
-							gtag('config', tool.cookieToolsTrackingID);
+								gtag('config', tool.cookieToolsTrackingID);
+
+							}
 						}
 						if (toolName.localeCompare('facebookPixel') === 0) {
 							<!-- Facebook Pixel Code -->
 						 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', tool.cookieToolsTrackingID);fbq('track', 'PageView');
 						}
 						if (toolName.localeCompare('matomo') === 0) {
-							let url = tool.cookieToolsTrackingServerUrl;
-							if (url.slice(-1) !== '/')
-								url += '/';
-							body.append("<script type=\"text/javascript\">" +
-								"var _paq = window._paq || [];" +
-								"_paq.push(['trackPageView']);" +
-								"_paq.push(['enableLinkTracking']);" +
-								"(function() {" +
-								"var u = '"+url+"';" +
-								"_paq.push(['setTrackerUrl', u+'matomo.php']);" +
-								"_paq.push(['setSiteId', '"+tool.cookieToolsTrackingID+"']);" +
-								"var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];" +
-								"g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);" +
-								"})();" +
-								"</script>");
+							matomo = true;
+							let templateScriptsEncodeElement = $('#analytics-encoded-matomo');
+							if(templateScriptsEncodeElement.length > 0 && templateScriptsMatomo.length === 0) {
+								decodeAfter(templateScriptsEncodeElement);
+							}
+							else if(templateScriptsEncodeElement.length === 0 && templateScriptsMatomo.length === 0) {
+								let url = tool.cookieToolsTrackingServerUrl;
+								if (url.slice(-1) !== '/')
+									url += '/';
+								body.append("<script type=\"text/javascript\">" +
+									"var _paq = window._paq || [];" +
+									"_paq.push(['trackPageView']);" +
+									"_paq.push(['enableLinkTracking']);" +
+									"(function() {" +
+									"var u = '"+url+"';" +
+									"_paq.push(['setTrackerUrl', u+'matomo.php']);" +
+									"_paq.push(['setSiteId', '"+tool.cookieToolsTrackingID+"']);" +
+									"var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];" +
+									"g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);" +
+									"})();" +
+									"</script>");
+							}
 						}
 					});
 					let otherScripts = data.otherScripts;
@@ -218,7 +236,21 @@
 						});
 					}
 				}
+				if (!googleAnalytics && templateScriptsGoogle.length > 0) {
+					templateScriptsGoogle.remove();
+				}
+				if (!matomo && templateScriptsMatomo.length > 0) {
+					templateScriptsMatomo.remove();
+				}
 			}
 		});
 	}// End Track
 })(jQuery);
+
+function decodeAfter(templateScriptsEncodeElement) {
+	let templateScriptsEncode = templateScriptsEncodeElement.html();
+	templateScriptsEncode = templateScriptsEncode.replace('<!--','');
+	templateScriptsEncode = templateScriptsEncode.replace('-->','');
+	templateScriptsEncode = atob(templateScriptsEncode);
+	templateScriptsEncodeElement.after(templateScriptsEncode);
+}
