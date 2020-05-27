@@ -24,14 +24,17 @@ class PageLayoutListener {
 	public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
 
 		$removeModules = false;
-
-		$licenseKey = (!empty($pageModel->__get('ncoi_license_key'))) ? $pageModel->__get('ncoi_license_key') : Config::get('ncoi_license_key');
-		$licenseExpiryDate = (!empty($pageModel->__get('ncoi_license_expiry_date'))) ? $pageModel->__get('ncoi_license_expiry_date') : Config::get('ncoi_license_expiry_date');
+        $rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
+        if (empty($rootPage)) {
+            $rootPage = $pageModel->__get('rootId');
+            $rootPage = PageModel::findByIdOrAlias($rootPage);
+        }
+		$licenseKey = (!empty($rootPage->__get('ncoi_license_key'))) ? $rootPage->__get('ncoi_license_key') : Config::get('ncoi_license_key');
+		$licenseExpiryDate = (!empty($rootPage->__get('ncoi_license_expiry_date'))) ? $rootPage->__get('ncoi_license_expiry_date') : Config::get('ncoi_license_expiry_date');
 
 		if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST']) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
 			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
 			if ($licenseAPIResponse->getSuccess()) {
-				$rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
 				$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
 				$licenseKey = $licenseAPIResponse->getLicenseKey();
 				LicenseController::setLicense($licenseExpiryDate,$licenseKey,$rootPage);
