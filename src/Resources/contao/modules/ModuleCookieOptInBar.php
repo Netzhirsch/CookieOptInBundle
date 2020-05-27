@@ -131,14 +131,14 @@ class ModuleCookieOptInBar extends Module
 
 		$impress = PageModel::findById($this->__get('impress'));
 		if (!empty($impress)) {
-            $impressUrl = $this->getUrl($this->__get('impress'));
+            $impressUrl = $impress->getFrontendUrl();
             $impress = '<a class="ncoi---link" href="'.$impressUrl.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
 			$data['impress'] = $impress;
 		}
 
 		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));
 		if (!empty($privacyPolicy)) {
-			$privacyPolicy = $this->getUrl($this->__get('privacyPolicy'));
+			$privacyPolicy = $privacyPolicy->getFrontendUrl();
 			$privacyPolicy = '<a class="ncoi---link" href="'.$privacyPolicy.'" title ="'.$tlLang['privacyPolicy'].'"> '.$tlLang['privacyPolicy'].' </a>';
 			$data['privacyPolicy'] = $privacyPolicy;
 		}
@@ -236,16 +236,4 @@ class ModuleCookieOptInBar extends Module
 		}
 		$GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
 	}
-
-    /**
-     * Ersetzt Module DNS mit dem DNS der RootPage
-     * @param int $id
-     * @return string|string[]
-     */
-	private function getUrl($id){
-
-	    $modulePage = PageModel::findById($id);
-
-        return $modulePage->getFrontendUrl();
-    }
 }
