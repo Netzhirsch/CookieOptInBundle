@@ -131,14 +131,14 @@ class ModuleCookieOptInBar extends Module
 
 		$impress = PageModel::findById($this->__get('impress'));
 		if (!empty($impress)) {
-			$impress = $impress->getFrontendUrl();
-			$impress = '<a class="ncoi---link" href="'.$impress.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
+            $impressUrl = $this->getUrl($this->__get('impress'),$objPage);
+            $impress = '<a class="ncoi---link" href="'.$impressUrl.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
 			$data['impress'] = $impress;
 		}
 
 		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));
 		if (!empty($privacyPolicy)) {
-			$privacyPolicy = $privacyPolicy->getFrontendUrl();
+			$privacyPolicy = $this->getUrl($this->__get('privacyPolicy'),$objPage);
 			$privacyPolicy = '<a class="ncoi---link" href="'.$privacyPolicy.'" title ="'.$tlLang['privacyPolicy'].'"> '.$tlLang['privacyPolicy'].' </a>';
 			$data['privacyPolicy'] = $privacyPolicy;
 		}
@@ -236,4 +236,46 @@ class ModuleCookieOptInBar extends Module
 		}
 		$GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
 	}
+
+    /**
+     * Ersetzt Module DNS mit dem DNS der RootPage
+     * @param int $id
+     * @param PageModel $objPage
+     * @return string|string[]
+     */
+	private function getUrl($id, $objPage){
+        /********* module page ****************************************************************************************/
+	    $modulePage = PageModel::findById($id);
+
+        /********* module - page url **********************************************************************************/
+	    $url = $modulePage->getFrontendUrl();
+
+	    if (!strpos($_SERVER['HTTP_HOST'],$url)) {
+            /********* module dns *************************************************************************************/
+	        $rootPageModule = $modulePage->__get('pid');
+            $rootPageModule = PageModel::findById($rootPageModule);
+            $dns = $rootPageModule->__get('dns');
+
+            /********* page dns ***************************************************************************************/
+            $rootPagePage = $objPage->__get('pid');
+            $rootPagePage = PageModel::findById($rootPagePage);;
+            $dnsRoot = $rootPagePage->__get('dns');
+
+            /********* create new url *********************************************************************************/
+            $urlNew = str_replace($dns,$dnsRoot,$url);
+
+            /********* check new url exist ****************************************************************************/
+            $urlExist = false;
+            $allPages = PageModel::findAll();
+            foreach ($allPages as $page) {
+                if ($urlNew == $page->getAbsoluteUrl())
+                    $urlExist = true;
+            }
+            /********* replace url with new url ***********************************************************************/
+            if ($urlExist)
+                $url = $urlNew;
+        }
+
+        return $url;
+    }
 }
