@@ -15,29 +15,30 @@ class GetSystemMessagesListener
 	 */
 	public function onGetSystemMessages() {
 		$rootPoints = PageModel::findByType('root');
-		$licenseExpiryDate = null;
-		$licenseKey = null;
+		$licenseExpiryDates = [];
+		$licenseKeys = [];
 		$messages = '';
 		$domain = null;
 		$domainNoDuplicate = [];
 		foreach ($rootPoints as $rootPoint) {
-			$licenseKey = $rootPoint->__get('ncoi_license_key');
-			if (empty($licenseKey)) {
-				$licenseKey = Config::get('ncoi_license_key');
-				$licenseExpiryDate = Config::get('ncoi_license_expiry_date');
-			} else {
-				$licenseExpiryDate = $rootPoint->__get('ncoi_license_expiry_date');
-			}
 			$domain = $rootPoint->__get('dns');
 			if (!in_array($domain, $domainNoDuplicate)) {
 				$domainNoDuplicate[] = $domain;
 			}
+			$licenseKeys[$domain] = $rootPoint->__get('ncoi_license_key');
+			if (empty($licenseKeys[$domain])) {
+				$licenseKeys[$domain] = Config::get('ncoi_license_key');
+				$licenseExpiryDates[$domain] = Config::get('ncoi_license_expiry_date');
+			} else {
+				$licenseExpiryDates[$domain] = $rootPoint->__get('ncoi_license_expiry_date');
+			}
 		}
 		if (empty($domainNoDuplicate)) {
-            $messages .= self::getMessage($licenseKey,$licenseExpiryDate);
+            $messages .= self::getMessage($licenseKeys[$domain],$licenseExpiryDates[$domain]);
         } else {
             foreach ($domainNoDuplicate as $domain) {
-                $messages .= self::getMessage($licenseKey,$licenseExpiryDate,$domain);
+                if (empty($licenseExpiryDates[$domain]))
+                    $messages .= self::getMessage($licenseKeys[$domain],$licenseExpiryDates[$domain],$domain);
             }
         }
 
