@@ -1,6 +1,7 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
@@ -323,7 +324,10 @@ class CookieController extends AbstractController
      * @return RedirectResponse
      */
     private function redirectToPageBefore($currentPage){
-        $this->initializeContaoFramework();
+        /* @var ContaoFramework $framework */
+        /** @noinspection PhpParamsInspection */
+        $framework = $this->get('contao.framework');
+        $framework->initialize();
         return $this->redirect($currentPage);
     }
 
