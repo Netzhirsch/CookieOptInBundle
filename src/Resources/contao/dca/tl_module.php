@@ -486,7 +486,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
 	'eval' => [
 		'tl_class'  =>  'w50',
 	],
-	'sql' => "varchar(3) NULL default '' ",
+	'sql' => "varchar(11) NULL default '' ",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['impress'] = [
@@ -496,7 +496,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['impress'] = [
 	'eval' => [
 		'tl_class'  =>  'w50',
 	],
-	'sql' => "varchar(3) NULL default '' ",
+	'sql' => "varchar(11) NULL default '' ",
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['excludePages'] = [
@@ -789,7 +789,7 @@ class tl_module_ncoi extends tl_module {
 	{
 		$id = $dca->id;
 		
-		$fieldPalettes = FieldPaletteModel::findAll();
+		$fieldPalettes = FieldPaletteModel::findByPid($id);
 		$netzhirschCookieFieldModel = null;
 		$csrfCookieFieldModel = null;
 		$phpSessIdCookieFieldModel = null;
