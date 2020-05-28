@@ -328,6 +328,10 @@ class CookieController extends AbstractController
         /** @noinspection PhpParamsInspection */
         $framework = $this->get('contao.framework');
         $framework->initialize();
+
+        if (empty($currentPage))
+            $currentPage = '/';
+        /** @noinspection PhpParamsInspection */
         return $this->redirect($currentPage);
     }
 
