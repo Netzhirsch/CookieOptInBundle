@@ -6,13 +6,12 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Netzhirsch\CookieOptInBundle\Classes\CookieData;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
-//use Contao\CoreBundle\Controller\AbstractController;
+use Contao\CoreBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CookieController extends AbstractController
 {
