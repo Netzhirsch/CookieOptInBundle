@@ -131,16 +131,12 @@ class ModuleCookieOptInBar extends Module
 
 		$imprint = PageModel::findById($this->__get('imprint'));
 		if (!empty($imprint)) {
-            $imprintUrl = $imprint->getFrontendUrl();
-            $imprint = '<a class="ncoi---link" href="'.$imprintUrl.'" title ="'.$tlLang['imprint'].'"> '.$tlLang['imprint'].' </a>';
-			$data['imprint'] = $imprint;
+			$data['imprint'] = '<a class="ncoi---link" href="'.$imprint->getFrontendUrl().'" title ="'.$imprint->title.'"> '.$imprint->title.' </a>';
 		}
 
 		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));
 		if (!empty($privacyPolicy)) {
-			$privacyPolicy = $privacyPolicy->getFrontendUrl();
-			$privacyPolicy = '<a class="ncoi---link" href="'.$privacyPolicy.'" title ="'.$tlLang['privacyPolicy'].'"> '.$tlLang['privacyPolicy'].' </a>';
-			$data['privacyPolicy'] = $privacyPolicy;
+			$data['privacyPolicy'] = '<a class="ncoi---link" href="'.$privacyPolicy->getFrontendUrl().'" title ="'.$privacyPolicy->title.'"> '.$privacyPolicy->title.' </a>';
 		}
 
 		$infoTitle = $this->arrData['infoTitle'];
