@@ -4,7 +4,7 @@ $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn'] = [
 				'cookieGroup' => [
 						'essential' => 'essential'
 				],
-				'impress' => 'impress',
+				'imprint' => 'imprint',
 				'privacyPolicy' => 'privacyPolicy',
 		],
 		'template' => [

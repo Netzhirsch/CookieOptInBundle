@@ -127,12 +127,12 @@
             <input id="no-script-newConsent" class="ncoi---no-script--hidden" type="text" name="data[newConsent]" value="1">
 
         </form>
-		<?php if(!empty($this->arrData['impress']) || !empty($this->arrData['privacyPolicy'])) :?>
+		<?php if(!empty($this->arrData['imprint']) || !empty($this->arrData['privacyPolicy'])) :?>
             <div class="ncoi---footer">
-                <?php if(!empty($this->arrData['impress'])) :?>
-                    <?php echo $this->arrData['impress'] ?>
+                <?php if(!empty($this->arrData['imprint'])) :?>
+                    <?php echo $this->arrData['imprint'] ?>
                 <?php endif; ?>
-                <?php if(!empty($this->arrData['impress']) && !empty($this->arrData['privacyPolicy'])) :?>
+                <?php if(!empty($this->arrData['imprint']) && !empty($this->arrData['privacyPolicy'])) :?>
                     <span class="ncoi---split"> | </span>
                 <?php endif; ?>
                 <?php if(!empty($this->arrData['privacyPolicy'])) :?>

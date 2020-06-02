@@ -67,7 +67,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,otherScripts
 	;cookieExpiredTime
 	;privacyPolicy
-	,impress
+	,imprint
 	,excludePages
 	;respectToNotTrack
 	;zIndex
@@ -489,8 +489,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
 	'sql' => "varchar(11) NULL default '' ",
 ];
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['impress'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['impress'],
+$GLOBALS['TL_DCA']['tl_module']['fields']['imprint'] = [
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['imprint'],
 	'exclude'   => true,
 	'inputType' => 'pageTree',
 	'eval' => [

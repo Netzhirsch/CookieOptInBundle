@@ -129,11 +129,11 @@ class ModuleCookieOptInBar extends Module
 		if (!empty($questionHint))
 			$data['questionHint'] = $questionHint;
 
-		$impress = PageModel::findById($this->__get('impress'));
-		if (!empty($impress)) {
-            $impressUrl = $impress->getFrontendUrl();
-            $impress = '<a class="ncoi---link" href="'.$impressUrl.'" title ="'.$tlLang['impress'].'"> '.$tlLang['impress'].' </a>';
-			$data['impress'] = $impress;
+		$imprint = PageModel::findById($this->__get('imprint'));
+		if (!empty($imprint)) {
+            $imprintUrl = $imprint->getFrontendUrl();
+            $imprint = '<a class="ncoi---link" href="'.$imprintUrl.'" title ="'.$tlLang['imprint'].'"> '.$tlLang['imprint'].' </a>';
+			$data['imprint'] = $imprint;
 		}
 
 		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));

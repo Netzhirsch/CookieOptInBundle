@@ -117,7 +117,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Expiration in days
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Data protection'];
 
-$GLOBALS['TL_LANG']['tl_module']['impress'] = ['Impress'];
+$GLOBALS['TL_LANG']['tl_module']['imprint'] = ['Imprint'];
 
 $GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Do not display cookie bar on the following pages.'];
 

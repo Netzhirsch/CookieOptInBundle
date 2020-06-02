@@ -110,7 +110,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Datenschutzerklärung'];
 
-$GLOBALS['TL_LANG']['tl_module']['impress'] = ['Impressum'];
+$GLOBALS['TL_LANG']['tl_module']['imprint'] = ['Impressum'];
 
 $GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Cookie Bar auf folgenden Seiten nicht anzeigen.'];
 
