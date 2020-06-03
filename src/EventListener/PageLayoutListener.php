@@ -141,7 +141,8 @@ class PageLayoutListener {
                     if (empty($cookieToolGroup))
                         $cookieToolGroup = $toolTyp['cookieToolGroup'];
                     if ($cookieToolGroup != 'Essenziell' && $cookieToolGroup != 'essential') {
-                        setrawcookie($cookieToolsTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
+                        setcookie($cookieToolsTechnicalName, '', time() - 1000);
+                        setcookie($cookieToolsTechnicalName, '', time() - 1000, '/');
                     }
                 }
             }
