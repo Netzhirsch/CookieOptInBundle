@@ -128,32 +128,40 @@ class PageLayoutListener {
 	}
 
 	public static function deleteCookie(Array $toolTypes) {
-		foreach ($toolTypes as $toolTyp) {
+        ob_start();
+        foreach ($toolTypes as $toolTyp) {
             if (is_array($toolTyp))
                 $cookieToolsTechnicalName = $toolTyp['cookieToolsTechnicalName'];
             else
                 $cookieToolsTechnicalName = $toolTyp->cookieToolsTechnicalName;
             if (!empty($cookieToolsTechnicalName)) {
                 $cookieToolsTechnicalNames = explode(',', $cookieToolsTechnicalName);
-
                 foreach ($cookieToolsTechnicalNames as $cookieToolsTechnicalName) {
                     $cookieToolGroup = $toolTyp->cookieToolGroup;
                     if (empty($cookieToolGroup))
                         $cookieToolGroup = $toolTyp['cookieToolGroup'];
+                    $domain = explode('www',$_SERVER['HTTP_HOST']);
+                    if (is_array($domain)) {
+                        $domain = $domain[1];
+                    } else {
+                        $domain = '';
+                    }
                     if ($cookieToolGroup != 'Essenziell' && $cookieToolGroup != 'essential') {
-                        setrawcookie($cookieToolsTechnicalName, 1, time() - 36000000, '/');
-                        setrawcookie($cookieToolsTechnicalName, 1, time() - 36000000, '/', $_SERVER['HTTP_HOST']);
+                        setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/');
+                        setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/',$_SERVER['HTTP_HOST']);
+                        setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/','.'.$_SERVER['HTTP_HOST']);
                         setrawcookie(
                             $cookieToolsTechnicalName
-                            ,1
+                            ,''
                             ,time() - 36000000
                             ,'/'
-                            ,explode('www',$_SERVER['HTTP_HOST'])[1]
+                            ,$domain
                         );
                     }
                 }
             }
-		}
+        }
+        ob_end_flush();
 	}
 
 	/**
