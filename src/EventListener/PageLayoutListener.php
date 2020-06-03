@@ -141,8 +141,15 @@ class PageLayoutListener {
                     if (empty($cookieToolGroup))
                         $cookieToolGroup = $toolTyp['cookieToolGroup'];
                     if ($cookieToolGroup != 'Essenziell' && $cookieToolGroup != 'essential') {
-                        setrawcookie($cookieToolsTechnicalName, 1, time() - 960000, '/');
-                        setrawcookie($cookieToolsTechnicalName, 1, time() - 960000, '/', $_SERVER['HTTP_HOST']);
+                        setrawcookie($cookieToolsTechnicalName, 1, time() - 36000000, '/');
+                        setrawcookie($cookieToolsTechnicalName, 1, time() - 36000000, '/', $_SERVER['HTTP_HOST']);
+                        setrawcookie(
+                            $cookieToolsTechnicalName
+                            ,1
+                            ,time() - 36000000
+                            ,'/'
+                            ,explode('www',$_SERVER['HTTP_HOST'])[1]
+                        );
                     }
                 }
             }
