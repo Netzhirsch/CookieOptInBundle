@@ -101,7 +101,7 @@ class CookieController extends AbstractController
      * @throws DBALException
      */
 	private function setNetzhirschCookie($cookieData,$modID,$cookieExpiredTime){
-		
+
 		$cookieToolsTechnicalName = $this->getNetzhirschTechnicalCookieName($modID);
 
 		$expiredDate = new DateTime();
@@ -116,16 +116,16 @@ class CookieController extends AbstractController
 		/** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
 		setcookie($cookieToolsTechnicalName, json_encode($netzhirschOptInCookie),$cookieExpiredTime,'/',$_SERVER['HTTP_HOST']);
 	}
-	
+
 	/**
 	 * @param $modID
 	 * @return mixed
 	 * @throws DBALException
 	 */
 	private function getModulData($modID){
-		
+
 		$response = [];
-		
+
 		/** @noinspection PhpParamsInspection */
 		$conn = $this->get('database_connection');
 		/* @var Connection $conn */
@@ -135,10 +135,10 @@ class CookieController extends AbstractController
 		$stmt->bindValue(2, $modID);
 		$stmt->execute();
 		$data = $stmt->fetch();
-		
+
 		$response['cookieVersion'] = $data['cookieVersion'];
 		$response['cookieExpiredTime'] = $data['cookieExpiredTime'];
-		
+
 		$select = [
 			'id',
 			'cookieToolsName',
@@ -155,13 +155,13 @@ class CookieController extends AbstractController
 		$sql = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
 		$sql .= ' WHERE pid = ? AND pfield = ?';
 		$stmt = $conn->prepare($sql);
-		
+
 		$stmt->bindValue(1, $modID);
 		$stmt->bindValue(2, 'cookieTools');
-		
+
 		$stmt->execute();
 		$tools = $stmt->fetchAll();
-		
+
 		$select = [
 			'id',
 			'cookieToolsName',
@@ -176,18 +176,18 @@ class CookieController extends AbstractController
 		];
 		$sql = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
 		$sql .= ' WHERE pid = ? AND pfield = ?';
-		
+
 		$stmt = $conn->prepare($sql);
-		
+
 		$stmt->bindValue(1, $modID);
 		$stmt->bindValue(2, 'otherScripts');
-		
+
 		$stmt->execute();
 		$otherScripts = $stmt->fetchAll();
-		
+
 		$response['cookieTools'] = $tools;
 		$response['otherScripts'] = $otherScripts;
-		
+
 		return $response;
 	}
 
@@ -253,14 +253,17 @@ class CookieController extends AbstractController
 		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
-		foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
-            foreach ($cookieDatabase['cookieTools'] as $cookieDataFromDb) {
-                if ($cookieDataFromDb['id'] == $cookieTool) {
-                    $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
-                    $cookieTechnicalName[] = $cookieDataFromDb['cookieToolsTechnicalName'];
+		$otherCookieIds = $cookieData->getOtherCookieIds();
+		if (!empty($otherCookieIds)) {
+            foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
+                foreach ($cookieDatabase['cookieTools'] as $cookieDataFromDb) {
+                    if ($cookieDataFromDb['id'] == $cookieTool) {
+                        $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
+                        $cookieTechnicalName[] = $cookieDataFromDb['cookieToolsTechnicalName'];
+                    }
                 }
             }
-		}
+        }
         $stmt->bindValue(2, implode(', ', $cookieNames));
         $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
         $stmt->bindValue(4, date('Y-m-d H:i'));

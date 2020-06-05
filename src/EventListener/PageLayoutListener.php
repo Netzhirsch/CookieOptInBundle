@@ -137,11 +137,14 @@ class PageLayoutListener {
             if (!empty($cookieToolsTechnicalName)) {
                 $cookieToolsTechnicalNames = explode(',', $cookieToolsTechnicalName);
                 foreach ($cookieToolsTechnicalNames as $cookieToolsTechnicalName) {
-                    $cookieToolGroup = $toolTyp->cookieToolGroup;
-                    if (empty($cookieToolGroup))
+                    if (is_object($toolTyp)) {
+                        $cookieToolGroup = $toolTyp->cookieToolGroup;
+                    } else {
                         $cookieToolGroup = $toolTyp['cookieToolGroup'];
+                    }
+
                     $domain = explode('www',$_SERVER['HTTP_HOST']);
-                    if (is_array($domain)) {
+                    if (is_array($domain) && count($domain) >= 2) {
                         $domain = $domain[1];
                     } else {
                         $domain = '';
@@ -273,7 +276,7 @@ class PageLayoutListener {
 	 * @return array
 	 */
 	public static function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
-		
+
 		$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
 		if (!empty($layoutModules)) {
 			foreach ($layoutModules as $key => $layoutModule) {
