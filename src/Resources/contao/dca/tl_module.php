@@ -760,9 +760,7 @@ class tl_module_ncoi extends tl_module {
             || $value == 'a:3:{i:0;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}i:1;a:2:{s:3:"key";s:1:"A";s:5:"value";s:1:"A";}i:2;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}}'
         ) {
 			$value = $this->getGroups($dca);
-            $modul = ModuleModel::findById($dca->__get('id'));
-            $modul->__set('cookieGroups',serialize($value));
-            $modul->save();
+            /********* update cookie groups for a version < 1.3.0 *****************************************************/
             $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
             foreach ($fieldPalettes as $fieldPalette) {
                 $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
@@ -779,6 +777,20 @@ class tl_module_ncoi extends tl_module {
                         break;
                 };
                 $fieldPalette->save();
+            }
+        } else {
+            /********* update groups for a version < 1.3.0 ************************************************************/
+	        $valueArray = StringUtil::deserialize($value);
+            if (!is_array($valueArray[0])) {
+                $newValues = [];
+                $key = 1;
+                foreach ($valueArray as $value) {
+                    $newValues[] = [
+                        'key' => $key++,
+                        'value' => $value
+                    ];
+                }
+                $value = serialize($newValues);
             }
         }
 		return $value;
@@ -823,7 +835,7 @@ class tl_module_ncoi extends tl_module {
         $groups = StringUtil::deserialize($groups);
         $groupValues = [];
         foreach ($groups as $group) {
-            $groupValues[] = $group['key'];
+            $groupValues[$group['key']] = $group['value'];
         }
         return $groupValues;
     }

@@ -34,6 +34,11 @@ class ParseFrontendTemplateListener
         return $buffer;
     }
 
+    /**
+     * @param $buffer
+     * @return string
+     * @throws DBALException
+     */
     private function iframe($buffer){
         // Block Entscheidungsvariablen
         $isUserCookieDontAllowMedia = false;
@@ -73,7 +78,9 @@ class ParseFrontendTemplateListener
             //Im Cookie gesetzten iFrame finden, damit dieses nicht blocked werden kann.
             $cookieData = CookieController::getUserCookie($requestStack);
             foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                if (!empty($cookieData->getOtherCookieIds()) && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())) {
+                if (!empty($cookieData->getOtherCookieIds())
+                    && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())
+                ) {
                     $isUserCookieDontAllowMedia = true;
                     break;
                 }
@@ -94,7 +101,7 @@ class ParseFrontendTemplateListener
                     $layout = LayoutModel::findById($pageModel->layout);
                     $moduleIds = StringUtil::deserialize($layout->modules);
 
-                    $sql = "SELECT id,cookieGroups,privacyPolicy FROM tl_module WHERE type = ? ";
+                    $sql = "SELECT id,privacyPolicy FROM tl_module WHERE type = ? ";
                     /** @var Statement $stmt */
                     $stmt = $conn->prepare($sql);
                     $stmt->bindValue(1, 'cookieOptInBar');

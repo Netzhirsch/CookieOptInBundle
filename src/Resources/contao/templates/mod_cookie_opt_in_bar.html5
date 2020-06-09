@@ -78,7 +78,6 @@
                                     <?=(in_array($cookieGroup['technicalName']
                                         , $this->arrData['cookieGroupsSelected'])) ? ' checked' : ' '?>
                                     <?=($cookieGroup['technicalName'] == 1) ? ' disabled' : ' '?>
-                                    <?=($cookieGroup['technicalName'] == 3) ? 'data-external-media="1"' : ''?>
                                 >
                                 <label
                                         class="ncoi---sliding ncoi---sliding-label"
