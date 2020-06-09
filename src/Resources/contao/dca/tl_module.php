@@ -781,8 +781,6 @@ class tl_module_ncoi extends tl_module {
                 $fieldPalette->save();
             }
         }
-//        var_dump($value);
-//        die();
 		return $value;
 	}
 
