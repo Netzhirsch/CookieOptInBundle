@@ -146,7 +146,7 @@ class PageLayoutListener {
                     } else {
                         $domain = '';
                     }
-                    if ($cookieToolGroup != 'Essenziell' && $cookieToolGroup != 'essential') {
+                    if ($cookieToolGroup != 1) {
                         setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/');
                         setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/',$_SERVER['HTTP_HOST']);
                         setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/','.'.$_SERVER['HTTP_HOST']);

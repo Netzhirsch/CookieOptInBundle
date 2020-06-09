@@ -9,6 +9,8 @@ use Netzhirsch\CookieOptInBundle\Classes\Helper;
 /** Revoke Modul ***********************************************/
 
 $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
+$GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
+$GLOBALS['TL_JAVASCRIPT']['ncoi'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.js|static';
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInRevoke'] =
 	'name,
@@ -191,15 +193,16 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieVersion'] = [
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['cookieGroups'],
 	'exclude'   => true,
-	'inputType' => 'listWizard',
+	'inputType' => 'keyValueWizard',
 	'eval' => [
 		'tl_class'  =>  'long clr',
 		'submitOnChange' => true,
 		'doNotCopy' => true,
 		'alwaysSave' => true
 	],
-	'sql' => "blob NULL default '' ",
-	'load_callback' => [['tl_module_ncoi','getDefaultGroups']]
+	'sql' => "text NULL default '' ",
+	'load_callback' => [['tl_module_ncoi','getDefaultGroups']],
+	'save_callback' => [['tl_module_ncoi','setEssentialGroup']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
@@ -322,7 +325,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'],
 				'exclude'   => true,
 				'inputType' => 'select',
-				'options_callback' => ['tl_module_ncoi','getGroups'],
+				'options_callback' => ['tl_module_ncoi','getGroupKeys'],
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
@@ -430,7 +433,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'],
 				'exclude'   => true,
 				'inputType' => 'select',
-				'options_callback' => ['tl_module_ncoi','getGroups'],
+				'options_callback' => ['tl_module_ncoi','getGroupKeys'],
 				'sql' => "varchar(255) NULL default '' ",
 				'eval' => [
 					'mandatory' => true,
@@ -751,14 +754,82 @@ class tl_module_ncoi extends tl_module {
 		return $value;
 	}
 	
-	public function getDefaultGroups($value){
-		
-		if (empty($value))
-			$value = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
-		
+	public function getDefaultGroups($value,DC_Table $dca){
+	    if (
+		    empty($value)
+            || $value == 'a:3:{i:0;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}i:1;a:2:{s:3:"key";s:1:"A";s:5:"value";s:1:"A";}i:2;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}}'
+        ) {
+			$value = $this->getGroups($dca);
+            $modul = ModuleModel::findById($dca->__get('id'));
+            $modul->__set('cookieGroups',serialize($value));
+            $modul->save();
+            $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
+            foreach ($fieldPalettes as $fieldPalette) {
+                $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
+                switch ($fieldPalette->cookieToolGroup) {
+                    case $tlLangGroups['essential']:
+                        $fieldPalette->cookieToolGroup = 1;
+                        break;
+                    case $tlLangGroups['analysis']:
+                    case 'Statistik':
+                        $fieldPalette->cookieToolGroup = 2;
+                        break;
+                    case $tlLangGroups['external_media']:
+                        $fieldPalette->cookieToolGroup = 3;
+                        break;
+                };
+                $fieldPalette->save();
+            }
+        }
+//        var_dump($value);
+//        die();
 		return $value;
 	}
+
+    public function setEssentialGroup($value)
+    {
+        $groups = StringUtil::deserialize($value);
+        $isExist = false;
+        foreach ($groups as $group) {
+            if ($group['key'] == '1') {
+                $isExist = true;
+            }
+        }
+        if (!$isExist){
+            $temp = $groups[0];
+            $groups[0] = [
+                'key' => '1',
+                'value' => $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential']
+            ];
+            if (!empty($temp)) {
+                $groups[array_key_last($groups)+1] = $temp;
+            }
+        }
+        return serialize($groups);
+	}
 	
+	public function getGroups(DC_Table $dca)
+	{
+		$fieldPaletteModel = FieldPaletteModel::findById($dca->id);
+		$modul = ModuleModel::findById($fieldPaletteModel->pid);
+		$cookieToolGroups = $modul->cookieGroups;
+		if (empty($cookieToolGroups)){
+			$cookieToolGroups = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
+		}
+		return $cookieToolGroups;
+	}
+
+    public function getGroupKeys(DC_Table $dca)
+    {
+        $groups = $this->getGroups($dca);
+        $groups = StringUtil::deserialize($groups);
+        $groupValues = [];
+        foreach ($groups as $group) {
+            $groupValues[] = $group['key'];
+        }
+        return $groupValues;
+    }
+
 	public function setCookieVersion(DC_Table $dca)
 	{
 		$strField = $dca->__get('field');
@@ -772,19 +843,6 @@ class tl_module_ncoi extends tl_module {
 		return $dca;
 	}
 
-
-	public function getGroups(DC_Table $dca)
-	{
-		$fieldPaletteModel = FieldPaletteModel::findById($dca->id);
-		$modul = ModuleModel::findById($fieldPaletteModel->pid);
-		$cookieToolGroups = $modul->cookieGroups;
-		$cookieToolGroups = StringUtil::deserialize($cookieToolGroups);
-		if (empty($cookieToolGroups)){
-			$cookieToolGroups = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
-		}
-		return $cookieToolGroups;
-	}
-	
 	public function getNetzhirschCookie($fieldValue,DC_Table $dca)
 	{
 		$id = $dca->id;
@@ -802,7 +860,6 @@ class tl_module_ncoi extends tl_module {
 				} elseif ($fieldPalette->cookieToolsTechnicalName == 'PHPSESSID') {
 					$phpSessIdCookieFieldModel = $fieldPalette;
 				}
-				
 			}
 		}
 		if (empty($netzhirschCookieFieldModel)) {
@@ -821,7 +878,7 @@ class tl_module_ncoi extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
 			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
 			$netzhirschCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
-			$netzhirschCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
+			$netzhirschCookieFieldModel->cookieToolGroup = '1';
 			
 			$netzhirschCookieFieldModel->save();
 		} elseif (!isset($netzhirschCookieFieldModel->cookieToolExpiredTime)) {
@@ -847,7 +904,7 @@ class tl_module_ncoi extends tl_module {
             $csrfCookieFieldModel->cookieToolExpiredTime = '0';
 			$csrfCookieFieldModel->cookieToolsSelect = '-';
 			$csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
-			$csrfCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
+			$csrfCookieFieldModel->cookieToolGroup = '1';
 			
 			$csrfCookieFieldModel->save();
 		} elseif (!isset($csrfCookieFieldModel->cookieToolExpiredTime)) {
@@ -873,7 +930,7 @@ class tl_module_ncoi extends tl_module {
             $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
 			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
 			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
-			$phpSessIdCookieFieldModel->cookieToolGroup = $GLOBALS['TL_LANG']['tl_module']['essential'];
+			$phpSessIdCookieFieldModel->cookieToolGroup = '1';
 			
 			$phpSessIdCookieFieldModel->save();
 			

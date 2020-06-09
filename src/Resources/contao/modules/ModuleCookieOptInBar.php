@@ -47,8 +47,7 @@ class ModuleCookieOptInBar extends Module
 	public function compile(){
 		
 		$this->strTemplate = 'mod_cookie_opt_in_bar';
-		$tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['module'];
-		
+
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
 
@@ -71,16 +70,21 @@ class ModuleCookieOptInBar extends Module
 		
 		if (PageLayoutListener::doNotTrackBrowserSetting($data['cookieTools'],$this->id))
 			return null;
-		
 		$netzhirschOptInCookie = self::getCookieData(System::getContainer());
         $data['cookieGroupsSelected'] = [];
         if (!empty($netzhirschOptInCookie->groups))
 		    $data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
-		$data['cookieGroupsSelected'][] = $tlLang['cookieGroup']['essential'];
-		$data['cookieGroups'][] = $tlLang['cookieGroup']['essential'];
 
         $data['noScriptTracking'] = [];
 		global $objPage;
+        $groups = $this->__get('cookieGroups');
+        $groups = StringUtil::deserialize($groups);
+        $data['cookieGroups'] = [
+            0 => [
+                'technicalName' => $groups[0]['key'],
+                'name' => $groups[0]['value']
+            ]
+        ];
 		foreach ($data['cookieTools'] as $cookieTool) {
             if (!empty($netzhirschOptInCookie)) {
                 foreach ($netzhirschOptInCookie->cookieIds as $cookieId) {
@@ -96,15 +100,34 @@ class ModuleCookieOptInBar extends Module
                                 $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$cookieTool->cookieToolsTrackingId.'&amp;rec=1" style="border:0" alt="" />;
 ';
                         }
+
                         if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroupsSelected'])) {
                             $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
                         }
                     }
                 }
             }
-			if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroups']) && $cookieTool->cookieToolGroup != 'essential' && $cookieTool->cookieToolGroup != 'Essenziell') {
-				$data['cookieGroups'][] = $cookieTool->cookieToolGroup;
-			}
+            $technicalName = null;
+            $name = null;
+            foreach ($groups as $group) {
+                if ($group['key'] == $cookieTool->cookieToolGroup) {
+                    $technicalName = $group['key'];
+                    $name = $group['value'];
+                    $cookieTool->cookieToolGroupName = $name;
+                }
+            }
+            $newGroup = true;
+            foreach ($data['cookieGroups'] as $cookieGroup) {
+                if ($cookieGroup['technicalName'] == $technicalName) {
+                    $newGroup = false;
+                }
+            }
+            if ($newGroup) {
+                $data['cookieGroups'][] = [
+                    'technicalName' => $technicalName,
+                    'name' => $name
+                ];
+            }
 
 		}
 

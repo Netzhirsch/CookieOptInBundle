@@ -5,93 +5,92 @@
         $cookieGroup = null;
     }
 ?>
-<tbody>
-	<tr>
-		<?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
-		<th>
-			<?php echo $tlLang['group']; ?>
-		</th>
-		<td>
-			<?php echo $tool->cookieToolGroup; ?>
-		</td>
-	</tr>
-	<tr>
-		<th>
-			<?php echo $tlLang['name']; ?>
-		</th>
-		<td>
-			<?php echo $tool->cookieToolsName; ?>
-		</td>
-	</tr>
-	<tr>
-	</tr>
-	<tr>
-		<th>
-			<?php echo $tlLang['cookieToolsTechnicalName']; ?>
-		</th>
-		<td>
-			<?php echo $tool->cookieToolsTechnicalName; ?>
-		</td>
-	</tr>
-	<tr>
-		<th>
-			<?php echo $tlLang['provider']; ?>
-		</th>
-		<td>
-			<?php echo $tool->cookieToolsProvider; ?>
-		</td>
-	</tr>
-	<tr>
-		<th>
-			<?php echo $tlLang['cookieToolExpiredTime']; ?>
-		</th>
-		<td>
-			<?php echo $tool->cookieToolExpiredTime; ?>
-		</td>
-	</tr>
-	<tr>
-		<th>
-			<?php echo $tlLang['privacyPolicy']; ?>
-		</th>
-		<td>
-			<?php echo '<a href="'; ?>
-			<?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
-			<?php echo '"'; ?>
-			<?php echo ' title="'.$tool->cookieToolsProvider.'"'; ?>
-			<?php echo 'target="_blank"'; ?>
-			<?php echo ' class="ncoi---link"'; ?>
-			<?php echo '>'; ?>
-			<?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
-			<?php echo '</a>' ?>
-		</td>
-	</tr>
-	<tr>
-		<th>
-			<?php echo $tlLang['use']; ?>
-		</th>
-		<td>
-			<?php echo $tool->cookieToolsUse; ?>
-		</td>
-	</tr>
-	<tr>
-		<th>
-			<?php echo $tlLang['allowed']; ?>
-		</th>
-		<td>
-			<input
-				type="checkbox"
-				id="<?=$tool->id?>"
-				value="<?=$tool->id?>"
-                form="cookieBar"
-                name="data[cookieIds][]"
-				class="ncoi---cookie ncoi---sliding"
-				data-group="<?= $tool->cookieToolGroup; ?>"
-				data-cookie-id="<?=$tool->id;?>"
-                data-block-class="ncoi---<?=$tool->cookieToolsSelect;?>"
-                <?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'checked' : ''?>
-				<?=($tool->cookieToolGroup == 'essential' || $tool->cookieToolGroup == 'Essenziell') ? 'disabled' : ''?>
-			/>
-			<label class="ncoi---sliding" for="<?=$tool->id?>"><i></i><span><?=$cookieGroup?></span></label>
-		</td>
-	</tr>
-</tbody>
+
+<tr>
+    <?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
+    <th>
+        <?php echo $tlLang['group']; ?>
+    </th>
+    <td>
+        <?php echo $tool->cookieToolGroupName; ?>
+    </td>
+</tr>
+<tr>
+    <th>
+        <?php echo $tlLang['name']; ?>
+    </th>
+    <td>
+        <?php echo $tool->cookieToolsName; ?>
+    </td>
+</tr>
+<tr>
+</tr>
+<tr>
+    <th>
+        <?php echo $tlLang['cookieToolsTechnicalName']; ?>
+    </th>
+    <td>
+        <?php echo $tool->cookieToolsTechnicalName; ?>
+    </td>
+</tr>
+<tr>
+    <th>
+        <?php echo $tlLang['provider']; ?>
+    </th>
+    <td>
+        <?php echo $tool->cookieToolsProvider; ?>
+    </td>
+</tr>
+<tr>
+    <th>
+        <?php echo $tlLang['cookieToolExpiredTime']; ?>
+    </th>
+    <td>
+        <?php echo $tool->cookieToolExpiredTime; ?>
+    </td>
+</tr>
+<tr>
+    <th>
+        <?php echo $tlLang['privacyPolicy']; ?>
+    </th>
+    <td>
+        <?php echo '<a href="'; ?>
+        <?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
+        <?php echo '"'; ?>
+        <?php echo ' title="'.$tool->cookieToolsProvider.'"'; ?>
+        <?php echo 'target="_blank"'; ?>
+        <?php echo ' class="ncoi---link"'; ?>
+        <?php echo '>'; ?>
+        <?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
+        <?php echo '</a>' ?>
+    </td>
+</tr>
+<tr>
+    <th>
+        <?php echo $tlLang['use']; ?>
+    </th>
+    <td>
+        <?php echo $tool->cookieToolsUse; ?>
+    </td>
+</tr>
+<tr>
+    <th>
+        <?php echo $tlLang['allowed']; ?>
+    </th>
+    <td>
+        <input
+            type="checkbox"
+            id="<?=$tool->id?>"
+            value="<?=$tool->id?>"
+            form="cookieBar"
+            name="data[cookieIds][]"
+            class="ncoi---cookie ncoi---sliding"
+            data-group="<?= $tool->cookieToolGroupValue; ?>"
+            data-cookie-id="<?=$tool->id;?>"
+            data-block-class="ncoi---<?=$tool->cookieToolsSelect;?>"
+            <?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == '1') ? 'checked' : ''?>
+            <?=($tool->cookieToolGroup == '1' ) ? 'disabled' : ''?>
+        />
+        <label class="ncoi---sliding" for="<?=$tool->id?>"><i></i><span><?=$cookieGroup?></span></label>
+    </td>
+</tr>

@@ -42,14 +42,16 @@ $GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] =
 
 $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie groups'];
+$GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie groups','The key is used for internal processing and the value is displayed in the frontend.'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
-	'essential',
-	'analysis',
-    'external media'
-];
-$GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essential';
+$GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] =
+    'a:3:{i:0;a:2:{s:3:"key";s:1:"1";s:5:"value";s:9:"essential";}i:1;a:2:{s:3:"key";s:1:"2";s:5:"value";s:8:"analysis";}i:2;a:2:{s:3:"key";s:1:"3";s:5:"value";s:14:"external media";}}'
+;
+
+$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential'] = 'Essential';
+$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['analysis'] = 'Analysis';
+$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['external_media'] = 'External media';
+
 /*************** Fieldpalette Tools ***************/
 
 $GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Here you can find help.</a>'];
@@ -88,8 +90,6 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'] =
 $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'] = ['Cookie group'];
 
 $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'] = 'Used to determine which cookie was accepted or rejected.';
-
-$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'] = 'essential';
 
 $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Serves to protect the website from cross-site request forgery
 attacks. After closing the browser, the cookie is deleted again.';

@@ -83,9 +83,9 @@
 
 		});
 
-		$('.ncoi---sliding').on('change',function () {
+		$('.ncoi---sliding-input').on('change',function () {
 			let group = $(this);
-			$('.ncoi---sliding').each(function () {
+			$('.ncoi---cookie').each(function () {
 				let cookie = $(this).data('group');
 				if(group.val().localeCompare(cookie) === 0)
 					$(this).prop('checked',group.prop('checked'));
@@ -99,7 +99,7 @@
 			let allChecked = true;
 			cookiesSelect.each(function () {
 				let group = $(this).data('group');
-				if( group.localeCompare(cookie) === 0 && !$(this).prop('checked'))
+				if( $(this).data('group') === group && !$(this).prop('checked'))
 					allChecked = false;
 			});
 			$('.ncoi---cookie-group input').each(function () {
@@ -159,7 +159,12 @@
 		};
 		let cookieSelected = $('.ncoi---cookie');
 		Object.keys(cookieSelected).forEach(function(key) {
-			if (key.localeCompare('length') !== 0 && key.localeCompare('prevObject') !== 0) {
+			if (
+				key.localeCompare('length') !== 0
+				&& key.localeCompare('prevObject') !== 0
+				&& key.localeCompare('context') !== 0
+				&& key.localeCompare('selector') !== 0
+			) {
 				if ($(cookieSelected[key]).prop('checked')) {
 					data.cookieIds.push($(cookieSelected[key]).data('cookie-id'))
 				}

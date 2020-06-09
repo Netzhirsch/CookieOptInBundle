@@ -50,9 +50,11 @@
                     <?php if(!empty($this->arrData['cookieTools'])) : ?>
                     <table>
                         <?php if(!empty($this->arrData['cookieTools'])) : ?>
+                            <tbody>
                             <?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
                                 <?php include('includes/mod_cookie_opt_in_table.html5') ?>
                             <?php endforeach;?>
+                            </tbody>
                         <?php endif;?>
                     </table>
                     <?php endif;?>
@@ -63,14 +65,30 @@
             <?php endif ?>
             <div id="ncoi---cookie-groups" class="<?=$class?>">
                 <?php foreach($this->arrData['cookieGroups'] as $cookieGroup): ?>
-                <div class="ncoi---cookie-group">
-                    <div class="ncoi---cookie-group-inner">
-                        <div class="ncoi---slider-container">
-                            <input type="checkbox" id="<?=$cookieGroup?>" value="<?=$cookieGroup?>" class="ncoi---sliding" form="cookieBar" name="data[cookieGroups][<?=$cookieGroup?>]"<?=(in_array($cookieGroup, $this->arrData['cookieGroupsSelected'])) ? ' checked' : ' '?> <?=($cookieGroup == $tlLang['essential']) ? ' disabled' : ' '?> <?=($cookieGroup == $tlLang['externalMedia']) ? 'data-external-media="1"' : ''?>>
-                            <label class="ncoi---sliding" for="<?=$cookieGroup?>"><i></i><span><?=$cookieGroup?></span></label>
+                    <div class="ncoi---cookie-group">
+                        <div class="ncoi---cookie-group-inner">
+                            <div class="ncoi---slider-container">
+                                <input
+                                        type="checkbox"
+                                        id="group-<?=$cookieGroup['technicalName']?>"
+                                        value="<?=$cookieGroup['technicalName']?>"
+                                        class="ncoi---sliding ncoi---sliding-input"
+                                        form="cookieBar"
+                                        name="data[cookieGroups][<?=$cookieGroup['technicalName']?>]"
+                                    <?=(in_array($cookieGroup['technicalName']
+                                        , $this->arrData['cookieGroupsSelected'])) ? ' checked' : ' '?>
+                                    <?=($cookieGroup['technicalName'] == 1) ? ' disabled' : ' '?>
+                                    <?=($cookieGroup['technicalName'] == 3) ? 'data-external-media="1"' : ''?>
+                                >
+                                <label
+                                        class="ncoi---sliding ncoi---sliding-label"
+                                        for="group-<?=$cookieGroup['technicalName']?>">
+                                    <i></i>
+                                    <span><?=$cookieGroup['name']?></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
                 <?php endforeach; ?>
             </div>
             <?php $class = 'ncoi---actions'?>
@@ -115,7 +133,13 @@
             <input id="no-script-isJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isJavaScript]" value="0">
 
             <label for="no-script-cookieGroups" class="ncoi---no-script--hidden"></label>
-            <input id="no-script-cookieGroups" class="ncoi---no-script--hidden" type="text" name="data[cookieGroups][<?=$tlLang['essential']?>]" value="<?=$tlLang['essential']?>">
+            <input
+                    id="no-script-cookieGroups"
+                    class="ncoi---no-script--hidden"
+                    type="text"
+                    name="data[cookieGroups][<?=$this->arrData['cookieGroups'][0]['technicalName']?>]"
+                    value="<?=$this->arrData['cookieGroups'][0]['technicalName']?>"
+            >
 
             <label for="no-script-modID" class="ncoi---no-script--hidden"></label>
             <input id="no-script-modID" class="ncoi---no-script--hidden" type="text" name="data[modID]" value="<?=$this->arrData['id']?>">

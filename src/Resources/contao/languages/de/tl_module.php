@@ -39,13 +39,16 @@ $GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] = ['Alle gesetzten Cookie
 
 $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie Gruppen'];
+$GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie Gruppen','Der Schlüssel dient der internen Verarbeitung, der Wert wird im Frontend angezeigt.'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = [
-	'Essenziell',
-	'Analyse',
-    'Externe Medien'
-];
+$GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] =
+	'a:3:{i:0;a:2:{s:3:"key";s:1:"1";s:5:"value";s:10:"Essenziell";}i:1;a:2:{s:3:"key";s:2:"2";s:5:"value";s:7:"Analyse";}i:2;a:2:{s:3:"key";s:1:"3";s:5:"value";s:14:"Externe Medien";}}'
+;
+
+$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential'] = 'Essenziell';
+$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['analysis'] = 'Analyse';
+$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['external_media'] = 'Externe Medien';
+
 /*************** Fieldpalette Tools ***************/
 
 $GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Klicken Sie hier für eine Hilfestellung.</a>'];
@@ -79,8 +82,6 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'] =
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'] = ['Zweck','Bitte geben Sie den Zweck des Cookies an.'];
 
 $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'] = 'Wird verwendet, um festzustellen, welches Cookie akzeptiert oder abgelehnt wurde.';
-
-$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup']['essential'] = 'Essenziell';
 
 $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Dient zum Schutz der Website vor Fälschungen von standortübergreifenden Anfragen
 . Nach dem Schließen des Browsers wird das Cookie wieder gelöscht';
