@@ -129,8 +129,6 @@
 				addIframe(parent);
 			}
 		});
-		//  only for testing
-		// console.log(getCookie('_netzhirsch_cookie_opt_in'));
 	});
 
 //  only for testing
@@ -153,7 +151,7 @@
 	function track(newConsent){
 		let data = {
 			cookieIds : [{}],
-			modID : {},
+			modId : {},
 			newConsent : newConsent,
 			isJavaScript : 1
 		};
@@ -170,7 +168,7 @@
 				}
 			}
 		});
-		data.modID = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
+		data.modId = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
 		$.ajax({
 			dataType: "json",
 			type: 'POST',

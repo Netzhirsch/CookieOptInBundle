@@ -58,6 +58,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Faceb
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Type'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
+    'optInCookie' => 'Opt-in Cookie',
     'googleAnalytics' => 'Google Analytics',
     'facebookPixel' => 'Facebook Pixel',
     'matomo' => 'Matomo',

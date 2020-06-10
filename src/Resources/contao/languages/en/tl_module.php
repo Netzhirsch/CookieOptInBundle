@@ -57,7 +57,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieTools'] = ['Tools','<a href="https://www
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie name','e.g. facebook pixel'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Analyse template'];
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Type'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'] =
 	['Tracking ID','z.B. UA-123456789-1 for google analytics'];
@@ -66,6 +66,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =
     ['Tracking Server URL ','Only for e.g. https://netzhirsch.matomo.cloud/'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
+    'optInCookie' => 'Opt-in Cookie',
     'googleAnalytics' => 'Google Analytics',
     'facebookPixel' => 'Facebook Pixel',
     'matomo' => 'Matomo',

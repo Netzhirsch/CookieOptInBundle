@@ -86,6 +86,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 
 // setCookieVersion check for right modul
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_ncoi','setCookieVersion'],['tl_module_ncoi','setLessVariables']];
+$GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'] = [['tl_module_ncoi','setCookieGroups']];
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
@@ -753,31 +754,38 @@ class tl_module_ncoi extends tl_module {
 		
 		return $value;
 	}
-	
+
+    public function setCookieGroups(DC_Table $dca) {
+        /********* update cookie groups for a version < 1.3.0 *****************************************************/
+        $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
+        foreach ($fieldPalettes as $fieldPalette) {
+            $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
+            $save = false;
+            switch ($fieldPalette->cookieToolGroup) {
+                case $tlLangGroups['essential']:
+                    $fieldPalette->cookieToolGroup = 1;
+                    $save = true;
+                    break;
+                case $tlLangGroups['analysis']:
+                case 'Statistik':
+                    $fieldPalette->cookieToolGroup = 2;
+                    $save = true;
+                    break;
+                case $tlLangGroups['external_media']:
+                    $fieldPalette->cookieToolGroup = 3;
+                    $save = true;
+                    break;
+            };
+            if ($save)
+                $fieldPalette->save();
+        }
+    }
 	public function getDefaultGroups($value,DC_Table $dca){
 	    if (
 		    empty($value)
             || $value == 'a:3:{i:0;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}i:1;a:2:{s:3:"key";s:1:"A";s:5:"value";s:1:"A";}i:2;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}}'
         ) {
 			$value = $this->getGroups($dca);
-            /********* update cookie groups for a version < 1.3.0 *****************************************************/
-            $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
-            foreach ($fieldPalettes as $fieldPalette) {
-                $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
-                switch ($fieldPalette->cookieToolGroup) {
-                    case $tlLangGroups['essential']:
-                        $fieldPalette->cookieToolGroup = 1;
-                        break;
-                    case $tlLangGroups['analysis']:
-                    case 'Statistik':
-                        $fieldPalette->cookieToolGroup = 2;
-                        break;
-                    case $tlLangGroups['external_media']:
-                        $fieldPalette->cookieToolGroup = 3;
-                        break;
-                };
-                $fieldPalette->save();
-            }
         } else {
             /********* update groups for a version < 1.3.0 ************************************************************/
 	        $valueArray = StringUtil::deserialize($value);
@@ -863,7 +871,9 @@ class tl_module_ncoi extends tl_module {
 		$phpSessIdCookieFieldModel = null;
 		if (!empty($fieldPalettes)) {
 			foreach ($fieldPalettes as $fieldPalette) {
-				if ($fieldPalette->cookieToolsTechnicalName == '_netzhirsch_cookie_opt_in') {
+				if ($fieldPalette->cookieToolsTechnicalName == '_netzhirsch_cookie_opt_in'
+                    || $fieldPalette->cookieToolsSelect == 'optInCookie'
+                ) {
 					$netzhirschCookieFieldModel = $fieldPalette;
 				} elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_contao_csrf_token') {
 					$csrfCookieFieldModel = $fieldPalette;
@@ -886,13 +896,17 @@ class tl_module_ncoi extends tl_module {
 			$netzhirschCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
 			$netzhirschCookieFieldModel->cookieToolsProvider = '';
 			$netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
-			$netzhirschCookieFieldModel->cookieToolsSelect = '-';
-			$netzhirschCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
+			$netzhirschCookieFieldModel->cookieToolsSelect = 'optInCookie';
+			$netzhirschCookieFieldModel->cookieToolsUse =
+                $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'];
 			$netzhirschCookieFieldModel->cookieToolGroup = '1';
 			
-			$netzhirschCookieFieldModel->save();
+            $netzhirschCookieFieldModel->save();
 		} elseif (!isset($netzhirschCookieFieldModel->cookieToolExpiredTime)) {
             $netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
+            $netzhirschCookieFieldModel->save();
+        } elseif($netzhirschCookieFieldModel->cookieToolsSelect == '-') {
+            $netzhirschCookieFieldModel->cookieToolsSelect = 'optInCookie';
             $netzhirschCookieFieldModel->save();
         }
 

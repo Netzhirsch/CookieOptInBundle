@@ -6,11 +6,13 @@ use Contao\Config;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 use DateInterval;
 use DateTime;
 use Exception;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use ModuleModel;
+use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 
 class PageLayoutListener {
@@ -71,9 +73,11 @@ class PageLayoutListener {
 
 		//module in this layout
 
-		$modulBar = ModuleModel::findById($moduleIds[0]);
-
-		$netzhirschOptInCookie = $_COOKIE['_netzhirsch_cookie_opt_in'];
+        $modId = $moduleIds[0];
+		$modulBar = ModuleModel::findById($modId);
+        $conn = System::getContainer()->get('database_connection');
+        $optInTechnicalName = CookieController::getOptInTechnicalCookieName($conn,$modId);
+        $netzhirschOptInCookie = $_COOKIE[$optInTechnicalName];
 
 		/** @noinspection PhpComposerExtensionStubsInspection */
 		$netzhirschOptInCookie = json_decode($netzhirschOptInCookie);
@@ -86,11 +90,11 @@ class PageLayoutListener {
 			}
 		}
 
-		if (self::doNotTrackBrowserSetting($modulBar, $cookieTools))
+		if (self::doNotTrackBrowserSetting($modulBar, $modId))
 			return;
 
 		if (empty($netzhirschOptInCookie)) {
-			self::deleteCookie($cookieTools);
+			self::deleteCookie();
 
 			return;
 		}
@@ -98,10 +102,10 @@ class PageLayoutListener {
 		if (!empty($modulBar) && $netzhirschOptInCookie->cookieVersion == $modulBar->__get('cookieVersion'))
 			return;
 
-		self::deleteCookie($cookieTools);
+		self::deleteCookie();
 	}
 
-	public static function doNotTrackBrowserSetting($cookieTools, $modulBar = null, $modId = null) {
+	public static function doNotTrackBrowserSetting($modulBar = null, $modId = null) {
 		$doNotTrack = false;
 
 		if (empty($modul)) {
@@ -121,45 +125,42 @@ class PageLayoutListener {
 
 		) {
 			$doNotTrack = true;
-			self::deleteCookie($cookieTools);
+			self::deleteCookie();
 		}
 
 		return $doNotTrack;
 	}
 
-	public static function deleteCookie(Array $toolTypes) {
+    /**
+     * @param array|null $toolTypes Cookies that should not be deleted
+     */
+	public static function deleteCookie(Array $toolTypes = null) {
         ob_start();
-        foreach ($toolTypes as $toolTyp) {
-            if (is_array($toolTyp))
-                $cookieToolsTechnicalName = $toolTyp['cookieToolsTechnicalName'];
-            else
-                $cookieToolsTechnicalName = $toolTyp->cookieToolsTechnicalName;
-            if (!empty($cookieToolsTechnicalName)) {
-                $cookieToolsTechnicalNames = explode(',', $cookieToolsTechnicalName);
-                foreach ($cookieToolsTechnicalNames as $cookieToolsTechnicalName) {
-                    $cookieToolGroup = $toolTyp->cookieToolGroup;
-                    if (empty($cookieToolGroup))
-                        $cookieToolGroup = $toolTyp['cookieToolGroup'];
-                    $domain = explode('www',$_SERVER['HTTP_HOST']);
-                    if (is_array($domain)) {
-                        $domain = $domain[1];
-                    } else {
-                        $domain = '';
-                    }
-                    if ($cookieToolGroup != 1) {
-                        setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/');
-                        setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/',$_SERVER['HTTP_HOST']);
-                        setrawcookie($cookieToolsTechnicalName,'',time() - 36000000,'/','.'.$_SERVER['HTTP_HOST']);
-                        setrawcookie(
-                            $cookieToolsTechnicalName
-                            ,''
-                            ,time() - 36000000
-                            ,'/'
-                            ,$domain
-                        );
-                    }
+        $cookiesSet = $_COOKIE;
+        foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
+            foreach ($toolTypes as $toolTyp) {
+                foreach ($toolTyp as $cookie) {
+                        unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
                 }
             }
+        }
+        $domain = explode('www',$_SERVER['HTTP_HOST']);
+        if (is_array($domain)) {
+            $domain = $domain[1];
+        } else {
+            $domain = '';
+        }
+        foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
+            setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
+            setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', $_SERVER['HTTP_HOST']);
+            setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', '.' . $_SERVER['HTTP_HOST']);
+            setrawcookie(
+                $cookieSetTechnicalName
+                , ''
+                , time() - 36000000
+                , '/'
+                , $domain
+            );
         }
         ob_end_flush();
 	}

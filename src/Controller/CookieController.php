@@ -27,7 +27,7 @@ class CookieController extends AbstractController
 	{
         $data = $request->get('data');
         $newConsent = $data['newConsent'];
-		$cookieDatabase = $this->getModulData($data['modID']);
+		$cookieDatabase = $this->getModulData($data['modId']);
         //nur ohne JS gefüllt
         if (!$data['isJavaScript']) {
             if (!isset($data['cookieIds']))
@@ -67,19 +67,19 @@ class CookieController extends AbstractController
 			}
 		}
 
-		if (!empty($cookiesToDelete))
-			PageLayoutListener::deleteCookie($cookiesToDelete);
+		if (!empty($cookiesToSet))
+			PageLayoutListener::deleteCookie($cookiesToSet);
 
         if ($newConsent) {
 
             $cookieData = new CookieData();
-            $cookieData->setId($this->changeConsent($cookiesToSet,$data['modID'],$cookieDatabase));
+            $cookieData->setId($this->changeConsent($cookiesToSet,$data['modId'],$cookieDatabase));
             $cookieData->setVersion(intval($cookieDatabase['cookieVersion']));
             $cookieData->setOtherCookieIds($data['cookieIds']);
             $cookieData->setIsJavaScript($data['isJavaScript']);
             $this->setNetzhirschCookie(
                 $cookieData,
-                $data['modID'],
+                $data['modId'],
                 $cookieDatabase['cookieExpiredTime']
             );
         }
@@ -96,13 +96,16 @@ class CookieController extends AbstractController
 
     /**
      * @param CookieData $cookieData
-     * @param $modID
+     * @param $modId
      * @param $cookieExpiredTime
      * @throws DBALException
      */
-	private function setNetzhirschCookie($cookieData,$modID,$cookieExpiredTime){
-		
-		$cookieToolsTechnicalName = $this->getNetzhirschTechnicalCookieName($modID);
+	private function setNetzhirschCookie($cookieData, $modId, $cookieExpiredTime){
+
+	    /** @noinspection PhpParamsInspection */
+        /* @var Connection $conn */
+        $conn = $this->get('database_connection');
+		$cookieToolsTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
 
 		$expiredDate = new DateTime();
 		$cookieExpiredTime = strtotime('+'.$cookieExpiredTime.' day',$expiredDate->getTimestamp());
@@ -118,21 +121,21 @@ class CookieController extends AbstractController
 	}
 	
 	/**
-	 * @param $modID
+	 * @param $modId
 	 * @return mixed
 	 * @throws DBALException
 	 */
-	private function getModulData($modID){
+	private function getModulData($modId){
 		
 		$response = [];
 		
 		/** @noinspection PhpParamsInspection */
-		$conn = $this->get('database_connection');
 		/* @var Connection $conn */
+		$conn = $this->get('database_connection');
 		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_module WHERE type = ? AND id = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, 'cookieOptInBar');
-		$stmt->bindValue(2, $modID);
+		$stmt->bindValue(2, $modId);
 		$stmt->execute();
 		$data = $stmt->fetch();
 		
@@ -156,7 +159,7 @@ class CookieController extends AbstractController
 		$sql .= ' WHERE pid = ? AND pfield = ?';
 		$stmt = $conn->prepare($sql);
 		
-		$stmt->bindValue(1, $modID);
+		$stmt->bindValue(1, $modId);
 		$stmt->bindValue(2, 'cookieTools');
 		
 		$stmt->execute();
@@ -179,7 +182,7 @@ class CookieController extends AbstractController
 		
 		$stmt = $conn->prepare($sql);
 		
-		$stmt->bindValue(1, $modID);
+		$stmt->bindValue(1, $modId);
 		$stmt->bindValue(2, 'otherScripts');
 		
 		$stmt->execute();
@@ -231,7 +234,7 @@ class CookieController extends AbstractController
                 if (!empty($referer))
                     $userInfo['consentURL'] = $referer;
             }
-            $cookieData = self::getUserCookie($requestStack);
+            $cookieData = self::getUserCookie($conn,$requestStack);
             $userInfo['cookieId'] = $cookieData->getId();
         }
 
@@ -276,11 +279,13 @@ class CookieController extends AbstractController
 	}
 
     /**
+     * @param $conn
      * @param RequestStack $requestStack
      * @param Request $request
      * @return CookieData
+     * @throws DBALException
      */
-	public static function getUserCookie($requestStack = null,$request = null)
+	public static function getUserCookie($conn,$requestStack = null,$request = null)
     {
         $cookieData = new CookieData();
 
@@ -291,10 +296,14 @@ class CookieController extends AbstractController
         if (empty($currentRequest))
             $currentRequest = $requestStack->getCurrentRequest();
 
+
         if (!empty($currentRequest)) {
             $cookieSet = $currentRequest->cookies;
+            $data = $currentRequest->request->get('data');
+            $modId = $data['modId'];
+            $cookieToolsTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
             if (!empty($cookieSet)) {
-                $cookieSet = $cookieSet->get('_netzhirsch_cookie_opt_in');
+                $cookieSet = $cookieSet->get($cookieToolsTechnicalName);
                 if (!empty($cookieSet)) {
                     /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
                     $cookieId = json_decode($cookieSet);
@@ -311,10 +320,15 @@ class CookieController extends AbstractController
      * @Route("/cookie/revoke", name="cookie_revoke")
      * @param Request $request
      * @return RedirectResponse
+     * @throws DBALException
      */
     public function revokeAction(Request $request)
     {
-        setrawcookie('_netzhirsch_cookie_opt_in', 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
+        /* @var Connection $conn */
+        /** @noinspection PhpParamsInspection */
+        $conn = $this->get('database_connection');
+        $optInTechnicalName = self::getOptInTechnicalCookieName($conn,$request->get('data')['modId']);
+        setrawcookie($optInTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
 
         return $this->redirectToPageBefore($request->get('currentPage'));
     }
@@ -336,18 +350,16 @@ class CookieController extends AbstractController
     }
 
     /**
+     * @param Connection $conn
      * @param $modID
      * @return false|mixed
      * @throws DBALException
      */
-    private function getNetzhirschTechnicalCookieName($modID)
+    public static function getOptInTechnicalCookieName($conn,$modID)
     {
-        /* @var Connection $conn */
-        /** @noinspection PhpParamsInspection */
-        $conn = $this->get('database_connection');
-        $sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsTechnicalName = ? AND pid = ?";
+        $sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsSelect = ? AND pid = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, '_netzhirsch_cookie_opt_in');
+        $stmt->bindValue(1, 'optInCookie');
         $stmt->bindValue(2, $modID);
         $stmt->execute();
         return $stmt->fetchColumn();
@@ -363,16 +375,17 @@ class CookieController extends AbstractController
     public function allowedIframeAction(Request $request)
     {
         $iframe = $request->get('iframe');
-        $modID = $request->get('modID');
+        $modId = $request->get('modId');
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
         $conn = $this->get('database_connection');
+        $optInTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
         $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?) OR (pid = ? AND cookieToolsTechnicalName = ?) ";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $modID);
+        $stmt->bindValue(1, $modId);
         $stmt->bindValue(2, $iframe);
-        $stmt->bindValue(3, $modID);
-        $stmt->bindValue(4, '_netzhirsch_cookie_opt_in');
+        $stmt->bindValue(3, $modId);
+        $stmt->bindValue(4, $optInTechnicalName);
         $stmt->execute();
         $cookies = $stmt->fetchAll();
         $nhCookie = null;
@@ -386,7 +399,7 @@ class CookieController extends AbstractController
         }
 
         if (!empty($nhCookie) && !empty($otherCookie) ) {
-            $cookieData = self::getUserCookie(null,$request);
+            $cookieData = self::getUserCookie($conn,null,$request);
 
             if (!empty($cookieData)) {
                 $otherCookieIds = $cookieData->getOtherCookieIds();
@@ -395,7 +408,7 @@ class CookieController extends AbstractController
             }
             $otherCookieIds[] = $otherCookie['id'];
             $cookieData->setOtherCookieIds($otherCookieIds);
-            $this->setNetzhirschCookie($cookieData,$modID,$nhCookie['cookieToolExpiredTime']);
+            $this->setNetzhirschCookie($cookieData,$modId,$nhCookie['cookieToolExpiredTime']);
         }
 
         return $this->redirectToPageBefore($request->get('currentPage'));

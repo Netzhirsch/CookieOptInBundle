@@ -8,9 +8,11 @@ use Contao\Module;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use Doctrine\DBAL\Connection;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -68,9 +70,9 @@ class ModuleCookieOptInBar extends Module
 		
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
 		
-		if (PageLayoutListener::doNotTrackBrowserSetting($data['cookieTools'],$this->id))
+		if (PageLayoutListener::doNotTrackBrowserSetting($this->id))
 			return null;
-		$netzhirschOptInCookie = self::getCookieData(System::getContainer());
+		$netzhirschOptInCookie = self::getCookieData(System::getContainer(),$this->id);
         $data['cookieGroupsSelected'] = [];
         if (!empty($netzhirschOptInCookie->groups))
 		    $data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
@@ -116,19 +118,20 @@ class ModuleCookieOptInBar extends Module
                     $cookieTool->cookieToolGroupName = $name;
                 }
             }
-            $newGroup = true;
-            foreach ($data['cookieGroups'] as $cookieGroup) {
-                if ($cookieGroup['technicalName'] == $technicalName) {
-                    $newGroup = false;
+            if (!empty($technicalName) && !empty($name)) {
+                $newGroup = true;
+                foreach ($data['cookieGroups'] as $cookieGroup) {
+                    if ($cookieGroup['technicalName'] == $technicalName) {
+                        $newGroup = false;
+                    }
+                }
+                if ($newGroup) {
+                    $data['cookieGroups'][] = [
+                        'technicalName' => $technicalName,
+                        'name' => $name
+                    ];
                 }
             }
-            if ($newGroup) {
-                $data['cookieGroups'][] = [
-                    'technicalName' => $technicalName,
-                    'name' => $name
-                ];
-            }
-
 		}
 
 		$data['cookiesSelected'] = [];
@@ -202,15 +205,20 @@ class ModuleCookieOptInBar extends Module
 	 * @param ContainerInterface $container
 	 * @return mixed
 	 */
-	public static function getCookieData(ContainerInterface $container) {
+	public static function getCookieData(ContainerInterface $container,$modId = null) {
 		
-		$request = $container->get('request_stack');
-		$cookies = $request->getCurrentRequest()->cookies;
-		
-		$netzhirschOptInCookie = $cookies->get('_netzhirsch_cookie_opt_in');
+        $requestStack = $container->get('request_stack');
+        $request = $requestStack->getCurrentRequest();
+		$cookies = $request->cookies;
+        /* @var Connection $conn */
+        $conn = $container->get('database_connection');
+        if (empty($modId))
+            $modId = $request->get('data')['modId'];
+        $optInTechnicalName = CookieController::getOptInTechnicalCookieName($conn,$modId);
+        $optInTechnicalName = $cookies->get($optInTechnicalName);
 		
 		/** @noinspection PhpComposerExtensionStubsInspection */
-		return json_decode($netzhirschOptInCookie);
+		return json_decode($optInTechnicalName);
 	}
 
     /**

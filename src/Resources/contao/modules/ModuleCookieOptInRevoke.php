@@ -64,7 +64,7 @@ class ModuleCookieOptInRevoke extends Module
 			}
 		}
 		
-		if (PageLayoutListener::doNotTrackBrowserSetting($data['cookieTools'],$this->id))
+		if (PageLayoutListener::doNotTrackBrowserSetting($this->id))
 			return null;
 		
 		$revokeButton = $this->arrData['revokeButton'];

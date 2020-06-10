@@ -76,7 +76,7 @@ class ParseFrontendTemplateListener
             $externalMediaCookiesInDB = $stmt->fetchAll();
 
             //Im Cookie gesetzten iFrame finden, damit dieses nicht blocked werden kann.
-            $cookieData = CookieController::getUserCookie($requestStack);
+            $cookieData = CookieController::getUserCookie($conn,$requestStack);
             foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                 if (!empty($cookieData->getOtherCookieIds())
                     && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())
@@ -247,7 +247,7 @@ class ParseFrontendTemplateListener
             $analyseCookiesInDB = $stmt->fetchAll();
 
             //ersetzen wenn cookie in user cookie.
-            $cookieData = CookieController::getUserCookie($requestStack);
+            $cookieData = CookieController::getUserCookie($conn,$requestStack);
             foreach ($analyseCookiesInDB as $analyseCookieInDB) {
                 if (!empty($cookieData->getOtherCookieIds()) && in_array($analyseCookieInDB['id'], $cookieData->getOtherCookieIds())) {
                     $replace = true;
