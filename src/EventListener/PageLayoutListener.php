@@ -151,7 +151,7 @@ class PageLayoutListener {
             $domain = '';
         }
         foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
-            if ($cookieSetTechnicalName == 'csrf_https_contao_csrf_token')
+            if ($cookieSetTechnicalName == 'csrf_https-contao_csrf_token')
                 continue;
             setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
             setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', $_SERVER['HTTP_HOST']);
