@@ -189,7 +189,20 @@ class ModuleCookieOptInBar extends Module
 
 		$data['saveButton'] = $this->__get('saveButton');
 		$data['saveAllButton'] = $this->__get('saveAllButton');
-		
+
+        /********* load $GLOBALS['TL_LANG']['tl_module'] **************************************************************/
+		System::loadLanguageFile('tl_module');
+
+        $infoButtonShow = $this->__get('infoButtonShow');
+        if (empty($infoButtonShow))
+            $infoButtonShow = $GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'];
+		$data['infoButtonShow'] = $infoButtonShow;
+
+        $infoButtonHide = $this->__get('infoButtonHide');
+        if (empty($infoButtonHide))
+            $infoButtonHide = $GLOBALS['TL_LANG']['tl_module']['infoButtonHideDefault'];
+        $data['infoButtonHide'] = $infoButtonHide;
+
 		$data['animation'] = '';
 		if (!empty($this->__get('animation')))
 			$data['animation'] = $this->__get('animation');

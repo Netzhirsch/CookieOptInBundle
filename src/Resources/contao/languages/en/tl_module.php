@@ -35,6 +35,14 @@ $GLOBALS['TL_LANG']['tl_module']['infoHint'] = ['information','Please enter the 
 
 $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'] = 'In this overview you can select and deselect individual cookies of a category or entire categories. You will also receive more information about the cookies available.';
 
+$GLOBALS['TL_LANG']['tl_module']['infoButtonShow'] = ['Info show button', 'Please enter the label of the button that displays all cookie information.'];
+
+$GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'] = 'Info';
+
+$GLOBALS['TL_LANG']['tl_module']['infoButtonHide'] = ['Info hide button', 'Please enter the label of the button that hides all cookie information.'];
+
+$GLOBALS['TL_LANG']['tl_module']['infoButtonHideDefault'] = 'Info hide';
+
 $GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] =
 	[
 		'Reset all cookies set','Activate in the event of a change relevant to data protection. The cookie bar is displayed again each time you visit.'

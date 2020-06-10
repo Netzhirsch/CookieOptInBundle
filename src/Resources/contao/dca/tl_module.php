@@ -59,7 +59,9 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,saveButton
 	,saveAllButton
 	,highlightSaveAllButton
-	;infoHint
+	;infoButtonShow
+	,infoButtonHide
+	,infoHint
 	;align
 	,space
 	,cssID
@@ -117,7 +119,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 		'alwaysSave' => true,
 	],
 	'sql' => "text NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultQuestionHintDefault']]
+	'load_callback' => [['tl_module_ncoi','getDefaultQuestionHint']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
@@ -154,6 +156,34 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
     'sql' => "varchar(1) NOT NULL DEFAULT 1",
 ];
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonShow'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonShow'],
+    'explanation' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonShow'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval' => [
+        'alwaysSave' => true,
+        'tl_class'	=>	'w50',
+    ],
+    'default' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'],
+    'sql' => "varchar(255)  NULL default ''",
+    'load_callback' => [['tl_module_ncoi','getDefaultInfoButtonShow']]
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonHide'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonHide'],
+    'explanation' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonHide'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval' => [
+        'alwaysSave' => true,
+        'tl_class'	=>	'w50',
+    ],
+    'default' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonHideDefault'],
+    'sql' => "varchar(255)  NULL default ''",
+    'load_callback' => [['tl_module_ncoi','getDefaultInfoButtonHide']]
+];
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['infoHint'],
 	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['infoHint'],
@@ -165,7 +195,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	],
 	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
 	'sql' => "text  NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultInfoHintDefault']]
+	'load_callback' => [['tl_module_ncoi','getDefaultInfoHint']]
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
@@ -739,7 +769,7 @@ class tl_module_ncoi extends tl_module {
 		return $value;
 	}
 	
-	public function getDefaultQuestionHintDefault($value){
+	public function getDefaultQuestionHint($value){
 		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['questionHintDefault'];
@@ -747,13 +777,29 @@ class tl_module_ncoi extends tl_module {
 		return $value;
 	}
 	
-	public function getDefaultInfoHintDefault($value){
+	public function getDefaultInfoHint($value){
 		
 		if (empty($value))
 			$value = $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'];
 		
 		return $value;
 	}
+
+    public function getDefaultInfoButtonShow($value){
+
+        if (empty($value))
+            $value = $GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'];
+
+        return $value;
+    }
+
+    public function getDefaultInfoButtonHide($value){
+
+        if (empty($value))
+            $value = $GLOBALS['TL_LANG']['tl_module']['infoButtonHideDefault'];
+
+        return $value;
+    }
 
     public function setCookieGroups(DC_Table $dca) {
         /********* update cookie groups for a version < 1.3.0 *****************************************************/
