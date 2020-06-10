@@ -256,14 +256,17 @@ class CookieController extends AbstractController
 		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
-		foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
-            foreach ($cookieDatabase['cookieTools'] as $cookieDataFromDb) {
-                if ($cookieDataFromDb['id'] == $cookieTool) {
-                    $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
-                    $cookieTechnicalName[] = $cookieDataFromDb['cookieToolsTechnicalName'];
+		$otherCookieIds = $cookieData->getOtherCookieIds();
+        if (!empty($otherCookieIds)) {
+            foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
+                foreach ($cookieDatabase['cookieTools'] as $cookieDataFromDb) {
+                    if ($cookieDataFromDb['id'] == $cookieTool) {
+                        $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
+                        $cookieTechnicalName[] = $cookieDataFromDb['cookieToolsTechnicalName'];
+                    }
                 }
             }
-		}
+        }
         $stmt->bindValue(2, implode(', ', $cookieNames));
         $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
         $stmt->bindValue(4, date('Y-m-d H:i'));
@@ -302,7 +305,7 @@ class CookieController extends AbstractController
             $data = $currentRequest->request->get('data');
             $modId = $data['modId'];
             $cookieToolsTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
-            if (!empty($cookieSet)) {
+            if (!empty($cookieSet) && !empty($cookieToolsTechnicalName)) {
                 $cookieSet = $cookieSet->get($cookieToolsTechnicalName);
                 if (empty($cookieSet))
                     $cookieSet = $_COOKIE[$cookieToolsTechnicalName];

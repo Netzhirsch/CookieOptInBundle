@@ -145,7 +145,7 @@ class PageLayoutListener {
             }
         }
         $domain = explode('www',$_SERVER['HTTP_HOST']);
-        if (is_array($domain)) {
+        if (is_array($domain) && count($domain) >= 2) {
             $domain = $domain[1];
         } else {
             $domain = '';
