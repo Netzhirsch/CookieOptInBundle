@@ -163,7 +163,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonShow'] = [
     'inputType' => 'text',
     'eval' => [
         'alwaysSave' => true,
-        'tl_class'	=>	'w50',
+        'tl_class'	=>	'w50 clr',
     ],
     'default' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'],
     'sql' => "varchar(255)  NULL default ''",
@@ -191,7 +191,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	'inputType' => 'textarea',
 	'eval' => [
 		'alwaysSave' => true,
-		'tl_class'	=>	'long',
+		'tl_class'	=>	'long clr',
 	],
 	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
 	'sql' => "text  NULL default ''",
