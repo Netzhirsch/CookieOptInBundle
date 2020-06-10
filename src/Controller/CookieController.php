@@ -196,12 +196,12 @@ class CookieController extends AbstractController
 
     /**
      * @param $cookieData
-     * @param $modID
+     * @param $modId
      * @param $cookieDatabase
      * @return string
      * @throws DBALException
      */
-	private function changeConsent($cookieData,$modID,$cookieDatabase)
+	private function changeConsent($cookieData, $modId, $cookieDatabase)
 	{
 		/** @noinspection PhpParamsInspection */
 		$requestStack = $this->get('request_stack');
@@ -211,7 +211,7 @@ class CookieController extends AbstractController
 
         $sql = "SELECT ipFormatSave FROM tl_module WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $modID);
+        $stmt->bindValue(1, $modId);
         $stmt->execute();
         $ipFormatSave = $stmt->fetchColumn();
 
@@ -304,18 +304,18 @@ class CookieController extends AbstractController
             $cookieToolsTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
             if (!empty($cookieSet)) {
                 $cookieSet = $cookieSet->get($cookieToolsTechnicalName);
-                if (!empty($cookieSet)) {
-                    /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
-                    $cookieId = json_decode($cookieSet);
-                    $cookieData->setId(intval($cookieId->cookieId));
-                    $cookieData->setVersion($cookieId->cookieVersion);
-                    $cookieData->setOtherCookieIds($cookieId->cookieIds);
-                }
+                if (empty($cookieSet))
+                    $cookieSet = $_COOKIE[$cookieToolsTechnicalName];
+
+                /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
+                $cookieId = json_decode($cookieSet);
+                $cookieData->setId(intval($cookieId->cookieId));
+                $cookieData->setVersion($cookieId->cookieVersion);
+                $cookieData->setOtherCookieIds($cookieId->cookieIds);
             }
         }
         return $cookieData;
     }
-
     /**
      * @Route("/cookie/revoke", name="cookie_revoke")
      * @param Request $request
@@ -351,16 +351,16 @@ class CookieController extends AbstractController
 
     /**
      * @param Connection $conn
-     * @param $modID
+     * @param $modId
      * @return false|mixed
      * @throws DBALException
      */
-    public static function getOptInTechnicalCookieName($conn,$modID)
+    public static function getOptInTechnicalCookieName($conn, $modId)
     {
         $sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsSelect = ? AND pid = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, 'optInCookie');
-        $stmt->bindValue(2, $modID);
+        $stmt->bindValue(2, $modId);
         $stmt->execute();
         return $stmt->fetchColumn();
 
@@ -375,7 +375,7 @@ class CookieController extends AbstractController
     public function allowedIframeAction(Request $request)
     {
         $iframe = $request->get('iframe');
-        $modId = $request->get('modId');
+        $modId = $request->get('data')['modId'];
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
         $conn = $this->get('database_connection');
@@ -391,7 +391,7 @@ class CookieController extends AbstractController
         $nhCookie = null;
         $otherCookie = null;
         foreach ($cookies as $cookie) {
-            if ($cookie['cookieToolsSelect'] == '-') {
+            if ($cookie['cookieToolsSelect'] == 'optInCookie') {
                 $nhCookie = $cookie;
             } else {
                 $otherCookie = $cookie;

@@ -140,8 +140,8 @@
                     value="<?=$this->arrData['cookieGroups'][0]['technicalName']?>"
             >
 
-            <label for="no-script-modID" class="ncoi---no-script--hidden"></label>
-            <input id="no-script-modID" class="ncoi---no-script--hidden" type="text" name="data[modID]" value="<?=$this->arrData['id']?>">
+            <label for="no-script-modId" class="ncoi---no-script--hidden"></label>
+            <input id="no-script-modId" class="ncoi---no-script--hidden" type="text" name="data[modId]" value="<?=$this->arrData['id']?>">
 
             <label for="no-script-currentPage"></label>
             <input id="no-script-currentPage" class="ncoi---no-script--hidden" type="text" name="data[currentPage]" value="<?=$this->arrData['currentPage']?>">

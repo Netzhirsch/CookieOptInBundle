@@ -8,6 +8,8 @@ use Contao\System;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ParseFrontendTemplateListener
 {
@@ -46,12 +48,13 @@ class ParseFrontendTemplateListener
 
         //Datenbank und User Cookie
         $container = System::getContainer();
+        /** @var RequestStack $requestStack */
         $requestStack = $container->get('request_stack');
 
         //Frontendvariablen
         $iframeTypInHtml = 'iframe';
         $privacyPolicyLink = '';
-        $modID = null;
+        $modId = null;
 
         //Wenn null werden alle iFrames angezeigt.
         if (!empty($requestStack)) {
@@ -74,17 +77,6 @@ class ParseFrontendTemplateListener
             $stmt->bindValue(2, $iframeTypInHtml);
             $stmt->execute();
             $externalMediaCookiesInDB = $stmt->fetchAll();
-
-            //Im Cookie gesetzten iFrame finden, damit dieses nicht blocked werden kann.
-            $cookieData = CookieController::getUserCookie($conn,$requestStack);
-            foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                if (!empty($cookieData->getOtherCookieIds())
-                    && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())
-                ) {
-                    $isUserCookieDontAllowMedia = true;
-                    break;
-                }
-            }
 
             //Feststellen ob iFrame laut Backend geblocked werden sollen
             // und Datenschutz url finden
@@ -114,7 +106,7 @@ class ParseFrontendTemplateListener
                                 foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                                     if ($module['id'] == $externalMediaCookieInDB['pid']) {
                                         $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
-                                        $modID = $module['id'];
+                                        $modId = $module['id'];
 
                                         if (!empty(PageModel::findById($module['privacyPolicy']))) {
                                             $privacyPolicyLink = PageModel::findById($module['privacyPolicy']);
@@ -125,6 +117,19 @@ class ParseFrontendTemplateListener
                             }
                         }
                     }
+                }
+            }
+
+            //Im Cookie gesetzten iFrame finden, damit dieses nicht blocked werden kann.
+            $request = new Request();
+            $request->request->set('data',['modId' => $modId]);
+            $cookieData = CookieController::getUserCookie($conn,null,$request);
+            foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
+                if (!empty($cookieData->getOtherCookieIds())
+                    && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())
+                ) {
+                    $isUserCookieDontAllowMedia = true;
+                    break;
                 }
             }
         }
@@ -203,7 +208,7 @@ class ParseFrontendTemplateListener
 <button type="submit" name="iframe" value="'.$iframeTypInHtml.'" class="ncoi---release">';
         $htmlConsentButtonEnd = '<span>' . $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</span></button></div>';
         $htmlInputCurrentPage = '<input class="ncoi---no-script--hidden" type="text" name="currentPage" value="'.$_SERVER['REDIRECT_URL'].'">';
-        $htmlInputModID = '<input class="ncoi---no-script--hidden" type="text" name="modID" value="'.$modID.'">';
+        $htmlInputModID = '<input class="ncoi---no-script--hidden" type="text" name="data[modId]" value="'.$modId.'">';
 
         //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
         $iframe = '<script type="text/template">' . base64_encode($buffer) . '</script>';
