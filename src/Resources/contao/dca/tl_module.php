@@ -924,7 +924,7 @@ class tl_module_ncoi extends tl_module {
 					$netzhirschCookieFieldModel = $fieldPalette;
 				} elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_contao_csrf_token') {
 					$csrfCookieFieldModel = $fieldPalette;
-                } elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_contao_csrf_token') {
+                } elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_https_contao_csrf_token') {
                     $csrfHttpsCookieFieldModel = $fieldPalette;
 				} elseif ($fieldPalette->cookieToolsTechnicalName == 'PHPSESSID') {
 					$phpSessIdCookieFieldModel = $fieldPalette;
