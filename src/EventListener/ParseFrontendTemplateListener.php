@@ -42,14 +42,28 @@ class ParseFrontendTemplateListener
      * @throws DBALException
      */
     private function iframe($buffer){
-        // Block Entscheidungsvariablen
-        $isUserCookieDontAllowMedia = false;
-        $blockedIFrames = [];
 
         //Datenbank und User Cookie
         $container = System::getContainer();
         /** @var RequestStack $requestStack */
         $requestStack = $container->get('request_stack');
+
+        $iframeArray = explode('<iframe',$buffer);
+        $return = '';
+        foreach ($iframeArray as $iframeEntry) {
+            if (strpos($iframeEntry, '</iframe') !== false) {
+                $iframeHTML = '<iframe'.$iframeEntry;
+                $return .= $this->getIframeHTML($iframeHTML,$requestStack,$container);
+            }
+        }
+        return $return;
+    }
+
+    private function getIframeHTML($iframeHTML,$requestStack,$container)
+    {
+        // Block Entscheidungsvariablen
+        $isUserCookieDontAllowMedia = false;
+        $blockedIFrames = [];
 
         //Frontendvariablen
         $iframeTypInHtml = 'iframe';
@@ -60,11 +74,11 @@ class ParseFrontendTemplateListener
         if (!empty($requestStack)) {
 
             //Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
-            if (strpos($buffer, 'youtube') !== false || strpos($buffer, 'youtu.be') !== false) {
+            if (strpos($iframeHTML, 'youtube') !== false || strpos($iframeHTML, 'youtu.be') !== false) {
                 $iframeTypInHtml = 'youtube';
-            }elseif (strpos($buffer, 'player.vimeo') !== false) {
+            }elseif (strpos($iframeHTML, 'player.vimeo') !== false) {
                 $iframeTypInHtml = 'vimeo';
-            }elseif (strpos($buffer, 'google.com/maps') || strpos($buffer, 'maps.google') !== false) {
+            }elseif (strpos($iframeHTML, 'google.com/maps') || strpos($iframeHTML, 'maps.google') !== false) {
                 $iframeTypInHtml = 'googleMaps';
             }
 
@@ -177,7 +191,7 @@ class ParseFrontendTemplateListener
             $isIFrameTypInDB = true;
 
         if (!$isIFrameTypInDB)
-            return $buffer;
+            return $iframeHTML;
 
         //$blockclass im JS um blocked Container ein. und auszublenden
         $class = 'ncoi---blocked ncoi---iframes '.$blockClass;
@@ -187,10 +201,10 @@ class ParseFrontendTemplateListener
             $class .= ' ncoi---hidden';
 
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
-        $height = substr($buffer, strpos($buffer, 'height'), 11);
+        $height = substr($iframeHTML, strpos($iframeHTML, 'height'), 11);
         $height = substr($height, 8, 3);
 
-        $width = substr($buffer, strpos($buffer, 'width'), 11);
+        $width = substr($iframeHTML, strpos($iframeHTML, 'width'), 11);
         $width = substr($width, 7, 3);
 
         //Umschliedender Container damit Kinder zentiert werden könne
@@ -211,18 +225,17 @@ class ParseFrontendTemplateListener
         $htmlInputModID = '<input class="ncoi---no-script--hidden" type="text" name="data[modId]" value="'.$modId.'">';
 
         //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
-        $iframe = '<script type="text/template">' . base64_encode($buffer) . '</script>';
+        $iframe = '<script type="text/template">' . base64_encode($iframeHTML) . '</script>';
 
         $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
 
         //User möchte das iFrame sehen, aber vielleicht auch über JS wieder blocken
         if ($isUserCookieDontAllowMedia) {
-            return $buffer.$newBuffer;
+            return $iframeHTML.$newBuffer;
         } else {
             return $newBuffer;
         }
     }
-
     private function analyticsTemplate($buffer) {
         $replace = false;
 
