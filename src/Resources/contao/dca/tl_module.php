@@ -5,6 +5,7 @@ use Contao\ModuleModel;
 use Contao\StringUtil;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 
 /** Revoke Modul ***********************************************/
 
@@ -804,26 +805,9 @@ class tl_module_ncoi extends tl_module {
     public function setCookieGroups(DC_Table $dca) {
         /********* update cookie groups for a version < 1.3.0 *****************************************************/
         $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
+        $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
         foreach ($fieldPalettes as $fieldPalette) {
-            $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
-            $save = false;
-            switch ($fieldPalette->cookieToolGroup) {
-                case $tlLangGroups['essential']:
-                    $fieldPalette->cookieToolGroup = 1;
-                    $save = true;
-                    break;
-                case $tlLangGroups['analysis']:
-                case 'Statistik':
-                    $fieldPalette->cookieToolGroup = 2;
-                    $save = true;
-                    break;
-                case $tlLangGroups['external_media']:
-                    $fieldPalette->cookieToolGroup = 3;
-                    $save = true;
-                    break;
-            };
-            if ($save)
-                $fieldPalette->save();
+            PageLayoutListener::setNewGroups($fieldPalette,$tlLangGroups);
         }
     }
 	public function getDefaultGroups($value,DC_Table $dca){
@@ -853,23 +837,26 @@ class tl_module_ncoi extends tl_module {
     public function setEssentialGroup($value)
     {
         $groups = StringUtil::deserialize($value);
-        $isExist = false;
-        foreach ($groups as $group) {
-            if ($group['key'] == '1') {
-                $isExist = true;
+        if (!is_array($groups[0])) {
+            $isExist = false;
+            foreach ($groups as $group) {
+                if ($group['key'] == '1') {
+                    $isExist = true;
+                }
             }
-        }
-        if (!$isExist){
-            $temp = $groups[0];
-            $groups[0] = [
-                'key' => '1',
-                'value' => $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential']
-            ];
-            if (!empty($temp)) {
-                $groups[array_key_last($groups)+1] = $temp;
+            if (!$isExist){
+                $temp = $groups[0];
+                $groups[0] = [
+                    'key' => '1',
+                    'value' => $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential']
+                ];
+                if (!empty($temp)) {
+                    $groups[array_key_last($groups)+1] = $temp;
+                }
             }
+            $value = serialize($groups);
         }
-        return serialize($groups);
+        return $value;
 	}
 	
 	public function getGroups(DC_Table $dca)
@@ -886,6 +873,7 @@ class tl_module_ncoi extends tl_module {
     public function getGroupKeys(DC_Table $dca)
     {
         $groups = $this->getGroups($dca);
+        $groups = $this->getDefaultGroups($groups,$dca);
         $groups = StringUtil::deserialize($groups);
         $groupValues = [];
         foreach ($groups as $group) {

@@ -79,15 +79,33 @@ class PageLayoutListener {
         $optInTechnicalName = CookieController::getOptInTechnicalCookieName($conn,$modId);
         $netzhirschOptInCookie = $_COOKIE[$optInTechnicalName];
 
+        /********* update groups for a version < 1.3.0 ************************************************************/
+        $valueArray = StringUtil::deserialize($modulBar->__get('cookieGroups'));
+        if (!is_array($valueArray[0])) {
+            $newValues = [];
+            $key = 1;
+            foreach ($valueArray as $value) {
+                $newValues[] = [
+                    'key' => $key++,
+                    'value' => $value
+                ];
+            }
+            $modulBar->__set('cookieGroups',serialize($newValues));
+            $modulBar->save();
+        }
+
 		/** @noinspection PhpComposerExtensionStubsInspection */
 		$netzhirschOptInCookie = json_decode($netzhirschOptInCookie);
 
-		$paletteModule = FieldPaletteModel::findByPid($modulBar->id);
+        $fieldPalettes = FieldPaletteModel::findByPid($modulBar->id);
 		$cookieTools = [];
-		foreach ($paletteModule as $palettModul) {
-			if ($palettModul->pfield == 'cookieTools') {
-				$cookieTools[] = $palettModul;
+        System::loadLanguageFile('tl_module');
+        $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
+		foreach ($fieldPalettes as $fieldPalette) {
+			if ($fieldPalettes->pfield == 'cookieTools') {
+				$cookieTools[] = $fieldPalette;
 			}
+            self::setNewGroups($fieldPalette,$tlLangGroups);
 		}
 
 		if (self::doNotTrackBrowserSetting($modulBar, $modId))
@@ -151,7 +169,10 @@ class PageLayoutListener {
             $domain = '';
         }
         foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
-            if ($cookieSetTechnicalName == 'csrf_https-contao_csrf_token')
+            if (
+                $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
+                || $cookieSetTechnicalName == 'csrf_contao_csrf_token'
+            )
                 continue;
             setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
             setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', $_SERVER['HTTP_HOST']);
@@ -296,5 +317,27 @@ class PageLayoutListener {
 		}
 
 		return $moduleIds;
+	}
+
+    public static function setNewGroups($fieldPalette,$tlLangGroups)
+    {
+        $save = false;
+        switch ($fieldPalette->cookieToolGroup) {
+            case $tlLangGroups['essential']:
+                $fieldPalette->cookieToolGroup = 1;
+                $save = true;
+                break;
+            case $tlLangGroups['analysis']:
+            case 'Statistik':
+                $fieldPalette->cookieToolGroup = 2;
+                $save = true;
+                break;
+            case $tlLangGroups['external_media']:
+                $fieldPalette->cookieToolGroup = 3;
+                $save = true;
+                break;
+        };
+        if ($save)
+            $fieldPalette->save();
 	}
 }
