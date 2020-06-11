@@ -805,9 +805,8 @@ class tl_module_ncoi extends tl_module {
     public function setCookieGroups(DC_Table $dca) {
         /********* update cookie groups for a version < 1.3.0 *****************************************************/
         $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
-        $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
         foreach ($fieldPalettes as $fieldPalette) {
-            PageLayoutListener::setNewGroups($fieldPalette,$tlLangGroups);
+            PageLayoutListener::setNewGroups($fieldPalette);
         }
     }
 	public function getDefaultGroups($value,DC_Table $dca){
@@ -942,7 +941,7 @@ class tl_module_ncoi extends tl_module {
 		} elseif (!isset($netzhirschCookieFieldModel->cookieToolExpiredTime)) {
             $netzhirschCookieFieldModel->cookieToolExpiredTime = '30';
             $netzhirschCookieFieldModel->save();
-        } elseif($netzhirschCookieFieldModel->cookieToolsSelect == '-') {
+        } elseif($netzhirschCookieFieldModel->cookieToolsSelect != 'optInCookie') {
             $netzhirschCookieFieldModel->cookieToolsSelect = 'optInCookie';
             $netzhirschCookieFieldModel->save();
         }

@@ -99,13 +99,11 @@ class PageLayoutListener {
 
         $fieldPalettes = FieldPaletteModel::findByPid($modulBar->id);
 		$cookieTools = [];
-        System::loadLanguageFile('tl_module');
-        $tlLangGroups = $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames'];
 		foreach ($fieldPalettes as $fieldPalette) {
 			if ($fieldPalettes->pfield == 'cookieTools') {
 				$cookieTools[] = $fieldPalette;
 			}
-            self::setNewGroups($fieldPalette,$tlLangGroups);
+            self::setNewGroups($fieldPalette);
 		}
 
 		if (self::doNotTrackBrowserSetting($modulBar, $modId))
@@ -319,20 +317,24 @@ class PageLayoutListener {
 		return $moduleIds;
 	}
 
-    public static function setNewGroups($fieldPalette,$tlLangGroups)
+    public static function setNewGroups($fieldPalette)
     {
         $save = false;
-        switch ($fieldPalette->cookieToolGroup) {
-            case $tlLangGroups['essential']:
+        switch ($fieldPalette->cookieToolsSelect) {
+            case '-':
                 $fieldPalette->cookieToolGroup = 1;
                 $save = true;
                 break;
-            case $tlLangGroups['analysis']:
-            case 'Statistik':
+            case 'googleAnalytics':
+            case 'facebookPixel':
+            case 'matomo':
                 $fieldPalette->cookieToolGroup = 2;
                 $save = true;
                 break;
-            case $tlLangGroups['external_media']:
+            case 'youtube':
+            case 'vimeo':
+            case 'googleMaps':
+            case 'iframe':
                 $fieldPalette->cookieToolGroup = 3;
                 $save = true;
                 break;
