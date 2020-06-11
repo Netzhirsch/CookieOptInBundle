@@ -50,11 +50,11 @@
                     <?php if(!empty($this->arrData['cookieTools'])) : ?>
                     <table>
                         <?php if(!empty($this->arrData['cookieTools'])) : ?>
-                            <tbody>
                             <?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
-                                <?php include('includes/mod_cookie_opt_in_table.html5') ?>
+                                <tbody>
+                                    <?php include('includes/mod_cookie_opt_in_table.html5') ?>
+                                </tbody>
                             <?php endforeach;?>
-                            </tbody>
                         <?php endif;?>
                     </table>
                     <?php endif;?>
