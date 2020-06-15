@@ -27,6 +27,7 @@
 			data-ncoi-is-version-new="<?php echo $this->arrData['netzhirschCookieIsVersionNew']?>"
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
+            data-ncoi-animation="<?= $this->arrData['animation']?>"
 	>
 		<?=(empty($this->arrData['headlineCookieOptInBar'])?'':$this->arrData['headlineCookieOptInBar']) ?>
 

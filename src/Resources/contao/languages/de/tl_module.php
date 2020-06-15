@@ -116,6 +116,8 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit sc
 
 $GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an. Danach wird die Cookie Bar erneut eingeblendet.'];
 
+$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTimeDefault'] = '30';
+
 $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'];
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Datenschutzerklärung'];

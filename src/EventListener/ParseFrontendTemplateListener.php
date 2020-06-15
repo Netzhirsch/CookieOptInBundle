@@ -107,10 +107,9 @@ class ParseFrontendTemplateListener
                     $layout = LayoutModel::findById($pageModel->layout);
                     $moduleIds = StringUtil::deserialize($layout->modules);
 
-                    $sql = "SELECT id,privacyPolicy FROM tl_module WHERE type = ? ";
+                    $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie ";
                     /** @var Statement $stmt */
                     $stmt = $conn->prepare($sql);
-                    $stmt->bindValue(1, 'cookieOptInBar');
                     $stmt->execute();
                     $modules = $stmt->fetchAll();
 
@@ -118,9 +117,9 @@ class ParseFrontendTemplateListener
                         foreach ($moduleIds as $moduleId) {
                             if ($module['id'] == $moduleId['mod']) {
                                 foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                                    if ($module['id'] == $externalMediaCookieInDB['pid']) {
+                                    if ($module['pid'] == $externalMediaCookieInDB['pid']) {
                                         $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
-                                        $modId = $module['id'];
+                                        $modId = $module['pid'];
 
                                         if (!empty(PageModel::findById($module['privacyPolicy']))) {
                                             $privacyPolicyLink = PageModel::findById($module['privacyPolicy']);

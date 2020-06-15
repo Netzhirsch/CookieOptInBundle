@@ -122,6 +122,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Expiration in days','P
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Expiration in days','Please specify the duration of the cookie.'];
 
+$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTimeDefault'] = '30';
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Data protection'];
 

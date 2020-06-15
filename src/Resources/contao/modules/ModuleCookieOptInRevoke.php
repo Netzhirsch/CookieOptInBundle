@@ -4,10 +4,11 @@ namespace Netzhirsch\CookieOptInBundle;
 
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
+use Contao\LayoutModel;
 use Contao\Module;
-use Contao\ModuleModel;
-use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
-use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
+use Contao\StringUtil;
+use Contao\System;
+use Doctrine\DBAL\Statement;
 
 class ModuleCookieOptInRevoke extends Module
 {
@@ -44,38 +45,37 @@ class ModuleCookieOptInRevoke extends Module
 		$this->Template = new FrontendTemplate($this->strTemplate);
 
 		$data = $this->Template->getData();
-		
-		$cookieOptInBarModule = ModuleModel::findByType('cookieOptInBar');
-		$moduleBarInLayout = null;
-		foreach ($cookieOptInBarModule as $cookieOptInBarModul) {
-			if ($cookieOptInBarModul->pid == $this->pid) {
-				$moduleBarInLayout = $cookieOptInBarModul;
-			}
-		}
-		$cookieTools = FieldPaletteModel::findByPid($moduleBarInLayout->id);
-		$data['cookieTools'] = [];
-		$data['otherScripts'] = [];
-		foreach ($cookieTools as $cookieTool) {
-			if ($cookieTool->pfield == 'cookieTools') {
-				$data['cookieTools'][] = $cookieTool;
-			}
-			if ($cookieTool->pfield == 'otherScripts') {
-				$data['otherScripts'][] = $cookieTool;
-			}
-		}
-		
-		if (PageLayoutListener::doNotTrackBrowserSetting($this->id))
-			return null;
-		
-		$revokeButton = $this->arrData['revokeButton'];
+        $conn = System::getContainer()->get('database_connection');
+
+        $sql = "SELECT revokeButton FROM tl_ncoi_cookie_revoke WHERE pid = ?";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $this->__get('id'));
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+		$revokeButton = $result['revokeButton'];
 		if (!empty($revokeButton))
 			$data['revokeButton'] = $revokeButton;
-		
-		if (empty($moduleBarInLayout))
+
+		$layout = LayoutModel::findById($this->__get('pid'));
+        $modules = $layout->modules;
+        $modules = StringUtil::deserialize($modules);
+        $sql = "SELECT id FROM tl_ncoi_cookie";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $this->__get('id'));
+        $stmt->execute();
+        $result = $stmt->fetch();
+        $moduleBarInLayout = false;
+        foreach ($modules as $module) {
+            if ($result['id'] == $module['mod']) {
+                $moduleBarInLayout = true;
+            }
+        }
+		if (!$moduleBarInLayout)
 			$data['moduleMissing'] = 'bar modul not in layout';
 		
-		$data['animation'] = $cookieOptInBarModule->__get('animation');
-
         $data['currentPage'] = $_SERVER['REDIRECT_URL'];
 
 		$this->Template->setData($data);

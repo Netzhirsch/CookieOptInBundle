@@ -29,7 +29,10 @@
 		"symfony/serializer": "*",
 		"ext-json": "*",
 		"ext-curl": "*",
-		"ext-gettext": "*"
+		"ext-gettext": "*",
+		"Doctrine/ORM": "*",
+		"doctrine/data-fixtures": "*",
+		"doctrine/dbal": "*"
 	},
 	"conflict": {
 		"contao/core": "*"

@@ -67,8 +67,8 @@ class CookieController extends AbstractController
 			}
 		}
 
-		if (!empty($cookiesToSet))
-			PageLayoutListener::deleteCookie($cookiesToSet);
+		if (!empty($cookiesToDelete))
+			PageLayoutListener::deleteCookie($cookiesToDelete);
 
         if ($newConsent) {
 
@@ -132,10 +132,9 @@ class CookieController extends AbstractController
 		/** @noinspection PhpParamsInspection */
 		/* @var Connection $conn */
 		$conn = $this->get('database_connection');
-		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_module WHERE type = ? AND id = ?";
+		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_ncoi_cookie WHERE pid = ?";
 		$stmt = $conn->prepare($sql);
-		$stmt->bindValue(1, 'cookieOptInBar');
-		$stmt->bindValue(2, $modId);
+		$stmt->bindValue(1, $modId);
 		$stmt->execute();
 		$data = $stmt->fetch();
 		
@@ -209,7 +208,7 @@ class CookieController extends AbstractController
 		/** @noinspection PhpParamsInspection */
         $conn = $this->get('database_connection');
 
-        $sql = "SELECT ipFormatSave FROM tl_module WHERE id = ?";
+        $sql = "SELECT ipFormatSave FROM tl_ncoi_cookie WHERE pid = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, $modId);
         $stmt->execute();

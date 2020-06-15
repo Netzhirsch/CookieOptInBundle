@@ -9,6 +9,7 @@ use Contao\StringUtil;
 use Contao\System;
 use DateInterval;
 use DateTime;
+use Doctrine\DBAL\Statement;
 use Exception;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use ModuleModel;
@@ -51,7 +52,6 @@ class PageLayoutListener {
 		$moduleIds = [];
 		$moduleIds = self::checkModules($layout, $removeModules, $moduleIds);
 		$moduleIds = self::checkModules($pageModel, $removeModules, $moduleIds);
-		$moduleIds = array_unique($moduleIds);
 
 		if ($removeModules) {
 			return;
@@ -64,7 +64,7 @@ class PageLayoutListener {
 
 				return;
 			}
-			elseif (count($moduleIds) > 1) {
+			elseif (count($moduleIds) > 2) {
 				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInErrorMore.js|static';
 
 				return;
@@ -80,18 +80,27 @@ class PageLayoutListener {
         $netzhirschOptInCookie = $_COOKIE[$optInTechnicalName];
 
         /********* update groups for a version < 1.3.0 ************************************************************/
-        $valueArray = StringUtil::deserialize($modulBar->__get('cookieGroups'));
-        if (!is_array($valueArray[0])) {
+        $sql = "SELECT cookieGroups,cookieVersion FROM tl_ncoi_cookie WHERE pid = ?";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $modId);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        $cookieGroups = StringUtil::deserialize($result['cookieGroups']);
+        if (!is_array($cookieGroups[0])) {
             $newValues = [];
             $key = 1;
-            foreach ($valueArray as $value) {
+            foreach ($cookieGroups as $cookieGroup) {
                 $newValues[] = [
                     'key' => $key++,
-                    'value' => $value
+                    'value' => $cookieGroup
                 ];
             }
-            $modulBar->__set('cookieGroups',serialize($newValues));
-            $modulBar->save();
+            $sql = "UPDATE tl_ncoi_cookie SET cookieGroups = ? WHERE pid = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(1, serialize($newValues));
+            $stmt->bindValue(2, $modId);
+            $stmt->execute();
         }
 
 		/** @noinspection PhpComposerExtensionStubsInspection */
@@ -118,7 +127,7 @@ class PageLayoutListener {
 			return;
 		}
 
-		if (!empty($modulBar) && $netzhirschOptInCookie->cookieVersion == $modulBar->__get('cookieVersion'))
+		if (!empty($modulBar) && $netzhirschOptInCookie->cookieVersion == $result['cookieVersion'])
 			return;
 
 		self::deleteCookie();
@@ -156,10 +165,12 @@ class PageLayoutListener {
 	public static function deleteCookie(Array $toolTypes = null) {
         ob_start();
         $cookiesSet = $_COOKIE;
-        foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
-            foreach ($toolTypes as $toolTyp) {
-                foreach ($toolTyp as $cookie) {
-                        unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
+        if (!empty($toolTypes)) {
+            foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
+                foreach ($toolTypes as $toolTyp) {
+                    foreach ($toolTyp as $cookie) {
+                            unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
+                    }
                 }
             }
         }
@@ -173,6 +184,7 @@ class PageLayoutListener {
             if (
                 $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
                 || $cookieSetTechnicalName == 'csrf_contao_csrf_token'
+                || $cookieSetTechnicalName == 'XDEBUG_SESSION'
             )
                 continue;
             setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
@@ -303,15 +315,32 @@ class PageLayoutListener {
 		if (!empty($layoutModules)) {
 			foreach ($layoutModules as $key => $layoutModule) {
 				if (!empty($layoutModule['enable'])) {
-					$mod = ModuleModel::findById($layoutModule['mod']);
-					if ($mod->type == 'cookieOptInBar') {
-						if ($removeModules)
-							unset($layoutModules[$key]);
-						else
-							$moduleIds[] = $mod->id;
-					} elseif ($mod->type == 'cookieOptInRevoke' && $removeModules) {
-						unset($layoutModules[$key]);
-					}
+
+                    $conn = System::getContainer()->get('database_connection');
+				    $sql = "SELECT pid FROM tl_ncoi_cookie";
+                    /** @var Statement $stmt */
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindValue(1, $layoutModule['mod']);
+                    $stmt->execute();
+                    $bar = $stmt->fetchColumn();
+
+                    if (!empty($bar) && $removeModules)
+                        unset($layoutModules[$key]);
+                    elseif(!in_array($bar,$moduleIds))
+                        $moduleIds[] = $bar;
+
+                    $conn = System::getContainer()->get('database_connection');
+                    $sql = "SELECT pid FROM tl_ncoi_cookie_revoke";
+                    /** @var Statement $stmt */
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindValue(1, $layoutModule['mod']);
+                    $stmt->execute();
+                    $revoke = $stmt->fetchColumn();
+
+                    if (!empty($revoke) && $removeModules)
+                        unset($layoutModules[$key]);
+                    elseif(!in_array($revoke,$moduleIds))
+                        $moduleIds[] = $revoke;
 				}
 			}
 			$layoutOrPage->__set('modules', serialize($layoutModules));

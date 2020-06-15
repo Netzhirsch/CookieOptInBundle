@@ -9,6 +9,7 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Statement;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
@@ -53,7 +54,15 @@ class ModuleCookieOptInBar extends Module
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
 
-		$maxWidth = $this->__get('maxWidth');
+        $conn = System::getContainer()->get('database_connection');
+        $sql = "SELECT * FROM tl_ncoi_cookie WHERE pid = ?";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $this->__get('id'));
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+		$maxWidth = $result['maxWidth'];
         $data['inconspicuous'] = false;
         $array = StringUtil::deserialize($maxWidth);
         if ($array['value'] == '100' && $array['unit'] == '%') {
@@ -61,11 +70,11 @@ class ModuleCookieOptInBar extends Module
         }
 
 		self::setCssJs(
-		    $this->__get('defaultCss'),
-            $this->__get('cssTemplateStyle'),
+            $result['defaultCss'],
+            $result['cssTemplateStyle'],
             $maxWidth,
-            $this->__get('blockSite')
-            ,$this->__get('zIndex')
+            $result['blockSite'],
+            $result['zIndex']
         );
 		
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
@@ -79,7 +88,7 @@ class ModuleCookieOptInBar extends Module
 
         $data['noScriptTracking'] = [];
 		global $objPage;
-        $groups = $this->__get('cookieGroups');
+        $groups = $result['cookieGroups'];
         $groups = StringUtil::deserialize($groups);
         $data['cookieGroups'] = [
             0 => [
@@ -143,42 +152,42 @@ class ModuleCookieOptInBar extends Module
 			$data['netzhirschCookieIsSet'] = true;
 
 		$data['netzhirschCookieIsVersionNew'] = "0";
-		if ($netzhirschOptInCookie->cookieVersion < $this->__get('cookieVersion'))
+		if ($netzhirschOptInCookie->cookieVersion < $result['cookieVersion'])
 			$data['netzhirschCookieIsVersionNew'] = "1";
 
-        $headlineData = StringUtil::deserialize($this->headlineCookieOptInBar);
+        $headlineData = StringUtil::deserialize($result['headlineCookieOptInBar']);
 		if (!empty($headlineData['value'])) {
 			$data['headlineCookieOptInBar'] = "<".$headlineData['unit']." class=\"ncoi---headline\">".$headlineData['value']."</".$headlineData['unit'].">";
 		}
 
-		$questionHint = $this->arrData['questionHint'];
+		$questionHint = $result['questionHint'];
 		if (!empty($questionHint))
 			$data['questionHint'] = $questionHint;
 
-		$imprint = PageModel::findById($this->__get('imprint'));
+		$imprint = PageModel::findById($result['imprint']);
 		if (!empty($imprint)) {
 			$data['imprint'] = '<a class="ncoi---link" href="'.$imprint->getFrontendUrl().'" title ="'.$imprint->title.'"> '.$imprint->title.' </a>';
 		}
 
-		$privacyPolicy = PageModel::findById($this->__get('privacyPolicy'));
+		$privacyPolicy = PageModel::findById($result['privacyPolicy']);
 		if (!empty($privacyPolicy)) {
 			$data['privacyPolicy'] = '<a class="ncoi---link" href="'.$privacyPolicy->getFrontendUrl().'" title ="'.$privacyPolicy->title.'"> '.$privacyPolicy->title.' </a>';
 		}
 
-		$infoTitle = $this->arrData['infoTitle'];
+		$infoTitle = $result['infoTitle'];
 		if (!empty($infoTitle)) {
 			$infoTitle = StringUtil::deserialize($infoTitle);
 			$data['infoTitle'] = "<".$infoTitle['unit'].">".$infoTitle['value']."</".$infoTitle['unit'].">";
 		}
 
-		$infoHint = $this->arrData['infoHint'];
+		$infoHint = $result['infoHint'];
 		if (!empty($infoHint))
 			$data['infoHint'] = $infoHint;
 
 		$data['isExcludePage'] = false;
 		$currentPageId = $objPage->id;
 		$data['currentPage'] = $_SERVER['REDIRECT_URL'];
-		$excludePages = StringUtil::deserialize($this->arrData['excludePages']);
+		$excludePages = StringUtil::deserialize($result['excludePages']);
         if (!empty($excludePages)) {
             foreach ($excludePages as $excludePage) {
                 if ($currentPageId == $excludePage) {
@@ -187,29 +196,29 @@ class ModuleCookieOptInBar extends Module
             }
         }
 
-		$data['saveButton'] = $this->__get('saveButton');
-		$data['saveAllButton'] = $this->__get('saveAllButton');
+		$data['saveButton'] = $result['saveButton'];
+		$data['saveAllButton'] = $result['saveAllButton'];
 
         /********* load $GLOBALS['TL_LANG']['tl_module'] **************************************************************/
 		System::loadLanguageFile('tl_module');
 
-        $infoButtonShow = $this->__get('infoButtonShow');
+        $infoButtonShow = $result['infoButtonShow'];
         if (empty($infoButtonShow))
             $infoButtonShow = $GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'];
 		$data['infoButtonShow'] = $infoButtonShow;
 
-        $infoButtonHide = $this->__get('infoButtonHide');
+        $infoButtonHide = $result['infoButtonHide'];
         if (empty($infoButtonHide))
             $infoButtonHide = $GLOBALS['TL_LANG']['tl_module']['infoButtonHideDefault'];
         $data['infoButtonHide'] = $infoButtonHide;
 
 		$data['animation'] = '';
-		if (!empty($this->__get('animation')))
-			$data['animation'] = $this->__get('animation');
+		if (!empty($result['animation']))
+			$data['animation'] = $result['animation'];
 		
-		$data['position'] = $this->__get('position');
+		$data['position'] = $result['position'];
 
-        $data['highlightSaveAllButton'] = $this->__get('highlightSaveAllButton');
+        $data['highlightSaveAllButton'] = $result['highlightSaveAllButton'];
 
 		$this->Template->setData($data);
 	}

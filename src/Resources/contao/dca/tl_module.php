@@ -31,10 +31,12 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['revokeButton'] = [
 		'mandatory' => true,
 		'tl_class' => 'w50 clr',
 		'maxlength' => 255,
-		'alwaysSave' => true
+		'alwaysSave' => true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(255) NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultRevokeButton']]
+    'foreignKey' => 'tl_ncoi_cookie_revoke.revokeButton',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableRevoke']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableRevoke']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateRevoke'] = [
@@ -44,8 +46,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateRevoke'] = [
 	'options' => $this->getTemplateGroup('mod_cookie_opt_in_revoke'),
 	'eval' => [
 		'tl_class'  =>  'w50 clr',
+        'doNotSaveEmpty' => true,
 	],
-	'sql' => "varchar(64) NULL default '' ",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableRevoke']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableRevoke']],
 ];
 
 /** Ende Revoke Modul ******************************************/
@@ -88,9 +92,17 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 ';
 
 // setCookieVersion check for right modul
-$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [['tl_module_ncoi','setCookieVersion'],['tl_module_ncoi','setLessVariables']];
-$GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'] = [['tl_module_ncoi','setCookieGroups']];
+$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [
+    ['tl_module_ncoi','setPageTreeEntries']
+    ,['tl_module_ncoi','setCookieVersion']
+    ,['tl_module_ncoi','setLessVariables']
+    ,['tl_module_ncoi','setGroupsToNcoiTable']
+];
 
+$GLOBALS['TL_DCA']['tl_module']['config']['ctable'] = [
+  'tl_ncoi_cookie'
+];
+$GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'] = [['tl_module_ncoi','setCookieGroups']];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
@@ -105,8 +117,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 	],
 	'eval' => [
 		'tl_class'=>'w50 clr',
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "text NULL default ''"
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableHeadlineCookieOptInBar']],
 ];
 
 
@@ -118,9 +132,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 	'eval' => [
 		'tl_class'=>'long clr',
 		'alwaysSave' => true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "text NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultQuestionHint']]
+    'foreignKey' => 'tl_ncoi_cookie.questionHint',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
@@ -129,10 +145,12 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
 	'inputType' => 'text',
 	'eval' => [
 		'tl_class' => 'w50',
-		'alwaysSave' => true
+		'alwaysSave' => true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "text NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultSaveButton']]
+    'foreignKey' => 'tl_ncoi_cookie.saveButton',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
@@ -141,10 +159,12 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
 	'inputType' => 'text',
 	'eval' => [
 		'tl_class' => 'w50',
-		'alwaysSave' => true
+		'alwaysSave' => true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "text NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultsaveAllButton']]
+    'foreignKey' => 'tl_ncoi_cookie.saveAllButton',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
@@ -152,9 +172,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
-        'tl_class'  =>  'w50'
+        'tl_class'  =>  'w50',
+        'doNotSaveEmpty' => true
     ],
-    'sql' => "varchar(1) NOT NULL DEFAULT 1",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonShow'] = [
@@ -165,10 +187,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonShow'] = [
     'eval' => [
         'alwaysSave' => true,
         'tl_class'	=>	'w50 clr',
+        'doNotSaveEmpty' => true
     ],
-    'default' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'],
-    'sql' => "varchar(255)  NULL default ''",
-    'load_callback' => [['tl_module_ncoi','getDefaultInfoButtonShow']]
+    'foreignKey' => 'tl_ncoi_cookie.infoButtonShow',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonHide'] = [
@@ -179,10 +202,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonHide'] = [
     'eval' => [
         'alwaysSave' => true,
         'tl_class'	=>	'w50',
+        'doNotSaveEmpty' => true
     ],
-    'default' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonHideDefault'],
-    'sql' => "varchar(255)  NULL default ''",
-    'load_callback' => [['tl_module_ncoi','getDefaultInfoButtonHide']]
+    'foreignKey' => 'tl_ncoi_cookie.infoButtonHide',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
@@ -193,33 +217,24 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 	'eval' => [
 		'alwaysSave' => true,
 		'tl_class'	=>	'long clr',
+        'doNotSaveEmpty' => true
 	],
-	'default' => &$GLOBALS['TL_LANG']['tl_module']['infoHintDefault'],
-	'sql' => "text  NULL default ''",
-	'load_callback' => [['tl_module_ncoi','getDefaultInfoHint']]
+    'foreignKey' => 'tl_ncoi_cookie.infoHint',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
-
-$GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'],
-	'exclude'   => true,
-	'inputType' => 'checkbox',
-	'eval' => [
-		'tl_class'  =>  'long clr',
-	],
-	'default' => '0',
-	'sql' => "varchar(1) NULL",
-];
-
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieVersion'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['cookieVersion'],
 	'exclude'   => true,
 	'inputType' => 'text',
 	'eval' => [
-		'style' => 'display:none'
+		'style' => 'display:none',
+        'doNotSaveEmpty' => true
 	],
-	'default' => '1',
-	'sql' => "int(10) NULL",
+    'foreignKey' => 'tl_ncoi_cookie.cookieVersion',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
@@ -230,11 +245,16 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
 		'tl_class'  =>  'long clr',
 		'submitOnChange' => true,
 		'doNotCopy' => true,
-		'alwaysSave' => true
+		'alwaysSave' => true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "text NULL default '' ",
-	'load_callback' => [['tl_module_ncoi','getDefaultGroups']],
-	'save_callback' => [['tl_module_ncoi','setEssentialGroup']],
+    'foreignKey' => 'tl_ncoi_cookie.cookieGroups',
+    'save_callback' => [
+        ['tl_module_ncoi','setEssentialGroup']
+    ],
+    'load_callback' => [
+        ['tl_module_ncoi','getDefaultGroups']
+    ],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
@@ -245,10 +265,14 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 	'relation'     => ['type' => 'hasMany', 'load' => 'eager'],
 	'sql'          => "blob NULL",
 	'load_callback' => [['tl_module_ncoi','getNetzhirschCookie']],
+    'eval' => [
+        'doNotSaveEmpty' => true
+    ],
 	'fieldpalette' => [
 		'config' => [
 			'hidePublished' => true,
-			'notSortable' => false
+			'notSortable' => false,
+            'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableCookieTools']],
 		],
 		'list'     => [
 			'label' => [
@@ -385,10 +409,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 	'inputType' => 'fieldpalette',
 	'foreignKey'   => 'tl_fieldpalette.id',
 	'relation'     => ['type' => 'hasMany', 'load' => 'eager'],
-	'sql'          => "blob NULL",
 	'fieldpalette' => [
 		'config' => [
 			'hidePublished' => true,
+            'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableOtherScripts']],
 		],
 		'list'     => array
 		(
@@ -508,10 +532,12 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieExpiredTime'] = [
 		'mandatory' => true,
 		'rgxp'=>'natural',
 		'tl_class'=>'long',
-        'alwaysSave' => true
+        'alwaysSave' => true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "int(2) NULL ",
-    'load_callback' => [['tl_module_ncoi','getCookieExpiredTime']]
+    'foreignKey' => 'tl_ncoi_cookie.cookieExpiredTime',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
@@ -520,8 +546,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
 	'inputType' => 'pageTree',
 	'eval' => [
 		'tl_class'  =>  'w50',
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(11) NULL default '' ",
+    'foreignKey' => 'tl_ncoi_cookie.privacyPolicy',
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTablePrivacyPolicy']],
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTablePageTree']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['imprint'] = [
@@ -530,8 +559,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['imprint'] = [
 	'inputType' => 'pageTree',
 	'eval' => [
 		'tl_class'  =>  'w50',
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(11) NULL default '' ",
+    'foreignKey' => 'tl_ncoi_cookie.imprint',
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableImpress']],
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTablePageTree']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['excludePages'] = [
@@ -543,8 +575,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['excludePages'] = [
 		'alwaysSave' => false,
 		'fieldType'=>'checkbox',
 		'multiple'=>true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "blob NULL default '' ",
+    'foreignKey' => 'tl_ncoi_cookie.excludePages',
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableExcludePages']],
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTablePageTree']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['respectToNotTrack'] = [
@@ -553,8 +588,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['respectToNotTrack'] = [
 	'inputType' => 'checkbox',
 	'eval' => [
 		'tl_class'  =>  'w50 clr',
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(1) NULL default '0' ",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['zIndex'] = [
@@ -565,8 +602,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['zIndex'] = [
         'mandatory' => true,
         'rgxp'=>'natural',
         'tl_class'=>'long clr',
+        'doNotSaveEmpty' => true
     ],
-    'sql' => "int(7) NULL DEFAULT '1' ",
+    'foreignKey' => 'tl_ncoi_cookie.zIndex',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
@@ -574,9 +614,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
-        'tl_class'  =>  'long clr'
+        'tl_class'  =>  'long clr',
+        'doNotSaveEmpty' => true
     ],
-    'sql' => "varchar(1) NOT NULL DEFAULT 0",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
 
 
@@ -586,8 +628,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
 	'inputType' => 'checkbox',
 	'eval' => [
 		'tl_class'  =>  'long clr',
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(1) NULL default '1' ",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
@@ -608,8 +652,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(64) NULL default '' ",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
@@ -623,9 +669,13 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
 	'eval' => [
 		'tl_class'  =>  'w50',
 		'alwaysSave' => false,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(255) NULL default '' ",
-	'save_callback' => [['tl_module_ncoi','setCssFromLess']]
+    'save_callback' => [
+        ['tl_module_ncoi', 'saveInNcoiTable']
+        ,['tl_module_ncoi','setCssFromLess']
+    ],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
@@ -635,8 +685,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
 	'options' => $this->getTemplateGroup('mod_cookie_opt_in_bar'),
 	'eval' => [
 		'tl_class'  =>  'w50 clr',
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(64) NULL default '' ",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
@@ -651,9 +703,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
-		'includeBlankOption' => true
+		'includeBlankOption' => true,
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(64) NULL default '' ",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
@@ -680,10 +734,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 		'tl_class'  =>  'w50',
 		'rgxp' => 'natural',
 		'alwaysSave' => false,
-	
+        'doNotSaveEmpty' => true
 	],
-	'sql' => "varchar(64) NULL default '' ",
-	'load_callback' => [['tl_module_ncoi','getDefaultMaxWidth']],
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'getDefaultMaxWidth']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
@@ -698,16 +752,32 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
     'eval' => [
         'tl_class'  =>  'w50 ncoi---list--container',
         'helpwizard' => true,
+        'doNotSaveEmpty' => true
     ],
     'explanation'   => 'ipFormatSaveExplanation',
-    'sql' => "varchar(64) NULL default '' ",
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval' => [
+        'tl_class'  =>  'long clr',
+        'doNotSaveEmpty' => true
+    ],
+    'default' => '0',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
 
 class tl_module_ncoi extends tl_module {
 
-	public function getDefaultMaxWidth($value){
-		
-		if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')
+	public function getDefaultMaxWidth($value,DC_Table $dca){
+
+        $value = $this->loadFromNcoiTable($value,$dca);
+	    if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')
 			$value = 'a:2:{s:5:"value";s:3:"400";s:4:"unit";s:2:"px";}';
 		
 		return $value;
@@ -720,11 +790,13 @@ class tl_module_ncoi extends tl_module {
 	 * @throws Less_Exception_Parser
 	 */
 	public function setLessVariables(DC_Table $dca){
-        $modulId = Input::get('id');
-        $strField = $dca->__get('field');
-        if ($strField == 'isNewCookieVersion') {
-            $cookieOptInBarMod = ModuleModel::findById($modulId);
-            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$cookieOptInBarMod->maxWidth,$cookieOptInBarMod->blockSite,$cookieOptInBarMod->zIndex);
+        if ($this->checkRightModule($dca->__get('field'))) {
+            $conn = $dca->Database;
+            $sql = "SELECT maxWidth,blockSite,zIndex FROM tl_ncoi_cookie WHERE pid=?";
+            $stmt = $conn->prepare($sql);
+            $data = $stmt->execute(Input::get('id'));
+            $data = $data->fetchAssoc();
+            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$data['maxWidth'],$data['blockSite'],$data['zIndex']);
         }
 		return $dca;
 	}
@@ -743,78 +815,24 @@ class tl_module_ncoi extends tl_module {
 			$styleSheet .= 'LightVersion';
 		}
 		Helper::parseLessToCss($styleSheet.'.less',$styleSheet.'.css');
-		return $value;
+		return '';
 	}
-	
-	public function getDefaultRevokeButton($value){
-		
-		if (empty($value))
-			$value = $GLOBALS['TL_LANG']['tl_module']['revokeButtonDefault'];
-		
-		return $value;
-	}
-	
-	public function getDefaultSaveButton($value){
-		
-		if (empty($value))
-			$value = $GLOBALS['TL_LANG']['tl_module']['saveButtonDefault'];
-		
-		return $value;
-	}
-	
-	public function getDefaultsaveAllButton($value){
-		
-		if (empty($value))
-			$value = $GLOBALS['TL_LANG']['tl_module']['saveAllButtonDefault'];
-		
-		return $value;
-	}
-	
-	public function getDefaultQuestionHint($value){
-		
-		if (empty($value))
-			$value = $GLOBALS['TL_LANG']['tl_module']['questionHintDefault'];
-		
-		return $value;
-	}
-	
-	public function getDefaultInfoHint($value){
-		
-		if (empty($value))
-			$value = $GLOBALS['TL_LANG']['tl_module']['infoHintDefault'];
-		
-		return $value;
-	}
-
-    public function getDefaultInfoButtonShow($value){
-
-        if (empty($value))
-            $value = $GLOBALS['TL_LANG']['tl_module']['infoButtonShowDefault'];
-
-        return $value;
-    }
-
-    public function getDefaultInfoButtonHide($value){
-
-        if (empty($value))
-            $value = $GLOBALS['TL_LANG']['tl_module']['infoButtonHideDefault'];
-
-        return $value;
-    }
 
     public function setCookieGroups(DC_Table $dca) {
         /********* update cookie groups for a version < 1.3.0 *****************************************************/
         $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
-        foreach ($fieldPalettes as $fieldPalette) {
-            PageLayoutListener::setNewGroups($fieldPalette);
+        if (!empty($fieldPalettes)) {
+            foreach ($fieldPalettes as $fieldPalette) {
+                PageLayoutListener::setNewGroups($fieldPalette);
+            }
         }
     }
 	public function getDefaultGroups($value,DC_Table $dca){
 	    if (
 		    empty($value)
-            || $value == 'a:3:{i:0;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}i:1;a:2:{s:3:"key";s:1:"A";s:5:"value";s:1:"A";}i:2;a:2:{s:3:"key";s:1:"E";s:5:"value";s:1:"E";}}'
         ) {
-			$value = $this->getGroups($dca);
+
+	        $value = $this->getGroups($dca);
         } else {
             /********* update groups for a version < 1.3.0 ************************************************************/
 	        $valueArray = StringUtil::deserialize($value);
@@ -833,7 +851,7 @@ class tl_module_ncoi extends tl_module {
 		return $value;
 	}
 
-    public function setEssentialGroup($value)
+    public function setEssentialGroup($value,DC_Table $dca)
     {
         $groups = StringUtil::deserialize($value);
         if (!is_array($groups[0])) {
@@ -855,23 +873,33 @@ class tl_module_ncoi extends tl_module {
             }
             $value = serialize($groups);
         }
-        return $value;
+        $this->saveInNcoiTable($value,$dca);
+        return null;
 	}
-	
-	public function getGroups(DC_Table $dca)
+
+	public function getGroups(DC_Table $dca,$id = null)
 	{
-		$fieldPaletteModel = FieldPaletteModel::findById($dca->id);
-		$modul = ModuleModel::findById($fieldPaletteModel->pid);
-		$cookieToolGroups = $modul->cookieGroups;
-		if (empty($cookieToolGroups)){
-			$cookieToolGroups = $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'];
-		}
-		return $cookieToolGroups;
+        if (empty($id)) {
+	        $fieldPaletteModel = FieldPaletteModel::findByPid($dca->id)[0];
+        } else {
+            $fieldPaletteModel = FieldPaletteModel::findById($id);
+        }
+
+        $cookieToolGroups = '';
+        if (!empty($fieldPaletteModel)) {
+
+            $modul = ModuleModel::findById($fieldPaletteModel->pid);
+            if (isset($modul->cookieGroups))
+                $cookieToolGroups = $modul->cookieGroups;
+            else
+                $cookieToolGroups = $this->loadFromNcoiTable(null,$dca,$modul->id,'cookieGroups');
+        }
+        return $cookieToolGroups;
 	}
 
     public function getGroupKeys(DC_Table $dca)
     {
-        $groups = $this->getGroups($dca);
+        $groups = $this->getGroups($dca,$dca->__get('id'));
         $groups = $this->getDefaultGroups($groups,$dca);
         $groups = StringUtil::deserialize($groups);
         $groupValues = [];
@@ -885,10 +913,11 @@ class tl_module_ncoi extends tl_module {
 	{
 		$strField = $dca->__get('field');
 		if ($strField == 'isNewCookieVersion') {
-			$cookieOptInBarMod = ModuleModel::findOneByType('cookieOptInBar');
-			if (!empty($cookieOptInBarMod->isNewCookieVersion)) {
-				$cookieOptInBarMod->cookieVersion++;
-				$cookieOptInBarMod->save();
+		    $isNewCookieVersion = $this->loadFromNcoiTable('',$dca);
+		    $cookieVersion = $this->loadFromNcoiTable('',$dca,null,'cookieVersion');
+			if (!empty($isNewCookieVersion)) {
+				$this->saveInNcoiTableCheckbox('1',$dca);
+				$this->saveInNcoiTable(++$cookieVersion,$dca,'','cookieVersion');
 			}
 		}
 		return $dca;
@@ -1035,8 +1064,217 @@ class tl_module_ncoi extends tl_module {
 		return $fieldValue;
 	}
 
-    public function getCookieExpiredTime($value)
+    public function saveInNcoiTable($value,DC_Table $dca,$pid = null,$field = null){
+	    $conn = $dca->Database;
+        if (empty($pid))
+            $pid = $dca->__get('id');
+        $sql = "SELECT id FROM tl_ncoi_cookie WHERE pid=?";
+        $stmt = $conn->prepare($sql);
+        $data = $stmt->execute($pid);
+        $id = $data->fetchAssoc();
+        if (empty($field))
+            $field = $dca->__get('field');
+        if (!empty($id)) {
+            $sql = "UPDATE tl_ncoi_cookie %s";
+        } else {
+            $sql = "INSERT tl_ncoi_cookie %s";
+        }
+        $stmt = $conn->prepare($sql);
+        $stmt->set([
+            'pid' => $pid,
+            $field => $value
+        ]);
+        $stmt->execute();
+    }
+
+    public function loadFromNcoiTableImpress($value,DC_Table $dca)
     {
-        return (empty($value)) ? "30" : $value;
-	}
+        return $this->loadFromNcoiTable($value,$dca,'','imprint');
+    }
+
+    public function loadFromNcoiTablePrivacyPolicy($value,DC_Table $dca)
+    {
+        return $this->loadFromNcoiTable($value,$dca,'','privacyPolicy');
+    }
+
+    public function loadFromNcoiTableExcludePages($value,DC_Table $dca)
+    {
+        return $this->loadFromNcoiTable($value,$dca,'','excludePages');
+    }
+
+    public function loadFromNcoiTableHeadlineCookieOptInBar($value,DC_Table $dca)
+    {
+        if ($value == 'a:2:{s:4:"unit";s:2:"h2";s:5:"value";s:0:"";}'){
+            $value = null;
+        }
+        return $this->loadFromNcoiTable($value,$dca);
+    }
+
+    public function loadFromNcoiTable($oldValue,DC_Table $dca,$pid = null,$field = null)
+    {
+        if (empty($field))
+            $field = $dca->__get('field');
+        if (empty($pid))
+            $pid = $dca->__get('id');
+        $conn = $dca->Database;
+        $sql = "SELECT ".$field." FROM tl_ncoi_cookie WHERE pid=?";
+        $stmt = $conn->prepare($sql);
+        $data = $stmt->execute($pid);
+        if ($data->count() > 0) {
+            $valueNew = $data->fetchAssoc();
+            $value = $valueNew[$field];
+        }
+        if (empty($value)) {
+            $value = $oldValue;
+        }
+        if (empty($value)) {
+            if (isset($GLOBALS['TL_LANG']['tl_module'][$field.'Default'])) {
+                $value = $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
+            }
+        }
+        /********* checkboxes ****************************************************************************************/
+        if ($value == "1")
+            $value = true;
+        return $value;
+    }
+
+    public function loadFromNcoiTableRevoke($oldValue,DC_Table $dca)
+    {
+        $field = $dca->__get('field');
+        $pid = $dca->__get('id');
+        $conn = $dca->Database;
+        $sql = "SELECT ".$field." FROM tl_ncoi_cookie_revoke WHERE pid=?";
+        $stmt = $conn->prepare($sql);
+        $data = $stmt->execute($pid);
+        if ($data->count() > 0) {
+            $valueNew = $data->fetchAssoc();
+            $value = $valueNew[$field];
+        }
+        if (empty($value)) {
+            $value = $oldValue;
+        }
+        if (empty($value)) {
+            if (isset($GLOBALS['TL_LANG']['tl_module'][$field.'Default'])) {
+                $value = $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
+            }
+        }
+        return $value;
+    }
+
+    public function loadFromNcoiTableCheckbox($value,DC_Table $dca)
+    {
+        $valueNew = $this->loadFromNcoiTable($value,$dca);
+        $field = $dca->__get('field');
+        return ['opt_'.$field.'_0' => $valueNew];
+    }
+
+    public function setPageTreeEntries(DC_Table $dca)
+    {
+        if ($this->checkRightModule($dca->__get('field'))) {
+            $activeRecord = $dca->__get('activeRecord');
+            $privacyPolicy = $activeRecord->__get('privacyPolicy');
+            if (!empty($privacyPolicy)) {
+                $this->saveInNcoiTable($privacyPolicy,$dca,'','privacyPolicy');
+            }
+            $imprint = $activeRecord->__get('imprint');
+            if (!empty($imprint)) {
+                $this->saveInNcoiTable($imprint,$dca,'','imprint');
+            }
+            $excludePages = $activeRecord->__get('excludePages');
+            if (!empty($excludePages)) {
+                $this->saveInNcoiTable($excludePages,$dca,'','excludePages');
+            }
+            $activeRecord->__set('privacyPolicy',null);
+            $activeRecord->__set('imprint',null);
+            $activeRecord->__set('excludePages',null);
+        }
+    }
+    public function saveInNcoiTableCheckbox($value,DC_Table $dca)
+    {
+        $value = $this->saveInNcoiTable($value,$dca);
+        if ($value === null) {
+            return '';
+        }
+        $field = $dca->__get('field');
+        return ['opt_'.$field.'_0' => $value];
+    }
+
+    public function saveInNcoiTableCookieTools(DC_Table $dca)
+    {
+        $this->saveInNcoiTableCookies($dca,'cookieTools');
+    }
+
+    public function saveInNcoiTableOtherScripts(DC_Table $dca)
+    {
+        $this->saveInNcoiTableCookies($dca,'otherScripts');
+    }
+
+    public function saveInNcoiTableRevoke($value,DC_Table $dca)
+    {
+        $conn = $dca->Database;
+        $pid = $dca->__get('id');
+        $sql = "SELECT id FROM tl_ncoi_cookie_revoke WHERE pid=?";
+        $stmt = $conn->prepare($sql);
+        $data = $stmt->execute($pid);
+        $id = $data->fetchAssoc();
+        $field = $dca->__get('field');
+        if (!empty($id)) {
+            $sql = "UPDATE tl_ncoi_cookie_revoke %s";
+        } else {
+            $sql = "INSERT tl_ncoi_cookie_revoke %s";
+        }
+        $stmt = $conn->prepare($sql);
+        $stmt->set([
+            'pid' => $pid,
+            $field => $value
+        ]);
+        $stmt->execute();
+        return '';
+    }
+
+    public function saveInNcoiTablePageTree()
+    {
+        return '';
+    }
+    public function saveInNcoiTableCookies(DC_Table $dca,$field)
+    {
+        $id = $dca->__get('id');
+        $conn = $dca->Database;
+        $activeRecord = $dca->__get('activeRecord');
+        $pid = $activeRecord->__get('pid');
+        $sql = "SELECT ".$field." FROM tl_ncoi_cookie WHERE pid=?";
+        $stmt = $conn->prepare($sql);
+        $data = $stmt->execute($pid);
+        $cookieGroups = $data->fetchAssoc();
+        $cookieGroups = StringUtil::deserialize($cookieGroups[$field]);
+        if (empty($cookieGroups)) {
+            $cookieGroups[] = $id;
+        } else {
+            if (!in_array($id,$cookieGroups)) {
+                $cookieGroups[] = $id;
+            }
+        }
+        $cookieGroups = serialize($cookieGroups);
+        $this->saveInNcoiTable($cookieGroups,$dca,$pid,$field);
+    }
+
+    public function setGroupsToNcoiTable(DC_Table $dca)
+    {
+        if ($this->checkRightModule($dca->__get('field'))) {
+            $modulId = Input::get('id');
+            $cookieOptInBarMod = ModuleModel::findById($modulId);
+            if (isset($cookieOptInBarMod->otherScripts))
+                $this->saveInNcoiTable($cookieOptInBarMod->otherScripts,$dca,$modulId,'otherScripts');
+            if (isset($cookieOptInBarMod->cookieTools))
+                $this->saveInNcoiTable($cookieOptInBarMod->cookieTools,$dca,$modulId,'cookieTools');
+        }
+    }
+
+    public function checkRightModule($field)
+    {
+        if ($field == 'isNewCookieVersion')
+            return true;
+        else
+            return false;
+    }
 }

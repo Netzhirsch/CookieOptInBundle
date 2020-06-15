@@ -7,7 +7,7 @@
 	id="<?php echo $id ?>"
 	class="ncoi---revoke ncoi---mod-missing <?php echo $class ?>"
 	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
-	data-ncoi-animation="<?= $this->arrData['animation']?>"
+
 >
     <a class="ncoi---revoke--button" href="/cookie/revoke?currentPage=<?=$this->arrData['currentPage']?>">
         <?php echo $this->arrData['revokeButton'] ?>
