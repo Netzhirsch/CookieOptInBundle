@@ -122,7 +122,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Expiration in days','P
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Expiration in days','Please specify the duration of the cookie.'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTimeDefault'] = '30';
+$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTimeDefault'] = '30';
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Data protection'];
 
@@ -135,6 +135,8 @@ $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" respect
 $GLOBALS['TL_LANG']['tl_module']['blockSite'] = ['Disable use of the site','Elements of the page can only be clicked on after cookies have been accepted or rejected.'];
 
 $GLOBALS['TL_LANG']['tl_module']['zIndex'] = ['z-index settings','Increase this value if the cookie banner is covered by other elements.'];
+
+$GLOBALS['TL_LANG']['tl_module']['zIndexDefault'] = '1';
 
 $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Load standard CSS','Load the CSS file of the Cookie Opt In Bar module.'];
 

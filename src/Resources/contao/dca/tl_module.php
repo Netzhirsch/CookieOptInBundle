@@ -634,7 +634,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['position'],
 	'exclude'   => true,
 	'inputType' => 'select',
-	'default' => 'centerCenter',
 	'options' => [
 		'leftTop' => $GLOBALS['TL_LANG']['tl_module']['leftTop'],
 		'leftCenter' => $GLOBALS['TL_LANG']['tl_module']['leftCenter'],
@@ -763,7 +762,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
         'tl_class'  =>  'long clr',
         'doNotSaveEmpty' => true
     ],
-    'default' => '0',
     'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
     'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
@@ -816,12 +814,16 @@ class tl_module_ncoi extends tl_module {
 
     public function setCookieGroups(DC_Table $dca) {
         /********* update cookie groups for a version < 1.3.0 *****************************************************/
-        $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
-        if (!empty($fieldPalettes)) {
-            foreach ($fieldPalettes as $fieldPalette) {
-                PageLayoutListener::setNewGroups($fieldPalette);
+        if  ($this->checkRightModule($dca->__get('field'))) {
+
+            $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
+            if (!empty($fieldPalettes)) {
+                foreach ($fieldPalettes as $fieldPalette) {
+                    PageLayoutListener::setNewGroups($fieldPalette);
+                }
             }
         }
+
     }
 	public function getDefaultGroups($value,DC_Table $dca){
         $value = $this->loadFromNcoiTable($value,$dca,null,'cookieGroups');

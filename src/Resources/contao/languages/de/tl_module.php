@@ -116,7 +116,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit sc
 
 $GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an. Danach wird die Cookie Bar erneut eingeblendet.'];
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTimeDefault'] = '30';
+$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTimeDefault'] = '30';
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'];
 
@@ -131,6 +131,8 @@ $GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" Browser
 $GLOBALS['TL_LANG']['tl_module']['blockSite'] = ['Nutzung der Seite unterbinden','Elemente der Seite können erst angeklickt werden, wenn Cookies aktzeptiert oder abgelehnt wurden.'];
 
 $GLOBALS['TL_LANG']['tl_module']['zIndex'] = ['z-index-Einstellung','Erhöhen Sie diesen Wert, wenn das Cookie-Banner von anderen Elementen überdeckt wird.'];
+
+$GLOBALS['TL_LANG']['tl_module']['zIndexDefault'] = '1';
 
 $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Standard-CSS laden','Die CSS-Datei des Cookie Opt In Bar-Moduls laden.'];
 
