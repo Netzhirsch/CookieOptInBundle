@@ -93,8 +93,8 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 
 // setCookieVersion check for right modul
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [
-    ['tl_module_ncoi','setPageTreeEntries']
-    ,['tl_module_ncoi','setCookieVersion']
+    ['tl_module_ncoi','setCookieVersion']
+    ,['tl_module_ncoi','setPageTreeEntries']
     ,['tl_module_ncoi','setLessVariables']
     ,['tl_module_ncoi','setGroupsToNcoiTable']
 ];
@@ -1170,15 +1170,18 @@ class tl_module_ncoi extends tl_module {
         if ($this->checkRightModule($dca->__get('field'))) {
             $activeRecord = $dca->__get('activeRecord');
             $privacyPolicy = $activeRecord->__get('privacyPolicy');
-            if (!empty($privacyPolicy)) {
+            $privacyPolicyOld = $this->loadFromNcoiTable('',$dca,null,'privacyPolicy');
+            if (!empty($privacyPolicy) && empty($privacyPolicyOld)) {
                 $this->saveInNcoiTable($privacyPolicy,$dca,'','privacyPolicy');
             }
             $imprint = $activeRecord->__get('imprint');
-            if (!empty($imprint)) {
+            $imprintOld = $this->loadFromNcoiTable('',$dca,null,'imprint');
+            if (!empty($imprint) && empty($imprintOld)) {
                 $this->saveInNcoiTable($imprint,$dca,'','imprint');
             }
             $excludePages = $activeRecord->__get('excludePages');
-            if (!empty($excludePages)) {
+            $excludePagesOld = $this->loadFromNcoiTable('',$dca,null,'excludePages');
+            if (!empty($excludePages) && empty($excludePagesOld)) {
                 $this->saveInNcoiTable($excludePages,$dca,'','excludePages');
             }
             $activeRecord->__set('privacyPolicy',null);
@@ -1229,10 +1232,12 @@ class tl_module_ncoi extends tl_module {
         return '';
     }
 
-    public function saveInNcoiTablePageTree()
+    public function saveInNcoiTablePageTree($value,DC_Table $dca)
     {
+        $this->saveInNcoiTable($value,$dca);
         return '';
     }
+
     public function saveInNcoiTableCookies(DC_Table $dca,$field)
     {
         $id = $dca->__get('id');
