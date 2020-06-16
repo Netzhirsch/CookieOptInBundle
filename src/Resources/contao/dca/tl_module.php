@@ -263,11 +263,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 	'inputType' => 'fieldpalette',
 	'foreignKey'   => 'tl_fieldpalette.id',
 	'relation'     => ['type' => 'hasMany', 'load' => 'eager'],
-	'sql'          => "blob NULL",
 	'load_callback' => [['tl_module_ncoi','getNetzhirschCookie']],
-    'eval' => [
-        'doNotSaveEmpty' => true
-    ],
 	'fieldpalette' => [
 		'config' => [
 			'hidePublished' => true,
@@ -828,6 +824,7 @@ class tl_module_ncoi extends tl_module {
         }
     }
 	public function getDefaultGroups($value,DC_Table $dca){
+        $value = $this->loadFromNcoiTable($value,$dca,null,'cookieGroups');
 	    if (
 		    empty($value)
         ) {
