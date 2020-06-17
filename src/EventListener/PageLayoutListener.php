@@ -172,28 +172,37 @@ class PageLayoutListener {
                 }
             }
         }
-        $domain = explode('www',$_SERVER['HTTP_HOST']);
-        if (is_array($domain) && count($domain) >= 2) {
-            $domain = $domain[1];
-        } else {
-            $domain = '';
-        }
-        foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
-            if (
-                $cookieSetTechnicalName == 'XDEBUG_SESSION'
-                || $cookieSetTechnicalName == 'BE_USER_AUTH'
-            )
-                continue;
-            setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
-            setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', $_SERVER['HTTP_HOST']);
-            setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', '.' . $_SERVER['HTTP_HOST']);
-            setrawcookie(
-                $cookieSetTechnicalName
-                , ''
-                , time() - 36000000
-                , '/'
-                , $domain
-            );
+
+        //all possible subdomains
+        $subDomains = explode(".", $_SERVER['HTTP_HOST']);
+        foreach ($subDomains as $key => $subDomain) {
+            $domain = implode(".", $subDomains);
+            unset($subDomains[$key]);
+
+            $domainWithDot = explode('www',$domain);
+            if (is_array($domainWithDot) && count($domainWithDot) >= 2) {
+                $domainWithDot = $domainWithDot[1];
+            } else {
+                $domainWithDot = '';
+            }
+            foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
+                if (
+                    $cookieSetTechnicalName == 'XDEBUG_SESSION'
+                    || $cookieSetTechnicalName == 'BE_USER_AUTH'
+                )
+                    continue;
+                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
+                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', $domain);
+                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', '.' . $domain);
+                setrawcookie(
+                    $cookieSetTechnicalName
+                    , ''
+                    , time() - 36000000
+                    , '/'
+                    , $domainWithDot
+                );
+
+            }
         }
         ob_end_flush();
 	}
