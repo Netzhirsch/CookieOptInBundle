@@ -160,17 +160,15 @@ class PageLayoutListener {
 	}
 
     /**
-     * @param array|null $toolTypes Cookies that should not be deleted
+     * @param array|null $cookieNotToDelete Cookies that should not be deleted
      */
-	public static function deleteCookie(Array $toolTypes = null) {
+	public static function deleteCookie(Array $cookieNotToDelete = null) {
         ob_start();
         $cookiesSet = $_COOKIE;
-        if (!empty($toolTypes)) {
-            foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
-                foreach ($toolTypes as $toolTyp) {
-                    foreach ($toolTyp as $cookie) {
-                            unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
-                    }
+        if (!empty($cookieNotToDelete)) {
+            foreach ($cookiesSet as $cookieSetTechnicalName => $value) {
+                foreach ($cookieNotToDelete as $cookie) {
+                    unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
                 }
             }
         }
@@ -182,11 +180,8 @@ class PageLayoutListener {
         }
         foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
             if (
-                $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
-                || $cookieSetTechnicalName == 'csrf_contao_csrf_token'
-                || $cookieSetTechnicalName == 'XDEBUG_SESSION'
+                $cookieSetTechnicalName == 'XDEBUG_SESSION'
                 || $cookieSetTechnicalName == 'BE_USER_AUTH'
-                || $cookieSetTechnicalName == 'PHPSESSID'
             )
                 continue;
             setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');

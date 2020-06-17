@@ -47,28 +47,22 @@ class CookieController extends AbstractController
                 }
             }
         }
-		$cookiesToDelete = [];
-		$cookiesToSet = [];
+		$cookiesToSet = [
+            'cookieTools' => [],
+            'otherScripts' => [],
+        ];
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
-			if (!in_array($cookieTool['id'],$data['cookieIds'])) {
-				$cookiesToDelete[] = $cookieTool;
-			} else {
+			if (in_array($cookieTool['id'],$data['cookieIds'])) {
 				$cookiesToSet['cookieTools'][] = $cookieTool;
 			}
 		}
-        if (!isset($cookiesToSet['otherScripts'])) {
-            $cookiesToSet['otherScripts'] = [];
-        }
 		foreach ($cookieDatabase['otherScripts'] as $otherScripts) {
-			if (!in_array($otherScripts['id'],$data['cookieIds'])) {
-				$cookiesToDelete[] = $otherScripts;
-			}else {
+			if (in_array($otherScripts['id'],$data['cookieIds'])) {
 				$cookiesToSet['otherScripts'][] = $otherScripts;
 			}
 		}
 
-		if (!empty($cookiesToDelete))
-			PageLayoutListener::deleteCookie($cookiesToDelete);
+        PageLayoutListener::deleteCookie(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
 
         if ($newConsent) {
 
