@@ -185,6 +185,8 @@ class PageLayoutListener {
                 $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
                 || $cookieSetTechnicalName == 'csrf_contao_csrf_token'
                 || $cookieSetTechnicalName == 'XDEBUG_SESSION'
+                || $cookieSetTechnicalName == 'BE_USER_AUTH'
+                || $cookieSetTechnicalName == 'PHPSESSID'
             )
                 continue;
             setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
