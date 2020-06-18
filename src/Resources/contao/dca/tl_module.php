@@ -1218,16 +1218,15 @@ class tl_module_ncoi extends tl_module {
         $data = $stmt->execute($pid);
         $id = $data->fetchAssoc();
         $field = $dca->__get('field');
+        $set = [$field => $value];
         if (!empty($id)) {
-            $sql = "UPDATE tl_ncoi_cookie_revoke %s WHERE id = %s";
+            $sql = "UPDATE tl_ncoi_cookie_revoke %s WHERE pid =?";
         } else {
             $sql = "INSERT tl_ncoi_cookie_revoke %s";
+            $set['pid'] = $pid;
         }
         $stmt = $conn->prepare($sql);
-        $stmt->set([
-            'pid' => $pid,
-            $field => $value
-        ]);
+        $stmt->set($set);
         $stmt->execute();
         return '';
     }
