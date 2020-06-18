@@ -189,6 +189,7 @@ class PageLayoutListener {
                 if (
                     $cookieSetTechnicalName == 'XDEBUG_SESSION'
                     || $cookieSetTechnicalName == 'BE_USER_AUTH'
+                    || $cookieSetTechnicalName == 'trusted_device'
                 )
                     continue;
                 setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
