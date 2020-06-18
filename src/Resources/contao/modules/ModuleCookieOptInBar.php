@@ -9,6 +9,7 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
@@ -43,17 +44,17 @@ class ModuleCookieOptInBar extends Module
 		}
 		return parent::generate();
 	}
-	
-	/**
-	 * @throws Less_Exception_Parser
-	 */
+
+    /**
+     * @throws Less_Exception_Parser
+     * @throws DBALException
+     */
 	public function compile(){
 		
 		$this->strTemplate = 'mod_cookie_opt_in_bar';
 
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
-
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT * FROM tl_ncoi_cookie WHERE pid = ?";
         /** @var Statement $stmt */

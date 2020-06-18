@@ -1072,17 +1072,16 @@ class tl_module_ncoi extends tl_module {
         $id = $data->fetchAssoc();
         if (empty($field))
             $field = $dca->__get('field');
+        $set = [$field => $value];
         if (!empty($id)) {
-            $sql = "UPDATE tl_ncoi_cookie %s";
+            $sql = "UPDATE tl_ncoi_cookie %s WHERE pid =?";
         } else {
             $sql = "INSERT tl_ncoi_cookie %s";
+            $set['pid'] = $pid;
         }
         $stmt = $conn->prepare($sql);
-        $stmt->set([
-            'pid' => $pid,
-            $field => $value
-        ]);
-        $stmt->execute();
+        $stmt->set($set);
+        $stmt->execute($pid);
     }
 
     public function loadFromNcoiTableImpress($value,DC_Table $dca)
@@ -1220,7 +1219,7 @@ class tl_module_ncoi extends tl_module {
         $id = $data->fetchAssoc();
         $field = $dca->__get('field');
         if (!empty($id)) {
-            $sql = "UPDATE tl_ncoi_cookie_revoke %s";
+            $sql = "UPDATE tl_ncoi_cookie_revoke %s WHERE id = %s";
         } else {
             $sql = "INSERT tl_ncoi_cookie_revoke %s";
         }

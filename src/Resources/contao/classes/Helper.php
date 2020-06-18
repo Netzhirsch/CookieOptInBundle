@@ -25,9 +25,11 @@ class Helper
 		$parser = new Less_Parser();
 		$parser->parseFile($path.$lessFile);
 		$array = StringUtil::deserialize($maxWidth);
-		$maxWidth = $array['value'];
-		$maxWidth .= $array['unit'];
-		$parser->ModifyVars(['maxWidth' => $maxWidth]);
+        if (!empty($array)) {
+            $maxWidth = $array['value'];
+            $maxWidth .= $array['unit'];
+            $parser->ModifyVars(['maxWidth' => $maxWidth]);
+        }
 
         if (empty($zIndex))
             $zIndex = 1;
