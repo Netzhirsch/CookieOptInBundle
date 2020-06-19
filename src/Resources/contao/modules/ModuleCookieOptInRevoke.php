@@ -61,16 +61,18 @@ class ModuleCookieOptInRevoke extends Module
 		$layout = LayoutModel::findById($this->__get('pid'));
         $modules = $layout->modules;
         $modules = StringUtil::deserialize($modules);
-        $sql = "SELECT id FROM tl_ncoi_cookie";
+        $sql = "SELECT pid FROM tl_ncoi_cookie";
         /** @var Statement $stmt */
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, $this->__get('id'));
         $stmt->execute();
-        $result = $stmt->fetch();
+        $results = $stmt->fetchAll();
         $moduleBarInLayout = false;
         foreach ($modules as $module) {
-            if ($result['id'] == $module['mod']) {
-                $moduleBarInLayout = true;
+            foreach ($results as $result) {
+                if ($result['pid'] == $module['mod']) {
+                    $moduleBarInLayout = true;
+                }
             }
         }
 		if (!$moduleBarInLayout)
