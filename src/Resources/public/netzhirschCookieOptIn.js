@@ -149,19 +149,12 @@
 // 	}
 
 	function track(newConsent){
-		let storedData = localStorage.getItem('ncoi');
 		let data = {
 			cookieIds : [{}],
 			modId : {},
 			newConsent : newConsent,
 			isJavaScript : 1,
-			timestampSetCookie: Date.now(),
 		};
-		if (storedData !== null){
-			let storedDataJson = JSON.parse(storedData);
-			data.timestampSetCookie = storedDataJson.timestampSetCookie;
-		}
-		console.log(data);
 		let cookieSelected = $('.ncoi---cookie');
 		Object.keys(cookieSelected).forEach(function(key) {
 			if (
@@ -176,7 +169,6 @@
 			}
 		});
 		data.modId = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
-		localStorage.setItem('ncoi',JSON.stringify(data));
 		$.ajax({
 			dataType: "json",
 			type: 'POST',
@@ -191,6 +183,7 @@
 				let matomo = false;
 				let templateScriptsGoogle = $('.analytics-decoded-googleAnalytics');
 				let templateScriptsMatomo = $('.analytics-decoded-matomo');
+				localStorage.setItem('ncoi',JSON.stringify(data.storedConsent));
 				if (tools !== null) {
 					tools.forEach(function (tool) {
 						let toolName = tool.cookieToolsSelect;

@@ -6,6 +6,8 @@ use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
 use Contao\LayoutModel;
 use Contao\Module;
+use Contao\ModuleModel;
+use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Statement;
@@ -53,32 +55,37 @@ class ModuleCookieOptInRevoke extends Module
         $stmt->bindValue(1, $this->__get('id'));
         $stmt->execute();
         $result = $stmt->fetch();
-
 		$revokeButton = $result['revokeButton'];
 		if (!empty($revokeButton))
 			$data['revokeButton'] = $revokeButton;
 
-		$layout = LayoutModel::findById($this->__get('pid'));
-        $modules = $layout->modules;
-        $modules = StringUtil::deserialize($modules);
-        $sql = "SELECT pid FROM tl_ncoi_cookie";
-        /** @var Statement $stmt */
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $this->__get('id'));
-        $stmt->execute();
-        $results = $stmt->fetchAll();
-        $moduleBarInLayout = false;
+        /**@var PageModel @$objPage */
+        global $objPage;
+        $modules = [];
+        $modulesInPage = $objPage->__get('modules');
+        if (!empty($modulesInPage))
+            $modules[] = $modulesInPage;
+
+        $layout = LayoutModel::findById($objPage->__get('layout'));
+        $modulesInLayout = $layout->__get('modules');
+        if (!empty($modulesInLayout))
+            $modules[] = $modulesInLayout;
+
+        $moduleIds =[];
         foreach ($modules as $module) {
-            foreach ($results as $result) {
-                if ($result['pid'] == $module['mod']) {
-                    $moduleBarInLayout = true;
-                }
+            $moduleArray = StringUtil::deserialize($module);
+            foreach ($moduleArray as $key => $item) {
+                    $moduleIds[] = $item['mod'];
             }
         }
-		if (!$moduleBarInLayout)
-			$data['moduleMissing'] = 'bar modul not in layout';
-		
-        $data['currentPage'] = $_SERVER['REDIRECT_URL'];
+        $modules = ModuleModel::findMultipleByIds($moduleIds);
+        $barModule = null;
+        foreach ($modules as $module) {
+            if ($module->type == 'cookieOptInBar')
+                $barModule = $module;
+        }
+        if (!empty($barModule))
+            $data['url'] = '/cookie/revoke?currentPage='.$_SERVER['REDIRECT_URL'].'&modId='.$barModule->id.'';
 
 		$this->Template->setData($data);
 	}

@@ -2,14 +2,13 @@
 <?php $id = str_replace(' id=','',$id)?>
 <?php $id = str_replace('"','',$id)?>
 <?php $class = $this->arrData['class'] ?>
-
 <div
 	id="<?php echo $id ?>"
 	class="ncoi---revoke ncoi---mod-missing <?php echo $class ?>"
 	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 
 >
-    <a class="ncoi---revoke--button" href="/cookie/revoke?currentPage=<?=$this->arrData['currentPage']?>">
+    <a class="ncoi---revoke--button" href="<?=$this->arrData['url']?>">
         <?php echo $this->arrData['revokeButton'] ?>
     </a>
 </div>

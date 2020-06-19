@@ -29,7 +29,7 @@ class CookieController extends AbstractController
         $newConsent = $data['newConsent'];
 		$cookieDatabase = $this->getModulData($data['modId']);
         //nur ohne JS gefüllt
-        if (!$data['isJavaScript']) {
+        if (isset($data['isJavaScript'])) {
             if (!isset($data['cookieIds']))
                 $data['cookieIds'] = [];
             foreach ($data['cookieGroups'] as $cookieGroup) {
@@ -63,7 +63,7 @@ class CookieController extends AbstractController
 		}
 
         PageLayoutListener::deleteCookie(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
-
+        $cookieData = null;
         if ($newConsent) {
 
             $cookieData = new CookieData();
@@ -77,13 +77,14 @@ class CookieController extends AbstractController
                 $cookieDatabase['cookieExpiredTime']
             );
         }
-        if (!$data['isJavaScript']) {
+        if (isset($data['isJavaScript'])) {
             return $this->redirectToPageBefore($data['currentPage']);
         }
 
 		$response = [
 			'tools' => $cookiesToSet['cookieTools'],
 			'otherScripts' => $cookiesToSet['otherScripts'],
+            'storedConsent' => $cookieData,
 		];
 		return new JsonResponse($response);
 	}
@@ -323,10 +324,20 @@ class CookieController extends AbstractController
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
         $conn = $this->get('database_connection');
-        $optInTechnicalName = self::getOptInTechnicalCookieName($conn,$request->get('data')['modId']);
-        setrawcookie($optInTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
+        $query = $request->query;
+        $currentPage = '/';
+        if (!empty($query)) {
+            $modId = $query->get('modId');
+            if (!empty($modId)) {
+                $optInTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
+                setrawcookie($optInTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
+            }
+            $currentPage = $query->get('currentPage');
+            if (empty($currentPage))
+                $currentPage = '';
+        }
 
-        return $this->redirectToPageBefore($request->get('currentPage'));
+        return $this->redirectToPageBefore($currentPage);
     }
 
     /**

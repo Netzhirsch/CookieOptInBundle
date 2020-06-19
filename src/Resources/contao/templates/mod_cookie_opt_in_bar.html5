@@ -128,27 +128,28 @@
                         </button>
                 </div>
             </div>
+            <noscript>
+                <label for="no-script-isJavaScript" class="ncoi---no-script--hidden"></label>
+                <input id="no-script-isJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isJavaScript]" value="0">
+            </noscript>
 
-            <label for="no-script-isJavaScript" class="ncoi---no-script--hidden"></label>
-            <input id="no-script-isJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isJavaScript]" value="0">
+                <label for="no-script-cookieGroups" class="ncoi---no-script--hidden"></label>
+                <input
+                        id="no-script-cookieGroups"
+                        class="ncoi---no-script--hidden"
+                        type="text"
+                        name="data[cookieGroups][<?=$this->arrData['cookieGroups'][0]['technicalName']?>]"
+                        value="<?=$this->arrData['cookieGroups'][0]['technicalName']?>"
+                >
 
-            <label for="no-script-cookieGroups" class="ncoi---no-script--hidden"></label>
-            <input
-                    id="no-script-cookieGroups"
-                    class="ncoi---no-script--hidden"
-                    type="text"
-                    name="data[cookieGroups][<?=$this->arrData['cookieGroups'][0]['technicalName']?>]"
-                    value="<?=$this->arrData['cookieGroups'][0]['technicalName']?>"
-            >
+                <label for="no-script-modId" class="ncoi---no-script--hidden"></label>
+                <input id="no-script-modId" class="ncoi---no-script--hidden" type="text" name="data[modId]" value="<?=$this->arrData['id']?>">
 
-            <label for="no-script-modId" class="ncoi---no-script--hidden"></label>
-            <input id="no-script-modId" class="ncoi---no-script--hidden" type="text" name="data[modId]" value="<?=$this->arrData['id']?>">
+                <label for="no-script-currentPage"></label>
+                <input id="no-script-currentPage" class="ncoi---no-script--hidden" type="text" name="data[currentPage]" value="<?=$this->arrData['currentPage']?>">
 
-            <label for="no-script-currentPage"></label>
-            <input id="no-script-currentPage" class="ncoi---no-script--hidden" type="text" name="data[currentPage]" value="<?=$this->arrData['currentPage']?>">
-
-            <label for="no-script-newConsent"></label>
-            <input id="no-script-newConsent" class="ncoi---no-script--hidden" type="text" name="data[newConsent]" value="1">
+                <label for="no-script-newConsent"></label>
+                <input id="no-script-newConsent" class="ncoi---no-script--hidden" type="text" name="data[newConsent]" value="1">
 
         </form>
 		<?php if(!empty($this->arrData['imprint']) || !empty($this->arrData['privacyPolicy'])) :?>
