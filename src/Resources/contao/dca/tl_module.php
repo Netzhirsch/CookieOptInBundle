@@ -1227,7 +1227,7 @@ class tl_module_ncoi extends tl_module {
         }
         $stmt = $conn->prepare($sql);
         $stmt->set($set);
-        $stmt->execute();
+        $stmt->execute($pid);
         return '';
     }
 

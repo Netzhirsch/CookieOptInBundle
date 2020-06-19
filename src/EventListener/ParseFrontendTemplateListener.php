@@ -101,7 +101,8 @@ class ParseFrontendTemplateListener
                 // Contao 4.4
                 if (empty($pageModel))
                     $pageModel = $GLOBALS['objPage'];
-                $moduleIds = PageLayoutListener::checkModules($pageModel, [], []);
+                $return = PageLayoutListener::checkModules($pageModel, [], []);
+                $moduleIds = $return['moduleIds'];
 
                 if (empty($moduleIds)) {
                     $layout = LayoutModel::findById($pageModel->layout);

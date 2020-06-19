@@ -1,1 +1,1 @@
-console.error("cookie opt in bar or revoke modul multiple present");
+console.error("cookie opt in bar multiple present");

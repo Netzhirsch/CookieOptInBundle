@@ -50,8 +50,12 @@ class PageLayoutListener {
 		}
 
 		$moduleIds = [];
-		$moduleIds = self::checkModules($layout, $removeModules, $moduleIds);
-		$moduleIds = self::checkModules($pageModel, $removeModules, $moduleIds);
+		$return = self::checkModules($layout, $removeModules, $moduleIds);
+		$moduleIds = $return['moduleIds'];
+		$tlCookieIds = $return['tlCookieIds'];
+		$return = self::checkModules($pageModel, $removeModules, $moduleIds);
+		$moduleIds = $return['moduleIds'];
+        $tlCookieIds[] = $return['tlCookieIds'];
 
 		if ($removeModules) {
 			return;
@@ -64,7 +68,7 @@ class PageLayoutListener {
 
 				return;
 			}
-			elseif (count($moduleIds) > 2) {
+			if (count($tlCookieIds) > 2) {
 				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInErrorMore.js|static';
 
 				return;
@@ -319,22 +323,27 @@ class PageLayoutListener {
 	public static function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
 		
 		$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
+        $tlCookieIds = [];
 		if (!empty($layoutModules)) {
 			foreach ($layoutModules as $key => $layoutModule) {
 				if (!empty($layoutModule['enable'])) {
 
                     $conn = System::getContainer()->get('database_connection');
-				    $sql = "SELECT pid FROM tl_ncoi_cookie";
+				    $sql = "SELECT id,pid FROM tl_ncoi_cookie";
                     /** @var Statement $stmt */
                     $stmt = $conn->prepare($sql);
                     $stmt->bindValue(1, $layoutModule['mod']);
                     $stmt->execute();
-                    $bar = $stmt->fetchColumn();
+                    $bars = $stmt->fetchAll();
 
-                    if (!empty($bar) && $removeModules)
+                    if (!empty($bars) && $removeModules)
                         unset($layoutModules[$key]);
-                    elseif(!in_array($bar,$moduleIds))
-                        $moduleIds[] = $bar;
+                    $tlCookieIds = [];
+                    foreach ($bars as $bar) {
+                        if(!in_array($bar['pid'],$moduleIds))
+                            $moduleIds[] = $bar['pid'];
+                        $tlCookieIds[] = $bar['id'];
+                    }
 
                     $conn = System::getContainer()->get('database_connection');
                     $sql = "SELECT pid FROM tl_ncoi_cookie_revoke";
@@ -353,7 +362,10 @@ class PageLayoutListener {
 			$layoutOrPage->__set('modules', serialize($layoutModules));
 		}
 
-		return $moduleIds;
+		return [
+		    'moduleIds' => $moduleIds,
+            'tlCookieIds' => $tlCookieIds,
+        ];
 	}
 
     public static function setNewGroups($fieldPalette)

@@ -86,7 +86,9 @@ class ModuleCookieOptInBar extends Module
         $data['cookieGroupsSelected'] = [];
         if (!empty($netzhirschOptInCookie->groups))
 		    $data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
-
+        if (!in_array(1, $data['cookieGroupsSelected'])) {
+            $data['cookieGroupsSelected'][] = 1;
+        }
         $data['noScriptTracking'] = [];
 		global $objPage;
         $groups = $result['cookieGroups'];
