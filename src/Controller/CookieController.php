@@ -29,7 +29,7 @@ class CookieController extends AbstractController
         $newConsent = $data['newConsent'];
 		$cookieDatabase = $this->getModulData($data['modId']);
         //nur ohne JS gefüllt
-        if (isset($data['isJavaScript'])) {
+        if (isset($data['isNoJavaScript'])) {
             if (!isset($data['cookieIds']))
                 $data['cookieIds'] = [];
             foreach ($data['cookieGroups'] as $cookieGroup) {
@@ -64,6 +64,7 @@ class CookieController extends AbstractController
 
         PageLayoutListener::deleteCookie(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
         $cookieData = null;
+
         if ($newConsent) {
 
             $cookieData = new CookieData();
@@ -77,7 +78,7 @@ class CookieController extends AbstractController
                 $cookieDatabase['cookieExpiredTime']
             );
         }
-        if (isset($data['isJavaScript'])) {
+        if (isset($data['isNoJavaScript'])) {
             return $this->redirectToPageBefore($data['currentPage']);
         }
 

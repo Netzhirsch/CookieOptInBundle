@@ -27,7 +27,8 @@
 			data-ncoi-is-version-new="<?php echo $this->arrData['netzhirschCookieIsVersionNew']?>"
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
-            data-ncoi-animation="<?= $this->arrData['animation']?>"
+            data-ncoi-animation="<?=$this->arrData['animation']?>"
+            data-technical-name="<?=$this->arrData['technicalName']?>"
 	>
 		<?=(empty($this->arrData['headlineCookieOptInBar'])?'':$this->arrData['headlineCookieOptInBar']) ?>
 
@@ -129,8 +130,8 @@
                 </div>
             </div>
             <noscript>
-                <label for="no-script-isJavaScript" class="ncoi---no-script--hidden"></label>
-                <input id="no-script-isJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isJavaScript]" value="0">
+                <label for="no-script-isNoJavaScript" class="ncoi---no-script--hidden"></label>
+                <input id="no-script-isNoJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isNoJavaScript]" value="1">
             </noscript>
 
                 <label for="no-script-cookieGroups" class="ncoi---no-script--hidden"></label>

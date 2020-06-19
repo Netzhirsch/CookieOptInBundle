@@ -153,7 +153,6 @@
 			cookieIds : [{}],
 			modId : {},
 			newConsent : newConsent,
-			isJavaScript : 1,
 		};
 		let cookieSelected = $('.ncoi---cookie');
 		Object.keys(cookieSelected).forEach(function(key) {
