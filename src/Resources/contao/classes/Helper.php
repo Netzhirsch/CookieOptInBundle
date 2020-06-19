@@ -42,7 +42,9 @@ class Helper
 
 		try {
 			$css = $parser->getCss();
-			file_put_contents($path.$cssFile,$css);
+            if (!file_exists($path.$cssFile)) {
+			    file_put_contents($path.$cssFile,$css);
+            }
 		} catch (Exception $e) {
 		}
 
