@@ -1,38 +1,8 @@
 (function($){
-	//ausführung beim Speicher der Entscheidung
-	function checkExternalMedia() {
-		let cookiesInput = $('table tbody .ncoi---cookie');
-		cookiesInput.each(function () {
-			let blockClass = '.' + $(this).data('block-class');
-			let blockClassElement = $(blockClass);
-			if ($(this).prop('checked')) {
-				//Klasses des Blockconainter aus input data-block-class auslesen
-				// Nur gefunden BlockContainer werden bearbeitet
-				// jedes Element separat
-				blockClassElement.each(function () {
-					addIframe($(this));
-				});
-			} else {
-				blockClassElement.each(function () {
-					$(this).removeClass('ncoi---hidden');
-					$(this).next('iframe').addClass('ncoi---hidden');
-				});
-			}
-		});
-	}
-
-	function addIframe(parent){
-		if (!parent.hasClass('ncoi---hidden')) {
-			let html = atob((parent.find('script').text().trim()));
-			parent.addClass('ncoi---hidden');
-			parent.after(html);
-		}
-	}
-
 	$(document).ready(function () {
 		// falls CSS zu spät eingunden wird
 		$('.ncoi---behind').removeClass('ncoi---no-transition');
-		// no script bekommt keine checkbox
+		// no script Iframes bekommen keine checkbox
 		// checked ist der default
 		$('.ncoi--release-all').removeClass('ncoi---hidden');
 
@@ -42,18 +12,19 @@
 			if(errorMessage.localeCompare('') !== 0)
 				console.error(errorMessage);
 		});
-
+		let storageKey = $('[data-technical-name]').data('technical-name');
+		let localStorage = getLocalStorage(storageKey);
 		if (
-			$('[data-ncoi-is-version-new]').data('ncoi-is-version-new') === 0
+			$('[data-ncoi-is-version-new]').data('ncoi-is-version-new') === localStorage.id
 		) {
-			track(0);
+			track(0,storageKey);
 		}
 
 		$('#ncoi---allowed').on('click', function (e) {
 			e.preventDefault();
 			$('.ncoi---behind').addClass('ncoi---hidden');
 			checkExternalMedia();
-			track(1);
+			track(1,storageKey);
 		});
 
 		$('#ncoi---allowed--all').on('click', function (e) {
@@ -62,7 +33,7 @@
 			$('.ncoi---cookie-group input').prop('checked',true);
 			$('.ncoi---sliding').prop('checked',true);
 			checkExternalMedia();
-			track(1);
+			track(1,storageKey);
 		});
 
 		$('.ncoi---revoke').on('click',function (e) {
@@ -119,7 +90,7 @@
 			if (input.prop('checked')) {
 				//In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
 				$('[data-block-class="'+input.data('block-class')+'"]').prop('checked',true);
-				track(1);
+				track(1,storageKey);
 
 				let parents = $('.'+input.data('block-class'));
 				parents.each(function () {
@@ -147,12 +118,19 @@
 // 		}
 // 		return false;
 // 	}
-
-	function track(newConsent){
+	function getLocalStorage(storageKey) {
+		return localStorage.getItem(storageKey);
+	}
+	function track(newConsent,storageKey){
+		let id = null;
+		let storage = getLocalStorage();
 		let data = {
-			cookieIds : [{}],
-			modId : {},
+			id : id,
+			cookieIds : [],
+			modId : '',
 			newConsent : newConsent,
+			storageKey : storageKey,
+			version : 0
 		};
 		let cookieSelected = $('.ncoi---cookie');
 		Object.keys(cookieSelected).forEach(function(key) {
@@ -175,14 +153,17 @@
 			data: {
 				data : data
 			},
-			success: function (data) {
-				let tools = data.tools;
+			success: function (response) {
+				let tools = response.tools;
 				let body = $('body');
 				let googleAnalytics = false;
 				let matomo = false;
 				let templateScriptsGoogle = $('.analytics-decoded-googleAnalytics');
 				let templateScriptsMatomo = $('.analytics-decoded-matomo');
-				localStorage.setItem('ncoi',JSON.stringify(data.storedConsent));
+				console.log(response.id);
+				data.id = response.id;
+				data.version = response.version;
+				localStorage.setItem(storageKey,JSON.stringify(data));
 				if (tools !== null) {
 					tools.forEach(function (tool) {
 						let toolName = tool.cookieToolsSelect;
@@ -232,7 +213,7 @@
 							}
 						}
 					});
-					let otherScripts = data.otherScripts;
+					let otherScripts = response.otherScripts;
 					if (otherScripts !== null) {
 						otherScripts.forEach(function (otherScript) {
 							body.append(otherScript.cookieToolsCode);
@@ -248,12 +229,42 @@
 			}
 		});
 	}// End Track
-})(jQuery);
 
-function decodeAfter(templateScriptsEncodeElement) {
-	let templateScriptsEncode = templateScriptsEncodeElement.html();
-	templateScriptsEncode = templateScriptsEncode.replace('<!--','');
-	templateScriptsEncode = templateScriptsEncode.replace('-->','');
-	templateScriptsEncode = atob(templateScriptsEncode);
-	templateScriptsEncodeElement.after(templateScriptsEncode);
-}
+	//ausführung beim Speicher der Entscheidung
+	function checkExternalMedia() {
+		let cookiesInput = $('table tbody .ncoi---cookie');
+		cookiesInput.each(function () {
+			let blockClass = '.' + $(this).data('block-class');
+			let blockClassElement = $(blockClass);
+			if ($(this).prop('checked')) {
+				//Klasses des Blockconainter aus input data-block-class auslesen
+				// Nur gefunden BlockContainer werden bearbeitet
+				// jedes Element separat
+				blockClassElement.each(function () {
+					addIframe($(this));
+				});
+			} else {
+				blockClassElement.each(function () {
+					$(this).removeClass('ncoi---hidden');
+					$(this).next('iframe').addClass('ncoi---hidden');
+				});
+			}
+		});
+	}
+
+	function addIframe(parent){
+		if (!parent.hasClass('ncoi---hidden')) {
+			let html = atob((parent.find('script').text().trim()));
+			parent.addClass('ncoi---hidden');
+			parent.after(html);
+		}
+	}
+
+	function decodeAfter(templateScriptsEncodeElement) {
+		let templateScriptsEncode = templateScriptsEncodeElement.html();
+		templateScriptsEncode = templateScriptsEncode.replace('<!--','');
+		templateScriptsEncode = templateScriptsEncode.replace('-->','');
+		templateScriptsEncode = atob(templateScriptsEncode);
+		templateScriptsEncodeElement.after(templateScriptsEncode);
+	}
+})(jQuery);

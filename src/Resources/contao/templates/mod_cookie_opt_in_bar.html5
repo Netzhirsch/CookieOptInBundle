@@ -24,6 +24,7 @@
 	<div
 			id="<?php echo $id ?>"
 			class="ncoi---container ncoi---mod-missing"
+			data-ncoi-technical-name="<?=$this->arrData['technicalName']?>"
 			data-ncoi-is-version-new="<?php echo $this->arrData['netzhirschCookieIsVersionNew']?>"
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"

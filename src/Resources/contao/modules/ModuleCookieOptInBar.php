@@ -63,6 +63,8 @@ class ModuleCookieOptInBar extends Module
         $stmt->execute();
         $result = $stmt->fetch();
 
+        $data['netzhirschCookieIsVersionNew'] = $result['cookieVersion'];
+
 		$maxWidth = $result['maxWidth'];
         $data['inconspicuous'] = false;
         $array = StringUtil::deserialize($maxWidth);
@@ -100,7 +102,9 @@ class ModuleCookieOptInBar extends Module
             ]
         ];
 		foreach ($data['cookieTools'] as $cookieTool) {
-            if (!empty($netzhirschOptInCookie)) {
+            if ($cookieTool->pid == $this->__get('id') && $cookieTool->cookieToolsSelect == 'optInCookie')
+		        $data['technicalName'] = $cookieTool->cookieToolsTechnicalName;
+		    if (!empty($netzhirschOptInCookie)) {
                 foreach ($netzhirschOptInCookie->cookieIds as $cookieId) {
                     if ($cookieId == $cookieTool->id) {
                         if (!$netzhirschOptInCookie->isJavaScript) {
@@ -153,10 +157,6 @@ class ModuleCookieOptInBar extends Module
 		$data['netzhirschCookieIsSet'] = false;
 		if (!empty($netzhirschOptInCookie))
 			$data['netzhirschCookieIsSet'] = true;
-
-		$data['netzhirschCookieIsVersionNew'] = "0";
-		if ($netzhirschOptInCookie->cookieVersion < $result['cookieVersion'])
-			$data['netzhirschCookieIsVersionNew'] = "1";
 
         $headlineData = StringUtil::deserialize($result['headlineCookieOptInBar']);
 		if (!empty($headlineData['value'])) {
