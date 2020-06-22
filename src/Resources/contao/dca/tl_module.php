@@ -910,13 +910,12 @@ class tl_module_ncoi extends tl_module {
 
 	public function setCookieVersion(DC_Table $dca)
 	{
-		$strField = $dca->__get('field');
-		if ($strField == 'isNewCookieVersion') {
-		    $isNewCookieVersion = $this->loadFromNcoiTable('',$dca);
-		    $cookieVersion = $this->loadFromNcoiTable('',$dca,null,'cookieVersion');
-			if (!empty($isNewCookieVersion)) {
-				$this->saveInNcoiTable(++$cookieVersion,$dca,'','cookieVersion');
-			}
+		if ($this->checkRightModule($dca->__get('field'))) {
+		    $isNewCookieVersion = $this->loadFromNcoiTable('',$dca,null,'isNewCookieVersion');
+            $cookieVersion = $this->loadFromNcoiTable('',$dca,null,'cookieVersion');
+            if (!empty($isNewCookieVersion) || empty($cookieVersion)) {
+                $this->saveInNcoiTable(++$cookieVersion,$dca,'','cookieVersion');
+            }
 		}
 		return $dca;
 	}
