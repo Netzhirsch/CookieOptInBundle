@@ -63,7 +63,7 @@ class CookieController extends AbstractController
         $cookieData = null;
         $id = $data['id'];
         if ($newConsent || empty($id)) {
-            $id = $this->changeConsent($id,$cookiesToSet,$data['modId'],$cookieDatabase);
+            $id = $this->changeConsent($id,$cookiesToSet,$data['modId']);
         }
         if (isset($data['isNoJavaScript'])) {
             if ($request->hasSession()) {
@@ -167,7 +167,7 @@ class CookieController extends AbstractController
      * @return string
      * @throws DBALException
      */
-	private function changeConsent($id,$cookieData, $modId, $cookieDatabase)
+	private function changeConsent($id,$cookieData, $modId)
 	{
 		/** @noinspection PhpParamsInspection */
 		$requestStack = $this->get('request_stack');
@@ -214,24 +214,18 @@ class CookieController extends AbstractController
             $userInfo['ip'] = implode('.',$userInfo['ip']);
         }
 
-        $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url,pid) VALUES(?,?,?,?,?,?,?)";
-
-		$stmt = $conn->prepare($sql);
-
-		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
-		$otherCookieIds = $cookieData['getOtherCookieIds'];
+		$otherCookieIds = array_merge($cookieData['cookieTools'],$cookieData['otherScripts']);
         if (!empty($otherCookieIds)) {
-            foreach ($cookieData['getOtherCookieIds'] as $cookieTool) {
-                foreach ($cookieDatabase['cookieTools'] as $cookieDataFromDb) {
-                    if ($cookieDataFromDb['id'] == $cookieTool) {
-                        $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
-                        $cookieTechnicalName[] = $cookieDataFromDb['cookieToolsTechnicalName'];
-                    }
-                }
+            foreach ($otherCookieIds as $cookieTool) {
+                $cookieNames[] = $cookieTool['cookieToolsName'];
+                $cookieTechnicalName[] = $cookieTool['cookieToolsTechnicalName'];
             }
         }
+        $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url,pid) VALUES(?,?,?,?,?,?,?)";
+		$stmt = $conn->prepare($sql);
+		$stmt->bindValue(1, $userInfo['ip']);
         $stmt->bindValue(2, implode(', ', $cookieNames));
         $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
         $stmt->bindValue(4, date('Y-m-d H:i'));
@@ -324,7 +318,7 @@ class CookieController extends AbstractController
         if ($request->hasSession()) {
             $session = $request->getSession();
             $cookieDatabase = $this->getModulData($modId);
-            $id = $this->changeConsent('',[$cookie['id']],$modId,$cookieDatabase);
+            $id = $this->changeConsent('',[$cookie['id']],$modId);
             if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi'])) {
                 $ncoi = $_SESSION['_sf2_attributes']['ncoi'];
                 $ncoi['cookieIds'][] = $cookie['id'];

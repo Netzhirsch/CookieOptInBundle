@@ -69,6 +69,7 @@ class ModuleCookieOptInBar extends Module
         //********* noscript ******************************************************************************************/
         $data['noscript'] = false;
         $ncoiSession = null;
+        $data['cookiesSelected'] = [];
         if (
             isset($_SESSION)
             && isset($_SESSION['_sf2_attributes'])
@@ -76,7 +77,6 @@ class ModuleCookieOptInBar extends Module
         ) {
             $data['noscript'] = true;
             $ncoiSession = $_SESSION['_sf2_attributes']['ncoi'];
-            $data['cookiesSelected'] = [];
             if (!empty($ncoiSession['cookieIds']))
                 $data['cookiesSelected'] = $ncoiSession['cookieIds'];
         }
