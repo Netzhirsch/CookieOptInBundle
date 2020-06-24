@@ -52,10 +52,12 @@ class PageLayoutListener {
 		$moduleIds = [];
 		$return = self::checkModules($layout, $removeModules, $moduleIds);
 		$moduleIds = $return['moduleIds'];
-		$tlCookieIds = $return['tlCookieIds'];
+        if (!empty($return['tlCookieIds']))
+            $tlCookieIds[] = $return['tlCookieIds'];
 		$return = self::checkModules($pageModel, $removeModules, $moduleIds);
 		$moduleIds = $return['moduleIds'];
-        $tlCookieIds[] = $return['tlCookieIds'];
+        if (!empty($return['tlCookieIds']))
+            $tlCookieIds[] = $return['tlCookieIds'];
 
 		if ($removeModules) {
 			return;

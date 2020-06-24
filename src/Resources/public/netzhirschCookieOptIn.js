@@ -29,7 +29,8 @@
 				url: '/cookie/delete',
 				success: function (response) {
 				}
-			})
+			});
+			ncoiBehindField.removeClass('ncoi---hidden');
 		}
 
 		$('#ncoi---allowed').on('click', function (e) {
