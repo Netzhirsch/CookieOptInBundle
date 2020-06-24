@@ -897,6 +897,9 @@ class tl_module_ncoi extends tl_module {
 		    $isNewCookieVersion = $this->loadFromNcoiTable('',$dca,null,'isNewCookieVersion');
             $cookieVersion = $this->loadFromNcoiTable('',$dca,null,'cookieVersion');
             if (!empty($isNewCookieVersion) || empty($cookieVersion)) {
+                if ($cookieVersion === true) {
+                    $cookieVersion = 1;
+                }
                 $this->saveInNcoiTable(++$cookieVersion,$dca,'','cookieVersion');
             }
 		}

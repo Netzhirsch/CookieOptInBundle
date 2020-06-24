@@ -374,9 +374,11 @@ class CookieController extends AbstractController
                 if (
                     $cookieSetTechnicalName == 'XDEBUG_SESSION'
                     || $cookieSetTechnicalName == 'BE_USER_AUTH'
+                    || $cookieSetTechnicalName == 'BE_PAGE_OFFSET'
                     || $cookieSetTechnicalName == 'trusted_device'
                     || $cookieSetTechnicalName == 'csrf_contao_csrf_token'
                     || $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
+                    || $cookieSetTechnicalName == 'PHPSESSID'
                 )
                     continue;
                 setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
