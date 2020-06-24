@@ -76,14 +76,10 @@ class PageLayoutListener {
 		}
 
 		//module in this layout
-
         $modId = $moduleIds[0];
-		$modulBar = ModuleModel::findById($modId);
-        $conn = System::getContainer()->get('database_connection');
-        $optInTechnicalName = CookieController::getOptInTechnicalCookieName($conn,$modId);
-        $netzhirschOptInCookie = $_COOKIE[$optInTechnicalName];
 
         /********* update groups for a version < 1.3.0 ************************************************************/
+        $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT cookieGroups,cookieVersion FROM tl_ncoi_cookie WHERE pid = ?";
         /** @var Statement $stmt */
         $stmt = $conn->prepare($sql);
@@ -107,9 +103,7 @@ class PageLayoutListener {
             $stmt->execute();
         }
 
-		/** @noinspection PhpComposerExtensionStubsInspection */
-		$netzhirschOptInCookie = json_decode($netzhirschOptInCookie);
-
+		$modulBar = ModuleModel::findById($modId);
         $fieldPalettes = FieldPaletteModel::findByPid($modulBar->id);
 		$cookieTools = [];
 		foreach ($fieldPalettes as $fieldPalette) {
@@ -125,16 +119,10 @@ class PageLayoutListener {
 		if (self::doNotTrackBrowserSetting($modulBar, $modId))
 			return;
 
-		if (empty($netzhirschOptInCookie)) {
-			self::deleteCookie();
-
-			return;
-		}
-
-		if (!empty($modulBar) && $netzhirschOptInCookie->cookieVersion == $result['cookieVersion'])
+		if (!empty($modulBar))
 			return;
 
-		self::deleteCookie();
+        CookieController::deleteCookies();
 	}
 
 	public static function doNotTrackBrowserSetting($modulBar = null, $modId = null) {
@@ -157,59 +145,10 @@ class PageLayoutListener {
 
 		) {
 			$doNotTrack = true;
-			self::deleteCookie();
+            CookieController::deleteCookies();
 		}
 
 		return $doNotTrack;
-	}
-
-    /**
-     * @param array|null $cookieNotToDelete Cookies that should not be deleted
-     */
-	public static function deleteCookie(Array $cookieNotToDelete = null) {
-        ob_start();
-        $cookiesSet = $_COOKIE;
-        if (!empty($cookieNotToDelete)) {
-            foreach ($cookiesSet as $cookieSetTechnicalName => $value) {
-                foreach ($cookieNotToDelete as $cookie) {
-                    unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
-                }
-            }
-        }
-
-        //all possible subdomains
-        $subDomains = explode(".", $_SERVER['HTTP_HOST']);
-        foreach ($subDomains as $key => $subDomain) {
-            $domain = implode(".", $subDomains);
-            unset($subDomains[$key]);
-
-            $domainWithDot = explode('www',$domain);
-            if (is_array($domainWithDot) && count($domainWithDot) >= 2) {
-                $domainWithDot = $domainWithDot[1];
-            } else {
-                $domainWithDot = '';
-            }
-            foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
-                if (
-                    $cookieSetTechnicalName == 'XDEBUG_SESSION'
-                    || $cookieSetTechnicalName == 'BE_USER_AUTH'
-                    || $cookieSetTechnicalName == 'trusted_device'
-                )
-                    continue;
-                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
-                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', $domain);
-                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', '.' . $domain);
-                setrawcookie(
-                    $cookieSetTechnicalName
-                    , ''
-                    , time() - 36000000
-                    , '/'
-                    , $domainWithDot
-                );
-
-            }
-        }
-        ob_end_flush();
 	}
 
 	/**

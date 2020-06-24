@@ -8,15 +8,12 @@ use Contao\Module;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
-use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ModuleCookieOptInBar extends Module
 {
@@ -50,11 +47,16 @@ class ModuleCookieOptInBar extends Module
      * @throws DBALException
      */
 	public function compile(){
-		
-		$this->strTemplate = 'mod_cookie_opt_in_bar';
 
+        if (PageLayoutListener::doNotTrackBrowserSetting($this->id))
+            return null;
+
+		$this->strTemplate = 'mod_cookie_opt_in_bar';
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
+
+        $data['id'] = $this->id;
+
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT * FROM tl_ncoi_cookie WHERE pid = ?";
         /** @var Statement $stmt */
@@ -62,8 +64,22 @@ class ModuleCookieOptInBar extends Module
         $stmt->bindValue(1, $this->__get('id'));
         $stmt->execute();
         $result = $stmt->fetch();
+        $data['cookieVersion'] = $result['cookieVersion'];
 
-        $data['netzhirschCookieIsVersionNew'] = $result['cookieVersion'];
+        //********* noscript ******************************************************************************************/
+        $data['noscript'] = false;
+        $ncoiSession = null;
+        if (
+            isset($_SESSION)
+            && isset($_SESSION['_sf2_attributes'])
+            && !empty($_SESSION['_sf2_attributes']['ncoi'])
+        ) {
+            $data['noscript'] = true;
+            $ncoiSession = $_SESSION['_sf2_attributes']['ncoi'];
+            $data['cookiesSelected'] = [];
+            if (!empty($ncoiSession['cookieIds']))
+                $data['cookiesSelected'] = $ncoiSession['cookieIds'];
+        }
 
 		$maxWidth = $result['maxWidth'];
         $data['inconspicuous'] = false;
@@ -80,18 +96,6 @@ class ModuleCookieOptInBar extends Module
             $result['zIndex']
         );
 		
-		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
-		
-		if (PageLayoutListener::doNotTrackBrowserSetting($this->id))
-			return null;
-		$netzhirschOptInCookie = self::getCookieData(System::getContainer(),$this->id);
-        $data['cookieGroupsSelected'] = [];
-        if (!empty($netzhirschOptInCookie->groups))
-		    $data['cookieGroupsSelected'] = $netzhirschOptInCookie->groups;
-        if (!in_array(1, $data['cookieGroupsSelected'])) {
-            $data['cookieGroupsSelected'][] = 1;
-        }
-        $data['noScriptTracking'] = [];
 		global $objPage;
         $groups = $result['cookieGroups'];
         $groups = StringUtil::deserialize($groups);
@@ -101,31 +105,32 @@ class ModuleCookieOptInBar extends Module
                 'name' => $groups[0]['value']
             ]
         ];
-		foreach ($data['cookieTools'] as $cookieTool) {
-            if ($cookieTool->pid == $this->__get('id') && $cookieTool->cookieToolsSelect == 'optInCookie')
-		        $data['technicalName'] = $cookieTool->cookieToolsTechnicalName;
-		    if (!empty($netzhirschOptInCookie)) {
-                foreach ($netzhirschOptInCookie->cookieIds as $cookieId) {
-                    if ($cookieId == $cookieTool->id) {
-                        if (!$netzhirschOptInCookie->isJavaScript) {
-                            if ($cookieTool->cookieToolsSelect == 'facebookPixel')
-                                $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id='.$cookieTool->cookieToolsTrackingId.'&ev=PageView&noscript=1"
-      />';
-                            elseif ($cookieTool->cookieToolsSelect == 'googleAnalytics')
-                                $data['noScriptTracking'][] = '<img src="http://www.google-analytics.com/collect?v=1&t=pageview&tid='.$cookieTool->cookieToolsTrackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
-                            elseif ($cookieTool->cookieToolsSelect == 'matomo')
-                                $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$cookieTool->cookieToolsTrackingId.'&amp;rec=1" style="border:0" alt="" />;
-';
-                        }
 
-                        if (!in_array($cookieTool->cookieToolGroup, $data['cookieGroupsSelected'])) {
+		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
+        $data['noScriptTracking'] = [];
+        $data['cookieGroupsSelected'] = [1];
+		foreach ($data['cookieTools'] as $cookieTool) {
+            if (!empty($ncoiSession) && $data['noscript']) {
+                foreach ($ncoiSession['cookieIds'] as $cookieId) {
+                    if ($cookieId == $cookieTool->id ) {
+                        if (!in_array($cookieId,$data['cookieGroupsSelected']))
                             $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
+
+                        if ($cookieTool->cookieToolsSelect == 'facebookPixel') {
+                            $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='.$cookieTool->cookieToolsTrackingId.'&ev=PageView&noscript=1"/>';
+                        } elseif ($cookieTool->cookieToolsSelect == 'googleAnalytics') {
+                            $data['noScriptTracking'][] = '<img src="http://www.google-analytics.com/collect?v=1&t=pageview&tid='.$cookieTool->cookieToolsTrackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
+                        } elseif ($cookieTool->cookieToolsSelect == 'matomo') {
+                            $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$cookieTool->cookieToolsTrackingId.'&amp;rec=1" style="border:0" alt="" />';
                         }
                     }
                 }
             }
-            $technicalName = null;
+
+		    if ($cookieTool->pid == $this->__get('id') && $cookieTool->cookieToolsSelect == 'optInCookie')
+		        $data['technicalName'] = $cookieTool->cookieToolsTechnicalName;
+
+		    $technicalName = null;
             $name = null;
             foreach ($groups as $group) {
                 if ($group['key'] == $cookieTool->cookieToolGroup) {
@@ -149,14 +154,6 @@ class ModuleCookieOptInBar extends Module
                 }
             }
 		}
-
-		$data['cookiesSelected'] = [];
-        if (!empty($netzhirschOptInCookie->cookieIds))
-		    $data['cookiesSelected'] = $netzhirschOptInCookie->cookieIds;
-		$data['id'] = $this->id;
-		$data['netzhirschCookieIsSet'] = false;
-		if (!empty($netzhirschOptInCookie))
-			$data['netzhirschCookieIsSet'] = true;
 
         $headlineData = StringUtil::deserialize($result['headlineCookieOptInBar']);
 		if (!empty($headlineData['value'])) {
@@ -224,26 +221,6 @@ class ModuleCookieOptInBar extends Module
         $data['highlightSaveAllButton'] = $result['highlightSaveAllButton'];
 
 		$this->Template->setData($data);
-	}
-	
-	/**
-	 * @param ContainerInterface $container
-	 * @return mixed
-	 */
-	public static function getCookieData(ContainerInterface $container,$modId = null) {
-		
-        $requestStack = $container->get('request_stack');
-        $request = $requestStack->getCurrentRequest();
-		$cookies = $request->cookies;
-        /* @var Connection $conn */
-        $conn = $container->get('database_connection');
-        if (empty($modId))
-            $modId = $request->get('data')['modId'];
-        $optInTechnicalName = CookieController::getOptInTechnicalCookieName($conn,$modId);
-        $optInTechnicalName = $cookies->get($optInTechnicalName);
-		
-		/** @noinspection PhpComposerExtensionStubsInspection */
-		return json_decode($optInTechnicalName);
 	}
 
     /**

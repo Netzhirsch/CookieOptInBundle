@@ -74,7 +74,6 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'] =
     ['Tracking Server URL ','Only for e.g. https://netzhirsch.matomo.cloud/'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
-    'optInCookie' => 'Opt-in Cookie',
     'googleAnalytics' => 'Google Analytics',
     'facebookPixel' => 'Facebook Pixel',
     'matomo' => 'Matomo',
@@ -118,11 +117,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript code','With s
 
 /*************** End Fieldpalette otherScripts ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Expiration in days','Please specify the duration of the cookie. The cookie bar is then displayed again.'];
-
 $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Expiration in days','Please specify the duration of the cookie.'];
-
-$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTimeDefault'] = '30';
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Data protection'];
 

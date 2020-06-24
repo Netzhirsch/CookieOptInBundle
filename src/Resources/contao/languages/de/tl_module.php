@@ -66,7 +66,6 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsName'] = ['Cookie Name','z.B. Faceb
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Type'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
-    'optInCookie' => 'Opt-in Cookie',
     'googleAnalytics' => 'Google Analytics',
     'facebookPixel' => 'Facebook Pixel',
     'matomo' => 'Matomo',
@@ -113,10 +112,6 @@ $GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Andere Skripte'];
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'];
 
 /*************** End Fieldpalette otherScripts ***************/
-
-$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an. Danach wird die Cookie Bar erneut eingeblendet.'];
-
-$GLOBALS['TL_LANG']['tl_module']['cookieExpiredTimeDefault'] = '30';
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'];
 

@@ -7,8 +7,6 @@ use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
-use Netzhirsch\CookieOptInBundle\Controller\CookieController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ParseFrontendTemplateListener
@@ -54,6 +52,8 @@ class ParseFrontendTemplateListener
             if (strpos($iframeEntry, '</iframe') !== false) {
                 $iframeHTML = '<iframe'.$iframeEntry;
                 $return .= $this->getIframeHTML($iframeHTML,$requestStack,$container);
+            } else {
+                $return .= $iframeEntry;
             }
         }
         return $return;
@@ -62,13 +62,13 @@ class ParseFrontendTemplateListener
     private function getIframeHTML($iframeHTML,$requestStack,$container)
     {
         // Block Entscheidungsvariablen
-        $isUserCookieDontAllowMedia = false;
         $blockedIFrames = [];
 
         //Frontendvariablen
         $iframeTypInHtml = 'iframe';
         $privacyPolicyLink = '';
         $modId = null;
+        $cookieIds = [];
 
         //Wenn null werden alle iFrames angezeigt.
         if (!empty($requestStack)) {
@@ -116,10 +116,11 @@ class ParseFrontendTemplateListener
 
                     foreach ($modules as $module) {
                         foreach ($moduleIds as $moduleId) {
-                            if ($module['id'] == $moduleId['mod']) {
+                            if ($module['pid'] == $moduleId['mod']) {
                                 foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                                     if ($module['pid'] == $externalMediaCookieInDB['pid']) {
                                         $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
+                                        $cookieIds[] = $externalMediaCookieInDB['id'];
                                         $modId = $module['pid'];
 
                                         if (!empty(PageModel::findById($module['privacyPolicy']))) {
@@ -131,19 +132,6 @@ class ParseFrontendTemplateListener
                             }
                         }
                     }
-                }
-            }
-
-            //Im Cookie gesetzten iFrame finden, damit dieses nicht blocked werden kann.
-            $request = new Request();
-            $request->request->set('data',['modId' => $modId]);
-            $cookieData = CookieController::getUserCookie($conn,null,$request);
-            foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                if (!empty($cookieData->getOtherCookieIds())
-                    && in_array($externalMediaCookieInDB['id'], $cookieData->getOtherCookieIds())
-                ) {
-                    $isUserCookieDontAllowMedia = true;
-                    break;
                 }
             }
         }
@@ -195,10 +183,13 @@ class ParseFrontendTemplateListener
 
         //$blockclass im JS um blocked Container ein. und auszublenden
         $class = 'ncoi---blocked ncoi---iframes '.$blockClass;
-
-        //User möchte das iFrame sehen
-        if ($isUserCookieDontAllowMedia)
-            $class .= ' ncoi---hidden';
+        if (!empty($cookieIds)) {
+            if (count($cookieIds) == 1) {
+                $class .= ' ncoi---cookie-id-'.$cookieIds[0];
+            } else {
+                $class .= implode(' ncoi---cookie-id-',$cookieIds);
+            }
+        }
 
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
         $height = substr($iframeHTML, strpos($iframeHTML, 'height'), 11);
@@ -215,7 +206,7 @@ class ParseFrontendTemplateListener
         $htmlConsentBox = '<div class="ncoi---consent-box">';
         $htmlConsentBoxEnd = '</div>';
 
-        $htmlForm = '<!--suppress HtmlUnknownTarget --><form action="/cookie/allowed/iframe" method="post">';
+        $htmlForm = '<form action="/cookie/allowed/iframe" method="post">';
         $htmlFormEnd = '</form>';
         //Damit JS das iFrame wieder laden kann
         $htmlConsentButton = '<div class="ncoi---blocked-link">
@@ -229,16 +220,23 @@ class ParseFrontendTemplateListener
 
         $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
 
+        $isUserCookieDontAllowMedia = false;
+        if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi']) && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])) {
+            $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
+            foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
+                if (isset($externalMediaCookieInDB['id']) && in_array($externalMediaCookieInDB['id'],$cookieIds)) {
+                    $isUserCookieDontAllowMedia = true;
+                }
+            }
+        }
         //User möchte das iFrame sehen, aber vielleicht auch über JS wieder blocken
         if ($isUserCookieDontAllowMedia) {
-            return $iframeHTML.$newBuffer;
+            return $iframeHTML;
         } else {
             return $newBuffer;
         }
     }
     private function analyticsTemplate($buffer) {
-        $replace = false;
-
         //Datenbank und User Cookie
         $container = System::getContainer();
         $requestStack = $container->get('request_stack');
@@ -253,34 +251,9 @@ class ParseFrontendTemplateListener
             }else {
                 $analyticsType = 'matomo';
             }
-
-            //Suche nach dem cookie.
-            $conn = $container->get('database_connection');
-            $sql = "SELECT id,pid,cookieToolsSelect FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
-            /** @var Statement $stmt */
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(1, 'cookieTools');
-            $stmt->bindValue(2, $analyticsType);
-            $stmt->execute();
-            $analyseCookiesInDB = $stmt->fetchAll();
-
-            //ersetzen wenn cookie in user cookie.
-            $cookieData = CookieController::getUserCookie($conn,$requestStack);
-            foreach ($analyseCookiesInDB as $analyseCookieInDB) {
-                if (!empty($cookieData->getOtherCookieIds()) && in_array($analyseCookieInDB['id'], $cookieData->getOtherCookieIds())) {
-                    $replace = true;
-                    break;
-                }
-            }
         }
         //class hinzufügen damit die in JS genutzt werden kann
         $buffer = str_replace('<script','<script class="analytics-decoded-'.$analyticsType.'"',$buffer);
-        $encoded = '<script id="analytics-encoded-'.$analyticsType.'"><!-- '.base64_encode($buffer).' --></script>';
-        if ($replace) {
-            return $encoded.$buffer;
-        } else {
-            //umschließendes script für JS
-            return $encoded;
-        }
+        return '<script id="analytics-encoded-'.$analyticsType.'"><!-- '.base64_encode($buffer).' --></script>';
     }
 }

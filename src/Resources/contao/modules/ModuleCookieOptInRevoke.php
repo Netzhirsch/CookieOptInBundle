@@ -4,12 +4,9 @@ namespace Netzhirsch\CookieOptInBundle;
 
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
-use Contao\LayoutModel;
 use Contao\Module;
-use Contao\ModuleModel;
-use Contao\PageModel;
-use Contao\StringUtil;
 use Contao\System;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 
 class ModuleCookieOptInRevoke extends Module
@@ -39,53 +36,42 @@ class ModuleCookieOptInRevoke extends Module
 
 		return parent::generate();
 	}
-	
+
+    /**
+     * @throws DBALException
+     */
 	public function compile(){
 		
 		$this->strTemplate = 'mod_cookie_opt_in_revoke';
-
 		$this->Template = new FrontendTemplate($this->strTemplate);
 
 		$data = $this->Template->getData();
-        $conn = System::getContainer()->get('database_connection');
+        $data['revokeButton'] = '';
 
+        //********* revokue button aus dem Module Spache Array ********************************************************/
+        System::loadLanguageFile('tl_module');
+        if (
+            isset($GLOBALS['TL_LANG'])
+            && isset($GLOBALS['TL_LANG']['tl_module'])
+            && !empty($GLOBALS['TL_LANG']['tl_module']['revokeButtonDefault'])
+        ) {
+            $data['revokeButton'] = $GLOBALS['TL_LANG']['tl_module']['revokeButtonDefault'];
+        }
+        //********* revokue button aus der Datenbank ******************************************************************/
+        $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT revokeButton FROM tl_ncoi_cookie_revoke WHERE pid = ?";
         /** @var Statement $stmt */
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, $this->__get('id'));
         $stmt->execute();
-        $result = $stmt->fetch();
-		$revokeButton = $result['revokeButton'];
-		if (!empty($revokeButton))
-			$data['revokeButton'] = $revokeButton;
+        $result = $stmt->fetchColumn();
+        if (!empty($result))
+			$data['revokeButton'] = $result;
 
-        /**@var PageModel @$objPage */
-        global $objPage;
-        $modules = [];
-        $modulesInPage = $objPage->__get('modules');
-        if (!empty($modulesInPage))
-            $modules[] = $modulesInPage;
-
-        $layout = LayoutModel::findById($objPage->__get('layout'));
-        $modulesInLayout = $layout->__get('modules');
-        if (!empty($modulesInLayout))
-            $modules[] = $modulesInLayout;
-
-        $moduleIds =[];
-        foreach ($modules as $module) {
-            $moduleArray = StringUtil::deserialize($module);
-            foreach ($moduleArray as $key => $item) {
-                    $moduleIds[] = $item['mod'];
-            }
-        }
-        $modules = ModuleModel::findMultipleByIds($moduleIds);
-        $barModule = null;
-        foreach ($modules as $module) {
-            if ($module->type == 'cookieOptInBar')
-                $barModule = $module;
-        }
-        if (!empty($barModule))
-            $data['url'] = '/cookie/revoke?currentPage='.$_SERVER['REDIRECT_URL'].'&modId='.$barModule->id.'';
+        //********* revoke link für noscript **************************************************************************/
+        $data['url'] = '/cookie/revoke';
+        if (!empty($_SERVER['REDIRECT_URL']))
+            $data['url'] .= '?currentPage='.$_SERVER['REDIRECT_URL'];
 
 		$this->Template->setData($data);
 	}

@@ -4,13 +4,10 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
-use Netzhirsch\CookieOptInBundle\Classes\CookieData;
-use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CookieController extends AbstractController
@@ -27,7 +24,7 @@ class CookieController extends AbstractController
         $data = $request->get('data');
         $newConsent = $data['newConsent'];
 		$cookieDatabase = $this->getModulData($data['modId']);
-        //nur ohne JS gefüllt
+        //nur ohne JS gesetzt
         if (isset($data['isNoJavaScript'])) {
             if (!isset($data['cookieIds']))
                 $data['cookieIds'] = [];
@@ -45,6 +42,7 @@ class CookieController extends AbstractController
                         $data['cookieIds'][] = $cookieInDB['id'];
                 }
             }
+
         }
 		$cookiesToSet = [
             'cookieTools' => [],
@@ -61,13 +59,22 @@ class CookieController extends AbstractController
 			}
 		}
 
-        PageLayoutListener::deleteCookie(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
+        self::deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
         $cookieData = null;
         $id = $data['id'];
         if ($newConsent || empty($id)) {
             $id = $this->changeConsent($id,$cookiesToSet,$data['modId'],$cookieDatabase);
         }
         if (isset($data['isNoJavaScript'])) {
+            if ($request->hasSession()) {
+                $session = $request->getSession();
+                $session->set('ncoi',[
+                    'id' => $id,
+                    'cookieIds' => $data['cookieIds'],
+                    'cookieVersion' => $cookieDatabase['cookieVersion']
+                ]);
+                $session->save();
+            }
             return $this->redirectToPageBefore($data['currentPage']);
         }
 
@@ -75,7 +82,7 @@ class CookieController extends AbstractController
 			'tools' => $cookiesToSet['cookieTools'],
 			'otherScripts' => $cookiesToSet['otherScripts'],
             'id' => $id,
-            'version' => $cookieDatabase['cookieVersion']
+            'cookieVersion' => $cookieDatabase['cookieVersion']
 		];
 		return new JsonResponse($response);
 	}
@@ -92,15 +99,14 @@ class CookieController extends AbstractController
 		/** @noinspection PhpParamsInspection */
 		/* @var Connection $conn */
 		$conn = $this->get('database_connection');
-		$sql = "SELECT cookieVersion,cookieExpiredTime FROM tl_ncoi_cookie WHERE pid = ?";
+		$sql = "SELECT cookieVersion FROM tl_ncoi_cookie WHERE pid = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, $modId);
 		$stmt->execute();
 		$data = $stmt->fetch();
 		
 		$response['cookieVersion'] = $data['cookieVersion'];
-		$response['cookieExpiredTime'] = $data['cookieExpiredTime'];
-		
+
 		$select = [
 			'id',
 			'cookieToolsName',
@@ -215,9 +221,9 @@ class CookieController extends AbstractController
 		$stmt->bindValue(1, $userInfo['ip']);
 		$cookieNames = [];
 		$cookieTechnicalName = [];
-		$otherCookieIds = $cookieData->getOtherCookieIds();
+		$otherCookieIds = $cookieData['getOtherCookieIds'];
         if (!empty($otherCookieIds)) {
-            foreach ($cookieData->getOtherCookieIds() as $cookieTool) {
+            foreach ($cookieData['getOtherCookieIds'] as $cookieTool) {
                 foreach ($cookieDatabase['cookieTools'] as $cookieDataFromDb) {
                     if ($cookieDataFromDb['id'] == $cookieTool) {
                         $cookieNames[] = $cookieDataFromDb['cookieToolsName'];
@@ -241,65 +247,23 @@ class CookieController extends AbstractController
 	}
 
     /**
-     * @param $conn
-     * @param RequestStack $requestStack
-     * @param Request $request
-     * @return CookieData
-     * @throws DBALException
-     */
-	public static function getUserCookie($conn,$requestStack = null,$request = null)
-    {
-        $cookieData = new CookieData();
-
-        if (empty($requestStack) && empty($request))
-            return $cookieData;
-
-        $currentRequest = $request;
-        if (empty($currentRequest))
-            $currentRequest = $requestStack->getCurrentRequest();
-
-
-        if (!empty($currentRequest)) {
-            $cookieSet = $currentRequest->cookies;
-            $data = $currentRequest->request->get('data');
-            $modId = $data['modId'];
-            $cookieToolsTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
-            if (!empty($cookieSet) && !empty($cookieToolsTechnicalName)) {
-                $cookieSet = $cookieSet->get($cookieToolsTechnicalName);
-                if (empty($cookieSet))
-                    $cookieSet = $_COOKIE[$cookieToolsTechnicalName];
-
-                /** @noinspection PhpComposerExtensionStubsInspection "ext-json": "*" is required in bundle composer phpStorm don't know this*/
-                $cookieId = json_decode($cookieSet);
-                $cookieData->setId(intval($cookieId->cookieId));
-                $cookieData->setVersion($cookieId->cookieVersion);
-                $cookieData->setOtherCookieIds($cookieId->cookieIds);
-            }
-        }
-        return $cookieData;
-    }
-    /**
      * @Route("/cookie/revoke", name="cookie_revoke")
      * @param Request $request
      * @return RedirectResponse
-     * @throws DBALException
      */
     public function revokeAction(Request $request)
     {
-        /* @var Connection $conn */
-        /** @noinspection PhpParamsInspection */
-        $conn = $this->get('database_connection');
         $query = $request->query;
         $currentPage = '/';
         if (!empty($query)) {
-            $modId = $query->get('modId');
-            if (!empty($modId)) {
-                $optInTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
-                setrawcookie($optInTechnicalName, 1, time() - 360000, '/', $_SERVER['HTTP_HOST']);
-            }
             $currentPage = $query->get('currentPage');
             if (empty($currentPage))
                 $currentPage = '';
+        }
+        if ($request->hasSession()) {
+            $session = $request->getSession();
+            $session->set('ncoi',null);
+            $session->save();
         }
 
         return $this->redirectToPageBefore($currentPage);
@@ -345,21 +309,91 @@ class CookieController extends AbstractController
      */
     public function allowedIframeAction(Request $request)
     {
-//        $iframe = $request->get('iframe');
-//        $modId = $request->get('data')['modId'];
-//        /* @var Connection $conn */
-//        /** @noinspection PhpParamsInspection */
-//        $conn = $this->get('database_connection');
-//        $optInTechnicalName = self::getOptInTechnicalCookieName($conn,$modId);
-//        $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?) OR (pid = ? AND cookieToolsTechnicalName = ?) ";
-//        $stmt = $conn->prepare($sql);
-//        $stmt->bindValue(1, $modId);
-//        $stmt->bindValue(2, $iframe);
-//        $stmt->bindValue(3, $modId);
-//        $stmt->bindValue(4, $optInTechnicalName);
-//        $stmt->execute();
-//        $cookies = $stmt->fetchAll();
-        //TODO set html data so iframe are allowed
+        $iframe = $request->get('iframe');
+        $modId = $request->get('data')['modId'];
+        /* @var Connection $conn */
+        /** @noinspection PhpParamsInspection */
+        $conn = $this->get('database_connection');
+        $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $modId);
+        $stmt->bindValue(2, $iframe);
+        $stmt->execute();
+        $cookie = $stmt->fetch();
+
+        if ($request->hasSession()) {
+            $session = $request->getSession();
+            $cookieDatabase = $this->getModulData($modId);
+            $id = $this->changeConsent('',[$cookie['id']],$modId,$cookieDatabase);
+            if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi'])) {
+                $ncoi = $_SESSION['_sf2_attributes']['ncoi'];
+                $ncoi['cookieIds'][] = $cookie['id'];
+            } else {
+                $ncoi = [
+                    'id' => $id,
+                    'cookieIds' => [$cookie['id']],
+                    'cookieVersion' => $cookieDatabase['cookieVersion']
+                ];
+            }
+            $session->set('ncoi',$ncoi);
+            $session->save();
+        }
+
         return $this->redirectToPageBefore($request->get('currentPage'));
+    }
+
+    /**
+     * @Route("/cookie/delete", name="cookie_delete")
+     * @param array|null $cookieNotToDelete Cookies that should not be deleted
+     * @return JsonResponse
+     */
+    public static function deleteCookies(Array $cookieNotToDelete = null) {
+        ob_start();
+        $cookiesSet = $_COOKIE;
+        if (!empty($cookieNotToDelete)) {
+            foreach ($cookiesSet as $cookieSetTechnicalName => $value) {
+                foreach ($cookieNotToDelete as $cookie) {
+                    unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
+                }
+            }
+        }
+
+        //all possible subdomains
+        $subDomains = explode(".", $_SERVER['HTTP_HOST']);
+        foreach ($subDomains as $key => $subDomain) {
+            $domain = implode(".", $subDomains);
+            unset($subDomains[$key]);
+
+            $domainWithDot = explode('www',$domain);
+            if (is_array($domainWithDot) && count($domainWithDot) >= 2) {
+                $domainWithDot = $domainWithDot[1];
+            } else {
+                $domainWithDot = '';
+            }
+            foreach ($cookiesSet as $cookieSetTechnicalName => $cookieSet) {
+                if (
+                    $cookieSetTechnicalName == 'XDEBUG_SESSION'
+                    || $cookieSetTechnicalName == 'BE_USER_AUTH'
+                    || $cookieSetTechnicalName == 'trusted_device'
+                    || $cookieSetTechnicalName == 'csrf_contao_csrf_token'
+                    || $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
+                )
+                    continue;
+                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
+                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', $domain);
+                setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/', '.' . $domain);
+                setrawcookie(
+                    $cookieSetTechnicalName
+                    , ''
+                    , time() - 36000000
+                    , '/'
+                    , $domainWithDot
+                );
+
+            }
+        }
+        ob_end_flush();
+
+        return new JsonResponse();
     }
 }

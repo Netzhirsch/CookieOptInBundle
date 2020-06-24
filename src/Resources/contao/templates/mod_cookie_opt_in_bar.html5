@@ -2,12 +2,13 @@
 <?php $class = $this->arrData['class'] ?>
 <?php $id = str_replace(' id=','',$id)?>
 <?php $id = str_replace('"','',$id)?>
-<?php $class = "ncoi---no-transition" ?>
-
-<?php if(($this->arrData['netzhirschCookieIsSet'] && !$this->arrData['netzhirschCookieIsVersionNew']) || $this->arrData['isExcludePage']):?>
-    <?php $class .= " ncoi---hidden" ?>
-<?php endif; ?>
-
+<?php $class = "ncoi---no-transition ncoi---hidden" ?>
+<?php
+    if($this->arrData['disableBar'])
+        $class .= " ncoi---on-no-script-hidden";
+    else
+        $class .= " ncoi---on-no-script";
+?>
 <?php if (!empty($this->arrData['animation'])):?>
     <?php $class .= " ncoi---animation" ?>
 <?php else: ?>
@@ -16,16 +17,29 @@
 
 <?php $animation = (!empty($this->arrData['animation']) ? 'ncoi---hidden--'.$this->arrData['animation'] : '') ?>
 
-
 <?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
 
-
+<noscript>
+    <style>
+        .ncoi---behind.ncoi---no-transition.ncoi---hidden.ncoi---on-no-script {
+            display: flex !important;
+            visibility: unset !important;
+            opacity: 1 !important;
+        }
+        .ncoi---behind.ncoi---no-transition.ncoi---hidden.ncoi---on-no-script-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+    </style>
+</noscript>
 <div class="ncoi---behind <?php echo $class ?> <?= $animation?> ncoi---<?= $this->arrData['position']?>">
 	<div
 			id="<?php echo $id ?>"
 			class="ncoi---container ncoi---mod-missing"
+			data-ncoi-cookie-version="<?php echo $this->arrData['cookieVersion']?>"
+            data-is-exclude-page="<?=$this->arrData['isExcludePage']?>"
 			data-ncoi-technical-name="<?=$this->arrData['technicalName']?>"
-			data-ncoi-is-version-new="<?php echo $this->arrData['netzhirschCookieIsVersionNew']?>"
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
             data-ncoi-animation="<?=$this->arrData['animation']?>"
@@ -55,7 +69,7 @@
                         <?php if(!empty($this->arrData['cookieTools'])) : ?>
                             <?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
                                 <tbody>
-                                    <?php include('includes/mod_cookie_opt_in_table.html5') ?>
+                                    <?php include('mod_cookie_opt_in_table.html5') ?>
                                 </tbody>
                             <?php endforeach;?>
                         <?php endif;?>
@@ -130,10 +144,8 @@
                         </button>
                 </div>
             </div>
-            <noscript>
-                <label for="no-script-isNoJavaScript" class="ncoi---no-script--hidden"></label>
-                <input id="no-script-isNoJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isNoJavaScript]" value="1">
-            </noscript>
+            <label for="no-script-isNoJavaScript" class="ncoi---no-script--hidden"></label>
+            <input id="no-script-isNoJavaScript" class="ncoi---no-script--hidden" type="text" name="data[isNoJavaScript]" value="1">
 
                 <label for="no-script-cookieGroups" class="ncoi---no-script--hidden"></label>
                 <input

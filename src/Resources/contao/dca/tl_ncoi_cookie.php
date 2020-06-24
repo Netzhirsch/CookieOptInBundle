@@ -1,5 +1,6 @@
 <?php
 /********* config ****************************************************************************************/
+
 $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
     'config' => [
         'label' => 'Cookie opt in bundle table',
@@ -61,9 +62,6 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
         'cookieVersion' => [
             'sql' => "int(10) NULL",
         ],
-        'cookieExpiredTime' => [
-            'sql' => "int(2) NULL ",
-        ],
         'privacyPolicy' => [
             'sql' => "varchar(11) NULL default '' ",
         ],
@@ -106,9 +104,3 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
     ]
 
 ];
-//$GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
-//    'config' => [],
-//    'list' => […],
-//    'fields' => […],
-//    'palettes' => […],
-//];

@@ -1,7 +1,8 @@
 (function($){
 	$(document).ready(function () {
+		let ncoiBehindField = $('.ncoi---behind');
 		// falls CSS zu spät eingunden wird
-		$('.ncoi---behind').removeClass('ncoi---no-transition');
+		ncoiBehindField.removeClass('ncoi---no-transition');
 		// no script Iframes bekommen keine checkbox
 		// checked ist der default
 		$('.ncoi--release-all').removeClass('ncoi---hidden');
@@ -12,18 +13,29 @@
 			if(errorMessage.localeCompare('') !== 0)
 				console.error(errorMessage);
 		});
+
 		let storageKey = $('[data-technical-name]').data('technical-name');
 		let localStorage = getLocalStorage(storageKey);
 		if (
-			$('[data-ncoi-is-version-new]').data('ncoi-is-version-new') === localStorage.id
+			localStorage !== '' && $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
 		) {
 			track(0,storageKey);
+			checkExternalMediaOnLoad(localStorage.cookieIds);
+			checkGroupsOnLoad(localStorage.cookieIds);
+		} else {
+			$.ajax({
+				dataType: "json",
+				type: 'POST',
+				url: '/cookie/delete',
+				success: function (response) {
+				}
+			})
 		}
 
 		$('#ncoi---allowed').on('click', function (e) {
 			e.preventDefault();
 			$('.ncoi---behind').addClass('ncoi---hidden');
-			checkExternalMedia();
+			checkExternalMediaOnClick();
 			track(1,storageKey);
 		});
 
@@ -32,12 +44,13 @@
 			$('.ncoi---behind').addClass('ncoi---hidden');
 			$('.ncoi---cookie-group input').prop('checked',true);
 			$('.ncoi---sliding').prop('checked',true);
-			checkExternalMedia();
+			checkExternalMediaOnClick();
 			track(1,storageKey);
 		});
 
-		$('.ncoi---revoke').on('click',function (e) {
+		$('.ncoi---revoke--button').on('click',function (e) {
 			e.preventDefault();
+			setLocalStorage(storageKey,null);
 			$('.ncoi---behind').removeClass('ncoi---hidden--page-load')
 				.removeClass('ncoi---hidden');
 			$('#FBTracking').remove();
@@ -119,33 +132,45 @@
 // 		return false;
 // 	}
 	function getLocalStorage(storageKey) {
-		return localStorage.getItem(storageKey);
+		let storageData = localStorage.getItem(storageKey);
+		if (storageData !== null) {
+			storageData = JSON.parse(storageData);
+		}
+		return (storageData ? storageData: '');
+	}
+	function setLocalStorage(storageKey,storageValue) {
+		localStorage.setItem(storageKey,storageValue)
 	}
 	function track(newConsent,storageKey){
 		let id = null;
-		let storage = getLocalStorage();
 		let data = {
 			id : id,
 			cookieIds : [],
-			modId : '',
+			modId : $('[data-ncoi-mod-id]').data('ncoi-mod-id'),
 			newConsent : newConsent,
 			storageKey : storageKey,
-			version : 0
+			cookieVersion : 0
 		};
-		let cookieSelected = $('.ncoi---cookie');
-		Object.keys(cookieSelected).forEach(function(key) {
-			if (
-				key.localeCompare('length') !== 0
-				&& key.localeCompare('prevObject') !== 0
-				&& key.localeCompare('context') !== 0
-				&& key.localeCompare('selector') !== 0
-			) {
-				if ($(cookieSelected[key]).prop('checked')) {
-					data.cookieIds.push($(cookieSelected[key]).data('cookie-id'))
+		if (newConsent === 1) {
+			let cookieSelected = $('.ncoi---cookie');
+			Object.keys(cookieSelected).forEach(function(key) {
+				if (
+					key.localeCompare('length') !== 0
+					&& key.localeCompare('prevObject') !== 0
+					&& key.localeCompare('context') !== 0
+					&& key.localeCompare('selector') !== 0
+				) {
+					if ($(cookieSelected[key]).prop('checked')) {
+						data.cookieIds.push($(cookieSelected[key]).data('cookie-id'))
+					}
 				}
-			}
-		});
-		data.modId = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
+			});
+		} else {
+			let storage = getLocalStorage(storageKey);
+			data.cookieIds = storage.cookieIds;
+			data.id = storage.id;
+			data.cookieVersion = storage.cookieVersion;
+		}
 		$.ajax({
 			dataType: "json",
 			type: 'POST',
@@ -160,10 +185,11 @@
 				let matomo = false;
 				let templateScriptsGoogle = $('.analytics-decoded-googleAnalytics');
 				let templateScriptsMatomo = $('.analytics-decoded-matomo');
-				console.log(response.id);
-				data.id = response.id;
-				data.version = response.version;
-				localStorage.setItem(storageKey,JSON.stringify(data));
+				setLocalStorage(storageKey,JSON.stringify({
+					id: response.id,
+					cookieVersion: response.cookieVersion,
+					cookieIds: data.cookieIds
+				}));
 				if (tools !== null) {
 					tools.forEach(function (tool) {
 						let toolName = tool.cookieToolsSelect;
@@ -231,7 +257,7 @@
 	}// End Track
 
 	//ausführung beim Speicher der Entscheidung
-	function checkExternalMedia() {
+	function checkExternalMediaOnClick() {
 		let cookiesInput = $('table tbody .ncoi---cookie');
 		cookiesInput.each(function () {
 			let blockClass = '.' + $(this).data('block-class');
@@ -252,9 +278,29 @@
 		});
 	}
 
+	function checkExternalMediaOnLoad(cookieIds) {
+		cookieIds.forEach(function (cookieId) {
+			let iframe = $('.ncoi---cookie-id-' + cookieId);
+			if (iframe.length > 0) {
+				addIframe((iframe));
+			}
+		});
+	}
+
+	function checkGroupsOnLoad(cookieIds) {
+		cookieIds.forEach(function (cookieId) {
+			$('.ncoi---cookie-id-' + cookieId).prop('checked');
+		});
+	}
+
 	function addIframe(parent){
 		if (!parent.hasClass('ncoi---hidden')) {
-			let html = atob((parent.find('script').text().trim()));
+			let html = '';
+			try {
+				html = atob(parent.find('script').text().trim());
+			} catch (e) {
+				console.error('Das IFrame html enthält invalide Zeichen.')
+			}
 			parent.addClass('ncoi---hidden');
 			parent.after(html);
 		}
@@ -264,7 +310,12 @@
 		let templateScriptsEncode = templateScriptsEncodeElement.html();
 		templateScriptsEncode = templateScriptsEncode.replace('<!--','');
 		templateScriptsEncode = templateScriptsEncode.replace('-->','');
+		try {
 		templateScriptsEncode = atob(templateScriptsEncode);
+		} catch (e) {
+			console.error('Das Analyse Template enthält invalide Zeichen.')
+		}
 		templateScriptsEncodeElement.after(templateScriptsEncode);
 	}
+
 })(jQuery);
