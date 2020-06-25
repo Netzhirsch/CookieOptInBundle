@@ -110,9 +110,14 @@ class CookieController extends AbstractController
 		$stmt->bindValue(1, $modId);
 		$stmt->execute();
 		$data = $stmt->fetch();
-		
-		$response['cookieVersion'] = $data['cookieVersion'];
-		$response['expireTime'] = $data['expireTime'];
+
+        $response['cookieVersion'] = 1;
+        if (!empty($data['cookieVersion']))
+		    $response['cookieVersion'] = $data['cookieVersion'];
+
+        $response['expireTime'] = 30;
+        if (!empty($data['expireTime']))
+		    $response['expireTime'] = $data['expireTime'];
 
 		$select = [
 			'id',

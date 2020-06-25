@@ -25,7 +25,6 @@
 			checkExternalMediaOnLoad(localStorage.cookieIds);
 			checkGroupsOnLoad(localStorage.cookieIds);
 		} else {
-			console.log(ncoiBehindField);
 			$.ajax({
 				dataType: "json",
 				type: 'POST',
