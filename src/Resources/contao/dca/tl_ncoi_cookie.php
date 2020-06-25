@@ -63,7 +63,7 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
             'sql' => "varchar(1) NOT NULL DEFAULT 0",
         ],
         'cookieVersion' => [
-            'sql' => "int(10) NULL",
+            'sql' => "int(10) NULL default '1'",
         ],
         'privacyPolicy' => [
             'sql' => "varchar(11) NULL default '' ",
