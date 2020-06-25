@@ -64,7 +64,9 @@ class ModuleCookieOptInBar extends Module
         $stmt->bindValue(1, $this->__get('id'));
         $stmt->execute();
         $result = $stmt->fetch();
-        $data['cookieVersion'] = $result['cookieVersion'];
+        $data['cookieVersion'] = 1;
+        if (isset($result['cookieVersion']) && !empty($result['cookieVersion']))
+            $data['cookieVersion'] = $result['cookieVersion'];
 
         //********* noscript ******************************************************************************************/
         $data['noscript'] = false;
