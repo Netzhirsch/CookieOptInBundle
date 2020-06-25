@@ -190,9 +190,12 @@
 				let matomo = false;
 				let templateScriptsGoogle = $('.analytics-decoded-googleAnalytics');
 				let templateScriptsMatomo = $('.analytics-decoded-matomo');
+				let cookieVersion = 1;
+				if (response.cookieVersion !== null)
+					cookieVersion = response.cookieVersion;
 				setLocalStorage(storageKey,JSON.stringify({
 					id: response.id,
-					cookieVersion: response.cookieVersion,
+					cookieVersion: cookieVersion,
 					cookieIds: data.cookieIds,
 					expireTime: response.expireTime
 				}));

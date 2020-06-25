@@ -230,6 +230,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieVersion'] = [
 	'inputType' => 'text',
 	'eval' => [
 		'style' => 'display:none',
+        'alwaysSave' => true,
         'doNotSaveEmpty' => true,
 	],
     'foreignKey' => 'tl_ncoi_cookie.cookieVersion',

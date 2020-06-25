@@ -108,15 +108,17 @@ class PageLayoutListener {
 		$modulBar = ModuleModel::findById($modId);
         $fieldPalettes = FieldPaletteModel::findByPid($modulBar->id);
 		$cookieTools = [];
-		foreach ($fieldPalettes as $fieldPalette) {
-			if ($fieldPalettes->pfield == 'cookieTools') {
-				$cookieTools[] = $fieldPalette;
-			}
-            if ($fieldPalettes->cookieToolsTechnicalName = '_netzhirsch_cookie_opt_in') {
-                $fieldPalettes->__set('cookieToolsSelect','optInCookie');
+        if (!empty($fieldPalettes)) {
+            foreach ($fieldPalettes as $fieldPalette) {
+                if ($fieldPalettes->pfield == 'cookieTools') {
+                    $cookieTools[] = $fieldPalette;
+                }
+                if ($fieldPalettes->cookieToolsTechnicalName = '_netzhirsch_cookie_opt_in') {
+                    $fieldPalettes->__set('cookieToolsSelect','optInCookie');
+                }
+                self::setNewGroups($fieldPalette);
             }
-            self::setNewGroups($fieldPalette);
-		}
+        }
 
 		if (self::doNotTrackBrowserSetting($modulBar, $modId))
 			return;
