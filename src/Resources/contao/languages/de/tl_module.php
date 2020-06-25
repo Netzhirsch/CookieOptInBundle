@@ -111,9 +111,14 @@ $GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Andere Skripte'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'];
 
+$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'];
+
 /*************** End Fieldpalette otherScripts ***************/
 
-$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'];
+$GLOBALS['TL_LANG']['tl_module']['expireTime'] = ['Ablauf in Tagen'
+    ,'Bitte geben Sie die Laufzeit der Einwilligung an. Danach wird die Cookie Bar erneut eingeblendet.'];
+
+$GLOBALS['TL_LANG']['tl_module']['expireTimeDefault'] = '30';
 
 $GLOBALS['TL_LANG']['tl_module']['privacyPolicy'] = ['Datenschutzerklärung'];
 
@@ -130,6 +135,8 @@ $GLOBALS['TL_LANG']['tl_module']['zIndex'] = ['z-index-Einstellung','Erhöhen Si
 $GLOBALS['TL_LANG']['tl_module']['zIndexDefault'] = '1';
 
 $GLOBALS['TL_LANG']['tl_module']['defaultCss'] = ['Standard-CSS laden','Die CSS-Datei des Cookie Opt In Bar-Moduls laden.'];
+
+$GLOBALS['TL_LANG']['tl_module']['defaultCssDefault'] = true;
 
 $GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];
 

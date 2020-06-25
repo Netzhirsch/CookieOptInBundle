@@ -61,30 +61,36 @@ class CookieController extends AbstractController
 
         self::deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
         $cookieData = null;
-        $id = $data['id'];
-        if ($newConsent || empty($id)) {
-            $id = $this->changeConsent($id,$cookiesToSet,$data['modId']);
+        $id = null;
+        if (isset($data['id']))
+            $id = $data['id'];
+        if ($newConsent) {
+            $id = $this->changeConsent($cookiesToSet,$data['modId'],$id);
         }
+
+        $expireTime = self::getExpireTime($cookieDatabase['expireTime']);
+
         if (isset($data['isNoJavaScript'])) {
             if ($request->hasSession()) {
                 $session = $request->getSession();
                 $session->set('ncoi',[
                     'id' => $id,
                     'cookieIds' => $data['cookieIds'],
-                    'cookieVersion' => $cookieDatabase['cookieVersion']
+                    'cookieVersion' => $cookieDatabase['cookieVersion'],
+                    'expireTime' => $expireTime
                 ]);
                 $session->save();
             }
             return $this->redirectToPageBefore($data['currentPage']);
         }
 
-		$response = [
-			'tools' => $cookiesToSet['cookieTools'],
-			'otherScripts' => $cookiesToSet['otherScripts'],
+		return new JsonResponse([
+            'tools' => $cookiesToSet['cookieTools'],
+            'otherScripts' => $cookiesToSet['otherScripts'],
             'id' => $id,
-            'cookieVersion' => $cookieDatabase['cookieVersion']
-		];
-		return new JsonResponse($response);
+            'cookieVersion' => $cookieDatabase['cookieVersion'],
+            'expireTime' => $expireTime
+        ]);
 	}
 
 	/**
@@ -99,13 +105,14 @@ class CookieController extends AbstractController
 		/** @noinspection PhpParamsInspection */
 		/* @var Connection $conn */
 		$conn = $this->get('database_connection');
-		$sql = "SELECT cookieVersion FROM tl_ncoi_cookie WHERE pid = ?";
+		$sql = "SELECT cookieVersion,expireTime FROM tl_ncoi_cookie WHERE pid = ?";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, $modId);
 		$stmt->execute();
 		$data = $stmt->fetch();
 		
 		$response['cookieVersion'] = $data['cookieVersion'];
+		$response['expireTime'] = $data['expireTime'];
 
 		$select = [
 			'id',
@@ -160,14 +167,13 @@ class CookieController extends AbstractController
 	}
 
     /**
-     * @param $id
      * @param $cookieData
      * @param $modId
-     * @param $cookieDatabase
+     * @param $id
      * @return string
      * @throws DBALException
      */
-	private function changeConsent($id,$cookieData, $modId)
+	private function changeConsent($cookieData, $modId,$id = null)
 	{
 		/** @noinspection PhpParamsInspection */
 		$requestStack = $this->get('request_stack');
@@ -318,7 +324,7 @@ class CookieController extends AbstractController
         if ($request->hasSession()) {
             $session = $request->getSession();
             $cookieDatabase = $this->getModulData($modId);
-            $id = $this->changeConsent('',[$cookie['id']],$modId);
+            $id = $this->changeConsent([$cookie['id']],$modId);
             if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi'])) {
                 $ncoi = $_SESSION['_sf2_attributes']['ncoi'];
                 $ncoi['cookieIds'][] = $cookie['id'];
@@ -326,7 +332,8 @@ class CookieController extends AbstractController
                 $ncoi = [
                     'id' => $id,
                     'cookieIds' => [$cookie['id']],
-                    'cookieVersion' => $cookieDatabase['cookieVersion']
+                    'cookieVersion' => $cookieDatabase['cookieVersion'],
+                    'expireTime' => self::getExpireTime($cookieDatabase['expireTime'])
                 ];
             }
             $session->set('ncoi',$ncoi);
@@ -373,6 +380,7 @@ class CookieController extends AbstractController
                     || $cookieSetTechnicalName == 'csrf_contao_csrf_token'
                     || $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
                     || $cookieSetTechnicalName == 'PHPSESSID'
+                    || $cookieSetTechnicalName == 'contao_settings'
                 )
                     continue;
                 setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');
@@ -391,5 +399,11 @@ class CookieController extends AbstractController
         ob_end_flush();
 
         return new JsonResponse();
+    }
+
+    public static function getExpireTime($expireTimeFromDB)
+    {
+        $expireDays = --$expireTimeFromDB;
+        return date('Y-m-d', strtotime('+'.$expireDays.'day',time()));
     }
 }

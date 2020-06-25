@@ -37,7 +37,6 @@ class ParseFrontendTemplateListener
     /**
      * @param $buffer
      * @return string
-     * @throws DBALException
      */
     private function iframe($buffer){
 
@@ -46,14 +45,19 @@ class ParseFrontendTemplateListener
         /** @var RequestStack $requestStack */
         $requestStack = $container->get('request_stack');
 
-        $iframeArray = explode('<iframe',$buffer);
+        $htmlArray = explode('<iframe',$buffer);
         $return = '';
-        foreach ($iframeArray as $iframeEntry) {
-            if (strpos($iframeEntry, '</iframe') !== false) {
-                $iframeHTML = '<iframe'.$iframeEntry;
-                $return .= $this->getIframeHTML($iframeHTML,$requestStack,$container);
+        foreach ($htmlArray as $html) {
+            if (strpos($html,'</iframe') !== false) {
+                $iframeArray = strpos($html,'</iframe>');
+                if ($iframeArray !== false) {
+                    $iframe = substr($html,0,$iframeArray);
+                    $iframeHTML = '<iframe'.$iframe;
+                    $return .= $this->getIframeHTML($iframeHTML,$requestStack,$container);
+                }
+                $return .= substr($html,$iframeArray,strlen($html));;
             } else {
-                $return .= $iframeEntry;
+                $return .= $html;
             }
         }
         return $return;

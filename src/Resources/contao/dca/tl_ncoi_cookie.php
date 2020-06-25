@@ -53,6 +53,9 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
         'otherScripts' => [
             'sql' => "text NULL default ''",
         ],
+        'expireTime' => [
+            'sql' => "int(11) NULL default '30'",
+        ],
         'cookieTools' => [
             'sql' => "text NULL default ''",
         ],

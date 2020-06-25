@@ -4,7 +4,7 @@
 <?php $id = str_replace('"','',$id)?>
 <?php $class = "ncoi---no-transition ncoi---hidden" ?>
 <?php
-    if($this->arrData['disableBar'])
+    if($this->arrData['noscript'])
         $class .= " ncoi---on-no-script-hidden";
     else
         $class .= " ncoi---on-no-script";
@@ -43,7 +43,6 @@
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
             data-ncoi-animation="<?=$this->arrData['animation']?>"
-            data-technical-name="<?=$this->arrData['technicalName']?>"
 	>
 		<?=(empty($this->arrData['headlineCookieOptInBar'])?'':$this->arrData['headlineCookieOptInBar']) ?>
 

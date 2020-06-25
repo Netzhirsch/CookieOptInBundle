@@ -14,20 +14,24 @@
 				console.error(errorMessage);
 		});
 
-		let storageKey = $('[data-technical-name]').data('technical-name');
+		let storageKey = 'ncoi';
 		let localStorage = getLocalStorage(storageKey);
 		if (
-			localStorage !== '' && $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
+			localStorage !== ''
+			&& $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
+			&& localStorage.expireTime >= dateString()
 		) {
 			track(0,storageKey);
 			checkExternalMediaOnLoad(localStorage.cookieIds);
 			checkGroupsOnLoad(localStorage.cookieIds);
 		} else {
+			console.log(ncoiBehindField);
 			$.ajax({
 				dataType: "json",
 				type: 'POST',
 				url: '/cookie/delete',
-				success: function (response) {
+				success: function () {
+					setLocalStorage(storageKey,null);
 				}
 			});
 			ncoiBehindField.removeClass('ncoi---hidden');
@@ -103,8 +107,9 @@
 			let input = parent.find('.ncoi---sliding');
 			if (input.prop('checked')) {
 				//In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
-				$('[data-block-class="'+input.data('block-class')+'"]').prop('checked',true);
+				$('[data-block-class="'+input.data('block-class')+'"]').prop('checked',true).trigger('change');
 				track(1,storageKey);
+				checkExternalMediaOnClick();
 
 				let parents = $('.'+input.data('block-class'));
 				parents.each(function () {
@@ -189,7 +194,8 @@
 				setLocalStorage(storageKey,JSON.stringify({
 					id: response.id,
 					cookieVersion: response.cookieVersion,
-					cookieIds: data.cookieIds
+					cookieIds: data.cookieIds,
+					expireTime: response.expireTime
 				}));
 				if (tools !== null) {
 					tools.forEach(function (tool) {
@@ -282,6 +288,7 @@
 	function checkExternalMediaOnLoad(cookieIds) {
 		cookieIds.forEach(function (cookieId) {
 			let iframe = $('.ncoi---cookie-id-' + cookieId);
+			$('#'+cookieId).trigger('change');
 			if (iframe.length > 0) {
 				addIframe((iframe));
 			}
@@ -317,6 +324,17 @@
 			console.error('Das Analyse Template enthält invalide Zeichen.')
 		}
 		templateScriptsEncodeElement.after(templateScriptsEncode);
+	}
+	
+	function dateString() {
+		let datum = new Date();
+		let monat = datum.getMonth()+1;
+		let tag = datum.getDate();
+		if(monat < 10)
+			monat = '0' + monat;
+		if(tag < 10)
+			tag = '0' + tag;
+		return datum.getFullYear()+'-'+monat+'-'+tag;
 	}
 
 })(jQuery);

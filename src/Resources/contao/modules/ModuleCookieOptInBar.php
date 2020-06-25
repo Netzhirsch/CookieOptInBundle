@@ -73,7 +73,9 @@ class ModuleCookieOptInBar extends Module
         if (
             isset($_SESSION)
             && isset($_SESSION['_sf2_attributes'])
-            && !empty($_SESSION['_sf2_attributes']['ncoi'])
+            && isset($_SESSION['_sf2_attributes']['ncoi'])
+            && !empty($_SESSION['_sf2_attributes']['ncoi']['expireTime'])
+            && ($_SESSION['_sf2_attributes']['ncoi']['expireTime'] >= date('Y-m-d'))
         ) {
             $data['noscript'] = true;
             $ncoiSession = $_SESSION['_sf2_attributes']['ncoi'];
