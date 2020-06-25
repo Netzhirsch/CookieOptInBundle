@@ -47,6 +47,8 @@ $GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] = ['Alle gesetzten Cookie
 
 $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
+$GLOBALS['TL_LANG']['tl_module']['cookieVersionDefault'] = '1';
+
 $GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie Gruppen','Der Schlüssel dient der internen Verarbeitung, der Wert wird im Frontend angezeigt.'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] =

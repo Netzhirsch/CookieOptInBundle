@@ -50,6 +50,8 @@ $GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'] =
 
 $GLOBALS['TL_LANG']['tl_module']['cookieVersion'] = [''];
 
+$GLOBALS['TL_LANG']['tl_module']['cookieVersionDefault'] = '1';
+
 $GLOBALS['TL_LANG']['tl_module']['cookieGroups'] = ['Cookie groups','The key is used for internal processing and the value is displayed in the frontend.'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = 'a:3:{i:0;a:2:{s:3:"key";s:1:"1";s:5:"value";s:9:"essential";}i:1;a:2:{s:3:"key";s:1:"2";s:5:"value";s:8:"analysis";}i:2;a:2:{s:3:"key";s:1:"3";s:5:"value";s:14:"external media";}}'
