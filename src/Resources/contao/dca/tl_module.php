@@ -8,7 +8,6 @@ use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 
 /** Revoke Modul ***********************************************/
-
 $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
 $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
 $GLOBALS['TL_JAVASCRIPT']['ncoi'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.js|static';
@@ -92,17 +91,15 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 ';
 
 // setCookieVersion check for right modul
-$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'] = [
-    ['tl_module_ncoi','setCookieVersion']
-    ,['tl_module_ncoi','setPageTreeEntries']
-    ,['tl_module_ncoi','setLessVariables']
-    ,['tl_module_ncoi','setGroupsToNcoiTable'],
-];
+$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setCookieVersion'];
+$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setPageTreeEntries'];
+$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setLessVariables'];
+$GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setGroupsToNcoiTable'];
 
 $GLOBALS['TL_DCA']['tl_module']['config']['ctable'] = [
   'tl_ncoi_cookie',
 ];
-$GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'] = [['tl_module_ncoi','setCookieGroups']];
+$GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'][] = ['tl_module_ncoi','setCookieGroups'];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['headline'],

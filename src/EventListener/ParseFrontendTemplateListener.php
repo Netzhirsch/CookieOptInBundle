@@ -15,7 +15,6 @@ class ParseFrontendTemplateListener
      * @param $buffer
      * @param $template
      * @return string
-     * @throws DBALException
      */
     public function onParseFrontendTemplate($buffer, $template)
     {
@@ -40,11 +39,19 @@ class ParseFrontendTemplateListener
      */
     private function iframe($buffer){
 
-        //Datenbank und User Cookie
+        /**
+         * Coantiner und RequestStack einmalig für die Schleife holen
+         */
         $container = System::getContainer();
+        $conn = $container->get('database_connection');
         /** @var RequestStack $requestStack */
         $requestStack = $container->get('request_stack');
 
+        /**
+         * IFrames von anderen HTML Tags trennen.
+         * IFrames encoden und in Container div einbetten.
+         * Andere HTML Tags einfach ans Return anhängen.
+         */
         $htmlArray = explode('<iframe',$buffer);
         $return = '';
         foreach ($htmlArray as $html) {
@@ -53,7 +60,7 @@ class ParseFrontendTemplateListener
                 if ($iframeArray !== false) {
                     $iframe = substr($html,0,$iframeArray);
                     $iframeHTML = '<iframe'.$iframe;
-                    $return .= $this->getIframeHTML($iframeHTML,$requestStack,$container);
+                    $return .= $this->getIframeHTML($iframeHTML,$requestStack,$conn);
                 }
                 $return .= substr($html,$iframeArray,strlen($html));;
             } else {
@@ -63,72 +70,88 @@ class ParseFrontendTemplateListener
         return $return;
     }
 
-    private function getIframeHTML($iframeHTML,$requestStack,$container)
+    /**
+     * @param $iframeHTML
+     * @param $requestStack
+     * @param $conn
+     * @return string
+     * @throws DBALException
+     */
+    private function getIframeHTML($iframeHTML,$requestStack,$conn)
     {
-        // Block Entscheidungsvariablen
+        // Speicher blockierte IFrame Typen
         $blockedIFrames = [];
 
-        //Frontendvariablen
+        //Frontendvariablen diese werden an das Template übergeben
         $iframeTypInHtml = 'iframe';
         $privacyPolicyLink = '';
         $modId = null;
         $cookieIds = [];
+        $externalMediaCookiesInDB = null;
 
-        //Wenn null werden alle iFrames angezeigt.
+        //Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
+        if (strpos($iframeHTML, 'youtube') !== false || strpos($iframeHTML, 'youtu.be') !== false) {
+            $iframeTypInHtml = 'youtube';
+        }elseif (strpos($iframeHTML, 'player.vimeo') !== false) {
+            $iframeTypInHtml = 'vimeo';
+        }elseif (strpos($iframeHTML, 'google.com/maps') || strpos($iframeHTML, 'maps.google') !== false) {
+            $iframeTypInHtml = 'googleMaps';
+        }
+
+        //Suche nach dem iFrame.
+        $sql = "SELECT id,pid,cookieToolsSelect FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, 'cookieTools');
+        $stmt->bindValue(2, $iframeTypInHtml);
+        $stmt->execute();
+        $externalMediaCookiesInDB = $stmt->fetchAll();
+
         if (!empty($requestStack)) {
 
-            //Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
-            if (strpos($iframeHTML, 'youtube') !== false || strpos($iframeHTML, 'youtu.be') !== false) {
-                $iframeTypInHtml = 'youtube';
-            }elseif (strpos($iframeHTML, 'player.vimeo') !== false) {
-                $iframeTypInHtml = 'vimeo';
-            }elseif (strpos($iframeHTML, 'google.com/maps') || strpos($iframeHTML, 'maps.google') !== false) {
-                $iframeTypInHtml = 'googleMaps';
-            }
-
-            //Suche nach dem iFrame.
-            $conn = $container->get('database_connection');
-            $sql = "SELECT id,pid,cookieToolsSelect FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
-            /** @var Statement $stmt */
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(1, 'cookieTools');
-            $stmt->bindValue(2, $iframeTypInHtml);
-            $stmt->execute();
-            $externalMediaCookiesInDB = $stmt->fetchAll();
-
-            //Feststellen ob iFrame laut Backend geblocked werden sollen
-            // und Datenschutz url finden
+            /**
+             * Attribute aus dem Request für das PageModel suchen.
+             */
             $attributes = $requestStack->getCurrentRequest()->attributes;
             if (!empty($attributes)) {
+
+                /**
+                 * Aus dem PageModel die ModulIds finden, damit diese mit dem PID der CookieBar verglichen werden kann.
+                 * Stimmt die PID ,so ist diese Cookiebar für dieses Modul gedacht.
+                 */
                 /** @var PageModel $pageModel */
                 $pageModel = $attributes->get('pageModel');
                 // Contao 4.4
                 if (empty($pageModel))
                     $pageModel = $GLOBALS['objPage'];
+
                 $return = PageLayoutListener::checkModules($pageModel, [], []);
-                $moduleIds = $return['moduleIds'];
+                // Achtung moduleData enthält nur die ID
+                $moduleData = $return['moduleIds'];
 
-                if (empty($moduleIds)) {
+                if (empty($moduleData)) {
                     $layout = LayoutModel::findById($pageModel->layout);
-                    $moduleIds = StringUtil::deserialize($layout->modules);
+                    // Achtung moduleData enthält die ID, col, enable
+                    $moduleData = StringUtil::deserialize($layout->modules);
 
+                    // Alle Cookiebars finden um über die ModuleIds die richtig zu finden.
                     $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie ";
                     /** @var Statement $stmt */
                     $stmt = $conn->prepare($sql);
                     $stmt->execute();
-                    $modules = $stmt->fetchAll();
+                    $cookieBars = $stmt->fetchAll();
 
-                    foreach ($modules as $module) {
-                        foreach ($moduleIds as $moduleId) {
-                            if ($module['pid'] == $moduleId['mod']) {
+                    foreach ($cookieBars as $cookieBar) {
+                        foreach ($moduleData as $moduleId) {
+                            if ($cookieBar['pid'] == $moduleId['mod']) {
                                 foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                                    if ($module['pid'] == $externalMediaCookieInDB['pid']) {
+                                    if ($cookieBar['pid'] == $externalMediaCookieInDB['pid']) {
                                         $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
                                         $cookieIds[] = $externalMediaCookieInDB['id'];
-                                        $modId = $module['pid'];
+                                        $modId = $cookieBar['pid'];
 
-                                        if (!empty(PageModel::findById($module['privacyPolicy']))) {
-                                            $privacyPolicyLink = PageModel::findById($module['privacyPolicy']);
+                                        if (!empty(PageModel::findById($cookieBar['privacyPolicy']))) {
+                                            $privacyPolicyLink = PageModel::findById($cookieBar['privacyPolicy']);
                                             $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
                                         }
                                     }
@@ -225,7 +248,13 @@ class ParseFrontendTemplateListener
         $newBuffer = $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
 
         $isUserCookieDontAllowMedia = false;
-        if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi']) && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])) {
+        if (
+            isset($_SESSION)
+            && isset($_SESSION['_sf2_attributes'])
+            && isset($_SESSION['_sf2_attributes']['ncoi'])
+            && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])
+            && !empty($externalMediaCookiesInDB)
+        ) {
             $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
             foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                 if (isset($externalMediaCookieInDB['id']) && in_array($externalMediaCookieInDB['id'],$cookieIds)) {

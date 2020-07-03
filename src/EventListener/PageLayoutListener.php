@@ -113,9 +113,6 @@ class PageLayoutListener {
                 if ($fieldPalettes->pfield == 'cookieTools') {
                     $cookieTools[] = $fieldPalette;
                 }
-                if ($fieldPalettes->cookieToolsTechnicalName = '_netzhirsch_cookie_opt_in') {
-                    $fieldPalettes->__set('cookieToolsSelect','optInCookie');
-                }
                 self::setNewGroups($fieldPalette);
             }
         }
