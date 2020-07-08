@@ -215,9 +215,9 @@
 
 								gtag('js', new Date());
 
-								gtag('set', {'cookie_flags': 'SameSite=None;Secure'})
-
 								gtag('config', tool.cookieToolsTrackingID);
+
+								gtag('set', {'cookie_flags': 'SameSite=None;Secure'})
 
 							}
 						}

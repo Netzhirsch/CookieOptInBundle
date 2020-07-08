@@ -96,7 +96,7 @@ $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse']
 $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Dient zum Schutz der Website vor Fälschungen von standortübergreifenden Anfragen
 . Nach dem Schließen des Browsers wird das Cookie wieder gelöscht';
 
-$GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'] = 'Dient zum Schutz der verschlüsselten Website(https) vor Fälschungen von standortübergreifenden Anfragen
+$GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'] = 'Dient zum Schutz der verschlüsselten Website (HTTPS) vor Fälschungen von standortübergreifenden Anfragen
 . Nach dem Schließen des Browsers wird das Cookie wieder gelöscht';
 
 $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'Cookie von PHP (Programmiersprache), PHP Daten-Identifikator. Enthält nur einen Verweis auf die aktuelle Sitzung. Im Browser des Nutzers werden keine Informationen gespeichert und dieses Cookie kann nur von der aktuellen Website genutzt werden. Dieses Cookie wird vor allem in Formularen benutzt, um die Benutzerfreundlichkeit zu erhöhen. In Formulare eingegebene Daten werden z. B. kurzzeitig gespeichert, wenn ein Eingabefehler durch den Nutzer vorliegt und dieser eine Fehlermeldung erhält. Ansonsten müssten alle Daten erneut eingegeben werden.';
