@@ -359,7 +359,15 @@ class CookieController extends AbstractController
         if (!empty($cookieNotToDelete)) {
             foreach ($cookiesSet as $cookieSetTechnicalName => $value) {
                 foreach ($cookieNotToDelete as $cookie) {
-                    unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
+                    $cookieToolsTechnicalName = $cookie['cookieToolsTechnicalName'];
+                    if (strpos($cookieToolsTechnicalName,',')) {
+                        $cookieToolsTechnicalName = explode(',',$cookieToolsTechnicalName);
+                        foreach ($cookieToolsTechnicalName as $cookieToolTechnicalName) {
+                            unset($cookiesSet[$cookieToolTechnicalName]);
+                        }
+                    } else {
+                        unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
+                    }
                 }
             }
         }
