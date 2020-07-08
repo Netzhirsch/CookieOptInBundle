@@ -989,7 +989,7 @@ class tl_module_ncoi extends tl_module {
             $csrfHttpsCookieFieldModel->cookieToolsProvider = '';
             $csrfHttpsCookieFieldModel->cookieToolExpiredTime = '0';
             $csrfHttpsCookieFieldModel->cookieToolsSelect = '-';
-            $csrfHttpsCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
+            $csrfHttpsCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
             $csrfHttpsCookieFieldModel->cookieToolGroup = '1';
 
             $csrfHttpsCookieFieldModel->save();
