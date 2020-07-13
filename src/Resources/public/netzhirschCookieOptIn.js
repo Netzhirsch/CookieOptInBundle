@@ -212,13 +212,12 @@
 								$.getScript('https://www.googletagmanager.com/gtag/js?id=' + tool.cookieToolsTrackingID);
 								window.dataLayer = window.dataLayer || [];
 								function gtag(){dataLayer.push(arguments);}
-
 								gtag('js', new Date());
 
-								gtag('config', tool.cookieToolsTrackingID);
-
-								gtag('set', {'cookie_flags': 'SameSite=None;Secure'})
-
+								gtag('config', tool.cookieToolsTrackingID,{
+									'cookie_update': false,
+									'cookie_flags':'SameSite=None;Secure'
+								});
 							}
 						}
 						if (toolName.localeCompare('facebookPixel') === 0) {
