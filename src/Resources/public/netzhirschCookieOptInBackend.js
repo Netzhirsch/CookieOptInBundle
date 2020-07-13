@@ -10,6 +10,7 @@
 
 		removeDeleteButtons();
 
+		// on info or edit a tool we need to remove the delete buttons after refresh again.
 		// Select the node that will be observed for mutations
 		const targetNode = document.getElementById('top');
 
