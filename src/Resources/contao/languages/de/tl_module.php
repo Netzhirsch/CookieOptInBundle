@@ -69,6 +69,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'] = ['Type'];
 
 $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
     'googleAnalytics' => 'Google Analytics',
+    'googleTagManager' => 'Google Tag Manager',
     'facebookPixel' => 'Facebook Pixel',
     'matomo' => 'Matomo',
     'youtube' => 'YouTube',
