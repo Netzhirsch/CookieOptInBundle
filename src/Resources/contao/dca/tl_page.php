@@ -119,7 +119,7 @@ class tl_page_ncoi extends tl_page {
             if (empty($licenseExpiryDates[$domain]))
 		        $message .=
                     '<div class="ncoi---backend--message-page">'
-                    .GetSystemMessagesListener::getMessage($licenseKeys,$licenseExpiryDates,$domain).'</div>';
+                    .GetSystemMessagesListener::getMessage($licenseKeys[$domain],$licenseExpiryDates[$domain],$domain).'</div>';
 		}
 		
 		if (empty($message))
