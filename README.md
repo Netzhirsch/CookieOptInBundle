@@ -19,7 +19,7 @@
     * Modul **Cookie Opt In Revoke** erstellen und z.B. in einem Artikel einbinden
  
 ## Lizenzierung
-Bitte kontaktieren Sie Netzhirsch unter <a href="tel:+4945138943740">0451 / 38 94 37 40</a> oder <a href="mailto:netzhirsch@netzhirsch.de">netzhirsch@netzhirsch.de</a>, um einen Lizenzschlüssel zu erwerben.
+Bitte kontaktieren Sie Netzhirsch unter <a href="tel:+4945138943740">0451 / 38 94 37 44</a> oder <a href="mailto:cookies@netzhirsch.de">cookies@netzhirsch.de</a>, um einen Lizenzschlüssel zu erwerben.
 
 ## Weitere Infos
 https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html
