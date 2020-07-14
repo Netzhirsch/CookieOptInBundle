@@ -362,6 +362,7 @@ class CookieController extends AbstractController
                     $cookieToolsTechnicalName = $cookie['cookieToolsTechnicalName'];
                     if (strpos($cookieToolsTechnicalName,',')) {
                         $cookieToolsTechnicalName = explode(',',$cookieToolsTechnicalName);
+                        $cookieToolsTechnicalName = trim($cookieToolsTechnicalName);
                         foreach ($cookieToolsTechnicalName as $cookieToolTechnicalName) {
                             unset($cookiesSet[$cookieToolTechnicalName]);
                         }
