@@ -87,7 +87,7 @@
 			let allChecked = true;
 			cookiesSelect.each(function () {
 				let group = $(this).data('group');
-				if( $(this).data('group') === group && !$(this).prop('checked'))
+				if( cookie === group && !$(this).prop('checked'))
 					allChecked = false;
 			});
 			$('.ncoi---cookie-group input').each(function () {
