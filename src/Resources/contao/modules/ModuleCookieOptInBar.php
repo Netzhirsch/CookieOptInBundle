@@ -50,7 +50,6 @@ class ModuleCookieOptInBar extends Module
 
         if (PageLayoutListener::doNotTrackBrowserSetting($this->id))
             return null;
-
 		$this->strTemplate = 'mod_cookie_opt_in_bar';
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
@@ -92,14 +91,15 @@ class ModuleCookieOptInBar extends Module
             $data['inconspicuous'] = true;
         }
 
-		self::setCssJs(
+		$this->setCss(
             $result['defaultCss'],
             $result['cssTemplateStyle'],
             $maxWidth,
             $result['blockSite'],
             $result['zIndex']
         );
-		
+        $this->setJs();
+
 		global $objPage;
         $groups = $result['cookieGroups'];
         $groups = StringUtil::deserialize($groups);
@@ -236,9 +236,9 @@ class ModuleCookieOptInBar extends Module
      * @param $zIndex
      * @throws Less_Exception_Parser
      */
-	public static function setCssJs($defaultCss, $cssTemplateStyle, $maxWidth, $blockSite, $zIndex)
+	private function setCss($defaultCss, $cssTemplateStyle, $maxWidth, $blockSite, $zIndex)
 	{
-		
+
 		if ($defaultCss == "1") {
 			$path = dirname(__DIR__,5).DIRECTORY_SEPARATOR.'web'.DIRECTORY_SEPARATOR.'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
 			if (!file_exists($path.'netzhirschCookieOptIn.css')) {
@@ -258,15 +258,28 @@ class ModuleCookieOptInBar extends Module
 				$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInLightVersion.css|static';
 			}
 		}
-		$jqueryIsLoaded = false;
-		foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
-			if (strrpos($javascript,"jquery.min.js") !== false){
-				$jqueryIsLoaded = true;
-			}
-		}
-		if (!$jqueryIsLoaded) {
-			$GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
-		}
-		$GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
+	}
+
+    private function setJs()
+    {
+
+        $jqueryIsLoaded = false;
+        foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
+            if (strrpos($javascript,"jquery.min.js") !== false){
+                $jqueryIsLoaded = true;
+            }
+        }
+        if (!$jqueryIsLoaded) {
+            $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
+        }
+        $netzhirschCookieOptInJs = false;
+        foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
+            if (strrpos($javascript,"netzhirschCookieOptIn.js") !== false){
+                $netzhirschCookieOptInJs = true;
+            }
+        }
+        if (!$netzhirschCookieOptInJs) {
+            $GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
+        }
 	}
 }

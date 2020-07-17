@@ -5,7 +5,6 @@ use Contao\ModuleModel;
 use Contao\StringUtil;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
-use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 
 /** Revoke Modul ***********************************************/
 $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
@@ -99,7 +98,6 @@ $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_n
 $GLOBALS['TL_DCA']['tl_module']['config']['ctable'] = [
   'tl_ncoi_cookie',
 ];
-$GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'][] = ['tl_module_ncoi','setCookieGroups'];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
@@ -809,19 +807,6 @@ class tl_module_ncoi extends tl_module {
 		return '';
 	}
 
-    public function setCookieGroups(DC_Table $dca) {
-        /********* update cookie groups for a version < 1.3.0 *****************************************************/
-        if  ($this->checkRightModule($dca->__get('field'))) {
-
-            $fieldPalettes = FieldPaletteModel::findByPid($dca->__get('id'));
-            if (!empty($fieldPalettes)) {
-                foreach ($fieldPalettes as $fieldPalette) {
-                    PageLayoutListener::setNewGroups($fieldPalette);
-                }
-            }
-        }
-
-    }
 	public function getDefaultGroups($value,DC_Table $dca){
         $value = $this->loadFromNcoiTable($value,$dca,null,'cookieGroups');
 	    if (

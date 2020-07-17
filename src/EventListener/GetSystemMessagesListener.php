@@ -21,17 +21,21 @@ class GetSystemMessagesListener
 		$domain = null;
 		$domainNoDuplicate = [];
 		foreach ($rootPoints as $rootPoint) {
-			$domain = $rootPoint->__get('dns');
-			if (!in_array($domain, $domainNoDuplicate)) {
-				$domainNoDuplicate[] = $domain;
-			}
-			$licenseKeys[$domain] = $rootPoint->__get('ncoi_license_key');
-			if (empty($licenseKeys[$domain])) {
-				$licenseKeys[$domain] = Config::get('ncoi_license_key');
-				$licenseExpiryDates[$domain] = Config::get('ncoi_license_expiry_date');
-			} else {
-				$licenseExpiryDates[$domain] = $rootPoint->__get('ncoi_license_expiry_date');
-			}
+
+            if (!$rootPoint->__get('bar_disabled')) {
+
+                $domain = $rootPoint->__get('dns');
+                if (!in_array($domain, $domainNoDuplicate)) {
+                    $domainNoDuplicate[] = $domain;
+                }
+                $licenseKeys[$domain] = $rootPoint->__get('ncoi_license_key');
+                if (empty($licenseKeys[$domain])) {
+                    $licenseKeys[$domain] = Config::get('ncoi_license_key');
+                    $licenseExpiryDates[$domain] = Config::get('ncoi_license_expiry_date');
+                } else {
+                    $licenseExpiryDates[$domain] = $rootPoint->__get('ncoi_license_expiry_date');
+                }
+            }
 		}
 		if (empty($domainNoDuplicate)) {
             $messages .= self::getMessage($licenseKeys[$domain],$licenseExpiryDates[$domain]);
