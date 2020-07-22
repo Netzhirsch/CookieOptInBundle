@@ -103,6 +103,9 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
         ],
         'ipFormatSave' => [
             'sql' => "varchar(64) NULL default '' ",
+        ],
+        'toolsDeactivate' => [
+            'sql' => "varchar(255) NULL default '' ",
         ]
     ]
 

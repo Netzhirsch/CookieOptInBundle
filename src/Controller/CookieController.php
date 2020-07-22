@@ -389,6 +389,7 @@ class CookieController extends AbstractController
                 if (
                     $cookieSetTechnicalName == 'XDEBUG_SESSION'
                     || $cookieSetTechnicalName == 'BE_USER_AUTH'
+                    || $cookieSetTechnicalName == 'FE_USER_AUTH'
                     || $cookieSetTechnicalName == 'BE_PAGE_OFFSET'
                     || $cookieSetTechnicalName == 'trusted_device'
                     || $cookieSetTechnicalName == 'csrf_contao_csrf_token'

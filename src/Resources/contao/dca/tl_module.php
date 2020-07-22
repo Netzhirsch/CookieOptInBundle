@@ -265,6 +265,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 			'hidePublished' => true,
 			'notSortable' => false,
             'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableCookieTools']],
+	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
 		],
 		'list'     => [
 			'label' => [
@@ -390,7 +391,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                     'tl_class'=>'long',
                 ],
                 'sql' => "int(2) NULL ",
-            ],
+            ]
 		],
 	],
 ];
@@ -910,10 +911,10 @@ class tl_module_ncoi extends tl_module {
 		$id = $dca->id;
 		
 		$fieldPalettes = FieldPaletteModel::findByPid($id);
-		$netzhirschCookieFieldModel = null;
 		$csrfCookieFieldModel = null;
         $csrfHttpsCookieFieldModel = null;
 		$phpSessIdCookieFieldModel = null;
+        $feUserAuthCookieFieldModel = null;
 		if (!empty($fieldPalettes)) {
 		    /** @var FieldPaletteModel $fieldPalette */
             foreach ($fieldPalettes as $fieldPalette) {
@@ -927,31 +928,42 @@ class tl_module_ncoi extends tl_module {
                     $csrfHttpsCookieFieldModel = $fieldPalette;
 				} elseif ($fieldPalette->cookieToolsTechnicalName == 'PHPSESSID') {
 					$phpSessIdCookieFieldModel = $fieldPalette;
-				}
+				} elseif ($fieldPalette->cookieToolsTechnicalName == 'FE_USER_AUTH') {
+                    $feUserAuthCookieFieldModel = $fieldPalette;
+                }
 			}
 		}
+        $toolsDeactivate = $this->loadFromNcoiTable('',$dca,$id,'toolsDeactivate');
+        if (!empty($toolsDeactivate))
+            $toolsDeactivate = StringUtil::deserialize($toolsDeactivate);
 
 		if (empty($csrfCookieFieldModel)) {
-			
-			$csrfCookieFieldModel = new FieldPaletteModel();
-			
-			$csrfCookieFieldModel->pid = $id;
-			$csrfCookieFieldModel->ptable = 'tl_module';
-			$csrfCookieFieldModel->pfield = 'cookieTools';
-			$csrfCookieFieldModel->sorting = '1';
-			$csrfCookieFieldModel->tstamp = time();
-			$csrfCookieFieldModel->dateAdded = time();
-			$csrfCookieFieldModel->published = '1';
-			$csrfCookieFieldModel->cookieToolsName = 'Contao CSRF Token';
-			$csrfCookieFieldModel->cookieToolsTechnicalName = 'csrf_contao_csrf_token';
-			$csrfCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
-			$csrfCookieFieldModel->cookieToolsProvider = '';
-            $csrfCookieFieldModel->cookieToolExpiredTime = '0';
-			$csrfCookieFieldModel->cookieToolsSelect = '-';
-			$csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
-			$csrfCookieFieldModel->cookieToolGroup = '1';
-			
-			$csrfCookieFieldModel->save();
+		    $cookieToolsTechnicalName = 'csrf_contao_csrf_token';
+			if (
+			    !empty($toolsDeactivate)
+                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
+                || empty($toolsDeactivate)
+            ) {
+                $csrfCookieFieldModel = new FieldPaletteModel();
+
+                $csrfCookieFieldModel->pid = $id;
+                $csrfCookieFieldModel->ptable = 'tl_module';
+                $csrfCookieFieldModel->pfield = 'cookieTools';
+                $csrfCookieFieldModel->sorting = '1';
+                $csrfCookieFieldModel->tstamp = time();
+                $csrfCookieFieldModel->dateAdded = time();
+                $csrfCookieFieldModel->published = '1';
+                $csrfCookieFieldModel->cookieToolsName = 'Contao CSRF Token';
+                $csrfCookieFieldModel->cookieToolsTechnicalName = $cookieToolsTechnicalName;
+                $csrfCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
+                $csrfCookieFieldModel->cookieToolsProvider = '';
+                $csrfCookieFieldModel->cookieToolExpiredTime = '0';
+                $csrfCookieFieldModel->cookieToolsSelect = '-';
+                $csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
+                $csrfCookieFieldModel->cookieToolGroup = '1';
+
+                $csrfCookieFieldModel->save();
+            }
 
 		} elseif (!isset($csrfCookieFieldModel->cookieToolExpiredTime)) {
             $csrfCookieFieldModel->cookieToolExpiredTime = '0';
@@ -959,64 +971,102 @@ class tl_module_ncoi extends tl_module {
         }
 
 		if (empty($csrfHttpsCookieFieldModel)) {
-            $csrfHttpsCookieFieldModel = new FieldPaletteModel();
+            $cookieToolsTechnicalName = 'csrf_https-contao_csrf_token';
+            if (
+                !empty($toolsDeactivate)
+                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
+                || empty($toolsDeactivate)
+            ) {
+                $csrfHttpsCookieFieldModel = new FieldPaletteModel();
 
-            $csrfHttpsCookieFieldModel->pid = $id;
-            $csrfHttpsCookieFieldModel->ptable = 'tl_module';
-            $csrfHttpsCookieFieldModel->pfield = 'cookieTools';
-            $csrfHttpsCookieFieldModel->sorting = '1';
-            $csrfHttpsCookieFieldModel->tstamp = time();
-            $csrfHttpsCookieFieldModel->dateAdded = time();
-            $csrfHttpsCookieFieldModel->published = '1';
-            $csrfHttpsCookieFieldModel->cookieToolsName = 'Contao HTTPS CSRF Token';
-            $csrfHttpsCookieFieldModel->cookieToolsTechnicalName = 'csrf_https-contao_csrf_token';
-            $csrfHttpsCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
-            $csrfHttpsCookieFieldModel->cookieToolsProvider = '';
-            $csrfHttpsCookieFieldModel->cookieToolExpiredTime = '0';
-            $csrfHttpsCookieFieldModel->cookieToolsSelect = '-';
-            $csrfHttpsCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
-            $csrfHttpsCookieFieldModel->cookieToolGroup = '1';
+                $csrfHttpsCookieFieldModel->pid = $id;
+                $csrfHttpsCookieFieldModel->ptable = 'tl_module';
+                $csrfHttpsCookieFieldModel->pfield = 'cookieTools';
+                $csrfHttpsCookieFieldModel->sorting = '1';
+                $csrfHttpsCookieFieldModel->tstamp = time();
+                $csrfHttpsCookieFieldModel->dateAdded = time();
+                $csrfHttpsCookieFieldModel->published = '1';
+                $csrfHttpsCookieFieldModel->cookieToolsName = 'Contao HTTPS CSRF Token';
+                $csrfHttpsCookieFieldModel->cookieToolsTechnicalName = $cookieToolsTechnicalName;
+                $csrfHttpsCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
+                $csrfHttpsCookieFieldModel->cookieToolsProvider = '';
+                $csrfHttpsCookieFieldModel->cookieToolExpiredTime = '0';
+                $csrfHttpsCookieFieldModel->cookieToolsSelect = '-';
+                $csrfHttpsCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
+                $csrfHttpsCookieFieldModel->cookieToolGroup = '1';
 
-            $csrfHttpsCookieFieldModel->save();
+                $csrfHttpsCookieFieldModel->save();
+            }
         }
 		if (empty($phpSessIdCookieFieldModel)) {
+            $cookieToolsTechnicalName = 'PHPSESSID';
+            if (
+                !empty($toolsDeactivate)
+                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
+                || empty($toolsDeactivate)
+            ) {
+                $phpSessIdCookieFieldModel = new FieldPaletteModel();
 
-			$phpSessIdCookieFieldModel = new FieldPaletteModel();
-			
-			$phpSessIdCookieFieldModel->pid = $id;
-			$phpSessIdCookieFieldModel->ptable = 'tl_module';
-			$phpSessIdCookieFieldModel->pfield = 'cookieTools';
-			$phpSessIdCookieFieldModel->sorting = '1';
-			$phpSessIdCookieFieldModel->tstamp = time();
-			$phpSessIdCookieFieldModel->dateAdded = time();
-			$phpSessIdCookieFieldModel->published = '1';
-			$phpSessIdCookieFieldModel->cookieToolsName = 'PHP SESSION ID';
-			$phpSessIdCookieFieldModel->cookieToolsTechnicalName = 'PHPSESSID';
-			$phpSessIdCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
-			$phpSessIdCookieFieldModel->cookieToolsProvider = '';
-            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
-			$phpSessIdCookieFieldModel->cookieToolsSelect = '-';
-			$phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
-			$phpSessIdCookieFieldModel->cookieToolGroup = '1';
-			
-			$phpSessIdCookieFieldModel->save();
-			
+                $phpSessIdCookieFieldModel->pid = $id;
+                $phpSessIdCookieFieldModel->ptable = 'tl_module';
+                $phpSessIdCookieFieldModel->pfield = 'cookieTools';
+                $phpSessIdCookieFieldModel->sorting = '1';
+                $phpSessIdCookieFieldModel->tstamp = time();
+                $phpSessIdCookieFieldModel->dateAdded = time();
+                $phpSessIdCookieFieldModel->published = '1';
+                $phpSessIdCookieFieldModel->cookieToolsName = 'PHP SESSION ID';
+                $phpSessIdCookieFieldModel->cookieToolsTechnicalName = 'PHPSESSID';
+                $phpSessIdCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
+                $phpSessIdCookieFieldModel->cookieToolsProvider = '';
+                $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
+                $phpSessIdCookieFieldModel->cookieToolsSelect = '-';
+                $phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
+                $phpSessIdCookieFieldModel->cookieToolGroup = '1';
+
+                $phpSessIdCookieFieldModel->save();
+            }
+
 		} elseif (!isset($phpSessIdCookieFieldModel->cookieToolExpiredTime)) {
             $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
             $phpSessIdCookieFieldModel->save();
+        }
+        if (empty($feUserAuthCookieFieldModel)) {
+            $cookieToolsTechnicalName = 'FE_USER_AUTH';
+            if (
+                !empty($toolsDeactivate)
+                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
+                || empty($toolsDeactivate)
+            ) {
+                $feUserAuthCookieFieldModel = new FieldPaletteModel();
+                $feUserAuthCookieFieldModel->pid = $id;
+                $feUserAuthCookieFieldModel->ptable = 'tl_module';
+                $feUserAuthCookieFieldModel->pfield = 'cookieTools';
+                $feUserAuthCookieFieldModel->sorting = '4';
+                $feUserAuthCookieFieldModel->tstamp = time();
+                $feUserAuthCookieFieldModel->dateAdded = time();
+                $feUserAuthCookieFieldModel->published = '1';
+                $feUserAuthCookieFieldModel->cookieToolsName = 'FE USER AUTH';
+                $feUserAuthCookieFieldModel->cookieToolsTechnicalName = $cookieToolsTechnicalName;
+                $feUserAuthCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
+                $feUserAuthCookieFieldModel->cookieToolsProvider = '';
+                $feUserAuthCookieFieldModel->cookieToolExpiredTime = '0';
+                $feUserAuthCookieFieldModel->cookieToolsSelect = '-';
+                $feUserAuthCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'];
+                $feUserAuthCookieFieldModel->cookieToolGroup = '1';
+                $feUserAuthCookieFieldModel->save();
+            }
         }
 		
 		if (!empty($fieldValue)) {
 			$fieldValues = StringUtil::deserialize($fieldValue);
 			$fieldValues[] = [
-				$netzhirschCookieFieldModel->id,
+                $feUserAuthCookieFieldModel->id,
 				$csrfCookieFieldModel->id,
 				$phpSessIdCookieFieldModel->id,
 			];
 			$fieldValue = serialize($fieldValues);
-		} else {
-			$fieldValue = $netzhirschCookieFieldModel->id;
 		}
+
 		return $fieldValue;
 	}
 
@@ -1257,6 +1307,34 @@ class tl_module_ncoi extends tl_module {
         }
     }
 
+    public function deleteTool(DC_Table $dca)
+    {
+        $id = Input::get('id');
+        $sql = "SELECT pid,cookieToolsTechnicalName FROM tl_fieldpalette WHERE id=?";
+        $conn = $dca->Database;
+        $stmt = $conn->prepare($sql);
+        $data = $stmt->execute($id);
+        $return = $data->fetchAssoc();
+        if (!empty($return['pid'])) {
+
+            $pid = $return['pid'];
+            $sql = "SELECT toolsDeactivate FROM tl_ncoi_cookie WHERE pid=?";
+            $conn = $dca->Database;
+            $stmt = $conn->prepare($sql);
+            $data = $stmt->execute($pid);
+            $toolsDeactivateDB = $data->fetchAssoc();
+            $toolsDeactivate = [];
+            if (!empty($toolsDeactivateDB['toolsDeactivate']))
+                $toolsDeactivate = StringUtil::deserialize($toolsDeactivateDB['toolsDeactivate']);
+            $toolsDeactivate[]= $return['cookieToolsTechnicalName'];
+            $sql = "UPDATE tl_ncoi_cookie %s WHERE pid=?";
+            $conn = $dca->Database;
+            $stmt = $conn->prepare($sql);
+            $toolsDeactivate = serialize($toolsDeactivate);
+            $stmt->set(['toolsDeactivate' => $toolsDeactivate]);
+            $stmt->execute($pid);
+        }
+    }
     public function checkRightModule($field)
     {
         if ($field == 'isNewCookieVersion')

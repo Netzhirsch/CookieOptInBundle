@@ -110,6 +110,8 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'] = ['Cookie Gruppe'];
 
 $GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essenziell';
 
+$GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse']
+    = 'Speichert Informationen eines Besuchers, sobald er sich im Frontend einloggt.';
 /*************** End Fieldpalette Tools ***************/
 
 /*************** Fieldpalette otherScripts ***************/
