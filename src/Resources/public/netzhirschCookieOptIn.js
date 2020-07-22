@@ -16,25 +16,26 @@
 
 		let storageKey = 'ncoi';
 		let localStorage = getLocalStorage(storageKey);
-		if (
-			localStorage !== ''
-			&& $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
-			&& localStorage.expireTime >= dateString()
-		) {
-			track(0, storageKey);
-			checkExternalMediaOnLoad(localStorage.cookieIds);
-			checkGroupsOnLoad(localStorage.cookieIds);
-		} else {
+		if(localStorage !== '') {
+			if (
+				$('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
+				|| localStorage.expireTime >= dateString()
+			) {
+				track(0, storageKey);
+				checkExternalMediaOnLoad(localStorage.cookieIds);
+				checkGroupsOnLoad(localStorage.cookieIds);
+			} else {
 
-			$.ajax({
-				dataType: "json",
-				type: 'POST',
-				url: '/cookie/delete',
-				success: function () {
-					setLocalStorage(storageKey, null);
-				}
-			});
-			ncoiBehindField.removeClass('ncoi---hidden');
+				$.ajax({
+					dataType: "json",
+					type: 'POST',
+					url: '/cookie/delete',
+					success: function () {
+						setLocalStorage(storageKey, null);
+					}
+				});
+				ncoiBehindField.removeClass('ncoi---hidden');
+			}
 		}
 
 		$('#ncoi---allowed').on('click', function (e) {
