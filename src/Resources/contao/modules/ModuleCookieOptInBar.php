@@ -131,9 +131,6 @@ class ModuleCookieOptInBar extends Module
                 }
             }
 
-		    if ($cookieTool->pid == $this->__get('id') && $cookieTool->cookieToolsSelect == 'optInCookie')
-		        $data['technicalName'] = $cookieTool->cookieToolsTechnicalName;
-
 		    $technicalName = null;
             $name = null;
             foreach ($groups as $group) {
