@@ -786,7 +786,7 @@ class tl_module_ncoi extends tl_module {
             $stmt = $conn->prepare($sql);
             $data = $stmt->execute(Input::get('id'));
             $data = $data->fetchAssoc();
-            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$data['maxWidth'],$data['blockSite'],$data['zIndex']);
+            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$data['maxWidth'],$data['blockSite'],$data['zIndex'],true);
         }
 		return $dca;
 	}
@@ -804,7 +804,7 @@ class tl_module_ncoi extends tl_module {
 		}else {
 			$styleSheet .= 'LightVersion';
 		}
-		Helper::parseLessToCss($styleSheet.'.less',$styleSheet.'.css');
+		Helper::parseLessToCss($styleSheet.'.less',$styleSheet.'.css',null,null,null,true);
 		return '';
 	}
 

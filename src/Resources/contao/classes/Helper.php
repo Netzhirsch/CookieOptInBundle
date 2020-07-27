@@ -17,9 +17,10 @@ class Helper
      * @param null $maxWidth
      * @param null $blockSite
      * @param null $zIndex
+     * @param bool $makeNew
      * @throws Less_Exception_Parser
      */
-	public static function parseLessToCss($lessFile,$cssFile,$maxWidth = null,$blockSite = null,$zIndex = null){
+	public static function parseLessToCss($lessFile,$cssFile,$maxWidth = null,$blockSite = null,$zIndex = null,$makeNew = false){
 		$path = dirname(__DIR__,2).DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR;
 
 		$parser = new Less_Parser();
@@ -42,10 +43,22 @@ class Helper
 
 		try {
 			$css = $parser->getCss();
-            if (!file_exists($path.$cssFile)) {
+                $dir = dirname(__DIR__,7).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'css';
+            if (!file_exists($path.$cssFile) || $makeNew) {
+                if (is_dir($dir)) {
+                    if ($dh = opendir($dir)) {
+                        while (($file = readdir($dh)) !== false) {
+                            if($file == '.' || $file == '..' || strpos($file,'netzhirsch') === false)
+                                continue;
+                            unlink($dir.DIRECTORY_SEPARATOR.$file);
+                        }
+                        closedir($dh);
+                    }
+                }
 			    file_put_contents($path.$cssFile,$css);
             }
 		} catch (Exception $e) {
+		    dd($e);
 		}
 
 

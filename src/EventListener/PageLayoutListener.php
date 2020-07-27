@@ -93,7 +93,7 @@ class PageLayoutListener {
 
 				return;
 			}
-			if (count($tlCookieIds) > 2) {
+			if (!empty($tlCookieIds) && count($tlCookieIds) > 2) {
 				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInErrorMore.js|static';
 
 				return;
