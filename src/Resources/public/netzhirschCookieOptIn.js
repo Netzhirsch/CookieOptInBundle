@@ -36,6 +36,8 @@
 				});
 				ncoiBehindField.removeClass('ncoi---hidden');
 			}
+		} else {
+			ncoiBehindField.removeClass('ncoi---hidden');
 		}
 
 		$('#ncoi---allowed').on('click', function (e) {
