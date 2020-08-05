@@ -101,15 +101,11 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'] = ['Cookie group'];
 
 $GLOBALS['TL_LANG']['tl_module']['netzhirschCookieFieldModel']['cookieToolsUse'] = 'Used to determine which cookie was accepted or rejected.';
 
-$GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Serves to protect the website from cross-site request forgery
-attacks. After closing the browser, the cookie is deleted again.';
+$GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'] = 'Serves to protect the website from cross-site request forgery attacks. After closing the browser, the cookie is deleted again.';
 
-$GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'PHP cookie (programming language), PHP data identifier.
-Contains only a reference to the current session. There is no information in the user\'s browser
-saved and this cookie can only be used by the current website. This cookie is used
-all used in forms to increase usability. Data entered in forms will be
-e.g. B. briefly saved when there is an input error by the user and the user receives an error message
-receives. Otherwise all data would have to be entered again';
+$GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'] = 'Serves to protect the encrypted website (HTTPS) against falsification of cross-site requests. After closing the browser the cookie is deleted again';
+
+$GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'PHP cookie (programming language), PHP data identifier. Contains only a reference to the current session. There is no information in the user\'s browser saved and this cookie can only be used by the current website. This cookie is used all used in forms to increase usability. Data entered in forms will be e.g. B. briefly saved when there is an input error by the user and the user receives an error message receives. Otherwise all data would have to be entered again';
 
 /*************** End Fieldpalette Tools ***************/
 
