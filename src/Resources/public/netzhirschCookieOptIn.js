@@ -197,6 +197,7 @@ function track(newConsent, storageKey) {
 			let matomo = false;
 			let templateScriptsGoogle = $('.analytics-decoded-googleAnalytics');
 			let templateScriptsMatomo = $('.analytics-decoded-matomo');
+			let templateScriptsMatomoTrackingTag = $('.analytics-decoded-matomo-tracking-tag');
 			let cookieVersion = 1;
 			if (response.cookieVersion !== null)
 				cookieVersion = response.cookieVersion;
@@ -268,10 +269,27 @@ function track(newConsent, storageKey) {
 					}
 					if (toolName.localeCompare('matomo') === 0) {
 						matomo = true;
+						let trackingTagTemplateScriptsEncodeElement = $('#analytics-encoded-matomo-tracking-tag');
 						let templateScriptsEncodeElement = $('#analytics-encoded-matomo');
-						if (templateScriptsEncodeElement.length > 0 && templateScriptsMatomo.length === 0) {
+
+						if (
+							trackingTagTemplateScriptsEncodeElement.length > 0
+							&& templateScriptsMatomoTrackingTag.length === 0
+						) {
+							decodeAfter(trackingTagTemplateScriptsEncodeElement);
+
+						}else if (
+							templateScriptsEncodeElement.length > 0
+							&& templateScriptsMatomo.length === 0
+						) {
 							decodeAfter(templateScriptsEncodeElement);
-						} else if (templateScriptsEncodeElement.length === 0 && templateScriptsMatomo.length === 0) {
+
+						} else if (
+							templateScriptsEncodeElement.length === 0
+							&& templateScriptsMatomo.length === 0
+							&& templateScriptsMatomoTrackingTag.length === 0
+						) {
+
 							let url = tool.cookieToolsTrackingServerUrl;
 							if (url.slice(-1) !== '/')
 								url += '/';

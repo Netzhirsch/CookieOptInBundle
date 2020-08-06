@@ -28,6 +28,8 @@ class ParseFrontendTemplateListener
         } elseif ($template == 'analytics_google' && !empty($buffer)
             || $template == 'analytics_piwik' && !empty($buffer)) {
             return $this->analyticsTemplate($buffer);
+        } elseif ($template == 'mod_matomo_TrackingTagAsynchron') {
+            return $this->matomoTrackingTagTemplate($buffer);
         }
         // nichts ändern
         return $buffer;
@@ -270,23 +272,19 @@ class ParseFrontendTemplateListener
         }
     }
     private function analyticsTemplate($buffer) {
-        //Datenbank und User Cookie
-        $container = System::getContainer();
-        $requestStack = $container->get('request_stack');
-
-        $analyticsType = '';
-
-        if (!empty($requestStack)) {
-
-            // cookie tool select finden
-            if (strpos($buffer, 'googletagmanager.com') !== false) {
-                $analyticsType = 'googleAnalytics';
-            }else {
-                $analyticsType = 'matomo';
-            }
+        // cookie tool select finden
+        if (strpos($buffer, 'googletagmanager.com') !== false) {
+            $analyticsType = 'googleAnalytics';
+        } else {
+            $analyticsType = 'matomo';
         }
         //class hinzufügen damit die in JS genutzt werden kann
         $buffer = str_replace('<script','<script class="analytics-decoded-'.$analyticsType.'"',$buffer);
         return '<script id="analytics-encoded-'.$analyticsType.'"><!-- '.base64_encode($buffer).' --></script>';
+    }
+
+    private function matomoTrackingTagTemplate($buffer) {
+        $buffer = str_replace('<script','<script class="analytics-decoded-matomo-tracking-tag"',$buffer);
+        return '<script id="analytics-encoded-matomo-tracking-tag"><!-- '.base64_encode($buffer).' --></script>';
     }
 }
