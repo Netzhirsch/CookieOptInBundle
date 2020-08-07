@@ -48,18 +48,19 @@ class CookieController extends AbstractController
             'cookieTools' => [],
             'otherScripts' => [],
         ];
+
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
-			if (in_array($cookieTool['id'],$data['cookieIds'])) {
+			if (in_array($cookieTool['id'],$data['cookieIds']))
 				$cookiesToSet['cookieTools'][] = $cookieTool;
-			}
 		}
+
 		foreach ($cookieDatabase['otherScripts'] as $otherScripts) {
-			if (in_array($otherScripts['id'],$data['cookieIds'])) {
+			if (in_array($otherScripts['id'],$data['cookieIds']))
 				$cookiesToSet['otherScripts'][] = $otherScripts;
-			}
 		}
 
         self::deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
+
         $cookieData = null;
         $id = null;
         if (isset($data['id']))

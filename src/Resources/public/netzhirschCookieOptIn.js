@@ -122,24 +122,6 @@
 				addIframe(parent);
 			}
 		});
-
-//  only for testing
-// 	function getCookie(cname) {
-// 		let name = cname + "=";
-// 		let decodedCookie = decodeURIComponent(document.cookie);
-// 		let ca = decodedCookie.split(';');
-// 		for(let i = 0; i <ca.length; i++) {
-// 			let c = ca[i];
-// 			while (c.charAt(0).localeCompare(' ') === 0 ) {
-// 				c = c.substring(1);
-// 			}
-// 			if (c.indexOf(name) === 0) {
-// 				return c.substring(name.length, c.length);
-// 			}
-// 		}
-// 		return false;
-// 	}
-
 });
 function getLocalStorage(storageKey) {
 	let storageData = localStorage.getItem(storageKey);
@@ -194,7 +176,7 @@ function track(newConsent, storageKey) {
 			let tools = response.tools;
 			let body = $('body');
 			let googleAnalytics = false;
-			let matomo = false;
+			let matomoCookiesNames = {};
 			let templateScriptsGoogle = $('.analytics-decoded-googleAnalytics');
 			let templateScriptsMatomo = $('.analytics-decoded-matomo');
 			let templateScriptsMatomoTrackingTag = $('.analytics-decoded-matomo-tracking-tag');
@@ -207,9 +189,13 @@ function track(newConsent, storageKey) {
 				cookieIds: data.cookieIds,
 				expireTime: response.expireTime
 			}));
+			matomoCookiesNames = false;
 			if (tools !== null) {
+				// delete all cookie that are not allowed
+				let allCookies = Cookies.get();
 				tools.forEach(function (tool) {
 					let toolName = tool.cookieToolsSelect;
+					allCookies = checkCookieArray(allCookies,tool.cookieToolsTechnicalName);
 					if (toolName.localeCompare('googleAnalytics') === 0) {
 						googleAnalytics = true;
 						let templateScriptsEncodeElement = $('#analytics-encoded-googleAnalytics');
@@ -268,7 +254,7 @@ function track(newConsent, storageKey) {
 						fbq('track', 'PageView');
 					}
 					if (toolName.localeCompare('matomo') === 0) {
-						matomo = true;
+						matomoCookiesNames = tools.cookieToolsTechnicalName;
 						let trackingTagTemplateScriptsEncodeElement = $('#analytics-encoded-matomo-tracking-tag');
 						let templateScriptsEncodeElement = $('#analytics-encoded-matomo');
 
@@ -308,17 +294,25 @@ function track(newConsent, storageKey) {
 						}
 					}
 				});
+
 				let otherScripts = response.otherScripts;
 				if (otherScripts !== null) {
 					otherScripts.forEach(function (otherScript) {
+						allCookies = checkCookieArray(allCookies,otherScript.cookieToolsTechnicalName);
 						body.append(otherScript.cookieToolsCode);
 					});
+				}
+				for (let cookie in allCookies) {
+					if (allCookies.hasOwnProperty(cookie)) {
+						Cookies.remove(cookie, {path: '/', domain: '.netzhirsch.localhost'});
+						Cookies.remove(cookie,{path:'/',domain:'netzhirsch.localhost'});
+					}
 				}
 			}
 			if (!googleAnalytics && templateScriptsGoogle.length > 0) {
 				templateScriptsGoogle.remove();
 			}
-			if (!matomo && templateScriptsMatomo.length > 0) {
+			if (!matomoCookiesNames && templateScriptsMatomo.length > 0) {
 				templateScriptsMatomo.remove();
 			}
 		}
@@ -398,5 +392,36 @@ function dateString() {
 		tag = '0' + tag;
 	return datum.getFullYear() + '-' + monat + '-' + tag;
 }
+	function checkCookieArray(cookiesToDelete,cookieToolsTechnicalName) {
+		if (cookieToolsTechnicalName.indexOf(',') > -1) {
+			let technicalNames = cookieToolsTechnicalName.split(',');
+			let cookiesToDeleteIndex = 0;
+			for (let cookie in cookiesToDelete) {
+				technicalNames.forEach(function (element, index) {
+					if (
+						technicalNames[index] === cookie
+						&& cookiesToDelete.hasOwnProperty(cookie)
+					) {
+						unsetCookie(technicalNames[index],cookie,cookiesToDelete);
+					}
+				});
+				cookiesToDeleteIndex++;
+			}
+		} else {
+			for (let cookie in cookiesToDelete) {
+				if (
+					cookiesToDelete.hasOwnProperty(cookie)
+					&& cookieToolsTechnicalName === cookie
+				)
+					unsetCookie(cookieToolsTechnicalName,cookie,cookiesToDelete);
+			}
+		}
+		return cookiesToDelete;
+	}
+
+	function unsetCookie(cookieToolsTechnicalName,cookie,cookiesToDelete) {
+		if (cookieToolsTechnicalName === cookie)
+				delete cookiesToDelete[cookie];
+	}
 
 })(jQuery);
