@@ -303,9 +303,20 @@ function track(newConsent, storageKey) {
 					});
 				}
 				for (let cookie in allCookies) {
-					if (allCookies.hasOwnProperty(cookie)) {
-						Cookies.remove(cookie, {path: '/', domain: '.netzhirsch.localhost'});
-						Cookies.remove(cookie,{path:'/',domain:'netzhirsch.localhost'});
+					if (
+						allCookies.hasOwnProperty(cookie)
+						&& cookie !== 'XDEBUG_SESSION'
+						&& cookie !== 'BE_USER_AUTH'
+						&& cookie !== 'FE_USER_AUTH'
+						&& cookie !== 'BE_PAGE_OFFSET'
+						&& cookie !== 'trusted_device'
+						&& cookie !== 'csrf_contao_csrf_token'
+						&& cookie !== 'csrf_https-contao_csrf_token'
+						&& cookie !== 'PHPSESSID'
+						&& cookie !== 'contao_settings'
+					) {
+						Cookies.remove(cookie, {path: '/', domain: window.location.hostname});
+						Cookies.remove(cookie,{path:'/', domain:'.' +window.location.hostname});
 					}
 				}
 			}
