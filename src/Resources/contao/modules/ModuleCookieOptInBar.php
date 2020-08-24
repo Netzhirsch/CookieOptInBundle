@@ -22,10 +22,11 @@ class ModuleCookieOptInBar extends Module
 	 * @var string
 	 */
 	protected $strTemplate = 'mod_cookie_opt_in_bar';
-	
-	/**
-	 * @return string
-	 */
+
+    /**
+     * @return string
+     * @throws DBALException|Less_Exception_Parser
+     */
 	public function generate() {
 		
 		if (TL_MODE == 'BE') {
@@ -39,6 +40,30 @@ class ModuleCookieOptInBar extends Module
 			$objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
 			return $objTemplate->parse();
 		}
+
+        $conn = System::getContainer()->get('database_connection');
+        $sql = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectToNotTrack 
+                FROM tl_ncoi_cookie 
+                WHERE pid = ?
+        ";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $this->__get('id'));
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+        $this->setCss(
+            $result['defaultCss'],
+            $result['cssTemplateStyle'],
+            $result['maxWidth'],
+            $result['blockSite'],
+            $result['zIndex']
+        );
+        $this->setJs();
+
+        if (PageLayoutListener::doNotTrackBrowserSetting($result['respectToNotTrack']))
+            return null;
+
 		return parent::generate();
 	}
 
@@ -48,14 +73,6 @@ class ModuleCookieOptInBar extends Module
      */
 	public function compile(){
 
-        if (PageLayoutListener::doNotTrackBrowserSetting($this->id))
-            return null;
-		$this->strTemplate = 'mod_cookie_opt_in_bar';
-		$this->Template = new FrontendTemplate($this->strTemplate);
-		$data = $this->Template->getData();
-
-        $data['id'] = $this->id;
-
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT * FROM tl_ncoi_cookie WHERE pid = ?";
         /** @var Statement $stmt */
@@ -63,6 +80,15 @@ class ModuleCookieOptInBar extends Module
         $stmt->bindValue(1, $this->__get('id'));
         $stmt->execute();
         $result = $stmt->fetch();
+        $maxWidth = $result['maxWidth'];
+
+		$this->strTemplate = 'mod_cookie_opt_in_bar';
+		$this->Template = new FrontendTemplate($this->strTemplate);
+		$data = $this->Template->getData();
+
+        $data['id'] = $this->id;
+
+
         $data['cookieVersion'] = 1;
         if (isset($result['cookieVersion']) && !empty($result['cookieVersion']))
             $data['cookieVersion'] = $result['cookieVersion'];
@@ -84,21 +110,11 @@ class ModuleCookieOptInBar extends Module
                 $data['cookiesSelected'] = $ncoiSession['cookieIds'];
         }
 
-		$maxWidth = $result['maxWidth'];
         $data['inconspicuous'] = false;
         $array = StringUtil::deserialize($maxWidth);
         if ($array['value'] == '100' && $array['unit'] == '%') {
             $data['inconspicuous'] = true;
         }
-
-		$this->setCss(
-            $result['defaultCss'],
-            $result['cssTemplateStyle'],
-            $maxWidth,
-            $result['blockSite'],
-            $result['zIndex']
-        );
-        $this->setJs();
 
 		global $objPage;
         $groups = $result['cookieGroups'];

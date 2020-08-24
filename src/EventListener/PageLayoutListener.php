@@ -12,7 +12,6 @@ use DateTime;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 use Exception;
-use ModuleModel;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 
@@ -105,7 +104,7 @@ class PageLayoutListener {
 
         /********* update groups for a version < 1.3.0 ************************************************************/
         $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT cookieGroups,cookieVersion FROM tl_ncoi_cookie WHERE pid = ?";
+        $sql = "SELECT cookieGroups,cookieVersion,respectToNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
         /** @var Statement $stmt */
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, $modId);
@@ -128,9 +127,7 @@ class PageLayoutListener {
             $stmt->execute();
         }
 
-		$modulBar = ModuleModel::findById($modId);
-
-		if (self::doNotTrackBrowserSetting($modulBar, $modId))
+		if (self::doNotTrackBrowserSetting($result['respectToNotTrack']))
 			return;
 
 		if (!empty($modulBar))
@@ -139,23 +136,19 @@ class PageLayoutListener {
         CookieController::deleteCookies();
 	}
 
-	public static function doNotTrackBrowserSetting($modulBar = null, $modId = null) {
+	public static function doNotTrackBrowserSetting($respectToNotTrack,$moduleId = null) {
 		$doNotTrack = false;
-
-		if (empty($modul)) {
-			//module in this layout
-			$module = ModuleModel::findMultipleByIds($modId);
-			if (!empty($module)) {
-				foreach ($module as $modul) {
-					if ($modul->type == 'cookieOptInBar') {
-						$modulBar = $modul;
-					}
-				}
-			}
-		}
-
+        if (empty($respectToNotTrack)) {
+            $conn = System::getContainer()->get('database_connection');
+            $sql = "SELECT respectToNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
+            /** @var Statement $stmt */
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(1, $moduleId);
+            $stmt->execute();
+            $respectToNotTrack = $stmt->fetchColumn();
+        }
 		if (
-				array_key_exists('HTTP_DNT', $_SERVER) && (1 === (int) $_SERVER['HTTP_DNT']) && $modulBar->respectToNotTrack
+				array_key_exists('HTTP_DNT', $_SERVER) && (1 === (int) $_SERVER['HTTP_DNT']) && $respectToNotTrack
 
 		) {
 			$doNotTrack = true;

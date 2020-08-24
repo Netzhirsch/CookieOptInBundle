@@ -5,9 +5,11 @@ namespace Netzhirsch\CookieOptInBundle;
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
 use Contao\Module;
+use Contao\ModuleModel;
 use Contao\System;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
+use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 
 class ModuleCookieOptInRevoke extends Module
 {
@@ -16,10 +18,11 @@ class ModuleCookieOptInRevoke extends Module
 	 * @var string
 	 */
 	protected $strTemplate = 'mod_cookie_opt_in_revoke';
-	
-	/**
-	 * @return string
-	 */
+
+    /**
+     * @return string
+     * @throws DBALException
+     */
 	public function generate() {
 		
 		if (TL_MODE == 'BE') {
@@ -34,6 +37,26 @@ class ModuleCookieOptInRevoke extends Module
 			return $objTemplate->parse();
 		}
 
+        //module in this layout
+        $module = ModuleModel::findByPid($this->pid);
+
+		if (!empty($module)) {
+            foreach ($module as $modul) {
+                if ($modul->type == 'cookieOptInBar') {
+                    $conn = System::getContainer()->get('database_connection');
+                    $sql = "SELECT respectToNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
+                    /** @var Statement $stmt */
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindValue(1, $modul->id);
+                    $stmt->execute();
+                    $respectToNotTrack = $stmt->fetchColumn();
+
+                    if (PageLayoutListener::doNotTrackBrowserSetting($respectToNotTrack))
+                        return null;
+                }
+            }
+        }
+
 		return parent::generate();
 	}
 
@@ -41,7 +64,7 @@ class ModuleCookieOptInRevoke extends Module
      * @throws DBALException
      */
 	public function compile(){
-		
+
 		$this->strTemplate = 'mod_cookie_opt_in_revoke';
 		$this->Template = new FrontendTemplate($this->strTemplate);
 
