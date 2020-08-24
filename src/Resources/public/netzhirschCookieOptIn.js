@@ -123,6 +123,7 @@
 			}
 		});
 });
+
 function getLocalStorage(storageKey) {
 	let storageData = localStorage.getItem(storageKey);
 	if (storageData !== null) {
@@ -315,8 +316,13 @@ function track(newConsent, storageKey) {
 						&& cookie !== 'PHPSESSID'
 						&& cookie !== 'contao_settings'
 					) {
-						Cookies.remove(cookie, {path: '/', domain: window.location.hostname});
-						Cookies.remove(cookie,{path:'/', domain:'.' +window.location.hostname});
+						//tries all paths from root to current subpage
+						let cookiePath = '',
+							cookiePaths = window.location.pathname.split('/')
+						while (cookiePaths.length > 0) {
+							cookiePath = cookiePath + cookiePaths.shift() + '/'
+							Cookies.remove(cookie, {path: cookiePath})
+						}
 					}
 				}
 			}
