@@ -110,6 +110,9 @@ class PageLayoutListener {
         $stmt->bindValue(1, $modId);
         $stmt->execute();
         $result = $stmt->fetch();
+        if (!$result)
+            return;
+
         $cookieGroups = StringUtil::deserialize($result['cookieGroups']);
         if (!is_array($cookieGroups[0])) {
             $newValues = [];
@@ -128,12 +131,7 @@ class PageLayoutListener {
         }
 
 		if (self::doNotTrackBrowserSetting($result['respectToNotTrack']))
-			return;
-
-		if (!empty($modulBar))
-			return;
-
-        CookieController::deleteCookies();
+            CookieController::deleteCookies();
 	}
 
 	public static function doNotTrackBrowserSetting($respectToNotTrack,$moduleId = null) {
