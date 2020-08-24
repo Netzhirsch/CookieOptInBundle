@@ -320,8 +320,8 @@ function track(newConsent, storageKey) {
 						let cookiePath = '',
 							cookiePaths = window.location.pathname.split('/')
 						while (cookiePaths.length > 0) {
-							cookiePath = cookiePath + cookiePaths.shift() + '/'
-							Cookies.remove(cookie, {path: cookiePath})
+							cookiePath = cookiePath + cookiePaths.shift() + '/';
+							Cookies.remove(cookie, {path: cookiePath});
 						}
 					}
 				}
