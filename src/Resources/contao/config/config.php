@@ -7,6 +7,8 @@ $GLOBALS['TL_HOOKS']['getPageLayout'][] = [Netzhirsch\CookieOptInBundle\EventLis
 
 $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = [Netzhirsch\CookieOptInBundle\EventListener\ParseFrontendTemplateListener::class, 'onParseFrontendTemplate'];
 
+$GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = [Netzhirsch\CookieOptInBundle\EventListener\ReplaceInsertTag::class, 'onReplaceInsertTagsListener'];
+
 
 /**
  * Add back end modules

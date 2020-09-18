@@ -10,6 +10,7 @@ use Contao\System;
 use DateInterval;
 use DateTime;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Statement;
 use Exception;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
@@ -25,79 +26,42 @@ class PageLayoutListener {
 	 */
 	public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
 
-		$removeModules = false;
-        $rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
-        if (empty($rootPage)) {
-            $rootPage = $pageModel->__get('rootId');
-            $rootPage = PageModel::findByIdOrAlias($rootPage);
-        }
-
-        if ($rootPage->__get('bar_disabled')) {
-            $removeModules = true;
-
-        } else {
-            $licenseKey = (!empty($rootPage->__get('ncoi_license_key'))) ? $rootPage->__get(
-                'ncoi_license_key'
-            ) : Config::get('ncoi_license_key');
-
-            $licenseExpiryDate = (!empty($rootPage->__get('ncoi_license_expiry_date'))) ? $rootPage->__get(
-                'ncoi_license_expiry_date'
-            ) : Config::get('ncoi_license_expiry_date');
-
-            if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense(
-                    $licenseKey,
-                    $licenseExpiryDate,
-                    $_SERVER['HTTP_HOST']
-                ) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
-
-                $licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
-                if ($licenseAPIResponse->getSuccess()) {
-                    $licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
-                    $licenseKey = $licenseAPIResponse->getLicenseKey();
-                    LicenseController::setLicense($licenseExpiryDate, $licenseKey, $rootPage);
-                }
-            }
-
-            if (!self::checkLicense(
-                    $licenseKey,
-                    $licenseExpiryDate,
-                    $_SERVER['HTTP_HOST']
-                ) && empty(self::checkLicenseRemainingTrialPeriod())) {
-
-                $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError']
-                    = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
-                $removeModules = true;
-            }
-        }
-
-		$moduleIds = [];
+        $removeModules = $this->shouldRemoveModules($pageModel);
+        $moduleIds = [];
 		$return = self::checkModules($layout, $removeModules, $moduleIds);
 		$moduleIds = $return['moduleIds'];
         if (!empty($return['tlCookieIds']))
             $tlCookieIds[] = $return['tlCookieIds'];
         $return = self::checkModules($pageModel, $removeModules, $moduleIds);
         $moduleIds = $return['moduleIds'];
+        if (empty($moduleIds)) {
+            // remove in done on onParseFrontendTemplate event listener
+            if ($removeModules) {
+                $_SESSION['nh_remove_modules'] = $removeModules;
+            }
+            else {
+                $return = self::getModuleIdFromInsertTag($pageModel);
+                $moduleIds = $return['moduleIds'];
+            }
+        }
         if (!empty($return['tlCookieIds']))
             $tlCookieIds[] = $return['tlCookieIds'];
 
-
-		if ($removeModules) {
-			return;
-		}
+        if ($removeModules) {
+            return;
+        }
 
 		//for customer info
-		if (!$removeModules) {
-			if (empty($moduleIds)) {
-				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInError.js|static';
+        if (empty($moduleIds)) {
+            $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInError.js|static';
 
-				return;
-			}
-			if (!empty($tlCookieIds) && count($tlCookieIds) > 2) {
-				$GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInErrorMore.js|static';
+            return;
+        }
+        if (!empty($tlCookieIds) && count($tlCookieIds) > 2) {
+            $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInErrorMore.js|static';
 
-				return;
-			}
-		}
+            return;
+        }
 
 		//module in this layout
         $modId = $moduleIds[0];
@@ -259,6 +223,82 @@ class PageLayoutListener {
 	}
 
     /**
+     * @param PageModel $page
+     * @return mixed[]
+     * @throws DBALException
+     */
+    public static function getModuleIdFromInsertTag($page)
+    {
+        $id = $page->__get('id');
+        $conn = System::getContainer()->get('database_connection');
+        $sql = "SELECT html FROM tl_content as tc 
+        LEFT JOIN tl_article ta on tc.pid = ta.id
+        LEFT JOIN tl_page tp on ta.pid = tp.id
+        WHERE tp.id = ?";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $id);
+        $stmt->execute();
+        $htmlElements = $stmt->fetchAll(FetchMode::COLUMN);
+
+        $modIds = [];
+        foreach ($htmlElements as $htmlElement) {
+            $modId = self::getModuleIdFromHtmlElement($htmlElement);
+            if (!empty($modId))
+                $modIds = array_merge($modId,$modIds);
+        }
+        $return = self::findCookieModuleByPid($modIds);
+        return [
+            'moduleIds'=> $return['pid'],
+            'tlCookieIds' => $return['id']
+        ];
+
+	}
+
+    public static function getModuleIdFromHtmlElement($htmlElement)
+    {
+        $modId = [];
+        $stringPositionEnd = 0;
+        $saveEnd = 0;
+        while($stringPositionEnd < strlen($htmlElement)) {
+            $stringPositionStart = strpos($htmlElement,'{{insert_module::',$stringPositionEnd);
+            if ($stringPositionStart !== false) {
+                $stringPositionEnd = strpos($htmlElement,'}}',$stringPositionStart);
+                if ($saveEnd == $stringPositionEnd) {
+                    $stringPositionEnd = strlen($htmlElement);
+                    continue;
+                }
+                $moduleTags
+                    = substr(
+                    $htmlElement,
+                    $stringPositionStart,
+                    $stringPositionEnd-$stringPositionStart)
+                ;
+                $modId[] = str_replace('{{insert_module::','',$moduleTags);
+                $saveEnd = $stringPositionEnd;
+            } else {
+                $stringPositionEnd = strlen($htmlElement);
+            }
+        }
+        return $modId;
+	}
+
+    /**
+     * @param $modIds
+     * @return mixed[]
+     * @throws DBALException
+     */
+    public static function findCookieModuleByPid($modIds)
+    {
+        $conn = System::getContainer()->get('database_connection');
+        $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (".implode(",",$modIds).")";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetch();
+	}
+
+    /**
      * @param LayoutModel|PageModel $layoutOrPage
      * @param                        $removeModules
      * @param array $moduleIds
@@ -347,4 +387,59 @@ class PageLayoutListener {
         if ($save)
             $fieldPalette->save();
 	}
+
+    /**
+     * @param PageModel $pageModel
+     * @return bool
+     * @throws Exception
+     */
+    public static function shouldRemoveModules(PageModel $pageModel)
+    {
+        $removeModules = false;
+        $rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
+        if (empty($rootPage)) {
+            $rootPage = $pageModel->__get('rootId');
+            $rootPage = PageModel::findByIdOrAlias($rootPage);
+        }
+
+        if ($rootPage->__get('bar_disabled')) {
+            $removeModules = true;
+
+        } else {
+            $licenseKey = (!empty($rootPage->__get('ncoi_license_key'))) ? $rootPage->__get(
+                'ncoi_license_key'
+            ) : Config::get('ncoi_license_key');
+
+            $licenseExpiryDate = (!empty($rootPage->__get('ncoi_license_expiry_date'))) ? $rootPage->__get(
+                'ncoi_license_expiry_date'
+            ) : Config::get('ncoi_license_expiry_date');
+
+            if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense(
+                    $licenseKey,
+                    $licenseExpiryDate,
+                    $_SERVER['HTTP_HOST']
+                ) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
+
+                $licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+                if ($licenseAPIResponse->getSuccess()) {
+                    $licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
+                    $licenseKey = $licenseAPIResponse->getLicenseKey();
+                    LicenseController::setLicense($licenseExpiryDate, $licenseKey, $rootPage);
+                }
+            }
+
+            if (!self::checkLicense(
+                    $licenseKey,
+                    $licenseExpiryDate,
+                    $_SERVER['HTTP_HOST']
+                ) && empty(self::checkLicenseRemainingTrialPeriod())) {
+
+                $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError']
+                    = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
+                $removeModules = true;
+            }
+        }
+
+        return $removeModules;
+    }
 }

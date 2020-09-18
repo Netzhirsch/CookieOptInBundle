@@ -15,6 +15,7 @@ class ParseFrontendTemplateListener
      * @param $buffer
      * @param $template
      * @return string
+     * @throws DBALException
      */
     public function onParseFrontendTemplate($buffer, $template)
     {
@@ -31,6 +32,7 @@ class ParseFrontendTemplateListener
         } elseif ($template == 'mod_matomo_TrackingTagAsynchron') {
             return $this->matomoTrackingTagTemplate($buffer);
         }
+
         // nichts ändern
         return $buffer;
     }
@@ -38,6 +40,7 @@ class ParseFrontendTemplateListener
     /**
      * @param $buffer
      * @return string
+     * @throws DBALException
      */
     private function iframe($buffer){
 
@@ -128,6 +131,8 @@ class ParseFrontendTemplateListener
                     $pageModel = $GLOBALS['objPage'];
 
                 $return = PageLayoutListener::checkModules($pageModel, [], []);
+                if (empty($return))
+                    $return = PageLayoutListener::getModuleIdFromInsertTag($pageModel);
                 // Achtung moduleData enthält nur die ID
                 $moduleData = $return['moduleIds'];
 
