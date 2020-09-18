@@ -72,6 +72,11 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,defaultTools
 	,cookieTools
 	,otherScripts
+	,i_frame_video
+	,i_frame_maps
+	,i_frame_i_frame
+	,i_frame_always_load
+	,i_frame_load
 	;expireTime
 	;privacyPolicy
 	,imprint
@@ -515,6 +520,77 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 			],
 		],
 	],
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_video'] = [
+    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['video'],
+    'exclude'   => true,
+    'inputType' => 'textarea',
+    'eval' => [
+        'mandatory' => true,
+        'tl_class'=>'long clr',
+        'doNotSaveEmpty' => true,
+    ],
+    'foreignKey' => 'tl_ncoi_cookie.i_frame_video',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_maps'] = [
+    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['maps'],
+    'exclude'   => true,
+    'inputType' => 'textarea',
+    'eval' => [
+        'mandatory' => true,
+        'tl_class'=>'long clr',
+        'doNotSaveEmpty' => true,
+    ],
+    'foreignKey' => 'tl_ncoi_cookie.i_frame_maps',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_i_frame'] = [
+    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['i_frame'],
+    'exclude'   => true,
+    'inputType' => 'textarea',
+    'eval' => [
+        'mandatory' => true,
+        'tl_class'=>'long clr',
+        'doNotSaveEmpty' => true,
+    ],
+    'foreignKey' => 'tl_ncoi_cookie.i_frame_i_frame',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
+];
+
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_always_load'] = [
+    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['always_load'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval' => [
+        'mandatory' => true,
+        'tl_class'=>'w50',
+        'doNotSaveEmpty' => true,
+    ],
+    'foreignKey' => 'tl_ncoi_cookie.i_frame_always_load',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_load'] = [
+    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['load'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval' => [
+        'mandatory' => true,
+        'tl_class'=>'w50',
+        'doNotSaveEmpty' => true,
+    ],
+    'foreignKey' => 'tl_ncoi_cookie.i_frame_load',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['expireTime'] = [

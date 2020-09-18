@@ -131,36 +131,34 @@ class ParseFrontendTemplateListener
                     $pageModel = $GLOBALS['objPage'];
 
                 $return = PageLayoutListener::checkModules($pageModel, [], []);
-                if (empty($return))
+                if (empty($return['moduleIds']))
                     $return = PageLayoutListener::getModuleIdFromInsertTag($pageModel);
                 // Achtung moduleData enthält nur die ID
-                $moduleData = $return['moduleIds'];
-
+                $moduleData[] = ['mod' => $return['moduleIds']];
                 if (empty($moduleData)) {
                     $layout = LayoutModel::findById($pageModel->layout);
                     // Achtung moduleData enthält die ID, col, enable
                     $moduleData = StringUtil::deserialize($layout->modules);
+                }
+                // Alle Cookiebars finden um über die ModuleIds die richtig zu finden.
+                $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie ";
+                /** @var Statement $stmt */
+                $stmt = $conn->prepare($sql);
+                $stmt->execute();
+                $cookieBars = $stmt->fetchAll();
 
-                    // Alle Cookiebars finden um über die ModuleIds die richtig zu finden.
-                    $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie ";
-                    /** @var Statement $stmt */
-                    $stmt = $conn->prepare($sql);
-                    $stmt->execute();
-                    $cookieBars = $stmt->fetchAll();
+                foreach ($cookieBars as $cookieBar) {
+                    foreach ($moduleData as $moduleId) {
+                        if ($cookieBar['pid'] == $moduleId['mod']) {
+                            foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
+                                if ($cookieBar['pid'] == $externalMediaCookieInDB['pid']) {
+                                    $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
+                                    $cookieIds[] = $externalMediaCookieInDB['id'];
+                                    $modId = $cookieBar['pid'];
 
-                    foreach ($cookieBars as $cookieBar) {
-                        foreach ($moduleData as $moduleId) {
-                            if ($cookieBar['pid'] == $moduleId['mod']) {
-                                foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                                    if ($cookieBar['pid'] == $externalMediaCookieInDB['pid']) {
-                                        $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
-                                        $cookieIds[] = $externalMediaCookieInDB['id'];
-                                        $modId = $cookieBar['pid'];
-
-                                        if (!empty(PageModel::findById($cookieBar['privacyPolicy']))) {
-                                            $privacyPolicyLink = PageModel::findById($cookieBar['privacyPolicy']);
-                                            $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
-                                        }
+                                    if (!empty(PageModel::findById($cookieBar['privacyPolicy']))) {
+                                        $privacyPolicyLink = PageModel::findById($cookieBar['privacyPolicy']);
+                                        $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
                                     }
                                 }
                             }
@@ -181,28 +179,29 @@ class ParseFrontendTemplateListener
          * iFrame spezifisches HTML
          */
         $blockClass = 'ncoi---'.$iframeTypInHtml;
+        $blockTexts = $this->loadBlockContainerTexts($modId);
         $id = uniqid();
         switch($iframeTypInHtml) {
             case 'youtube':
-                $htmlDisclaimer .=  $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://policies.google.com/privacy" target="_blank">YouTube</a>.';
+                $htmlDisclaimer .=  $blockTexts['i_frame_video'].' <a href="https://policies.google.com/privacy" target="_blank">YouTube</a>.';
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Youtube '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Youtube '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
             case 'googleMaps':
-                $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['map'].' <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a>.';
+                $htmlDisclaimer .= $blockTexts['i_frame_maps'].' <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a>.';
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
             case 'vimeo':
-                $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['video'].' <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a>.';
+                $htmlDisclaimer .= $blockTexts['i_frame_video'].' <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a>.';
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
             case 'iframe':
             default:
                 global $objPage;
-                $htmlDisclaimer .= $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['iframe'].' <a href="/'.$privacyPolicyLink.'" target="_blank">'.$objPage->rootTitle.'</a>.';
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['alwaysLoad'].'</span></label>';
+                $htmlDisclaimer .= $blockTexts['i_frame_i_frame'].' <a href="/'.$privacyPolicyLink.'" target="_blank">'.$objPage->rootTitle.'</a>.';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
         }
         $htmlDisclaimer .= '</div>';
@@ -245,7 +244,8 @@ class ParseFrontendTemplateListener
         //Damit JS das iFrame wieder laden kann
         $htmlConsentButton = '<div class="ncoi---blocked-link">
 <button type="submit" name="iframe" value="'.$iframeTypInHtml.'" class="ncoi---release">';
-        $htmlConsentButtonEnd = '<span>' . $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['iframes']['load'].'</span></button></div>';
+
+        $htmlConsentButtonEnd = '<span>' . $blockTexts['i_frame_load'].'</span></button></div>';
         $htmlInputCurrentPage = '<input class="ncoi---no-script--hidden" type="text" name="currentPage" value="'.$_SERVER['REDIRECT_URL'].'">';
         $htmlInputModID = '<input class="ncoi---no-script--hidden" type="text" name="data[modId]" value="'.$modId.'">';
 
@@ -291,5 +291,21 @@ class ParseFrontendTemplateListener
     private function matomoTrackingTagTemplate($buffer) {
         $buffer = str_replace('<script','<script class="analytics-decoded-matomo-tracking-tag"',$buffer);
         return '<script id="analytics-encoded-matomo-tracking-tag"><!-- '.base64_encode($buffer).' --></script>';
+    }
+
+    private function loadBlockContainerTexts($modId) {
+
+        $container = System::getContainer();
+        $conn = $container->get('database_connection');
+
+        $sql
+            = "SELECT i_frame_video,i_frame_maps,i_frame_i_frame,i_frame_always_load,i_frame_load 
+                FROM tl_ncoi_cookie WHERE pid = ?";
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $modId);
+        $stmt->execute();
+
+        return $stmt->fetch();
     }
 }

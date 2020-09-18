@@ -110,6 +110,32 @@ $GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essenziell';
 
 $GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse']
     = 'Speichert Informationen eines Besuchers, sobald er sich im Frontend einloggt.';
+
+$GLOBALS['TL_LANG']['tl_module']['i_frame'] = [
+    'video' => ['Blockierte Videos','Bitte geben Sie hier den Text ein, der erscheint wenn Videos blockiert werden. {{provider}} wird durch den eingetragenen Anbieter des Tools ersetzt.'],
+    'maps' => ['Blockierte Karten','Bitte geben Sie hier den Text ein, der erscheint wenn Karten blockiert werden. {{provider}} wird durch den eingetragenen Anbieter des Tools ersetzt.'],
+    'i_frame' => ['Blockierte iFrames','Bitte geben Sie hier den Text ein, der erscheint wenn iFrames blockiert werden. {{provider}} wird durch den eingetragenen Anbieter des Tools ersetzt.'],
+    'always_load'
+        => [
+            'Immer-laden-Check-Bock',
+            'Bitte geben Sie die Beschriftung der Check-Box ein, die die Entscheidung für diesen Typen ändert.'
+    ],
+    'load' => [
+        'Laden-Button',
+        'Bitte geben Sie die Beschriftung des Buttons ein, der alle blockierten Inhalte eines Typs lädt.'
+    ]
+];
+
+$GLOBALS['TL_LANG']['tl_module']['i_frame_videoDefault']
+    = 'Durch das Laden dieses Videos geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_mapsDefault']
+    = 'Durch das Laden dieser Karte geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_i_frameDefault']
+    = 'Durch das Laden dieses iFrame geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_always_loadDefault']
+    = 'immer laden';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_loadDefault']
+    = 'laden';
 /*************** End Fieldpalette Tools ***************/
 
 /*************** Fieldpalette otherScripts ***************/

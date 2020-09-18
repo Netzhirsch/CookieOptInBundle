@@ -53,6 +53,21 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
         'otherScripts' => [
             'sql' => "text NULL default ''",
         ],
+        'i_frame_video' => [
+            'sql' => "text NULL default ''",
+        ],
+        'i_frame_maps' => [
+            'sql' => "text NULL default ''",
+        ],
+        'i_frame_i_frame' => [
+            'sql' => "text NULL default ''",
+        ],
+        'i_frame_always_load' => [
+            'sql' => "text NULL default ''",
+        ],
+        'i_frame_load' => [
+            'sql' => "text NULL default ''",
+        ],
         'expireTime' => [
             'sql' => "int(11) NULL default '30'",
         ],

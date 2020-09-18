@@ -107,6 +107,31 @@ $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'] = 'Se
 
 $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'PHP cookie (programming language), PHP data identifier. Contains only a reference to the current session. There is no information in the user\'s browser saved and this cookie can only be used by the current website. This cookie is used all used in forms to increase usability. Data entered in forms will be e.g. B. briefly saved when there is an input error by the user and the user receives an error message receives. Otherwise all data would have to be entered again';
 
+$GLOBALS['TL_LANG']['tl_module']['i_frame'] = [
+    'video' => ['Blocked Videos','Please enter here the text that appears when videos are blocked. {{provider}} is replaced by the registered provider of the tool.'],
+    'maps' => ['Blocked Maps','Please enter here the text that appears when cards are blocked. {{provider}} is replaced by the registered provider of the tool.'],
+    'i_frame' => ['Blocked iFrames','Please enter here the text that appears when iFrames are blocked. {{provider}} is replaced by the registered provider of the tool.'],
+    'always_load'
+    => [
+        'Always-load-Check-Bock',
+        'Please enter the label of the check box that changes the decision for this type.'
+    ],
+    'load' => [
+        'Load-Button',
+        'Please enter the label of the button that loads all blocked content of a type.'
+    ]
+];
+
+$GLOBALS['TL_LANG']['tl_module']['i_frame_videoDefault']
+    = 'Durch das Laden dieses Videos geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_mapsDefault']
+    = 'Durch das Laden dieser Karte geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_i_frameDefault']
+    = 'Durch das Laden dieses iFrame geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_always_loadDefault']
+    = 'immer laden';
+$GLOBALS['TL_LANG']['tl_module']['i_frame_loadDefault']
+    = 'laden';
 /*************** End Fieldpalette Tools ***************/
 
 /*************** Fieldpalette otherScripts ***************/
