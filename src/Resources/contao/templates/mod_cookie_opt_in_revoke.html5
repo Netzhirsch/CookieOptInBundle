@@ -8,7 +8,7 @@
 	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 
 >
-    <a class="ncoi---revoke--button" href="<?=$this->arrData['url']?>">
+    <a class="ncoi---revoke--button" href="<?=$this->arrData['url']?>" rel="nofollow">
         <?php echo $this->arrData['revokeButton'] ?>
     </a>
 </div>
