@@ -89,7 +89,6 @@ class ParseFrontendTemplateListener
 
         //Frontendvariablen diese werden an das Template übergeben
         $iframeTypInHtml = 'iframe';
-        $privacyPolicyLink = '';
         $modId = null;
         $cookieIds = [];
         $externalMediaCookiesInDB = null;
@@ -104,14 +103,16 @@ class ParseFrontendTemplateListener
         }
 
         //Suche nach dem iFrame.
-        $sql = "SELECT id,pid,cookieToolsSelect FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
+        $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
         /** @var Statement $stmt */
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, 'cookieTools');
         $stmt->bindValue(2, $iframeTypInHtml);
         $stmt->execute();
         $externalMediaCookiesInDB = $stmt->fetchAll();
-
+        global $objPage;
+        $provider = $objPage->rootTitle;
+        $privacyPolicyLink = '';
         if (!empty($requestStack)) {
 
             /**
@@ -154,9 +155,12 @@ class ParseFrontendTemplateListener
                                 if ($cookieBar['pid'] == $externalMediaCookieInDB['pid']) {
                                     $blockedIFrames[] = $externalMediaCookieInDB['cookieToolsSelect'];
                                     $cookieIds[] = $externalMediaCookieInDB['id'];
+                                    if (!empty($externalMediaCookieInDB['cookieToolsProvider']))
+                                        $provider = $externalMediaCookieInDB['cookieToolsProvider'];
                                     $modId = $cookieBar['pid'];
-
-                                    if (!empty(PageModel::findById($cookieBar['privacyPolicy']))) {
+                                    if (!empty($externalMediaCookieInDB['cookieToolsPrivacyPolicyUrl']))
+                                        $privacyPolicyLink = $externalMediaCookieInDB['cookieToolsPrivacyPolicyUrl'];
+                                    elseif (!empty(PageModel::findById($cookieBar['privacyPolicy']))) {
                                         $privacyPolicyLink = PageModel::findById($cookieBar['privacyPolicy']);
                                         $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
                                     }
@@ -181,29 +185,41 @@ class ParseFrontendTemplateListener
         $blockClass = 'ncoi---'.$iframeTypInHtml;
         $blockTexts = $this->loadBlockContainerTexts($modId);
         $id = uniqid();
+        $disclaimerString = '';
         switch($iframeTypInHtml) {
             case 'youtube':
-                $htmlDisclaimer .=  $blockTexts['i_frame_video'].' <a href="https://policies.google.com/privacy" target="_blank">YouTube</a>.';
+            case 'vimeo':
+                $disclaimerString = $blockTexts['i_frame_video'];
+                break;
+            case 'googleMaps':
+                $disclaimerString = $blockTexts['i_frame_maps'];
+                break;
+            case 'iframe':
+                $disclaimerString = $blockTexts['i_frame_i_frame'];
+                break;
+        }
+        $disclaimerString = str_replace('{{provider}}','<a href="'.$privacyPolicyLink.'" target="_blank">'.$provider.'</a>',$disclaimerString);
+
+        $htmlDisclaimer .= $disclaimerString;
+        switch($iframeTypInHtml) {
+            case 'youtube':
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
                 $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Youtube '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
             case 'googleMaps':
-                $htmlDisclaimer .= $blockTexts['i_frame_maps'].' <a href="https://policies.google.com/privacy" target="_blank">Google LLC</a>.';
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
                 $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
             case 'vimeo':
-                $htmlDisclaimer .= $blockTexts['i_frame_video'].' <a href="https://vimeo.com/privacy" target="_blank">Vimeo</a>.';
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
                 $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
             case 'iframe':
             default:
-                global $objPage;
-                $htmlDisclaimer .= $blockTexts['i_frame_i_frame'].' <a href="/'.$privacyPolicyLink.'" target="_blank">'.$objPage->rootTitle.'</a>.';
                 $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$blockTexts['i_frame_always_load'].'</span></label>';
                 break;
         }
+
         $htmlDisclaimer .= '</div>';
 
         // Wenn iFrame nicht im Backend, kann nur das iFrame zurückgegeben werden.

@@ -26,14 +26,7 @@ $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn'] = [
 				'hidden' => 'ausblenden',
                 'cookieToolExpiredTime' => 'Ablauf in Tagen',
                 'cookieToolsTechnicalName' => 'Technischer Name'
-		],
-        'iframes' => [
-            'video' => 'Durch das Laden dieses Videos geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von',
-            'map' => 'Durch das Laden dieser Karte geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von',
-            'iframe' => 'Durch das Laden dieses iFrames geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von',
-            'alwaysLoad' => 'immer laden',
-            'load' => 'laden'
-        ]
+		]
 ];
 $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn'] = [
 	'messages' => [
