@@ -131,8 +131,6 @@ function getLocalStorage(storageKey) {
 }
 
 function setLocalStorage(storageKey, storageValue) {
-	console.log(storageKey);
-	console.log(storageValue);
 	localStorage.setItem(storageKey, storageValue)
 }
 
