@@ -13,7 +13,6 @@ use Doctrine\DBAL\Statement;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
-use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 
 class ModuleCookieOptInBar extends Module
 {
@@ -42,7 +41,7 @@ class ModuleCookieOptInBar extends Module
 		}
 
         $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectToNotTrack 
+        $sql = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectDoNotTrack 
                 FROM tl_ncoi_cookie 
                 WHERE pid = ?
         ";
@@ -61,14 +60,10 @@ class ModuleCookieOptInBar extends Module
         );
         $this->setJs();
 
-        if (PageLayoutListener::doNotTrackBrowserSetting($result['respectToNotTrack']))
-            return null;
-
 		return parent::generate();
 	}
 
     /**
-     * @throws Less_Exception_Parser
      * @throws DBALException
      */
 	public function compile(){
@@ -85,6 +80,7 @@ class ModuleCookieOptInBar extends Module
 		$this->strTemplate = 'mod_cookie_opt_in_bar';
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
+        $data['respectDoNotTrack'] = $result['respectDoNotTrack'];
 
         $data['id'] = $this->id;
 

@@ -153,7 +153,7 @@ $GLOBALS['TL_LANG']['tl_module']['imprint'] = ['Imprint'];
 
 $GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Do not display cookie bar on the following pages.'];
 
-$GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'] = ['"Do Not Track" respect browser settings. If this browser setting is set, the cookie bar will not be shown.'];
+$GLOBALS['TL_LANG']['tl_module']['respectDoNotTrack'] = ['"Do Not Track" respect browser settings. If this browser setting is set, the cookie bar will not be shown.'];
 
 $GLOBALS['TL_LANG']['tl_module']['blockSite'] = ['Disable use of the site','Elements of the page can only be clicked on after cookies have been accepted or rejected.'];
 

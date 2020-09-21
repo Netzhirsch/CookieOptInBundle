@@ -16,7 +16,13 @@
 
 		let storageKey = 'ncoi';
 		let localStorage = getLocalStorage(storageKey);
-		if(localStorage !== '') {
+		//Respect "Do Not Track"
+		let doNotTrack = false;
+		if ($('[data-ncoi-respect-do-not-track]').data('ncoi-respect-do-not-track') === 1 && navigator.doNotTrack === "1") {
+			doNotTrack = true;
+			ajaxDeleteCookies(storageKey);
+		}
+		if(localStorage !== '' && !doNotTrack) {
 			if (
 				$('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
 				|| localStorage.expireTime >= dateString()
@@ -25,18 +31,10 @@
 				checkExternalMediaOnLoad(localStorage.cookieIds);
 				checkGroupsOnLoad(localStorage.cookieIds);
 			} else {
-
-				$.ajax({
-					dataType: "json",
-					type: 'POST',
-					url: '/cookie/delete',
-					success: function () {
-						setLocalStorage(storageKey, null);
-					}
-				});
+				ajaxDeleteCookies(storageKey);
 				ncoiBehindField.removeClass('ncoi---hidden');
 			}
-		} else {
+		} else if(!doNotTrack) {
 			ncoiBehindField.removeClass('ncoi---hidden');
 		}
 
@@ -439,6 +437,17 @@ function dateString() {
 	function unsetCookie(cookieToolsTechnicalName,cookie,cookiesToDelete) {
 		if (cookieToolsTechnicalName === cookie)
 				delete cookiesToDelete[cookie];
+	}
+
+	function ajaxDeleteCookies(storageKey) {
+		$.ajax({
+			dataType: "json",
+			type: 'POST',
+			url: '/cookie/delete',
+			success: function () {
+				setLocalStorage(storageKey, null);
+			}
+		});
 	}
 
 })(jQuery);

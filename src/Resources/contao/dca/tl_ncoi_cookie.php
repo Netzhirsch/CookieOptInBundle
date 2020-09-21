@@ -89,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
         'excludePages' => [
             'sql' => "blob NULL default '' ",
         ],
-        'respectToNotTrack' => [
+        'respectDoNotTrack' => [
             'sql' => "varchar(1) NULL default '0' ",
         ],
         'zIndex' => [

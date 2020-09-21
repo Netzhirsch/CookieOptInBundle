@@ -81,7 +81,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	;privacyPolicy
 	,imprint
 	,excludePages
-	;respectToNotTrack
+	;respectDoNotTrack
 	;zIndex
 	,blockSite
 	;templateBar
@@ -650,8 +650,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['excludePages'] = [
     'save_callback' => [['tl_module_ncoi', 'saveInNcoiTablePageTree']],
 ];
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['respectToNotTrack'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['respectToNotTrack'],
+$GLOBALS['TL_DCA']['tl_module']['fields']['respectDoNotTrack'] = [
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['respectDoNotTrack'],
 	'exclude'   => true,
 	'inputType' => 'checkbox',
 	'eval' => [
