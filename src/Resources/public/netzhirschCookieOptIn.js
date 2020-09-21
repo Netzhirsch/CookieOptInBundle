@@ -25,7 +25,7 @@
 		if(localStorage !== '' && !doNotTrack) {
 			if (
 				$('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
-				|| localStorage.expireTime >= dateString()
+				&& localStorage.expireTime >= dateString()
 			) {
 				track(0, storageKey);
 				checkExternalMediaOnLoad(localStorage.cookieIds);
@@ -131,10 +131,13 @@ function getLocalStorage(storageKey) {
 }
 
 function setLocalStorage(storageKey, storageValue) {
+	console.log(storageKey);
+	console.log(storageValue);
 	localStorage.setItem(storageKey, storageValue)
 }
 
 function track(newConsent, storageKey) {
+	console.log("track");
 	let id = null;
 	let data = {
 		id: id,
