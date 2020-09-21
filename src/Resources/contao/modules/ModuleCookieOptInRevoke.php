@@ -6,7 +6,6 @@ use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
 use Contao\Module;
 use Contao\System;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 
 class ModuleCookieOptInRevoke extends Module
@@ -19,7 +18,6 @@ class ModuleCookieOptInRevoke extends Module
 
     /**
      * @return string
-     * @throws DBALException
      */
 	public function generate() {
 		
@@ -39,7 +37,6 @@ class ModuleCookieOptInRevoke extends Module
 	}
 
     /**
-     * @throws DBALException
      */
 	public function compile(){
 

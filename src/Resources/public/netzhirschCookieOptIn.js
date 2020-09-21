@@ -56,7 +56,7 @@
 
 		$('.ncoi---revoke--button').on('click', function (e) {
 			e.preventDefault();
-			setLocalStorage(storageKey, null);
+			ajaxDeleteCookies(storageKey);
 			$('.ncoi---behind').removeClass('ncoi---hidden--page-load')
 				.removeClass('ncoi---hidden');
 			$('#FBTracking').remove();
@@ -135,7 +135,6 @@ function setLocalStorage(storageKey, storageValue) {
 }
 
 function track(newConsent, storageKey) {
-	console.log("track");
 	let id = null;
 	let data = {
 		id: id,
@@ -436,8 +435,9 @@ function dateString() {
 	}
 
 	function unsetCookie(cookieToolsTechnicalName,cookie,cookiesToDelete) {
-		if (cookieToolsTechnicalName === cookie)
+		if (cookieToolsTechnicalName === cookie) {
 				delete cookiesToDelete[cookie];
+		}
 	}
 
 	function ajaxDeleteCookies(storageKey) {
