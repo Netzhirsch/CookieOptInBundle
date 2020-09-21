@@ -41,8 +41,7 @@ class GetSystemMessagesListener
             $messages .= self::getMessage($licenseKeys[$domain],$licenseExpiryDates[$domain]);
         } else {
             foreach ($domainNoDuplicate as $domain) {
-                if (empty($licenseExpiryDates[$domain]))
-                    $messages .= self::getMessage($licenseKeys[$domain],$licenseExpiryDates[$domain],$domain);
+                $messages .= self::getMessage($licenseKeys[$domain],$licenseExpiryDates[$domain],$domain);
             }
         }
 

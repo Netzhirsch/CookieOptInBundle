@@ -18,18 +18,18 @@ use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 
 class PageLayoutListener {
 
-	/**
-	 * @param PageModel   $pageModel
-	 * @param LayoutModel $layout
-	 *
-	 * @throws Exception
-	 */
-	public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
+    /**
+     * @param PageModel   $pageModel
+     * @param LayoutModel $layout
+     *
+     * @throws Exception
+     */
+    public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
 
         $removeModules = $this->shouldRemoveModules($pageModel);
         $moduleIds = [];
-		$return = self::checkModules($layout, $removeModules, $moduleIds);
-		$moduleIds = $return['moduleIds'];
+        $return = self::checkModules($layout, $removeModules, $moduleIds);
+        $moduleIds = $return['moduleIds'];
         if (!empty($return['tlCookieIds']))
             $tlCookieIds[] = $return['tlCookieIds'];
         $return = self::checkModules($pageModel, $removeModules, $moduleIds);
@@ -41,7 +41,8 @@ class PageLayoutListener {
             }
             else {
                 $return = self::getModuleIdFromInsertTag($pageModel);
-                $moduleIds = $return['moduleIds'];
+                if (!empty($return['moduleIds']))
+                    $moduleIds = $return['moduleIds'];
             }
         }
         if (!empty($return['tlCookieIds']))
@@ -51,7 +52,7 @@ class PageLayoutListener {
             return;
         }
 
-		//for customer info
+        //for customer info
         if (empty($moduleIds)) {
             $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInError.js|static';
 
@@ -63,7 +64,7 @@ class PageLayoutListener {
             return;
         }
 
-		//module in this layout
+        //module in this layout
         $modId = $moduleIds[0];
 
         /********* update groups for a version < 1.3.0 ************************************************************/
@@ -94,12 +95,12 @@ class PageLayoutListener {
             $stmt->execute();
         }
 
-		if (self::doNotTrackBrowserSetting($result['respectDoNotTrack']))
+        if (self::doNotTrackBrowserSetting($result['respectDoNotTrack']))
             CookieController::deleteCookies();
-	}
+    }
 
-	public static function doNotTrackBrowserSetting($respectDoNotTrack,$moduleId = null) {
-		$doNotTrack = false;
+    public static function doNotTrackBrowserSetting($respectDoNotTrack,$moduleId = null) {
+        $doNotTrack = false;
         if (empty($respectDoNotTrack)) {
             $conn = System::getContainer()->get('database_connection');
             $sql = "SELECT respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
@@ -109,118 +110,118 @@ class PageLayoutListener {
             $stmt->execute();
             $respectDoNotTrack = $stmt->fetchColumn();
         }
-		if (
-				array_key_exists('HTTP_DNT', $_SERVER) && (1 === (int) $_SERVER['HTTP_DNT']) && $respectDoNotTrack
+        if (
+            array_key_exists('HTTP_DNT', $_SERVER) && (1 === (int) $_SERVER['HTTP_DNT']) && $respectDoNotTrack
 
-		) {
-			$doNotTrack = true;
+        ) {
+            $doNotTrack = true;
             CookieController::deleteCookies();
-		}
+        }
 
-		return $doNotTrack;
-	}
+        return $doNotTrack;
+    }
 
-	/**
-	 * @param string $licenseKey
-	 * @param string $licenseExpiryDate
-	 *
-	 * @param        $domain
-	 *
-	 * @return bool
-	 * @throws Exception
-	 */
-	public static function checkLicense($licenseKey,$licenseExpiryDate,$domain) {
+    /**
+     * @param string $licenseKey
+     * @param string $licenseExpiryDate
+     *
+     * @param        $domain
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public static function checkLicense($licenseKey,$licenseExpiryDate,$domain) {
 
-		if (empty($licenseKey) || empty($licenseExpiryDate))
-			return false;
+        if (empty($licenseKey) || empty($licenseExpiryDate))
+            return false;
 
-		// in Frontend Y-m-d in Backend d.m.Y
-		$licenseExpiryDate = date("Y-m-d", strtotime($licenseExpiryDate));
-		if ($licenseExpiryDate < date("Y-m-d"))
-			return false;
+        // in Frontend Y-m-d in Backend d.m.Y
+        $licenseExpiryDate = date("Y-m-d", strtotime($licenseExpiryDate));
+        if ($licenseExpiryDate < date("Y-m-d"))
+            return false;
 
-		return self::checkHash($licenseKey, $licenseExpiryDate, $domain);
-	}
+        return self::checkHash($licenseKey, $licenseExpiryDate, $domain);
+    }
 
-	/**
-	 * @param       $licenseKey
-	 * @param       $licenseExpiryDate
-	 * @param       $domain
-	 *
-	 * @return bool
-	 */
-	private static function checkHash($licenseKey, $licenseExpiryDate, $domain) {
-		$hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
+    /**
+     * @param       $licenseKey
+     * @param       $licenseExpiryDate
+     * @param       $domain
+     *
+     * @return bool
+     */
+    private static function checkHash($licenseKey, $licenseExpiryDate, $domain) {
+        $hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
 
-		//all possible subdomains
-		$domainLevels = explode(".", $domain);
+        //all possible subdomains
+        $domainLevels = explode(".", $domain);
 
-		foreach ($domainLevels as $key => $domainLevel) {
-			if (count($domainLevels) < 2)
-				break;
-			unset($domainLevels[$key]);
-			$domain = implode(".", $domainLevels);
-			$hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
-		}
+        foreach ($domainLevels as $key => $domainLevel) {
+            if (count($domainLevels) < 2)
+                break;
+            unset($domainLevels[$key]);
+            $domain = implode(".", $domainLevels);
+            $hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
+        }
 
-		if (in_array($licenseKey, $hashes)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+        if (in_array($licenseKey, $hashes)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * @param DateTime $licenseExpiryDate
-	 *
-	 * @return DateInterval|false
-	 * @throws Exception
-	 */
-	public static function getLicenseRemainingExpiryDays(DateTime $licenseExpiryDate) {
+    /**
+     * @param DateTime $licenseExpiryDate
+     *
+     * @return DateInterval|false
+     * @throws Exception
+     */
+    public static function getLicenseRemainingExpiryDays(DateTime $licenseExpiryDate) {
 
-		$today = new DateTime('now');
+        $today = new DateTime('now');
 
-		return date_diff($licenseExpiryDate, $today);
-	}
+        return date_diff($licenseExpiryDate, $today);
+    }
 
-	/**
-	 * @return DateInterval|false|null
-	 * @throws Exception
-	 */
-	public static function checkLicenseRemainingTrialPeriod(){
-		$dateInterval = null;
+    /**
+     * @return DateInterval|false|null
+     * @throws Exception
+     */
+    public static function checkLicenseRemainingTrialPeriod(){
+        $dateInterval = null;
 
-		$path = dirname(__DIR__);
-		$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
-		if (file_exists($filename)) {
-			$fileTime = self::getTrialPeriod();
-			if ($fileTime->getTimestamp() > time()) {
-				$today = new DateTime();
-				$dateInterval = date_diff($fileTime, $today);
-			}
-		}
-		// Only for testing
+        $path = dirname(__DIR__);
+        $filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
+        if (file_exists($filename)) {
+            $fileTime = self::getTrialPeriod();
+            if ($fileTime->getTimestamp() > time()) {
+                $today = new DateTime();
+                $dateInterval = date_diff($fileTime, $today);
+            }
+        }
+        // Only for testing
 //		$dateInterval = null;
-		return $dateInterval;
-	}
+        return $dateInterval;
+    }
 
-	/**
-	 * @return DateTime|null
-	 * @throws Exception
-	 */
-	public static function getTrialPeriod(){
+    /**
+     * @return DateTime|null
+     * @throws Exception
+     */
+    public static function getTrialPeriod(){
 
-		$datetimeFile = null;
+        $datetimeFile = null;
 
-		$path = dirname(__DIR__);
-		$filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
-		if (file_exists($filename)) {
-			$fileTime = strtotime('+1 month',filemtime($filename));
-			$datetimeFile = new DateTime();
-			$datetimeFile->setTimestamp($fileTime);
-		}
-		return $datetimeFile;
-	}
+        $path = dirname(__DIR__);
+        $filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
+        if (file_exists($filename)) {
+            $fileTime = strtotime('+1 month',filemtime($filename));
+            $datetimeFile = new DateTime();
+            $datetimeFile->setTimestamp($fileTime);
+        }
+        return $datetimeFile;
+    }
 
     /**
      * @param PageModel $page
@@ -229,6 +230,10 @@ class PageLayoutListener {
      */
     public static function getModuleIdFromInsertTag($page)
     {
+        $parameters = [
+            'moduleIds' => null,
+            'tlCookieIds' => null
+        ];
         $id = $page->__get('id');
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT html FROM tl_content as tc 
@@ -240,6 +245,8 @@ class PageLayoutListener {
         $stmt->bindValue(1, $id);
         $stmt->execute();
         $htmlElements = $stmt->fetchAll(FetchMode::COLUMN);
+        if (empty($htmlElements))
+            return $parameters;
 
         $modIds = [];
         foreach ($htmlElements as $htmlElement) {
@@ -247,13 +254,19 @@ class PageLayoutListener {
             if (!empty($modId))
                 $modIds = array_merge($modId,$modIds);
         }
-        $return = self::findCookieModuleByPid($modIds);
-        return [
-            'moduleIds'=> $return['pid'],
-            'tlCookieIds' => $return['id']
-        ];
+        if (empty($modIds))
+            return $parameters;
 
-	}
+        $return = self::findCookieModuleByPid($modIds);
+        if (empty($return))
+            return $parameters;
+
+        $parameters['moduleIds'] = $return['pid'];
+        $parameters['tlCookieIds'] = $return['id'];
+
+        return $parameters;
+
+    }
 
     public static function getModuleIdFromHtmlElement($htmlElement)
     {
@@ -281,7 +294,7 @@ class PageLayoutListener {
             }
         }
         return $modId;
-	}
+    }
 
     /**
      * @param $modIds
@@ -296,7 +309,7 @@ class PageLayoutListener {
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetch();
-	}
+    }
 
     /**
      * @param LayoutModel|PageModel $layoutOrPage
@@ -306,16 +319,16 @@ class PageLayoutListener {
      * @return array
      * @throws DBALException
      */
-	public static function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
-		
-		$layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
+    public static function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
+
+        $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
         $tlCookieIds = [];
-		if (!empty($layoutModules)) {
-			foreach ($layoutModules as $key => $layoutModule) {
-				if (!empty($layoutModule['enable'])) {
+        if (!empty($layoutModules)) {
+            foreach ($layoutModules as $key => $layoutModule) {
+                if (!empty($layoutModule['enable'])) {
 
                     $conn = System::getContainer()->get('database_connection');
-				    $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid = ?";
+                    $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid = ?";
                     /** @var Statement $stmt */
                     $stmt = $conn->prepare($sql);
                     $stmt->bindValue(1, $layoutModule['mod']);
@@ -351,16 +364,16 @@ class PageLayoutListener {
                                 $moduleIds[] = $revoke['pid'];
                         }
                     }
-				}
-			}
-			$layoutOrPage->__set('modules', serialize($layoutModules));
-		}
+                }
+            }
+            $layoutOrPage->__set('modules', serialize($layoutModules));
+        }
 
-		return [
-		    'moduleIds' => $moduleIds,
+        return [
+            'moduleIds' => $moduleIds,
             'tlCookieIds' => $tlCookieIds,
         ];
-	}
+    }
 
     public static function setNewGroups($fieldPalette)
     {
@@ -386,7 +399,7 @@ class PageLayoutListener {
         };
         if ($save)
             $fieldPalette->save();
-	}
+    }
 
     /**
      * @param PageModel $pageModel
