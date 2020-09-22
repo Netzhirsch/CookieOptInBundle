@@ -303,6 +303,9 @@ class PageLayoutListener {
      */
     public static function findCookieModuleByPid($modIds)
     {
+        if (empty($modIds))
+            return null;
+
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (".implode(",",$modIds).")";
         /** @var Statement $stmt */
