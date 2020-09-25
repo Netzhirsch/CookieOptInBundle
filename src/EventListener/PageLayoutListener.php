@@ -326,11 +326,11 @@ class PageLayoutListener {
 
         $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
         $tlCookieIds = [];
+        $conn = System::getContainer()->get('database_connection');
         if (!empty($layoutModules)) {
             foreach ($layoutModules as $key => $layoutModule) {
                 if (!empty($layoutModule['enable'])) {
 
-                    $conn = System::getContainer()->get('database_connection');
                     $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid = ?";
                     /** @var Statement $stmt */
                     $stmt = $conn->prepare($sql);
@@ -338,20 +338,18 @@ class PageLayoutListener {
                     $stmt->execute();
                     $bars = $stmt->fetchAll();
 
-                    $tlCookieIds = [];
                     if (!empty($bars)) {
                         foreach ($bars as $bar) {
                             if ($removeModules) {
                                 unset($layoutModules[$key]);
                             }
-                            elseif(!in_array($bar['pid'],$moduleIds))
+                            elseif(!in_array($bar['pid'],$moduleIds)) {
                                 $moduleIds[] = $bar['pid'];
-
+                            }
                             $tlCookieIds[] = $bar['id'];
                         }
                     }
 
-                    $conn = System::getContainer()->get('database_connection');
                     $sql = "SELECT id,pid FROM tl_ncoi_cookie_revoke WHERE pid = ?";
                     /** @var Statement $stmt */
                     $stmt = $conn->prepare($sql);
@@ -370,6 +368,22 @@ class PageLayoutListener {
                 }
             }
             $layoutOrPage->__set('modules', serialize($layoutModules));
+        }
+        if (empty($moduleIds)) {
+            $pageId = $layoutOrPage->__get('id');
+            $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (SELECT module FROM tl_content AS content LEFT JOIN tl_article AS article ON article.id = content.pid LEFT JOIN tl_page AS page ON page.id = article.pid WHERE page.id = ? AND content.module <> 0 OR page.pid = ? AND content.module <> 0)";
+            /** @var Statement $stmt */
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(1, $pageId);
+            $stmt->bindValue(2, $pageId);
+            $stmt->execute();
+            $bars = $stmt->fetchAll();
+            if (!empty($bars)) {
+                foreach ($bars as $bar) {
+                    $tlCookieIds[] = $bar['id'];
+                    $moduleIds[] = $bar['pid'];
+                }
+            }
         }
 
         return [

@@ -131,16 +131,22 @@ class ParseFrontendTemplateListener
                 if (empty($pageModel))
                     $pageModel = $GLOBALS['objPage'];
 
-                $return = PageLayoutListener::checkModules($pageModel, [], []);
-                if (empty($return['moduleIds']))
-                    $return = PageLayoutListener::getModuleIdFromInsertTag($pageModel);
                 // Achtung moduleData enthält nur die ID
-                $moduleData[] = ['mod' => $return['moduleIds']];
-                if (empty($moduleData)) {
-                    $layout = LayoutModel::findById($pageModel->layout);
-                    // Achtung moduleData enthält die ID, col, enable
-                    $moduleData = StringUtil::deserialize($layout->modules);
+                $layout = LayoutModel::findById($pageModel->layout);
+                // Achtung moduleData enthält die ID, col, enable
+                $moduleData = StringUtil::deserialize($layout->modules);
+
+                $moduleInPage = PageLayoutListener::checkModules($pageModel, [], []);
+                foreach ($moduleInPage as $modulInPage) {
+                    if (isset($modulInPage['moduleIds']))
+                        $moduleData[] = ['mod' => $modulInPage['moduleIds']];
+                    else
+                        $moduleData[] = ['mod' => $modulInPage[0]];
                 }
+                $moduleInContent = PageLayoutListener::getModuleIdFromInsertTag($pageModel);
+                $moduleData[] = ['mod' => $moduleInContent['moduleIds']];
+
+
                 // Alle Cookiebars finden um über die ModuleIds die richtig zu finden.
                 $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie ";
                 /** @var Statement $stmt */
