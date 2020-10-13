@@ -108,16 +108,16 @@ $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'] = 'Se
 $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'PHP cookie (programming language), PHP data identifier. Contains only a reference to the current session. There is no information in the user\'s browser saved and this cookie can only be used by the current website. This cookie is used all used in forms to increase usability. Data entered in forms will be e.g. B. briefly saved when there is an input error by the user and the user receives an error message receives. Otherwise all data would have to be entered again';
 
 $GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_urls'] =
-    ['Blocked URL','Please enter the URL of the IFrame here. If you do not enter any text, the URL of the IFrame type will be used. Please separate multiple URLS with commas.'];
+    ['Blocked URL','Please enter the URL of the IFrame here. If you do not enter any text, the URL of the IFrame type will be used. Please separate multiple URLS with commas. '];
 
 $GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_text'] =
-    ['Blocked text','Please enter here the text that should be used for this blocked IFrame. If you do not enter any text, the corresponding text of the IFrame type will be used.'];
+    ['Blocked text','Please enter here the text that should be used for this blocked IFrame. If you do not enter any text, the corresponding text of the IFrame type will be used. {{provider}} is replaced by the registered provider, with link to the privacy terms, of the tool.'];
 
 /*************** End Fieldpalette Tools ***************/
 $GLOBALS['TL_LANG']['tl_module']['i_frame'] = [
-    'video' => ['Blocked Videos','Please enter here the text that appears when videos are blocked. {{provider}} is replaced by the registered provider of the tool.'],
-    'maps' => ['Blocked Maps','Please enter here the text that appears when cards are blocked. {{provider}} is replaced by the registered provider of the tool.'],
-    'i_frame' => ['Blocked iFrames','Please enter here the text that appears when iFrames are blocked. {{provider}} is replaced by the registered provider of the tool.'],
+    'video' => ['Blocked Videos','Please enter here the text that appears when videos are blocked. {{provider}} is replaced by the registered provider, with link to the privacy terms, of the tool.'],
+    'maps' => ['Blocked Maps','Please enter here the text that appears when cards are blocked. {{provider}} is replaced by the registered provider, with link to the privacy terms, of the tool.'],
+    'i_frame' => ['Blocked iFrames','Please enter here the text that appears when iFrames are blocked. {{provider}} is replaced by the registered provider, with link to the privacy terms, of the tool.'],
     'always_load'
     => [
         'Always-load-Check-Bock',
