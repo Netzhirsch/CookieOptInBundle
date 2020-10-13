@@ -296,7 +296,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				cookieToolsPrivacyPolicyUrl,
 				cookieToolsUse,
 				cookieToolGroup,
-				cookieToolExpiredTime
+				cookieToolExpiredTime,
+				i_frame_blocked_urls,
+				i_frame_blocked_text
 				',
 		],
 		'fields' => [
@@ -336,6 +338,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
 					'tl_class'  =>  'long clr',
+                    'mandatory' => false,
 				],
 			],
 			'cookieToolsTrackingServerUrl' => [
@@ -396,6 +399,26 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                     'tl_class'=>'long',
                 ],
                 'sql' => "int(2) NULL ",
+            ],
+            'i_frame_blocked_urls' => [
+                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_urls'],
+                'exclude'   => true,
+                'inputType' => 'text',
+                'eval' => [
+                    'mandatory' => false,
+                    'tl_class'=>'long',
+                ],
+                'sql' => "text NULL default ''",
+            ],
+            'i_frame_blocked_text' => [
+                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_text'],
+                'exclude'   => true,
+                'inputType' => 'text',
+                'eval' => [
+                    'mandatory' => false,
+                    'tl_class'=>'long',
+                ],
+                'sql' => "text NULL default ''",
             ]
 		],
 	],

@@ -111,6 +111,22 @@ $GLOBALS['TL_LANG']['tl_module']['essential'] = 'Essenziell';
 $GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse']
     = 'Speichert Informationen eines Besuchers, sobald er sich im Frontend einloggt.';
 
+$GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_urls'] =
+    ['Blockierte URL','Bitte geben Sie hier die URL des IFrames ein. Sollten Sie keine angeben wird die entsprechende URL des IFrame Typen verwendet. Mehrer URLS bitte mit Komma getrennt.'];
+
+$GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_text'] =
+    ['Blockierte Text','Bitte geben Sie hier den Text ein, der für dieses blockiert IFrame verwendet werden soll. Sollten Sie keinen angeben wird der entsprechende Text des IFrame Typen verwendet.'];
+
+/*************** End Fieldpalette Tools ***************/
+
+/*************** Fieldpalette otherScripts ***************/
+$GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Andere Skripte'];
+
+$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'];
+
+$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'];
+
+/*************** End Fieldpalette otherScripts ***************/
 $GLOBALS['TL_LANG']['tl_module']['i_frame'] = [
     'video' => ['Blockierte Videos','Bitte geben Sie hier den Text ein, der für blockiert Videos verwendet werden soll. {{provider}} wird durch den eingetragenen Anbieter des Tools ersetzt.'],
     'maps' => ['Blockierte Karten','Bitte geben Sie hier den Text ein, der für blockiert Karten verwendet werden soll. {{provider}} wird durch den eingetragenen Anbieter des Tools ersetzt.'],
@@ -136,16 +152,6 @@ $GLOBALS['TL_LANG']['tl_module']['i_frame_always_loadDefault']
     = 'immer laden';
 $GLOBALS['TL_LANG']['tl_module']['i_frame_loadDefault']
     = 'laden';
-/*************** End Fieldpalette Tools ***************/
-
-/*************** Fieldpalette otherScripts ***************/
-$GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Andere Skripte'];
-
-$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'] = ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'];
-
-$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'] = ['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'];
-
-/*************** End Fieldpalette otherScripts ***************/
 
 $GLOBALS['TL_LANG']['tl_module']['expireTime'] = ['Ablauf in Tagen'
     ,'Bitte geben Sie die Laufzeit der Einwilligung an. Danach wird die Cookie Bar erneut eingeblendet.'];

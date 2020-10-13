@@ -93,23 +93,42 @@ class ParseFrontendTemplateListener
         $cookieIds = [];
         $externalMediaCookiesInDB = null;
 
-        //Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
-        if (strpos($iframeHTML, 'youtube') !== false || strpos($iframeHTML, 'youtu.be') !== false) {
-            $iframeTypInHtml = 'youtube';
-        }elseif (strpos($iframeHTML, 'player.vimeo') !== false) {
-            $iframeTypInHtml = 'vimeo';
-        }elseif (strpos($iframeHTML, 'google.com/maps') || strpos($iframeHTML, 'maps.google') !== false) {
-            $iframeTypInHtml = 'googleMaps';
-        }
+        $url = substr($iframeHTML,strpos($iframeHTML,'src="'));
+        $url = str_replace('src="','',$url);
+        $url = substr($url,0,strpos($url,'"'));
 
-        //Suche nach dem iFrame.
-        $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
+        //Suche nach dem iFrame bei url.
+        $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = ? AND i_frame_blocked_urls LIKE ?";
         /** @var Statement $stmt */
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, 'cookieTools');
-        $stmt->bindValue(2, $iframeTypInHtml);
+        $stmt->bindValue(2, '%'.$url.'%');
         $stmt->execute();
         $externalMediaCookiesInDB = $stmt->fetchAll();
+
+        if (empty($externalMediaCookiesInDB)) {
+            $iFrameByUrl = false;
+//Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
+            if (strpos($iframeHTML, 'youtube') !== false || strpos($iframeHTML, 'youtu.be') !== false) {
+                $iframeTypInHtml = 'youtube';
+            }elseif (strpos($iframeHTML, 'player.vimeo') !== false) {
+                $iframeTypInHtml = 'vimeo';
+            }elseif (strpos($iframeHTML, 'google.com/maps') || strpos($iframeHTML, 'maps.google') !== false) {
+                $iframeTypInHtml = 'googleMaps';
+            }
+
+            //Suche nach dem iFrame.
+            $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
+            /** @var Statement $stmt */
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(1, 'cookieTools');
+            $stmt->bindValue(2, $iframeTypInHtml);
+            $stmt->execute();
+            $externalMediaCookiesInDB = $stmt->fetchAll();
+        } else {
+            $iFrameByUrl = true;
+        }
+
         global $objPage;
         $provider = $objPage->rootTitle;
         $privacyPolicyLink = '';
@@ -164,8 +183,9 @@ class ParseFrontendTemplateListener
                                     if (!empty($externalMediaCookieInDB['cookieToolsProvider']))
                                         $provider = $externalMediaCookieInDB['cookieToolsProvider'];
                                     $modId = $cookieBar['pid'];
-                                    if (!empty($externalMediaCookieInDB['cookieToolsPrivacyPolicyUrl']))
+                                    if (!empty($externalMediaCookieInDB['cookieToolsPrivacyPolicyUrl'])) {
                                         $privacyPolicyLink = $externalMediaCookieInDB['cookieToolsPrivacyPolicyUrl'];
+                                    }
                                     elseif (!empty(PageModel::findById($cookieBar['privacyPolicy']))) {
                                         $privacyPolicyLink = PageModel::findById($cookieBar['privacyPolicy']);
                                         $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
@@ -188,22 +208,35 @@ class ParseFrontendTemplateListener
         /**
          * iFrame spezifisches HTML
          */
-        $blockClass = 'ncoi---'.$iframeTypInHtml;
-        $blockTexts = $this->loadBlockContainerTexts($modId);
+        if ($iFrameByUrl)
+            $blockClass = implode('-',$cookieIds);
+        else
+            $blockClass = 'ncoi---'.$iframeTypInHtml;
+
         $id = uniqid();
-        $disclaimerString = '';
-        switch($iframeTypInHtml) {
-            case 'youtube':
-            case 'vimeo':
-                $disclaimerString = $blockTexts['i_frame_video'];
-                break;
-            case 'googleMaps':
-                $disclaimerString = $blockTexts['i_frame_maps'];
-                break;
-            case 'iframe':
-                $disclaimerString = $blockTexts['i_frame_i_frame'];
-                break;
+        $blockTexts = $this->loadBlockContainerTexts($modId);
+
+        if ( isset ($externalMediaCookiesInDB[0]['i_frame_blocked_text']) ) {
+
+            $disclaimerString = $externalMediaCookiesInDB[0]['i_frame_blocked_text'];
+
+        } else {
+
+            $disclaimerString = '';
+            switch($iframeTypInHtml) {
+                case 'youtube':
+                case 'vimeo':
+                    $disclaimerString = $blockTexts['i_frame_video'];
+                    break;
+                case 'googleMaps':
+                    $disclaimerString = $blockTexts['i_frame_maps'];
+                    break;
+                case 'iframe':
+                    $disclaimerString = $blockTexts['i_frame_i_frame'];
+                    break;
+            }
         }
+
         $disclaimerString = str_replace('{{provider}}','<a href="'.$privacyPolicyLink.'" target="_blank">'.$provider.'</a>',$disclaimerString);
 
         $htmlDisclaimer .= $disclaimerString;
@@ -230,7 +263,7 @@ class ParseFrontendTemplateListener
 
         // Wenn iFrame nicht im Backend, kann nur das iFrame zurückgegeben werden.
         $isIFrameTypInDB = false;
-        if (in_array($iframeTypInHtml,$blockedIFrames))
+        if (in_array($iframeTypInHtml,$blockedIFrames) || $iFrameByUrl)
             $isIFrameTypInDB = true;
 
         if (!$isIFrameTypInDB)

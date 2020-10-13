@@ -108,7 +108,15 @@
 			let input = parent.find('.ncoi---sliding');
 			if (input.prop('checked')) {
 				//In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
-				$('[data-block-class="' + input.data('block-class') + '"]').prop('checked', true).trigger('change');
+				let blockClass = $('[data-block-class="' + input.data('block-class') + '"]');
+				blockClass.prop('checked', true).trigger('change');
+				let inputClass = input.data('block-class')+"";
+				inputClass = inputClass.split('-');
+				inputClass.forEach(function (id,value,test){
+					let blockClassIds = $('[data-cookie-id="' + id + '"]');
+					blockClassIds.prop('checked', true).trigger('change');
+				});
+
 				track(1, storageKey);
 				checkExternalMediaOnClick();
 
@@ -376,7 +384,15 @@ function addIframe(parent) {
 	if (!parent.hasClass('ncoi---hidden')) {
 		let html = '';
 		try {
-			html = atob(parent.find('script').text().trim());
+			if (parent.length > 1) {
+				for (let i = 0; i < parent.length; i++) {
+					$('.'+parent[i].classList[3]).each(function (){
+						html = atob($(this).find('script').text().trim());
+					});
+				}
+			} else {
+				html = atob(parent.find('script').text().trim());
+			}
 		} catch (e) {
 			console.error('Das IFrame html enthält invalide Zeichen.')
 		}
