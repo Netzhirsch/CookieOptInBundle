@@ -97,6 +97,12 @@ class ParseFrontendTemplateListener
         $url = str_replace('src="','',$url);
         $url = substr($url,0,strpos($url,'"'));
 
+        $urlArray = explode('/',$url);
+        foreach ($urlArray as $item) {
+            if (strpos($item,'.'))
+                $url = $item;
+        }
+
         //Suche nach dem iFrame bei url.
         $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = ? AND i_frame_blocked_urls LIKE ?";
         /** @var Statement $stmt */
@@ -280,14 +286,22 @@ class ParseFrontendTemplateListener
         }
 
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
-        $height = substr($iframeHTML, strpos($iframeHTML, 'height'), 11);
-        $height = substr($height, 8, 3);
+        $heightPosition = strpos($iframeHTML, 'height="')+strlen('height="');
+        $height = substr($iframeHTML, $heightPosition);
+        $heightPosition = strpos($height, '"');
+        $height = substr($height, 0,$heightPosition);
+        if(!$this->hasUnit($height))
+            $height .= 'px';
 
-        $width = substr($iframeHTML, strpos($iframeHTML, 'width'), 11);
-        $width = substr($width, 7, 3);
+        $widthPosition = strpos($iframeHTML, 'width="')+strlen('width="');
+        $width = substr($iframeHTML, $widthPosition);
+        $widthPosition = strpos($width, '"');
+        $width = substr($width, 0,$widthPosition);
+        if(!$this->hasUnit($width))
+            $width .= 'px';
 
         //Umschliedender Container damit Kinder zentiert werden könne
-        $htmlContainer = '<div class="'.$class.'" style="height:' . $height . 'px; width:' . $width . 'px" >';
+        $htmlContainer = '<div class="'.$class.'" style="height:' . $height . '; width:' . $width . '" >';
         $htmlContainerEnd = '</div>';
 
         //Container für alle Inhalte
@@ -362,5 +376,31 @@ class ParseFrontendTemplateListener
         $stmt->execute();
 
         return $stmt->fetch();
+    }
+
+    private function hasUnit($html)
+    {
+        $units = [
+            'px',
+            '%',
+            'em',
+            'rem',
+            'vw',
+            'vh',
+            'vmin',
+            'vmax',
+            'ex',
+            'pt',
+            'pc',
+            'in',
+            'cm',
+            'mm',
+        ];
+        foreach ($units as $unit) {
+            if (strpos($html,$unit) !== false)
+                return true;
+
+        }
+        return false;
     }
 }
