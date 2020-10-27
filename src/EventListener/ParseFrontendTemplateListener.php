@@ -168,7 +168,7 @@ class ParseFrontendTemplateListener
                     else
                         $moduleData[] = ['mod' => $modulInPage[0]];
                 }
-                $moduleInContent = PageLayoutListener::getModuleIdFromInsertTag($pageModel);
+                $moduleInContent = PageLayoutListener::getModuleIdFromInsertTag($pageModel, $layout);
                 $moduleData[] = ['mod' => $moduleInContent['moduleIds']];
 
 

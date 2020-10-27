@@ -40,7 +40,7 @@ class PageLayoutListener {
                 $_SESSION['nh_remove_modules'] = $removeModules;
             }
             else {
-                $return = self::getModuleIdFromInsertTag($pageModel);
+                $return = self::getModuleIdFromInsertTag($pageModel,$layout);
                 if (!empty($return['moduleIds']))
                     $moduleIds = $return['moduleIds'];
             }
@@ -65,7 +65,10 @@ class PageLayoutListener {
         }
 
         //module in this layout
-        $modId = $moduleIds[0];
+        if (is_array($moduleIds))
+            $modId = $moduleIds[0];
+        else
+            $modId = $moduleIds;
 
         /********* update groups for a version < 1.3.0 ************************************************************/
         $conn = System::getContainer()->get('database_connection');
@@ -228,7 +231,7 @@ class PageLayoutListener {
      * @return mixed[]
      * @throws DBALException
      */
-    public static function getModuleIdFromInsertTag($page)
+    public static function getModuleIdFromInsertTag($page,LayoutModel $layout)
     {
         $parameters = [
             'moduleIds' => null,
@@ -245,6 +248,17 @@ class PageLayoutListener {
         $stmt->bindValue(1, $id);
         $stmt->execute();
         $htmlElements = $stmt->fetchAll(FetchMode::COLUMN);
+        $id = $layout->__get('id');
+        $sql = "SELECT html FROM tl_module as tm 
+                LEFT JOIN tl_layout tlayout on tlayout.id = tm.pid
+                WHERE tlayout.id = ?"
+        ;
+        /** @var Statement $stmt */
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(1, $id);
+        $stmt->execute();
+        $htmlElementsLayout = $stmt->fetchAll(FetchMode::COLUMN);
+        $htmlElements = array_merge($htmlElementsLayout,$htmlElements);
         if (empty($htmlElements))
             return $parameters;
 
