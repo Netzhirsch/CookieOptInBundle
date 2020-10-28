@@ -24,6 +24,7 @@ class ParseFrontendTemplateListener
             $template == 'ce_html' && strpos($buffer, '<iframe') !== false
             || $template == 'ce_youtube' && strpos($buffer, '<iframe') !== false
             || $template == 'ce_vimeo' && strpos($buffer, '<iframe') !== false
+            || $template == 'ce_metamodel_list' && strpos($buffer, '<iframe') !== false
         ) {
             return $this->iframe($buffer);
         } elseif ($template == 'analytics_google' && !empty($buffer)
