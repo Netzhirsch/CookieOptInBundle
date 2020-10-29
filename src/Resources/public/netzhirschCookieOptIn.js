@@ -342,87 +342,92 @@ function track(newConsent, storageKey) {
 	});
 }// End Track
 
-//ausführung beim Speicher der Entscheidung
-function checkExternalMediaOnClick() {
-	let cookiesInput = $('table tbody .ncoi---cookie');
-	cookiesInput.each(function () {
-		let blockClass = '.' + $(this).data('block-class');
-		let blockClassElement = $(blockClass);
-		if ($(this).prop('checked')) {
-			//Klasses des Blockconainter aus input data-block-class auslesen
-			// Nur gefunden BlockContainer werden bearbeitet
-			// jedes Element separat
-			blockClassElement.each(function () {
-				addIframe($(this));
-			});
-		} else {
-			blockClassElement.each(function () {
-				$(this).removeClass('ncoi---hidden');
-				$(this).next('iframe').addClass('ncoi---hidden');
-			});
-		}
-	});
-}
-
-function checkExternalMediaOnLoad(cookieIds) {
-	cookieIds.forEach(function (cookieId) {
-		let iframe = $('.ncoi---cookie-id-' + cookieId);
-		$('#' + cookieId).trigger('change');
-		if (iframe.length > 0) {
-			addIframe((iframe));
-		}
-	});
-}
-
-function checkGroupsOnLoad(cookieIds) {
-	cookieIds.forEach(function (cookieId) {
-		$('.ncoi---cookie-id-' + cookieId).prop('checked');
-	});
-}
-
-function addIframe(parent) {
-	if (!parent.hasClass('ncoi---hidden')) {
-		let html = '';
-		try {
-			if (parent.length > 1) {
-				for (let i = 0; i < parent.length; i++) {
-					$('.'+parent[i].classList[3]).each(function (){
-						html = atob($(this).find('script').text().trim());
-					});
-				}
+	//ausführung beim Speicher der Entscheidung
+	function checkExternalMediaOnClick() {
+		let cookiesInput = $('table tbody .ncoi---cookie');
+		cookiesInput.each(function () {
+			let blockClass = '.' + $(this).data('block-class');
+			let blockClassElement = $(blockClass);
+			if ($(this).prop('checked')) {
+				//Klasses des Blockconainter aus input data-block-class auslesen
+				// Nur gefunden BlockContainer werden bearbeitet
+				// jedes Element separat
+				blockClassElement.each(function () {
+					addIframe($(this));
+				});
 			} else {
-				html = atob(parent.find('script').text().trim());
+				blockClassElement.each(function () {
+					$(this).removeClass('ncoi---hidden');
+					$(this).next('iframe').addClass('ncoi---hidden');
+				});
 			}
-		} catch (e) {
-			console.error('Das IFrame html enthält invalide Zeichen.')
+		});
+	}
+
+	function checkExternalMediaOnLoad(cookieIds) {
+		$('.ncoi---blocked').each(function (key,value) {
+			let iframe = $(this);
+			cookieIds.forEach(function (cookieId) {
+				if (value.className.indexOf(cookieId) !== -1) {
+					iframe.trigger('change');
+					if (iframe.length > 0) {
+						addIframe(iframe);
+					}
+				}
+			});
+		});
+	}
+
+	function checkGroupsOnLoad(cookieIds) {
+		cookieIds.forEach(function (cookieId) {
+			$('.ncoi---cookie-id-' + cookieId).prop('checked');
+		});
+	}
+
+	function addIframe(parent) {
+
+		if (!parent.hasClass('ncoi---hidden')) {
+			let html = '';
+			try {
+				if (parent.length > 1) {
+					for (let i = 0; i < parent.length; i++) {
+						$('.'+parent[i].classList[3]).each(function (){
+							html = atob($(this).find('script').text().trim());
+						});
+					}
+				} else {
+					html = atob(parent.find('script').text().trim());
+				}
+			} catch (e) {
+				console.error('Das IFrame html enthält invalide Zeichen.')
+			}
+			parent.addClass('ncoi---hidden');
+			parent.after(html);
 		}
-		parent.addClass('ncoi---hidden');
-		parent.after(html);
 	}
-}
 
-function decodeAfter(templateScriptsEncodeElement) {
-	let templateScriptsEncode = templateScriptsEncodeElement.html();
-	templateScriptsEncode = templateScriptsEncode.replace('<!--', '');
-	templateScriptsEncode = templateScriptsEncode.replace('-->', '');
-	try {
-		templateScriptsEncode = atob(templateScriptsEncode);
-	} catch (e) {
-		console.error('Das Analyse Template enthält invalide Zeichen.')
+	function decodeAfter(templateScriptsEncodeElement) {
+		let templateScriptsEncode = templateScriptsEncodeElement.html();
+		templateScriptsEncode = templateScriptsEncode.replace('<!--', '');
+		templateScriptsEncode = templateScriptsEncode.replace('-->', '');
+		try {
+			templateScriptsEncode = atob(templateScriptsEncode);
+		} catch (e) {
+			console.error('Das Analyse Template enthält invalide Zeichen.')
+		}
+		templateScriptsEncodeElement.after(templateScriptsEncode);
 	}
-	templateScriptsEncodeElement.after(templateScriptsEncode);
-}
 
-function dateString() {
-	let datum = new Date();
-	let monat = datum.getMonth() + 1;
-	let tag = datum.getDate();
-	if (monat < 10)
-		monat = '0' + monat;
-	if (tag < 10)
-		tag = '0' + tag;
-	return datum.getFullYear() + '-' + monat + '-' + tag;
-}
+	function dateString() {
+		let datum = new Date();
+		let monat = datum.getMonth() + 1;
+		let tag = datum.getDate();
+		if (monat < 10)
+			monat = '0' + monat;
+		if (tag < 10)
+			tag = '0' + tag;
+		return datum.getFullYear() + '-' + monat + '-' + tag;
+	}
 	function checkCookieArray(cookiesToDelete,cookieToolsTechnicalName) {
 		if (cookieToolsTechnicalName.indexOf(',') > -1) {
 			let technicalNames = cookieToolsTechnicalName.split(',');
