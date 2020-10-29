@@ -115,7 +115,7 @@ $GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_urls'] =
     ['Blockierte URL','Bitte geben Sie hier die URL des IFrames ein. Sollten Sie keine angeben wird die entsprechende URL des IFrame Typen verwendet. Mehrer URLS bitte mit Komma getrennt.'];
 
 $GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_text'] =
-    ['Blockierte Text','Bitte geben Sie hier den Text ein, der für dieses blockiert IFrame verwendet werden soll. Sollten Sie keinen angeben wird der entsprechende Text des IFrame Typen verwendet. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'];
+    ['Blockierter Text','Bitte geben Sie hier den Text ein, der für dieses blockiert IFrame verwendet werden soll. Sollten Sie keinen angeben wird der entsprechende Text des IFrame Typen verwendet. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'];
 
 /*************** End Fieldpalette Tools ***************/
 
