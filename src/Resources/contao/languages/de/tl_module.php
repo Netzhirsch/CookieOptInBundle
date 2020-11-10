@@ -215,5 +215,5 @@ $GLOBALS['TL_LANG']['tl_module']['anon'] = 'anonymisiert';
 
 $GLOBALS['TL_LANG']['tl_module']['external'] = ['Extern','Über Artikel eingebundene HTML Elemente mit iFrame werden nur bei Einwilligung geladen.'];
 
-$GLOBALS['TL_LANG']['tl_module']['youtube'] = 'Youtube';
+$GLOBALS['TL_LANG']['tl_module']['youtube'] = 'YouTube';
 $GLOBALS['TL_LANG']['tl_module']['googleMaps'] = 'Google Maps';
