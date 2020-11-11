@@ -23,6 +23,8 @@ class ParseFrontendTemplateListener
         if (
             $template == 'ce_html' && strpos($buffer, '<iframe') !== false
             || $template == 'ce_youtube' && strpos($buffer, '<iframe') !== false
+            || $template == 'ce_youtube_nocookie' && strpos($buffer, '<iframe') !== false
+            || $template == 'ce_youtube_optin' && strpos($buffer, '<iframe') !== false
             || $template == 'ce_vimeo' && strpos($buffer, '<iframe') !== false
             || $template == 'ce_metamodel_list' && strpos($buffer, '<iframe') !== false
         ) {
