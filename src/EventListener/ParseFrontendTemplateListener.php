@@ -19,21 +19,23 @@ class ParseFrontendTemplateListener
      */
     public function onParseFrontendTemplate($buffer, $template)
     {
-        //iFrame als HTML Element eingebunden
-        if (
-            $template == 'ce_html' && strpos($buffer, '<iframe') !== false
-            || $template == 'ce_youtube' && strpos($buffer, '<iframe') !== false
-            || $template == 'ce_youtube_nocookie' && strpos($buffer, '<iframe') !== false
-            || $template == 'ce_youtube_optin' && strpos($buffer, '<iframe') !== false
-            || $template == 'ce_vimeo' && strpos($buffer, '<iframe') !== false
-            || $template == 'ce_metamodel_list' && strpos($buffer, '<iframe') !== false
-        ) {
-            return $this->iframe($buffer);
-        } elseif ($template == 'analytics_google' && !empty($buffer)
-            || $template == 'analytics_piwik' && !empty($buffer)) {
-            return $this->analyticsTemplate($buffer);
-        } elseif ($template == 'mod_matomo_TrackingTagAsynchron') {
-            return $this->matomoTrackingTagTemplate($buffer);
+        // Nur passende Template untersuchen um Zeit zu sparen
+        if (!empty($buffer)) {
+            if (strpos($buffer, '<iframe') !== false) {
+                if (
+                    strpos($template, 'ce_html') !== false
+                    || strpos($template, 'ce_youtube') !== false
+                    || strpos($template, 'ce_vimeo') !== false
+                    || strpos($template, 'ce_metamodel_list') !== false
+                ) {
+                    return $this->iframe($buffer);
+                }
+            }
+            if (strpos($template, 'google') !== false) {
+                return $this->analyticsTemplate($buffer,'googleAnalytics');
+            } elseif (strpos($template, 'piwik') !== false || strpos($template, 'matomo') !== false) {
+                return $this->analyticsTemplate($buffer,'matomo');
+            }
         }
 
         // nichts ändern
@@ -348,21 +350,11 @@ class ParseFrontendTemplateListener
             return $newBuffer;
         }
     }
-    private function analyticsTemplate($buffer) {
-        // cookie tool select finden
-        if (strpos($buffer, 'googletagmanager.com') !== false) {
-            $analyticsType = 'googleAnalytics';
-        } else {
-            $analyticsType = 'matomo';
-        }
+
+    private function analyticsTemplate($analyticsType,$buffer) {
         //class hinzufügen damit die in JS genutzt werden kann
         $buffer = str_replace('<script','<script class="analytics-decoded-'.$analyticsType.'"',$buffer);
         return '<script id="analytics-encoded-'.$analyticsType.'"><!-- '.base64_encode($buffer).' --></script>';
-    }
-
-    private function matomoTrackingTagTemplate($buffer) {
-        $buffer = str_replace('<script','<script class="analytics-decoded-matomo-tracking-tag"',$buffer);
-        return '<script id="analytics-encoded-matomo-tracking-tag"><!-- '.base64_encode($buffer).' --></script>';
     }
 
     private function loadBlockContainerTexts($modId) {
