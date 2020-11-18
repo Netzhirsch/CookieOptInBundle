@@ -357,7 +357,7 @@ function track(newConsent, storageKey) {
 		$('.ncoi---blocked').each(function (key,value) {
 			let iframe = $(this);
 			cookieIds.forEach(function (cookieId) {
-				if (value.className.indexOf(cookieId) !== -1) {
+				if (value.hasClass('ncoi---cookie-id-'+cookieId)) {
 					iframe.trigger('change');
 					if (iframe.length > 0) {
 						addIframe(iframe);
