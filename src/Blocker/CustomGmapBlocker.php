@@ -49,10 +49,12 @@ class CustomGmapBlocker
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $externalMediaCookiesInDB = Blocker::getExternalMediaByType('maps.google',$conn,'googleMaps');
+        if (empty($externalMediaCookiesInDB))
+            return null;
         $dataFromExternalMediaAndBar->setIFrameType('googleMaps');
 
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-            $dataFromExternalMediaAndBar,$conn,$externalMediaCookiesInDB,$moduleData,$buffer
+            $dataFromExternalMediaAndBar,$conn,$externalMediaCookiesInDB,$moduleData
         );
 
         $barRepo = new BarRepository($conn);
