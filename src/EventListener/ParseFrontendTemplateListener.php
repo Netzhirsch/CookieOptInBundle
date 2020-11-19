@@ -9,6 +9,7 @@ use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ParseFrontendTemplateListener
@@ -73,6 +74,9 @@ class ParseFrontendTemplateListener
         return $container->get('request_stack');
     }
 
+    /**
+     * @return ContainerInterface
+     */
     private function getContainer() {
         return System::getContainer();
     }

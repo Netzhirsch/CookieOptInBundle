@@ -45,12 +45,13 @@ class CustomGmapBlocker
 
         $moduleData = Blocker::getModulData($requestStack);
         if (empty($moduleData))
-            return null;
+            return $buffer;
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $externalMediaCookiesInDB = Blocker::getExternalMediaByType('maps.google',$conn,'googleMaps');
         if (empty($externalMediaCookiesInDB))
-            return null;
+            return $buffer;
+
         $dataFromExternalMediaAndBar->setIFrameType('googleMaps');
 
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
