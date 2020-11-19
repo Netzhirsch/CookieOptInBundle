@@ -82,8 +82,9 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
     'matomo' => 'Matomo',
     'youtube' => 'YouTube',
     'vimeo' => 'Vimeo',
-    'googleMaps' => 'iFrame [Google Maps]',
-    'iframe' => 'iFrame [Other]',
+    'googleMaps' => 'IFrame [Google Maps]',
+    'iframe' => 'IFrame [Other]',
+    'script' => 'HTML-element [script]',
     '-' => '-'
 ];
 

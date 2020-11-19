@@ -99,7 +99,6 @@
 			});
 
 		});
-
 		$('.ncoi---release').on('click', function (e) {
 			e.preventDefault();
 			//Um richtige Chechbox zu finden
@@ -111,12 +110,8 @@
 				let blockClass = $('[data-block-class="' + input.data('block-class') + '"]');
 				blockClass.prop('checked', true).trigger('change');
 				let inputClass = input.data('block-class')+"";
-				inputClass = inputClass.split('-');
-				inputClass.forEach(function (id,value,test){
-					let blockClassIds = $('[data-cookie-id="' + id + '"]');
-					blockClassIds.prop('checked', true).trigger('change');
-				});
-
+				let blockClassIds = $('[data-block-class="ncoi---' + inputClass + '"]');
+				blockClassIds.prop('checked', true).trigger('change');
 				track(1, storageKey);
 				checkExternalMediaOnClick();
 
@@ -264,13 +259,11 @@ function track(newConsent, storageKey) {
 						let templateScriptsEncodeElement = $('#analytics-encoded-matomo');
 
 						if (
-							templateScriptsEncodeElement.length === 0
+							templateScriptsEncodeElement.length !== 0
 						) {
 							decodeAfter(templateScriptsEncodeElement);
 
-						} else if (
-							templateScriptsEncodeElement.length === 0
-						) {
+						} else  {
 
 							let url = tool.cookieToolsTrackingServerUrl;
 							if (url.slice(-1) !== '/')
@@ -357,7 +350,7 @@ function track(newConsent, storageKey) {
 		$('.ncoi---blocked').each(function (key,value) {
 			let iframe = $(this);
 			cookieIds.forEach(function (cookieId) {
-				if (value.hasClass('ncoi---cookie-id-'+cookieId)) {
+				if ($(value).hasClass('ncoi---cookie-id-'+cookieId)) {
 					iframe.trigger('change');
 					if (iframe.length > 0) {
 						addIframe(iframe);

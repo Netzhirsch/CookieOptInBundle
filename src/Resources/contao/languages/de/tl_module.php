@@ -76,6 +76,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'] = [
     'vimeo' => 'Vimeo',
     'googleMaps' => 'iFrame [Google Maps]',
     'iframe' => 'iFrame [Andere]',
+    'script' => 'HTML-Element [script]',
     '-' => '-'
 ];
 
