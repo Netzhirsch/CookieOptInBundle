@@ -81,7 +81,12 @@ class IFrameBlocker
             $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($html));
         }
 
-        $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar($conn,$url,$moduleData,$iframeHTML);
+        $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
+            $dataFromExternalMediaAndBar,
+            $conn,
+            $externalMediaCookiesInDB,
+            $moduleData
+        );
         // Wenn iFrame nicht im Backend, kann nur das iFrame zurückgegeben werden.
         $isIFrameTypInDB = false;
         if (in_array($iframeTypInHtml,$blockedIFrames) || empty($dataFromExternalMediaAndBar->getDisclaimer()))
