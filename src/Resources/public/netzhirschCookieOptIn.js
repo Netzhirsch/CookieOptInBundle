@@ -43,6 +43,11 @@
 			$('.ncoi---behind').addClass('ncoi---hidden');
 			checkExternalMediaOnClick();
 			track(1, storageKey);
+			$('.ncoi---cookie').each(function (){
+				if ($(this).data('block-class') === 'ncoi---googleMaps' && $(this).prop('checked')) {
+					addCustomGmapOnClickLoad();
+				}
+			});
 		});
 
 		$('#ncoi---allowed--all').on('click', function (e) {
@@ -51,6 +56,7 @@
 			$('.ncoi---cookie-group input').prop('checked', true);
 			$('.ncoi---sliding').prop('checked', true);
 			checkExternalMediaOnClick();
+			addCustomGmapOnClickLoad();
 			track(1, storageKey);
 		});
 
@@ -105,9 +111,9 @@
 			//und um Blockcontainer vielleicht auszublenden und iFrame anzuhängen
 			let parent = $(this).parents('.ncoi---blocked');
 			let input = parent.find('.ncoi---sliding');
+			let blockClass = $('[data-block-class="' + input.data('block-class') + '"]');
 			if (input.prop('checked')) {
 				//In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
-				let blockClass = $('[data-block-class="' + input.data('block-class') + '"]');
 				blockClass.prop('checked', true).trigger('change');
 				let inputClass = input.data('block-class')+"";
 				let blockClassIds = $('[data-block-class="ncoi---' + inputClass + '"]');
@@ -122,6 +128,7 @@
 			} else {
 				addIframe(parent);
 			}
+			addCustomGmapOnClickLoad();
 		});
 });
 
@@ -339,8 +346,10 @@ function track(newConsent, storageKey) {
 				});
 			} else {
 				blockClassElement.each(function () {
-					$(this).removeClass('ncoi---hidden');
-					$(this).next('iframe').addClass('ncoi---hidden');
+					if (!$(this).hasClass('ncoi---googleMaps')) {
+						$(this).removeClass('ncoi---hidden');
+						$(this).next('iframe').addClass('ncoi---hidden');
+					}
 				});
 			}
 		});
@@ -365,6 +374,15 @@ function track(newConsent, storageKey) {
 			$('.ncoi---cookie-id-' + cookieId).prop('checked');
 		});
 	}
+
+	function addCustomGmapOnClickLoad() {
+		$('.ce_google_map').removeClass('ncoi---hidden');
+		let gmapBlockContainer = $('.ncoi---custom_gmap');
+		gmapBlockContainer.find('.ce_google_map_inside').css('height',0);
+		gmapBlockContainer.addClass('ncoi---hidden');
+	}
+
+
 
 	function addIframe(parent) {
 
@@ -410,6 +428,7 @@ function track(newConsent, storageKey) {
 			tag = '0' + tag;
 		return datum.getFullYear() + '-' + monat + '-' + tag;
 	}
+
 	function checkCookieArray(cookiesToDelete,cookieToolsTechnicalName) {
 		if (cookieToolsTechnicalName.indexOf(',') > -1) {
 			let technicalNames = cookieToolsTechnicalName.split(',');

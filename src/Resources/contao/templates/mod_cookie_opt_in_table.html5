@@ -24,8 +24,6 @@
     </td>
 </tr>
 <tr>
-</tr>
-<tr>
     <th>
         <?php echo $tlLang['cookieToolsTechnicalName']; ?>
     </th>

@@ -179,12 +179,11 @@ class Blocker
 
     public static function getHtmlContainer(
         DataFromExternalMediaAndBar $dataFromExternalMediaAndBar,
-        $blockTexts,
-        $disclaimerString,
-        $height,
-        $width,
+        $loadStrings,
+        $size,
         $html,
-        $iconPath = ''
+        $iconPath = '',
+        $isCustomGmap = false
     ) {
 
         $cookieIds = $dataFromExternalMediaAndBar->getCookieIds();
@@ -195,30 +194,32 @@ class Blocker
         $htmlDisclaimer = '<div class="ncoi---blocked-disclaimer">';
         $htmlIcon = '';
 
+        $disclaimerString = $dataFromExternalMediaAndBar->getDisclaimer();
         $disclaimerString = str_replace('{{provider}}','<a href="'.$privacyPolicyLink.'" target="_blank">'.$provider.'</a>',$disclaimerString);
         $htmlDisclaimer .= $disclaimerString;
 
         $id = uniqid();
         $iframeTypInHtml = $dataFromExternalMediaAndBar->getIFrameType();
         $blockClass = $dataFromExternalMediaAndBar->getIFrameType();
+        $htmlReleaseAll = '';
         switch($iframeTypInHtml) {
             case 'youtube':
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>YouTube '.$blockTexts['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>YouTube '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'googleMaps':
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$blockTexts['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'vimeo':
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$blockTexts['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'iframe':
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$blockTexts['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'script':
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="script"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Script '.$blockTexts['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="script"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Script '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
         }
 
@@ -235,14 +236,21 @@ class Blocker
             }
         }
 
+        $style = '';
+        if (!$isCustomGmap) {
+            $width = $size['width'];
+            $height = $size['height'];
+            if (!self::hasUnit($width)) {
+                $width .= 'px';
+            }
+            if (!self::hasUnit($height)) {
+                $height .= 'px';
+            }
 
-        if(!self::hasUnit($width))
-            $width .= 'px';
-        if(!self::hasUnit($height))
-            $height .= 'px';
-
+            $style = 'style="height:'.$height.'; width:'.$width.'"';
+        }
         //Umschliedender Container damit Kinder zentiert werden könne
-        $htmlContainer = '<div class="'.$class.'" style="height:' . $height . '; width:' . $width . '" >';
+        $htmlContainer = '<div class="'.$class.'" '.$style.' >';
         $htmlContainerEnd = '</div>';
 
         //Container für alle Inhalte
@@ -254,12 +262,15 @@ class Blocker
         //Damit JS das iFrame wieder laden kann
         $htmlConsentButton = '<div class="ncoi---blocked-link"><button type="submit" name="iframe" value="'.$iframeTypInHtml.'" class="ncoi---release">';
 
-        $htmlConsentButtonEnd = '<span>' . $blockTexts['i_frame_load'].'</span></button></div>';
+        $htmlConsentButtonEnd = '<span>' . $loadStrings['i_frame_load'].'</span></button></div>';
         $htmlInputCurrentPage = '<input class="ncoi---no-script--hidden" type="text" name="currentPage" value="'.$_SERVER['REDIRECT_URL'].'">';
         $htmlInputModID = '<input class="ncoi---no-script--hidden" type="text" name="data[modId]" value="'.$dataFromExternalMediaAndBar->getModId().'">';
 
         //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
-        $iframe = '<script type="text/template">' . base64_encode($html) . '</script>';
+        $iframe = '';
+        if (!$isCustomGmap) {
+            $iframe = '<script type="text/template">' . base64_encode($html) . '</script>';
+        }
 
         return $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
     }

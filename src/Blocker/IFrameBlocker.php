@@ -121,7 +121,7 @@ class IFrameBlocker
                     break;
             }
         }
-
+        $dataFromExternalMediaAndBar->setDisclaimer($disclaimerString);
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
         $heightPosition = strpos($iframeHTML, 'height="')+strlen('height="');
         $height = substr($iframeHTML, $heightPosition);
@@ -132,13 +132,14 @@ class IFrameBlocker
         $width = substr($iframeHTML, $widthPosition);
         $widthPosition = strpos($width, '"');
         $width = substr($width, 0,$widthPosition);
-
+        $size = [
+            'height' => $height,
+            'width' => $width
+        ];
         $newBuffer = Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockTexts,
-            $disclaimerString,
-            $height,
-            $width,
+            $size,
             $iframeHTML,
             $iconPath,
         );

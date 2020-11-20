@@ -74,12 +74,14 @@ class ScriptBlocker
         if (Blocker::isAllowed($dataFromExternalMediaAndBar))
             return $buffer;
 
+        $size = [
+            'height' => $DOMElement->getAttribute('height'),
+            'width' => $DOMElement->getAttribute('width'),
+        ];
         return Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockText,
-            $dataFromExternalMediaAndBar->getDisclaimer(),
-            $DOMElement->getAttribute('height'),
-            $DOMElement->getAttribute('width'),
+            $size,
             $buffer
         );
     }

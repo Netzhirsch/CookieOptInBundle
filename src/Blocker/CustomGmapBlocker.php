@@ -78,16 +78,24 @@ class CustomGmapBlocker
                     $height .= 'px';
             }
         }
-
-        return Blocker::getHtmlContainer(
+        $size = [
+          'height'  => $height,
+          'width'  => 'auto',
+        ];
+        $dataFromExternalMediaAndBar->setDisclaimer($blockText['i_frame_maps']);
+        $html = '<div class="ncoi---custom_gmap">';
+        $html .= Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockText,
-            $blockText['i_frame_maps'],
-            $height,
-            'auto',
+            $size,
             $buffer,
-            'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR
+            'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR,
         );
+        $html .='</div>';
+
+        $buffer = str_replace('ce_google_map','ce_google_map ncoi---hidden',$buffer);
+
+        return $html.$buffer;
     }
 }
 
