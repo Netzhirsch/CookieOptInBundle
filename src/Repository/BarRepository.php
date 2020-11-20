@@ -3,6 +3,7 @@
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Statement;
 
 class BarRepository
 {
@@ -20,5 +21,18 @@ class BarRepository
         $stmt->execute();
 
         return $stmt->fetchAll();
+    }
+
+    public function loadBlockContainerTexts($modId) {
+
+        $sql
+            = "SELECT i_frame_video,i_frame_maps,i_frame_i_frame,i_frame_always_load,i_frame_load 
+                FROM tl_ncoi_cookie WHERE pid = ?";
+        /** @var Statement $stmt */
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(1, $modId);
+        $stmt->execute();
+
+        return $stmt->fetch();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Netzhirsch\CookieOptInBundle\Struct;
+namespace Netzhirsch\CookieOptInBundle\Classes;
 
 class DataFromExternalMediaAndBar
 {
@@ -25,10 +25,9 @@ class DataFromExternalMediaAndBar
     /** @var null|string */
     private $iFrameType;
 
-    public function __construct(string $provider)
+    public function __construct()
     {
         $this->privacyPolicyLink = '';
-        $this->provider = $provider;
     }
 
     /**
@@ -102,7 +101,7 @@ class DataFromExternalMediaAndBar
     /**
      * @return int
      */
-    public function getModId(): int
+    public function getModId(): ?int
     {
         return $this->modId;
     }
