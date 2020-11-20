@@ -65,6 +65,8 @@ class ScriptBlocker
             return $buffer;
 
         $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $DOMElement->getAttribute('src'));
+        if (empty($externalMediaCookiesInDB))
+            return $buffer;
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
