@@ -72,7 +72,7 @@ class ScriptBlocker
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
             $dataFromExternalMediaAndBar,$conn,$externalMediaCookiesInDB,$moduleData
         );
-
+        $dataFromExternalMediaAndBar->setDisclaimer($externalMediaCookiesInDB[0]['i_frame_blocked_text']);
         $dataFromExternalMediaAndBar->setIFrameType('script');
         $barRepo = new BarRepository($conn);
         $blockText = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());

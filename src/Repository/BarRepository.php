@@ -35,4 +35,13 @@ class BarRepository
 
         return $stmt->fetch();
     }
+
+    public function findByIds($ids){
+        $sql = "SELECT * FROM tl_ncoi_cookie WHERE pid IN (".implode(",",$ids).") LIMIT 1";
+        /** @var Statement $stmt */
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetch();
+    }
 }

@@ -12,6 +12,7 @@ use Doctrine\DBAL\Driver\Exception;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ToolRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -85,9 +86,12 @@ class Blocker
 
         $barRepo = new BarRepository($conn);
         $cookieBars = $barRepo->findAll();
+        $isModuleIdInLayout = false;
+        $modIds = [];
         foreach ($cookieBars as $cookieBar) {
             foreach ($moduleData as $moduleId) {
                 if ($cookieBar['pid'] == $moduleId['mod']) {
+                    $isModuleIdInLayout = true;
                     foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                         if ($cookieBar['pid'] == $externalMediaCookieInDB['pid']) {
                             $dataFromExternalMediaAndBar
@@ -120,7 +124,25 @@ class Blocker
                         }
                     }
                 }
+                if (!empty($moduleId['mod']))
+                    $modIds[] = $moduleId['mod'];
             }
+        }
+        if (!$isModuleIdInLayout) {
+            $moduleRepo = new ModuleRepository($conn);
+            $htmlInModules = $moduleRepo->findByIds($modIds);
+            $ids = [];
+            foreach ($htmlInModules as $htmlInModule) {
+                $html = $htmlInModule['html'];
+                $position = strpos($html,'{{insert_module::');
+                if ($position !== false) {
+                    $id = str_replace('{{insert_module::','',$html);
+                    $id = str_replace('}}','',$id);
+                    $ids[] = $id;
+                }
+            }
+            $barModule = $barRepo->findByIds($ids);
+            $dataFromExternalMediaAndBar->setModId($barModule['pid']);
         }
 
         return $dataFromExternalMediaAndBar;
