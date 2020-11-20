@@ -9,7 +9,6 @@ use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
-use Netzhirsch\CookieOptInBundle\Repository\ToolRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class IFrameBlocker
@@ -53,9 +52,10 @@ class IFrameBlocker
      * @param $iframeHTML
      * @param $requestStack
      * @param $conn
+     * @param string $html
      * @return string
-     * @throws DBALException
      * @throws Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     private function getIframeHTML($iframeHTML,$requestStack,$conn)
     {
@@ -65,21 +65,20 @@ class IFrameBlocker
         //Frontendvariablen diese werden an das Template übergeben
         $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
 
-        $url = $this->getUrl($iframeHTML);
-        $toolRepo = new ToolRepository($conn);
-        $externalMediaCookiesInDB = $toolRepo->findByUrl($url);
-
         $moduleData = Blocker::getModulData($requestStack);
         if (empty($moduleData))
             return $iframeHTML;
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
+        $url = $this->getUrl($iframeHTML);
         if (!empty($url))
             $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $url);
-        if (empty($externalMediaCookiesInDB) && !empty($html)) {
-            $externalMediaCookiesInDB = Blocker::getExternalMediaByType($html,$conn);
-            $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($html));
+        if (empty($externalMediaCookiesInDB)) {
+            $externalMediaCookiesInDB = Blocker::getExternalMediaByType($iframeHTML,$conn);
+            $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($iframeHTML));
         }
+        if (empty($externalMediaCookiesInDB))
+            return $iframeHTML;
 
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
             $dataFromExternalMediaAndBar,

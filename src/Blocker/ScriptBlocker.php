@@ -58,7 +58,11 @@ class ScriptBlocker
 
         $moduleData = Blocker::getModulData($requestStack);
         if (empty($moduleData))
-            return null;
+            return $buffer;
+
+        $src = $DOMElement->getAttribute('src');
+        if (empty($src))
+            return $buffer;
 
         $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $DOMElement->getAttribute('src'));
 

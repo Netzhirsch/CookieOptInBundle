@@ -35,18 +35,33 @@ class ParseFrontendTemplateListener
                     return $iframeBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
                 }
             }
-            if (strpos($template, 'google') !== false) {
+
+
+            $isAnalyticsTemplateGoogle = (strpos($template, 'analytics_google') !== false);
+            if ($isAnalyticsTemplateGoogle) {
                 $analyticsBlocker = new AnalyticsBlocker();
                 return $analyticsBlocker->analyticsTemplate($buffer,'googleAnalytics');
-            } elseif (strpos($template, 'piwik') !== false || strpos($template, 'matomo') !== false) {
+            }
+
+            $isAnalyticsTemplateMatomo
+                = (
+                    strpos($template, 'analytics_piwik') !== false
+                    || strpos($template, 'analytics_matomo') !== false
+            );
+
+            if ($isAnalyticsTemplateMatomo) {
                 $analyticsBlocker = new AnalyticsBlocker();
                 return $analyticsBlocker->analyticsTemplate($buffer,'matomo');
             }
-            if ($template == 'ce_html' && strpos($buffer, '<script') !== false) {
+
+            $isScriptTemplate = $template == 'ce_html' && strpos($buffer, '<script') !== false;
+            if ($isScriptTemplate) {
                 $scriptBlocker = new ScriptBlocker();
                 return $scriptBlocker->script($buffer,$this->getConnection(),$this->getRequestStack());
             }
-            if (strpos($template, 'customelement_gmap') !== false) {
+
+            $isCustomElementGmapTemplate = strpos($template, 'customelement_gmap') !== false;
+            if ($isCustomElementGmapTemplate) {
                 $customGmapBlocker = new CustomGmapBlocker();
                 return $customGmapBlocker->block($buffer,$this->getConnection(),$this->getRequestStack());
             }
