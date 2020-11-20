@@ -38,9 +38,9 @@ class ParseFrontendTemplateListener
                     return $this->iframe($buffer);
                 }
             }
-            if (strpos($template, 'google') !== false) {
+            if (strpos($template, 'analytics_google') !== false) {
                 return $this->analyticsTemplate($buffer,'googleAnalytics');
-            } elseif (strpos($template, 'piwik') !== false || strpos($template, 'matomo') !== false) {
+            } elseif (strpos($template, 'analytics_piwik') !== false || strpos($template, 'analytics_matomo') !== false) {
                 return $this->analyticsTemplate($buffer,'matomo');
             }
             if ($template == 'ce_html' && strpos($buffer, '<script') !== false) {
