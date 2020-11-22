@@ -284,7 +284,7 @@ class ModuleCookieOptInBar extends Module
         $netzhirschCookieOptInJs = false;
         $cookieJs = false;
         foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
-            if (strrpos($javascript,"netzhirschCookieOptIn.js") !== false){
+            if (strrpos($javascript,"NcoiApp.js") !== false){
                 $netzhirschCookieOptInJs = true;
             }
             if (strrpos($javascript,"cookie.min.js") !== false){
@@ -292,7 +292,19 @@ class ModuleCookieOptInBar extends Module
             }
         }
         if (!$netzhirschCookieOptInJs) {
-            $GLOBALS['TL_JAVASCRIPT']['netzhirsch'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.js|static';
+            $files = scandir('bundles/netzhirschcookieoptin/js');
+            foreach ($files as $file) {
+                if (is_dir($file)) {
+                    $templateFiles = scandir('bundles/netzhirschcookieoptin/js'.DIRECTORY_SEPARATOR.$file);
+                    foreach ($templateFiles as $templateFile) {
+                        $GLOBALS['TL_JAVASCRIPT'][$templateFile] = 'bundles/netzhirschcookieoptin/'.$templateFile.'|static';
+                    }
+                }
+                else if ($file != '.' && $file != '..') {
+                    $GLOBALS['TL_JAVASCRIPT'][$file] = 'bundles/netzhirschcookieoptin/'.$file.'|static';
+                }
+            }
+
         }
         if (!$cookieJs) {
             $GLOBALS['TL_JAVASCRIPT']['cookieJs'] = 'bundles/netzhirschcookieoptin/library/cookie.min.js|static';
