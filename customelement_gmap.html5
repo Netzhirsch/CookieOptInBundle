@@ -160,7 +160,7 @@ $arrLocations[$i]['icon'] = \StringUtil::substrHtml($image,strlen($image));
         }
 
         // find average coordinate as map center
-        if(locations.length > 0)
+        if(locations.length > 0 || centers_lat.length > 0)
         {
             setTimeout(function()
             {
