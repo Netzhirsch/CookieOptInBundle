@@ -48,8 +48,8 @@ class NcoiExternalMedia {
                 blockClassElement.each(function () {
                     let customGmap = $(this).parentsUntil('.ncoi---custom_gmap');
                     if (customGmap.length > 0) {
-                        $(customGmap).siblings('.ce_google_map');
-                        $(customGmap).removeClass('ncoi---hidden');
+                        let iframe = $(customGmap).siblings('.ce_google_map');
+                        iframe.removeClass('ncoi---hidden');
                         $(customGmap).addClass('ncoi---hidden');
                     } else {
                         that.addIframe($(this));
