@@ -5,6 +5,7 @@ namespace Netzhirsch\CookieOptInBundle\Repository;
 
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 
 class ModuleRepository
 {
@@ -21,6 +22,6 @@ class ModuleRepository
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(FetchMode::COLUMN);
     }
 }

@@ -17,13 +17,6 @@ class NcoiCookie {
         });
     }
 
-    getVersion(versionByResponse) {
-        let version = 1;
-        if (versionByResponse !== null)
-            version = versionByResponse.cookieVersion;
-        return version;
-    }
-
     unsetByTechnicalName(cookiesToDelete, technicalName) {
         let that = this;
         if (technicalName.indexOf(',') > -1) {

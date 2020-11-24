@@ -272,42 +272,103 @@ class ModuleCookieOptInBar extends Module
     private function setJs()
     {
 
-        $jqueryIsLoaded = false;
-        foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
-            if (strrpos($javascript,"jquery.min.js") !== false){
-                $jqueryIsLoaded = true;
-            }
-        }
-        if (!$jqueryIsLoaded) {
+        if (!self::isJqueryLoaded()) {
             $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
         }
-        $netzhirschCookieOptInJs = false;
-        $cookieJs = false;
-        foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
-            if (strrpos($javascript,"NcoiApp.js") !== false){
-                $netzhirschCookieOptInJs = true;
-            }
-            if (strrpos($javascript,"cookie.min.js") !== false){
-                $netzhirschCookieOptInJs = true;
-            }
-        }
-        if (!$netzhirschCookieOptInJs) {
-            $files = scandir('bundles/netzhirschcookieoptin/js');
-            foreach ($files as $file) {
-                if (is_dir($file)) {
-                    $templateFiles = scandir('bundles/netzhirschcookieoptin/js'.DIRECTORY_SEPARATOR.$file);
-                    foreach ($templateFiles as $templateFile) {
-                        $GLOBALS['TL_JAVASCRIPT'][$templateFile] = 'bundles/netzhirschcookieoptin/'.$templateFile.'|static';
-                    }
-                }
-                else if ($file != '.' && $file != '..') {
-                    $GLOBALS['TL_JAVASCRIPT'][$file] = 'bundles/netzhirschcookieoptin/'.$file.'|static';
-                }
-            }
 
-        }
-        if (!$cookieJs) {
+        if (!self::isCookieLibLoaded()) {
             $GLOBALS['TL_JAVASCRIPT']['cookieJs'] = 'bundles/netzhirschcookieoptin/library/cookie.min.js|static';
         }
+
+        if (!self::isNcoiJsAlreadyLoaded()) {
+            self::loadNcoiJs();
+        }
 	}
+
+    private static function isJqueryLoaded()
+    {
+        return self::isJsAlreadyLoaded('jquery.min.js');
+	}
+
+    private static function isCookieLibLoaded()
+    {
+        return self::isJsAlreadyLoaded('cookie.min.js');
+	}
+
+    private static function isJsAlreadyLoaded($filename)
+    {
+        foreach ($GLOBALS['TL_JAVASCRIPT'] as $javascript) {
+            if (strrpos($javascript,$filename) !== false){
+                return true;
+            }
+        }
+        return false;
+	}
+
+    private static function isNcoiJsAlreadyLoaded()
+    {
+        return self::isJsAlreadyLoaded('NcoiApp.js');
+	}
+
+    private static function loadNcoiJs()
+    {
+        $relativDir = self::getRelativDir();
+        $files = scandir($relativDir);
+        foreach ($files as $file) {
+            if (self::isPresentDirOrParentDir($file))
+                continue;
+
+            if (self::isFileADir($file)) {
+                self::includeFilesInDir($file);
+            }
+            else {
+                $GLOBALS['TL_JAVASCRIPT'][$file] = $relativDir.DIRECTORY_SEPARATOR.$file.'|static';
+            }
+        }
+	}
+
+    private static function includeFilesInDir($dir)
+    {
+        $relativPath = self::getRelativDir();
+        $templateFiles = scandir(self::getDir().DIRECTORY_SEPARATOR.$dir);
+        foreach ($templateFiles as $templateFile) {
+            if (self::isPresentDirOrParentDir($templateFile))
+                continue;
+            $filepath = $relativPath.DIRECTORY_SEPARATOR.$dir.DIRECTORY_SEPARATOR.$templateFile.'|static';
+            $GLOBALS['TL_JAVASCRIPT'][$templateFile]
+                = $filepath;
+        }
+	}
+
+    private static function getRelativDir()
+    {
+        return 'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR.'js';
+	}
+    private static function getDir()
+    {
+        return self::getRootDir().
+            DIRECTORY_SEPARATOR.
+            'web'.
+            DIRECTORY_SEPARATOR.
+            'bundles'.
+            DIRECTORY_SEPARATOR.
+            'netzhirschcookieoptin'.
+            DIRECTORY_SEPARATOR.
+            'js';
+	}
+    private static function getRootDir()
+    {
+        return dirname(__DIR__,7);
+	}
+
+    private static function isFileADir($file)
+    {
+        return is_dir(self::getDir().DIRECTORY_SEPARATOR.$file);
+	}
+
+    private static function isPresentDirOrParentDir($file)
+    {
+        return ($file == '.' || $file == '..');
+    }
+
 }

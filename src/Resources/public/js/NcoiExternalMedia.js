@@ -4,7 +4,7 @@ class NcoiExternalMedia {
         this.$ = $;
     }
 
-    onClickRelease(storageKey) {
+    addOnClickEvent(storageKey) {
         let $ = this.$;
         let that = this;
         $('.ncoi---release').on('click', function (e) {

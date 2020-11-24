@@ -9,12 +9,14 @@ use Contao\StringUtil;
 use Contao\System;
 use DateInterval;
 use DateTime;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Statement;
 use Exception;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
+use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
 
 class PageLayoutListener {
 
@@ -29,6 +31,7 @@ class PageLayoutListener {
         $removeModules = $this->shouldRemoveModules($pageModel);
         $moduleIds = [];
         $return = self::checkModules($layout, $removeModules, $moduleIds);
+        $allModuleIdsInLayout = $return['allModuleIds'];
         $moduleIds = $return['moduleIds'];
         if (!empty($return['tlCookieIds']))
             $tlCookieIds[] = $return['tlCookieIds'];
@@ -40,7 +43,7 @@ class PageLayoutListener {
                 $_SESSION['nh_remove_modules'] = $removeModules;
             }
             else {
-                $return = self::getModuleIdFromInsertTag($pageModel,$layout);
+                $return = self::getModuleIdFromInsertTag($pageModel,$layout,$allModuleIdsInLayout);
                 if (!empty($return['moduleIds']))
                     $moduleIds = $return['moduleIds'];
             }
@@ -228,16 +231,21 @@ class PageLayoutListener {
 
     /**
      * @param PageModel $page
+     * @param LayoutModel $layout
+     * @param $allModuleIds
      * @return mixed[]
      * @throws DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
      */
-    public static function getModuleIdFromInsertTag($page,LayoutModel $layout)
+    public static function getModuleIdFromInsertTag($page,LayoutModel $layout,$allModuleIds = null)
     {
         $parameters = [
             'moduleIds' => null,
             'tlCookieIds' => null
         ];
         $id = $page->__get('id');
+        /** @var Connection $conn */
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT html FROM tl_content as tc 
         LEFT JOIN tl_article ta on tc.pid = ta.id
@@ -262,12 +270,18 @@ class PageLayoutListener {
         if (empty($htmlElements))
             return $parameters;
 
-        $modIds = [];
-        foreach ($htmlElements as $htmlElement) {
-            $modId = self::getModuleIdFromHtmlElement($htmlElement);
-            if (!empty($modId))
-                $modIds = array_merge($modId,$modIds);
+        if (!empty($allModuleIds)) {
+            $repoModule = new ModuleRepository($conn);
+            $htmlElementsModule= $repoModule->findByIds($allModuleIds);
+            $htmlElements = array_merge($htmlElementsModule,$htmlElements);
+            $modIds = [];
+            foreach ($htmlElements as $htmlElement) {
+                $modId = self::getModuleIdFromHtmlElement($htmlElement);
+                if (!empty($modId))
+                    $modIds = array_merge($modId,$modIds);
+            }
         }
+
         if (empty($modIds))
             return $parameters;
 
@@ -340,6 +354,7 @@ class PageLayoutListener {
 
         $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
         $tlCookieIds = [];
+        $allModuleIds = [];
         $conn = System::getContainer()->get('database_connection');
         if (!empty($layoutModules)) {
             foreach ($layoutModules as $key => $layoutModule) {
@@ -379,6 +394,7 @@ class PageLayoutListener {
                                 $moduleIds[] = $revoke['pid'];
                         }
                     }
+                    $allModuleIds[] = $layoutModule['mod'];
                 }
             }
             $layoutOrPage->__set('modules', serialize($layoutModules));
@@ -403,6 +419,7 @@ class PageLayoutListener {
         return [
             'moduleIds' => $moduleIds,
             'tlCookieIds' => $tlCookieIds,
+            'allModuleIds' => $allModuleIds
         ];
     }
 

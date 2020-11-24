@@ -1,7 +1,7 @@
 class NcoiLoad {
 
-    constructor(jQuery) {
-        this.$ = jQuery;
+    constructor($) {
+        this.$ = $;
     }
     fixTooLateCssLoad(mainWrapper){
         mainWrapper.removeClass('ncoi---no-transition');
@@ -23,6 +23,7 @@ class NcoiLoad {
     isLocalStorageIsUpToDate(localStorage,storageKey,mainWrapper) {
         let $ = this.$
         let ncoiDate = new NcoiDate();
+
         if(localStorage !== '' && !this.doNotTrackByBrowserSetting(storageKey,mainWrapper)) {
             return $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
                 && localStorage.expireTime >= ncoiDate.dateString();

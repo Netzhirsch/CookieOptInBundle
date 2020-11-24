@@ -1,19 +1,18 @@
 class NcoiTrack {
 
-    constructor(jQuery) {
-        this.$ = jQuery;
+    constructor($) {
+        this.$ = $;
     }
 
-    track(newConsent, storageKey,localStorage,ncoiCookie,ncoiApp) {
+    track(newConsent, storageKey,localStorage) {
         let $ = this.$;
         let that = this;
-        let userSettings = this.getDefaultUserSettings();
+        let userSettings = this.getDefaultUserSettings(newConsent, storageKey);
         if (newConsent === 1) {
             this.setNewUserSettings(userSettings);
         } else {
            this.setUserSettings(userSettings,localStorage);
         }
-
         $.ajax({
             dataType: "json",
             type: 'POST',
@@ -22,7 +21,7 @@ class NcoiTrack {
                 data: userSettings
             },
             success: function (response) {
-                let cookieVersion = ncoiCookie.getVersion(response.cookieVersion);
+                let cookieVersion = response.cookieVersion;
                 that.saveUserSettings(
                     storageKey
                     ,JSON.stringify({
@@ -30,24 +29,23 @@ class NcoiTrack {
                         cookieVersion: cookieVersion,
                         cookieIds: userSettings.cookieIds,
                         expireTime: response.expireTime
-                    }
-                    ,ncoiApp
-                    )
+                    })
                 );
 
                 let cookiesToDelete = Cookies.get();
                 let template = new NcoiTemplate();
                 let tools = response.tools;
                 let body = $('body');
+                let ncoiCookie = new NcoiCookie($);
                 if (tools !== null) {
                     tools.forEach(function (tool) {
                         cookiesToDelete = ncoiCookie.unsetByTechnicalName(cookiesToDelete, tool.cookieToolsTechnicalName);
                         template.addToolTemplates(tool, body)
                     });
                 } else {
-                    let templateGoogle = new NcoiAnalyticsGoogleTemplate();
+                    let templateGoogle = new _NcoiAnalyticsGoogleTemplate();
                     templateGoogle.remove();
-                    let templateMatomo = new NcoiMatomoTemplate();
+                    let templateMatomo = new _NcoiMatomoTemplate();
                     templateMatomo.remove();
                 }
                 let otherScripts = response.otherScripts;
@@ -68,10 +66,11 @@ class NcoiTrack {
 
     getDefaultUserSettings(newConsent, storageKey) {
         let $ = this.$;
+        let modId = $('[data-ncoi-mod-id]').data('ncoi-mod-id');
         return {
             id: null,
             cookieIds: [],
-            modId: $('[data-ncoi-mod-id]').data('ncoi-mod-id'),
+            modId: modId,
             newConsent: newConsent,
             storageKey: storageKey,
             cookieVersion: 0
@@ -80,6 +79,7 @@ class NcoiTrack {
 
     setNewUserSettings(userSettings) {
         let $ = this.$;
+        userSettings.newConsent = true;
         let cookieSelected = $('.ncoi---cookie');
         Object.keys(cookieSelected).forEach(function (key) {
             if (
@@ -101,7 +101,9 @@ class NcoiTrack {
         userSettings.cookieVersion = localStorage.cookieVersion;
     }
 
-    saveUserSettings(storageKey, storageValue,ncoiApp) {
+    saveUserSettings(storageKey, storageValue) {
+        let $ = this.$;
+        let ncoiApp = new NcoiApp($);
         ncoiApp.setLocalStorage(storageKey, storageValue);
     }
 

@@ -1,4 +1,4 @@
-class NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
+class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
 
     setCookies (trackingId,body = null) {
         if (this.hasContaoGoogleTemplate) {

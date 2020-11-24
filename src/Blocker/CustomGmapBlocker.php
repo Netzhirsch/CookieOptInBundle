@@ -65,6 +65,9 @@ class CustomGmapBlocker
             return $buffer;
 
         $doc = new DOMDocument();
+        if (self::isDebugModus($buffer)) {
+            return 'Unfortunately no output in debug mode is possible.';
+        }
         $doc->loadHTML($buffer);
         $divs = $doc->getElementsByTagName('div');
         /** @var DOMElement $div */
@@ -96,6 +99,12 @@ class CustomGmapBlocker
         $buffer = str_replace('ce_google_map','ce_google_map ncoi---hidden',$buffer);
 
         return $html.$buffer;
+    }
+
+    private static function isDebugModus($buffer)
+    {
+        $debugCommentPosition = strpos($buffer,'<!-- TEMPLATE START: templates/layout/customelement_gmap.html5 -->');
+        return ($debugCommentPosition !== false);
     }
 }
 

@@ -1,4 +1,4 @@
-class NcoiTagManagerGoogleTemplate {
+class _NcoiTagManagerGoogleTemplate {
 
     setCookies(trackingId,body) {
         body.append(

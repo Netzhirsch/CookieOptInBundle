@@ -132,8 +132,7 @@ class Blocker
             $moduleRepo = new ModuleRepository($conn);
             $htmlInModules = $moduleRepo->findByIds($modIds);
             $ids = [];
-            foreach ($htmlInModules as $htmlInModule) {
-                $html = $htmlInModule['html'];
+            foreach ($htmlInModules as $html) {
                 $position = strpos($html,'{{insert_module::');
                 if ($position !== false) {
                     $id = str_replace('{{insert_module::','',$html);

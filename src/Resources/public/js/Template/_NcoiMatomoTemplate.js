@@ -1,4 +1,4 @@
-class NcoiMatomoTemplate extends NcoiTemplate{
+class _NcoiMatomoTemplate extends NcoiTemplate{
 
     setCookies (trackingId) {
         if (this.hasContaoTemplate) {

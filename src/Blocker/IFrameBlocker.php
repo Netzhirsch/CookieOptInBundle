@@ -149,7 +149,6 @@ class IFrameBlocker
             && isset($_SESSION['_sf2_attributes'])
             && isset($_SESSION['_sf2_attributes']['ncoi'])
             && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])
-            && !empty($externalMediaCookiesInDB)
         ) {
             $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
             foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {

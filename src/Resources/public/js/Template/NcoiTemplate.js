@@ -1,9 +1,9 @@
 class NcoiTemplate {
 
-    addToolTemplates(toolName, trackingId, body) {
-        let template = this.getChildTemplate(toolName);
+    addToolTemplates(tool, body) {
+        let template = this.getChildTemplate(this.getName(tool));
         if (typeof template !== 'undefined')
-            template.setCookies(trackingId,body);
+            template.setCookies(this.getTrackingId(tool),body);
     }
 
     addOtherScriptTemplate(otherScripts,body) {
@@ -23,6 +23,11 @@ class NcoiTemplate {
         return url;
     }
 
+    getName(tool) {
+        return tool.cookieToolsTechnicalName;
+    }
+
+
     getWrapper(template) {
         let wrapper = template.getWrapper();
         if (wrapper.length > 0)
@@ -40,11 +45,11 @@ class NcoiTemplate {
     getChildTemplate(toolName) {
         let template;
         if (toolName.localeCompare('googleAnalytics') === 0) {
-            template = new NcoiAnalyticsGoogleTemplate(this.$);
+            template = new _NcoiAnalyticsGoogleTemplate(this.$);
         } else if (toolName.localeCompare('googleTagManager') === 0) {
-            template = new NcoiTagManagerGoogleTemplate();
+            template = new _NcoiTagManagerGoogleTemplate();
         } else if (toolName.localeCompare('facebookPixel') === 0) {
-            template = new NcoiFacebookPixelTemplate();
+            template = new _NcoiFacebookPixelTemplate();
         }
         return template;
     }
