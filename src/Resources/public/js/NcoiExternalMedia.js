@@ -46,10 +46,11 @@ class NcoiExternalMedia {
                 // Nur gefunden BlockContainer werden bearbeitet
                 // jedes Element separat
                 blockClassElement.each(function () {
-                    let sibling = $(this).siblings('.ce_google_map');
-                    if (sibling.length > 0) {
-                        $(this).removeClass('ncoi---hidden');
-                        $(this).next('iframe').addClass('ncoi---hidden');
+                    let customGmap = $(this).parentsUntil('.ncoi---custom_gmap');
+                    if (customGmap.length > 0) {
+                        $(customGmap).siblings('.ce_google_map');
+                        $(customGmap).removeClass('ncoi---hidden');
+                        $(customGmap).addClass('ncoi---hidden');
                     } else {
                         that.addIframe($(this));
                     }
