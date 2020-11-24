@@ -42,11 +42,11 @@ class NcoiExternalMedia {
             let blockClass = '.' + $(this).data('block-class');
             let blockClassElement = $(blockClass);
             if ($(this).prop('checked')) {
-                //Klasses des Blockconainter aus input data-block-class auslesen
+                //Klasses des Blockcontainer aus input data-block-class auslesen
                 // Nur gefunden BlockContainer werden bearbeitet
                 // jedes Element separat
                 blockClassElement.each(function () {
-                    let customGmap = $(this).parentsUntil('.ncoi---custom_gmap');
+                    let customGmap = $(this).parent('.ncoi---custom_gmap');
                     if (customGmap.length > 0) {
                         $('.ce_google_map').removeClass('ncoi---hidden');
                         $('.ncoi---custom_gmap').addClass('ncoi---hidden');
