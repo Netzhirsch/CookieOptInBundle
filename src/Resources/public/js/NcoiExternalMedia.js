@@ -61,17 +61,34 @@ class NcoiExternalMedia {
     encode(cookieIds) {
         let $ = this.$;
         let that = this;
+        let showCustomGmap = this;
         $('.ncoi---blocked').each(function (key,value) {
             let iframe = $(this);
             cookieIds.forEach(function (cookieId) {
                 if ($(value).hasClass('ncoi---cookie-id-'+cookieId)) {
-                    iframe.trigger('change');
                     if (iframe.length > 0) {
-                        that.addIframe(iframe);
+                        if (that.isCustomGmap(iframe)) {
+                            showCustomGmap.showCustomGmap(iframe)
+                        } else {
+                            that.addIframe(iframe);
+                            iframe.trigger('change');
+                        }
                     }
                 }
             });
         });
+    }
+
+    showCustomGmap() {
+        let $ = this.$;
+        $('.ce_google_map').removeClass('ncoi---hidden');
+        $('.ncoi---custom_gmap').addClass('ncoi---hidden');
+    }
+
+    isCustomGmap(iframe) {
+        let customGmap = iframe.parent('.ncoi---custom_gmap');
+        return customGmap.length > 0;
+
     }
 
     addIframe(parent) {
