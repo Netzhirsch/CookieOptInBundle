@@ -46,13 +46,12 @@ class NcoiExternalMedia {
                 // Nur gefunden BlockContainer werden bearbeitet
                 // jedes Element separat
                 blockClassElement.each(function () {
-                    that.addIframe($(this));
-                });
-            } else {
-                blockClassElement.each(function () {
-                    if (!$(this).hasClass('ncoi---googleMaps')) {
+                    let sibling = $(this).siblings('.ce_google_map');
+                    if (sibling.length > 0) {
                         $(this).removeClass('ncoi---hidden');
                         $(this).next('iframe').addClass('ncoi---hidden');
+                    } else {
+                        that.addIframe($(this));
                     }
                 });
             }
@@ -61,8 +60,8 @@ class NcoiExternalMedia {
 
     encode(cookieIds) {
         let $ = this.$;
+        let that = this;
         $('.ncoi---blocked').each(function (key,value) {
-            let that = this;
             let iframe = $(this);
             cookieIds.forEach(function (cookieId) {
                 if ($(value).hasClass('ncoi---cookie-id-'+cookieId)) {
