@@ -9,6 +9,7 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
+use DOMDocument;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
@@ -128,25 +129,60 @@ class Blocker
                     $modIds[] = $moduleId['mod'];
             }
         }
+
         if (!$isModuleIdInLayout) {
-            $moduleRepo = new ModuleRepository($conn);
-            $htmlInModules = $moduleRepo->findByIds($modIds);
-            $ids = [];
-            foreach ($htmlInModules as $html) {
-                $position = strpos($html,'{{insert_module::');
-                if ($position !== false) {
-                    $id = str_replace('{{insert_module::','',$html);
-                    $id = str_replace('}}','',$id);
-                    $ids[] = $id;
-                }
-            }
-            $barModule = $barRepo->findByIds($ids);
-            $dataFromExternalMediaAndBar->setModId($barModule['pid']);
+            self::setModIdByInsertTagInModule($conn,$modIds,$barRepo,$dataFromExternalMediaAndBar);
         }
 
         return $dataFromExternalMediaAndBar;
     }
 
+
+    private static function setModIdByInsertTagInModule
+    (
+        Connection $conn,
+        array $modIds,
+        BarRepository $barRepo,
+        DataFromExternalMediaAndBar $dataFromExternalMediaAndBar
+    ) {
+        $moduleRepo = new ModuleRepository($conn);
+        $htmlInModules = $moduleRepo->findByIds($modIds);
+        $ids = self::getModuleIdsFromHtml($htmlInModules);
+        if (!empty($ids)) {
+            $barModule = $barRepo->findByIds($ids);
+            if (!empty($barModule))
+                $dataFromExternalMediaAndBar->setModId($barModule['pid']);
+        }
+    }
+
+    private static function getModuleIdsFromHtml($htmlInModules)
+    {
+        $ids = [];
+        foreach ($htmlInModules as $html) {
+            $id = self::getModuleIdFromHtml($html);
+            if (!empty($id))
+                $ids[] = $id;
+        }
+        return $ids;
+    }
+    private static function getModuleIdFromHtml($html)
+    {
+        $position = strpos($html,'{{insert_module::');
+        if ($position !== false) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($html);
+            $html = $doc->textContent;
+            $insertTags = explode('insert_module::',$html);
+            foreach ($insertTags as $insertTag) {
+                $id = str_replace('{{','',$insertTag);
+                $id = str_replace('}}','',$id);
+                $id = trim($id);
+                if (is_numeric($id))
+                    return $id;
+            }
+        }
+        return null;
+    }
     /**
      * @param Connection $conn
      * @param $url
