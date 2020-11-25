@@ -79,7 +79,12 @@ class Blocker
      * @param $moduleData
      * @return DataFromExternalMediaAndBar
      */
-    public static function getDataFromExternalMediaAndBar(DataFromExternalMediaAndBar $dataFromExternalMediaAndBar, Connection $conn,$externalMediaCookiesInDB,$moduleData)
+    public static function getDataFromExternalMediaAndBar(
+        DataFromExternalMediaAndBar $dataFromExternalMediaAndBar,
+        Connection $conn,
+        $externalMediaCookiesInDB,
+        $moduleData
+    )
     {
         global $objPage;
         $provider = $objPage->rootTitle;
@@ -92,9 +97,9 @@ class Blocker
         foreach ($cookieBars as $cookieBar) {
             foreach ($moduleData as $moduleId) {
                 if ($cookieBar['pid'] == $moduleId['mod']) {
-                    $isModuleIdInLayout = true;
                     foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
                         if ($cookieBar['pid'] == $externalMediaCookieInDB['pid']) {
+                            $isModuleIdInLayout = true;
                             $dataFromExternalMediaAndBar
                                 ->addBlockedIFrames($externalMediaCookieInDB['cookieToolsSelect']);
 
@@ -351,7 +356,7 @@ class Blocker
             $iframe = '<script type="text/template">' . base64_encode($html) . '</script>';
         }
 
-        return $htmlContainer  .$dataFromExternalMediaAndBar->getModId().$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
+        return $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
     }
 
     public static function hasUnit($html)
@@ -378,5 +383,13 @@ class Blocker
 
         }
         return false;
+    }
+
+    public static function clearHtmlComments($html){
+        $commentStart = strpos($html,'<!--',);
+        $commentEnd = strpos($html,'-->',);
+        if ($commentStart !== false && $commentEnd !== false)
+            return substr($html,$commentStart,$commentEnd);
+        return $html;
     }
 }

@@ -35,6 +35,7 @@ class ScriptBlocker
 
         $newBuffer = '';
         $doc = new DOMDocument();
+//        $clearBuffer = Blocker::clearHtmlComments($buffer);
         $doc->loadHTML($buffer);
         $htmlArray = self::getAllDOMElement($doc);
         foreach ($htmlArray as $html) {
