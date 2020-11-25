@@ -54,4 +54,10 @@ class _NcoiMatomoTemplate extends NcoiTemplate{
         return $('#analytics-encoded-matomo');
     }
 
+    remove() {
+        let wrapperGoogle = this.getWrapper();
+        if (wrapperGoogle !== null)
+            wrapperGoogle.remove();
+    }
+
 }

@@ -1,5 +1,9 @@
 class NcoiTemplate {
 
+    constructor($) {
+        this.$ = $;
+    }
+
     addToolTemplates(tool, body) {
         let template = this.getChildTemplate(this.getName(tool));
         if (typeof template !== 'undefined')
@@ -33,13 +37,6 @@ class NcoiTemplate {
         if (wrapper.length > 0)
             return template.getWrapper();
         return null
-    }
-
-    remove() {
-        let matomo = new NcoiMatomoTemplate();
-        let wrapperMatomo = this.getWrapper(matomo);
-        if (wrapperMatomo !== null)
-            wrapperMatomo.remove();
     }
 
     getChildTemplate(toolName) {

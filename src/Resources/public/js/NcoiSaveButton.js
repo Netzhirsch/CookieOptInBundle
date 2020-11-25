@@ -7,11 +7,12 @@ class NcoiSaveButton {
     addOnClickEvents(storageKey){
 
         let that = this;
+        let $ = that.$;
         onClickSaveAllConsent(storageKey);
         onClickSaveConsent(storageKey);
 
         function  onClickSaveAllConsent(storageKey) {
-            let $ = that.$;
+            console.log("prevend Default");
             $('#ncoi---allowed--all').on('click', function (e) {
                 e.preventDefault();
                 $('.ncoi---cookie-group input').prop('checked', true);
@@ -21,7 +22,7 @@ class NcoiSaveButton {
         }
 
         function onClickSaveConsent(storageKey){
-            let $ = that.$;
+            console.log("prevend Default");
             $('#ncoi---allowed').on('click', function (e) {
                 e.preventDefault();
                 saveConsent(storageKey);
@@ -29,7 +30,6 @@ class NcoiSaveButton {
         }
 
         function saveConsent(storageKey) {
-            let $ = that.$;
             let ncoiTrack = new NcoiTrack($);
             $('.ncoi---behind').addClass('ncoi---hidden');
             ncoiTrack.track(1, storageKey);

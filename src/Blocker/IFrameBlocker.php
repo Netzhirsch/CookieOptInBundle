@@ -106,7 +106,6 @@ class IFrameBlocker
 
         } else {
 
-            $disclaimerString = '';
             switch($iframeTypInHtml) {
                 case 'youtube':
                 case 'vimeo':
@@ -118,6 +117,8 @@ class IFrameBlocker
                 case 'iframe':
                     $disclaimerString = $blockTexts['i_frame_i_frame'];
                     break;
+                default:
+                    $disclaimerString = 'Default disclaimer';
             }
         }
         $dataFromExternalMediaAndBar->setDisclaimer($disclaimerString);

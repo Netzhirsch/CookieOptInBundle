@@ -43,7 +43,7 @@ class NcoiLoad {
             $('[data-ncoi-respect-do-not-track]').data('ncoi-respect-do-not-track') === 1
             && navigator.doNotTrack === "1"
         ) {
-            let ncoiCookie = new NcoiCookie();
+            let ncoiCookie = new NcoiCookie($);
             ncoiCookie.ajaxDeleteCookies(storageKey);
             ncoiCookie.removeCookies(Cookies.get());
             return true;

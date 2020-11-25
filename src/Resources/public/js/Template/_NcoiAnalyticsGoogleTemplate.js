@@ -54,9 +54,8 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
         return $('#analytics-encoded-googleAnalytics');
     }
 
-    removeGoogle() {
-        let analyticsGoogle = new NcoiAnalyticsGoogleTemplate();
-        let wrapperGoogle = this.getWrapper(analyticsGoogle);
+    remove() {
+        let wrapperGoogle = this.getWrapper();
         if (wrapperGoogle !== null)
             wrapperGoogle.remove();
     }

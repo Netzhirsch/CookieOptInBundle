@@ -33,7 +33,7 @@ class NcoiTrack {
                 );
 
                 let cookiesToDelete = Cookies.get();
-                let template = new NcoiTemplate();
+                let template = new NcoiTemplate($);
                 let tools = response.tools;
                 let body = $('body');
                 let ncoiCookie = new NcoiCookie($);
@@ -43,9 +43,9 @@ class NcoiTrack {
                         template.addToolTemplates(tool, body)
                     });
                 } else {
-                    let templateGoogle = new _NcoiAnalyticsGoogleTemplate();
+                    let templateGoogle = new _NcoiAnalyticsGoogleTemplate($);
                     templateGoogle.remove();
-                    let templateMatomo = new _NcoiMatomoTemplate();
+                    let templateMatomo = new _NcoiMatomoTemplate($);
                     templateMatomo.remove();
                 }
                 let otherScripts = response.otherScripts;

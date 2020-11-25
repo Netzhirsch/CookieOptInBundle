@@ -6,7 +6,7 @@ class NcoiRevoke {
 
     addOnClickEvent(storageKey) {
         let $ = this.$;
-        let ncoiCookie = new NcoiCookie();
+        let ncoiCookie = new NcoiCookie($);
         $('.ncoi---revoke--button').on('click', function (e) {
             e.preventDefault();
             ncoiCookie.ajaxDeleteCookies(storageKey);
