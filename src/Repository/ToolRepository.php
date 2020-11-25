@@ -23,10 +23,11 @@ class ToolRepository
      * @throws DBALException
      */
     public function findByUrl($url) {
-        $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = ? AND i_frame_blocked_urls LIKE ?";
+        $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = ? AND i_frame_blocked_urls LIKE ? AND i_frame_blocked_urls <> ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(1, 'cookieTools');
         $stmt->bindValue(2, '%'.$url.'%');
+        $stmt->bindValue(3, '');
         $stmt->execute();
         return $stmt->fetchAll();
     }

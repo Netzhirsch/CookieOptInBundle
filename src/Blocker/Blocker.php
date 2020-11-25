@@ -192,11 +192,33 @@ class Blocker
      */
     public static function getExternalMediaByUrl(Connection $conn, $url) {
         $toolRepo = new ToolRepository($conn);
+        $topLevelPosition = self::getTopLevel($url);
+        if (!empty($topLevelPosition)) {
+            $url = substr($url,0,$topLevelPosition);
+            $urlArray = explode('.',$url);
+            $url = $urlArray[array_key_last($urlArray)];
+        }
+        return $toolRepo->findByUrl($url);
+    }
+
+    private static function getTopLevel($url){
         $topLevelPosition = strpos($url,'.com');
-        $url = substr($url,0,$topLevelPosition);
-        $urlArray = explode('.',$url);
-        $secondLevel = $urlArray[array_key_last($urlArray)];
-        return $toolRepo->findByUrl($secondLevel);
+        if ($topLevelPosition !== false)
+            return $topLevelPosition;
+
+        $topLevelPosition = strpos($url,'.net');
+        if ($topLevelPosition !== false)
+            return $topLevelPosition;
+
+        $topLevelPosition = strpos($url,'.de');
+        if ($topLevelPosition !== false)
+            return $topLevelPosition;
+
+        $topLevelPosition = strpos($url,'.at');
+        if ($topLevelPosition !== false)
+            return $topLevelPosition;
+
+        return null;
     }
 
     /**

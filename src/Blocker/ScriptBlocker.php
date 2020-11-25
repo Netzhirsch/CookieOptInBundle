@@ -33,15 +33,13 @@ class ScriptBlocker
          * Andere HTML Tags einfach ans Return anhängen.
          */
 
+        $newBuffer = '';
         $doc = new DOMDocument();
         $doc->loadHTML($buffer);
-        $htmlArray = $doc->getElementsByTagName('script');
-        $newBuffer = '';
+        $htmlArray = self::getAllDOMElement($doc);
         foreach ($htmlArray as $html) {
             $newBuffer .= self::getScriptHTML($html,$requestStack,$conn,$buffer);
         }
-        if (empty($newBuffer))
-            return $buffer;
         return $newBuffer;
     }
 
@@ -60,11 +58,11 @@ class ScriptBlocker
         if (empty($moduleData))
             return $buffer;
 
-        $src = $DOMElement->getAttribute('src');
+        $src = self::getSrc($DOMElement);
         if (empty($src))
             return $buffer;
 
-        $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $DOMElement->getAttribute('src'));
+        $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $src);
         if (empty($externalMediaCookiesInDB))
             return $buffer;
 
@@ -90,5 +88,33 @@ class ScriptBlocker
             $size,
             $buffer
         );
+    }
+
+    private static function getSrc(DOMElement $DOMElement){
+        $src = $DOMElement->getAttribute('src');
+        if (!empty($src))
+            return $src;
+
+        $src = $DOMElement->getAttribute('data-src');
+        if (!empty($src))
+            return $src;
+
+        return null;
+    }
+
+
+    private static function getAllDOMElement($doc) {
+        $domElementArray = [];
+        $domElementArray = self::addToDomElementArray($doc,$domElementArray,'script');
+        $domElementArray = self::addToDomElementArray($doc,$domElementArray,'link');
+        return $domElementArray;
+    }
+
+    private static function addToDomElementArray($doc,$domElementArray,$tag) {
+        $scriptElements = $doc->getElementsByTagName($tag);
+        foreach ($scriptElements as $scriptElement) {
+            $domElementArray[] = $scriptElement;
+        }
+        return $domElementArray;
     }
 }
