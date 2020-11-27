@@ -13,10 +13,12 @@ class ReplaceInsertTag
      * @param $insertTag
      * @return mixed
      * @throws DBALException
+     * @throws \Exception
      */
     public function onReplaceInsertTagsListener($insertTag)
     {
-        if ($_SESSION['nh_remove_modules']) {
+        global $objPage;
+        if (PageLayoutListener::shouldRemoveModules($objPage)) {
             $modIdsInBuffer = PageLayoutListener::getModuleIdFromHtmlElement($insertTag);
             if (!empty($modIdsInBuffer)) {
                 $return = PageLayoutListener::findCookieModuleByPid($modIdsInBuffer);

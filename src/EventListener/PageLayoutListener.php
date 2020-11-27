@@ -39,10 +39,7 @@ class PageLayoutListener {
         $moduleIds = $return['moduleIds'];
         if (empty($moduleIds)) {
             // remove in done on onParseFrontendTemplate event listener
-            if ($removeModules) {
-                $_SESSION['nh_remove_modules'] = $removeModules;
-            }
-            else {
+            if (!$removeModules) {
                 $return = self::getModuleIdFromInsertTag($pageModel,$layout,$allModuleIdsInLayout);
                 if (!empty($return['moduleIds']))
                     $moduleIds = $return['moduleIds'];
