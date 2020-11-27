@@ -12,7 +12,6 @@ class NcoiSaveButton {
         onClickSaveConsent(storageKey);
 
         function  onClickSaveAllConsent(storageKey) {
-            console.log("prevend Default");
             $('#ncoi---allowed--all').on('click', function (e) {
                 e.preventDefault();
                 $('.ncoi---cookie-group input').prop('checked', true);
@@ -22,7 +21,6 @@ class NcoiSaveButton {
         }
 
         function onClickSaveConsent(storageKey){
-            console.log("prevend Default");
             $('#ncoi---allowed').on('click', function (e) {
                 e.preventDefault();
                 saveConsent(storageKey);

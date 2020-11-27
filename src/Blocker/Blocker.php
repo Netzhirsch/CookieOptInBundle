@@ -384,12 +384,4 @@ class Blocker
         }
         return false;
     }
-
-    public static function clearHtmlComments($html){
-        $commentStart = strpos($html,'<!--',);
-        $commentEnd = strpos($html,'-->',);
-        if ($commentStart !== false && $commentEnd !== false)
-            return substr($html,$commentStart,$commentEnd);
-        return $html;
-    }
 }
