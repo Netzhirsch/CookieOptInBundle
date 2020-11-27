@@ -5,7 +5,7 @@ class NcoiTemplate {
     }
 
     addToolTemplates(tool, body) {
-        let template = this.getChildTemplate(this.getName(tool));
+        let template = this.getChildTemplate(this.getToolsType(tool));
         if (typeof template !== 'undefined')
             template.setCookies(this.getTrackingId(tool),body);
     }
@@ -29,6 +29,10 @@ class NcoiTemplate {
 
     getName(tool) {
         return tool.cookieToolsTechnicalName;
+    }
+
+    getToolsType(tool){
+        return tool.cookieToolsSelect;
     }
 
 
