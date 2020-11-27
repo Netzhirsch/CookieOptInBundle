@@ -19,11 +19,13 @@ class ParseFrontendTemplateListener
      * @param $template
      * @return string
      * @throws DBALException|Exception
+     * @throws \Exception
      */
     public function onParseFrontendTemplate($buffer, $template)
     {
         // Nur passende Template untersuchen um Zeit zu sparen
-        if (!empty($buffer)) {
+        global $objPage;;
+        if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
             if (strpos($buffer, '<iframe') !== false) {
                 if (
                     strpos($template, 'ce_html') !== false
