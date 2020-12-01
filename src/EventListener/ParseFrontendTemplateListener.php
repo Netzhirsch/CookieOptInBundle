@@ -23,8 +23,11 @@ class ParseFrontendTemplateListener
      */
     public function onParseFrontendTemplate($buffer, $template)
     {
-        // Nur passende Template untersuchen um Zeit zu sparen
-        global $objPage;;
+        global $objPage;
+        //On Backend empty
+        if (empty($objPage))
+            return $buffer;
+
         if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
             if (strpos($buffer, '<iframe') !== false) {
                 if (
