@@ -59,7 +59,7 @@ class ParseFrontendTemplateListener
                 return $analyticsBlocker->analyticsTemplate($buffer,'matomo');
             }
 
-            $isScriptTemplate = $template == 'ce_html' && strpos($buffer, '<script') !== false;
+            $isScriptTemplate = strpos($buffer, '<script') !== false;
             if ($isScriptTemplate) {
                 $scriptBlocker = new ScriptBlocker();
                 return $scriptBlocker->script($buffer,$this->getConnection(),$this->getRequestStack());
