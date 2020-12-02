@@ -1,9 +1,9 @@
 class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
 
     setCookies (trackingId,body = null) {
-        if (this.hasContaoGoogleTemplate) {
+        if (this.hasContaoGoogleTemplate()) {
             this.addContaoTemplate(body);
-        } else if (this.getWrapper().length === 0 && this.getScript().length === 0) {
+        } else {
             this.executeDefault(trackingId)
         }
     }
@@ -11,7 +11,7 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
     hasContaoGoogleTemplate() {
         let script = this.getScript();
         let wrapper = this.getWrapper();
-        return script.length > 0 && wrapper.length === 0;
+        return script.length > 0 && wrapper.length > 0;
     }
 
     addContaoTemplate(body) {
@@ -40,7 +40,7 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
 
         gtag('config', trackingId, {
             'cookie_update': false,
-            'cookie_flags': 'SameSite=None;Secure'
+            'cookie_flags': 'SameSite=none'
         });
     }
 

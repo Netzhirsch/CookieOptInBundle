@@ -27,14 +27,9 @@ class NcoiTemplate {
         return url;
     }
 
-    getName(tool) {
-        return tool.cookieToolsTechnicalName;
-    }
-
     getToolsType(tool){
         return tool.cookieToolsSelect;
     }
-
 
     getWrapper(template) {
         let wrapper = template.getWrapper();
@@ -43,14 +38,14 @@ class NcoiTemplate {
         return null
     }
 
-    getChildTemplate(toolName) {
+    getChildTemplate(toolType) {
         let template;
-        if (toolName.localeCompare('googleAnalytics') === 0) {
+        if (toolType.localeCompare('googleAnalytics') === 0) {
             template = new _NcoiAnalyticsGoogleTemplate(this.$);
-        } else if (toolName.localeCompare('googleTagManager') === 0) {
+        } else if (toolType.localeCompare('googleTagManager') === 0) {
             template = new _NcoiTagManagerGoogleTemplate();
-        } else if (toolName.localeCompare('facebookPixel') === 0) {
-            template = new _NcoiFacebookPixelTemplate();
+        } else if (toolType.localeCompare('facebookPixel') === 0) {
+            template = new _NcoiFacebookPixelTemplate(this.$);
         }
         return template;
     }

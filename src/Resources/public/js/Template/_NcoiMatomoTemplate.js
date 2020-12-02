@@ -1,9 +1,9 @@
 class _NcoiMatomoTemplate extends NcoiTemplate{
 
     setCookies (trackingId) {
-        if (this.hasContaoTemplate) {
+        if (this.hasContaoTemplate()) {
             this.addContaoTemplate();
-        } else if (this.getWrapper().length === 0 && this.getScript().length === 0) {
+        } else {
             this.executeDefault(trackingId)
         }
     }
@@ -11,7 +11,7 @@ class _NcoiMatomoTemplate extends NcoiTemplate{
     hasContaoTemplate() {
         let script = this.getScript();
         let wrapper = this.getWrapper();
-        return script.length > 0 && wrapper.length === 0;
+        return script.length > 0 && wrapper.length > 0;
     }
 
     addContaoTemplate() {
