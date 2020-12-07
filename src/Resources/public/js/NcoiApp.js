@@ -31,6 +31,9 @@ class NcoiApp {
 
         const ncoiApp = new NcoiApp($);
         let mainWrapper  = ncoiApp.getMainWrapper();
+        let isExcludePage = mainWrapper.find('.ncoi---container').data('is-exclude-page')
+        if  (isExcludePage === 1)
+            return;
 
         const ncoiLoad = new NcoiLoad($);
         ncoiLoad.fixTooLateCssLoad(mainWrapper)

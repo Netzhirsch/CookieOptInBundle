@@ -21,10 +21,11 @@ use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
 class PageLayoutListener {
 
     /**
-     * @param PageModel   $pageModel
+     * @param PageModel $pageModel
      * @param LayoutModel $layout
      *
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
 
