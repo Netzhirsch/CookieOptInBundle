@@ -31,6 +31,11 @@ class NcoiApp {
 
         const ncoiApp = new NcoiApp($);
         let mainWrapper  = ncoiApp.getMainWrapper();
+        const ncoiRevoke = new NcoiRevoke($);
+        let storageKey = ncoiApp.getStorageKey();
+        let localStorage = ncoiApp.getLocalStorage(storageKey);
+        ncoiRevoke.addOnClickEvent(storageKey);
+
         let isExcludePage = mainWrapper.find('.ncoi---container').data('is-exclude-page')
         if  (isExcludePage === 1)
             return;
@@ -41,7 +46,6 @@ class NcoiApp {
         ncoiLoad.showAllMissingModuleMessage();
 
         const ncoiSaveButton = new NcoiSaveButton($);
-        let storageKey = ncoiApp.getStorageKey();
         const ncoiTrack = new NcoiTrack($);
         ncoiSaveButton.addOnClickEvents(storageKey,ncoiTrack);
 
@@ -53,9 +57,6 @@ class NcoiApp {
         ncoiInfoTable.onChangeGroupActive();
         ncoiInfoTable.onChangeCookieActive();
 
-        const ncoiRevoke = new NcoiRevoke($);
-        let localStorage = ncoiApp.getLocalStorage(storageKey);
-        ncoiRevoke.addOnClickEvent(storageKey);
 
         const ncoiCookie = new NcoiCookie($);
         if (ncoiLoad.isLocalStorageIsUpToDate(localStorage,storageKey,mainWrapper)) {
