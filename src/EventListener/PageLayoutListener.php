@@ -442,7 +442,7 @@ class PageLayoutListener {
                 $fieldPalette->cookieToolGroup = 3;
                 $save = true;
                 break;
-        };
+        }
         if ($save)
             $fieldPalette->save();
     }
