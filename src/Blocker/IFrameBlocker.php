@@ -141,7 +141,7 @@ class IFrameBlocker
             $blockTexts,
             $size,
             $iframeHTML,
-            $iconPath,
+            $iconPath
         );
 
         $isUserCookieDontAllowMedia = false;
