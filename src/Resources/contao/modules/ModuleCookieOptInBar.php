@@ -13,6 +13,7 @@ use Doctrine\DBAL\Statement;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Repository\LayoutRepository;
 
 class ModuleCookieOptInBar extends Module
 {
@@ -129,15 +130,24 @@ class ModuleCookieOptInBar extends Module
             if (!empty($ncoiSession) && $data['noscript']) {
                 foreach ($ncoiSession['cookieIds'] as $cookieId) {
                     if ($cookieId == $cookieTool->id ) {
+
                         if (!in_array($cookieId,$data['cookieGroupsSelected']))
                             $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
+
+                        $cookieToolsSelect = $cookieTool->cookieToolsSelect;
+                        if (self::hasTemplate($conn,$objPage->layout,$cookieToolsSelect))
+                            continue;
+
+                        $trackingId = $cookieTool->cookieToolsTrackingId;
 
                         if ($cookieTool->cookieToolsSelect == 'facebookPixel') {
                             $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='.$cookieTool->cookieToolsTrackingId.'&ev=PageView&noscript=1"/>';
                         } elseif ($cookieTool->cookieToolsSelect == 'googleAnalytics') {
-                            $data['noScriptTracking'][] = '<img src="http://www.google-analytics.com/collect?v=1&t=pageview&tid='.$cookieTool->cookieToolsTrackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
+
+                            $data['noScriptTracking'][] = '<img src="http://www.google-analytics.com/collect?v=1&t=pageview&tid='.$trackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
                         } elseif ($cookieTool->cookieToolsSelect == 'matomo') {
-                            $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$cookieTool->cookieToolsTrackingId.'&amp;rec=1" style="border:0" alt="" />';
+
+                            $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$trackingId.'&amp;rec=1" style="border:0" alt="" />';
                         }
                     }
                 }
@@ -369,6 +379,35 @@ class ModuleCookieOptInBar extends Module
     private static function isPresentDirOrParentDir($file)
     {
         return ($file == '.' || $file == '..');
+    }
+
+
+    private static function hasTemplate($conn,$layout,$name) {
+
+	    if ($name == 'googleAnalytics')
+	        $name = 'google';
+	    elseif ($name == 'matomo')
+            $name = 'piwik';
+
+	    if (empty($name))
+	        return false;
+
+
+        $repo = new LayoutRepository($conn);
+        $analytics = $repo->find($layout);
+
+        foreach ($analytics as $analytic) {
+
+            if (isset($analytic['analytics'])) {
+
+                $analyticFile = StringUtil::deserialize($analytic['analytics']);
+                $analyticFile = $analyticFile[array_key_first($analyticFile)];
+                if (strpos($analyticFile,$name))
+                    return true;
+            }
+        }
+
+        return false;
     }
 
 }
