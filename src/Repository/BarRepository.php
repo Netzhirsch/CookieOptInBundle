@@ -51,7 +51,7 @@ class BarRepository
 
         DatabaseExceptionLogger::tryExecute($stmt);
 
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
+        $result = DatabaseExceptionLogger::tryFetchAssociative($stmt);
         if (!empty($result))
             return $result;
 
