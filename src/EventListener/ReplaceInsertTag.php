@@ -5,8 +5,11 @@ namespace Netzhirsch\CookieOptInBundle\EventListener;
 
 
 
+use Contao\System;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Exception;
+use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 
 class ReplaceInsertTag
 {
@@ -25,7 +28,11 @@ class ReplaceInsertTag
         if (PageLayoutListener::shouldRemoveModules($objPage)) {
             $modIdsInBuffer = PageLayoutListener::getModuleIdFromHtmlElement($insertTag);
             if (!empty($modIdsInBuffer)) {
-                $return = PageLayoutListener::findCookieModuleByPid($modIdsInBuffer);
+                /** @var Connection $conn */
+                /** @noinspection MissingService */
+                $conn = System::getContainer()->get('database_connection');
+                $barRepo = new BarRepository($conn);
+                $return = $barRepo->findByIds($modIdsInBuffer);
                 if (!empty($return)) {
                     $cookieBarId = $return['pid'];
                     $insertTag = str_replace('{{insert_module::'.$cookieBarId.'}}','',$insertTag);

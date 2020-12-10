@@ -3,6 +3,7 @@
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
 use Doctrine\DBAL\Connection;
+use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
 
 class LayoutRepository
 {
@@ -13,13 +14,20 @@ class LayoutRepository
         $this->conn = $conn;
     }
 
-    public function find($id)
+    public function find($id): array
     {
         $sql = "SELECT analytics FROM tl_layout WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(1, $id);
-        $stmt->execute();
+        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
+        if (empty($stmt))
+            return [];
 
-        return $stmt->fetchAll();
+        $stmt->bindValue(1, $id);
+
+        DatabaseExceptionLogger::tryExecute($stmt);
+        $result = DatabaseExceptionLogger::tryFetch($stmt);
+        if (empty($result))
+            return [];
+
+        return $result;
     }
 }

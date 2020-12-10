@@ -16,7 +16,9 @@ use Doctrine\DBAL\Statement;
 use Exception;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
+use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
+use Netzhirsch\CookieOptInBundle\Repository\RevokeRepository;
 
 class PageLayoutListener {
 
@@ -72,6 +74,7 @@ class PageLayoutListener {
             $modId = $moduleIds;
 
         /********* update groups for a version < 1.3.0 ************************************************************/
+        /** @noinspection MissingService */
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
         /** @var Statement $stmt */
@@ -106,13 +109,11 @@ class PageLayoutListener {
     public static function doNotTrackBrowserSetting($respectDoNotTrack,$moduleId = null) {
         $doNotTrack = false;
         if (empty($respectDoNotTrack)) {
+            /** @var Connection $conn */
+            /** @noinspection MissingService */
             $conn = System::getContainer()->get('database_connection');
-            $sql = "SELECT respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
-            /** @var Statement $stmt */
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(1, $moduleId);
-            $stmt->execute();
-            $respectDoNotTrack = $stmt->fetchColumn();
+            $barRepository = new BarRepository($conn);
+            $respectDoNotTrack = $barRepository->findByPid($moduleId);
         }
         if (
             array_key_exists('HTTP_DNT', $_SERVER) && (1 === (int) $_SERVER['HTTP_DNT']) && $respectDoNotTrack
@@ -244,6 +245,7 @@ class PageLayoutListener {
         ];
         $id = $page->__get('id');
         /** @var Connection $conn */
+        /** @noinspection MissingService */
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT html FROM tl_content as tc 
         LEFT JOIN tl_article ta on tc.pid = ta.id
@@ -282,8 +284,9 @@ class PageLayoutListener {
 
         if (empty($modIds))
             return $parameters;
+        $barRepo = new BarRepository($conn);
 
-        $return = self::findCookieModuleByPid($modIds);
+        $return = $barRepo->findByIds($modIds);
         if (empty($return))
             return $parameters;
 
@@ -323,24 +326,6 @@ class PageLayoutListener {
     }
 
     /**
-     * @param $modIds
-     * @return mixed[]
-     * @throws DBALException
-     */
-    public static function findCookieModuleByPid($modIds)
-    {
-        if (empty($modIds))
-            return null;
-
-        $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (".implode(",",$modIds).")";
-        /** @var Statement $stmt */
-        $stmt = $conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-
-    /**
      * @param LayoutModel|PageModel $layoutOrPage
      * @param                        $removeModules
      * @param array $moduleIds
@@ -353,18 +338,17 @@ class PageLayoutListener {
         $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
         $tlCookieIds = [];
         $allModuleIds = [];
+        /** @var Connection $conn */
+        /** @noinspection MissingService */
         $conn = System::getContainer()->get('database_connection');
+        $barRepository = new BarRepository($conn);
+
         if (!empty($layoutModules)) {
+            $bars = $barRepository->findAll();
+            $revokeRepository = new RevokeRepository($conn);
+
             foreach ($layoutModules as $key => $layoutModule) {
                 if (!empty($layoutModule['enable'])) {
-
-                    $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid = ?";
-                    /** @var Statement $stmt */
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bindValue(1, $layoutModule['mod']);
-                    $stmt->execute();
-                    $bars = $stmt->fetchAll();
-
                     if (!empty($bars)) {
                         foreach ($bars as $bar) {
                             if ($removeModules) {
@@ -376,13 +360,7 @@ class PageLayoutListener {
                             $tlCookieIds[] = $bar['id'];
                         }
                     }
-
-                    $sql = "SELECT id,pid FROM tl_ncoi_cookie_revoke WHERE pid = ?";
-                    /** @var Statement $stmt */
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bindValue(1, $layoutModule['mod']);
-                    $stmt->execute();
-                    $revokes = $stmt->fetchAll();
+                    $revokes = $revokeRepository->findByPid($layoutModule['mod']);
                     if (!empty($revokes)) {
                         foreach ($revokes as $revoke) {
 
@@ -398,14 +376,9 @@ class PageLayoutListener {
             $layoutOrPage->__set('modules', serialize($layoutModules));
         }
         if (empty($moduleIds)) {
+
             $pageId = $layoutOrPage->__get('id');
-            $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (SELECT module FROM tl_content AS content LEFT JOIN tl_article AS article ON article.id = content.pid LEFT JOIN tl_page AS page ON page.id = article.pid WHERE page.id = ? AND content.module <> 0 OR page.pid = ? AND content.module <> 0)";
-            /** @var Statement $stmt */
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(1, $pageId);
-            $stmt->bindValue(2, $pageId);
-            $stmt->execute();
-            $bars = $stmt->fetchAll();
+            $bars = $barRepository->findByLayoutOrPage($pageId);
             if (!empty($bars)) {
                 foreach ($bars as $bar) {
                     $tlCookieIds[] = $bar['id'];

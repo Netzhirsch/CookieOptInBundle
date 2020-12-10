@@ -59,9 +59,6 @@ class IFrameBlocker
      */
     private function getIframeHTML($iframeHTML,$requestStack,$conn)
     {
-        // Speicher blockierte IFrame Typen
-        $blockedIFrames = [];
-
         //Frontendvariablen diese werden an das Template übergeben
         $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
 
@@ -86,8 +83,9 @@ class IFrameBlocker
             $externalMediaCookiesInDB,
             $moduleData
         );
-        // Wenn iFrame nicht im Backend, kann nur das iFrame zurückgegeben werden.
+
         $isIFrameTypInDB = false;
+        $blockedIFrames = $dataFromExternalMediaAndBar->getBlockedIFrames();
         if (in_array($iframeTypInHtml,$blockedIFrames) || empty($dataFromExternalMediaAndBar->getDisclaimer()))
             $isIFrameTypInDB = true;
 

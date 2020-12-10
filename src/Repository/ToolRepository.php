@@ -3,8 +3,7 @@
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception as DriverException;
-use Doctrine\DBAL\Exception as DBALException;
+use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
 
 class ToolRepository
 {
@@ -19,32 +18,44 @@ class ToolRepository
     /**
      * @param $url
      * @return mixed[]
-     * @throws DriverException
-     * @throws DBALException
      */
-    public function findByUrl($url) {
+    public function findByUrl($url): array
+    {
         $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = ? AND i_frame_blocked_urls LIKE ? AND i_frame_blocked_urls <> ?";
-        $stmt = $this->conn->prepare($sql);
+
+        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
+        if (empty($stmt))
+            return [];
+
+
         $stmt->bindValue(1, 'cookieTools');
         $stmt->bindValue(2, '%'.$url.'%');
         $stmt->bindValue(3, '');
-        $stmt->execute();
-        return $stmt->fetchAll();
+        DatabaseExceptionLogger::tryExecute($stmt);
+
+        return DatabaseExceptionLogger::tryFetch($stmt);
     }
 
     /**
      * @param $type
      * @return mixed[]
-     * @throws DBALException
-     * @throws DriverException
      */
     public function findByType($type)
     {
         $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
-        $stmt = $this->conn->prepare($sql);
+
+        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
+        if (empty($stmt))
+            return [];
+
+        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
+        if (empty($stmt))
+            return [];
+
         $stmt->bindValue(1, 'cookieTools');
         $stmt->bindValue(2, $type);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        DatabaseExceptionLogger::tryExecute($stmt);
+
+        return DatabaseExceptionLogger::tryFetch($stmt);
     }
 }
