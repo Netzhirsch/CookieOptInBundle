@@ -31,7 +31,6 @@
 		"ext-json": "*",
 		"ext-curl": "*",
 		"ext-gettext": "*",
-		"doctrine/orm": "*",
 		"doctrine/data-fixtures": "*",
 		"doctrine/dbal": "*"
 	},
