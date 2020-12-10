@@ -41,7 +41,8 @@
 	"autoload": {
 		"classmap": [
 			"src/ContaoManager/Plugin.php",
-			"src/Resources/contao/"
+			"src/Resources/contao/",
+			"src/Looger"
 		],
 		"psr-4": {
 			"Netzhirsch\\CookieOptInBundle\\": "src/"
