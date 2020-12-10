@@ -131,15 +131,15 @@ $GLOBALS['TL_LANG']['tl_module']['i_frame'] = [
 ];
 
 $GLOBALS['TL_LANG']['tl_module']['i_frame_videoDefault']
-    = 'Durch das Laden dieses Videos geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+    = 'By loading this video you agree to the privacy policy of {{provider}}.';
 $GLOBALS['TL_LANG']['tl_module']['i_frame_mapsDefault']
-    = 'Durch das Laden dieser Karte geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+    = 'By loading this map you agree to the privacy policy of {{provider}}.';
 $GLOBALS['TL_LANG']['tl_module']['i_frame_i_frameDefault']
-    = 'Durch das Laden dieses iFrame geben Sie Ihre Zustimmung zu den Datenschutzbedingungen von {{provider}} zu.';
+    = 'By loading this iframe you agree to the privacy policy of {{provider}}.';
 $GLOBALS['TL_LANG']['tl_module']['i_frame_always_loadDefault']
-    = 'immer laden';
+    = 'always load';
 $GLOBALS['TL_LANG']['tl_module']['i_frame_loadDefault']
-    = 'laden';
+    = 'load';
 
 /*************** Fieldpalette otherScripts ***************/
 $GLOBALS['TL_LANG']['tl_module']['otherScripts'] = ['Other scripts'];

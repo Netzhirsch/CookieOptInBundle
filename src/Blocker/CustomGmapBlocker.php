@@ -92,7 +92,7 @@ class CustomGmapBlocker
             $blockText,
             $size,
             $buffer,
-            'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR,
+            'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR
         );
         $html .='</div>';
 

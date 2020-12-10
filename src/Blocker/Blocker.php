@@ -192,8 +192,6 @@ class Blocker
      * @param Connection $conn
      * @param $url
      * @return mixed[]
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
      */
     public static function getExternalMediaByUrl(Connection $conn, $url) {
         $toolRepo = new ToolRepository($conn);

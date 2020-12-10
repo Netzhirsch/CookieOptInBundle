@@ -7,28 +7,30 @@ namespace Netzhirsch\CookieOptInBundle\Repository;
 use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
 
-class ModuleRepository
+class RevokeRepository
 {
-    /** @var Connection $conn */
+    /** @var Connection */
     private $conn;
+
+    /**
+     * RevokeRepository constructor.
+     * @param Connection $conn
+     */
     public function __construct(Connection $conn)
     {
         $this->conn = $conn;
     }
 
-    public function findByIds($modIds): array
-    {
-        $sql = "SELECT html FROM tl_module WHERE type = 'html' AND id IN (".implode(",",$modIds).")";
+    public function findByPid($pid){
+        $sql = "SELECT id,pid FROM tl_ncoi_cookie_revoke WHERE pid = ?";
         $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
         if (empty($stmt))
             return [];
 
+        $stmt->bindValue(1, $pid);
+
         DatabaseExceptionLogger::tryExecute($stmt);
 
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
-        if (empty($result))
-            return [];
-
-        return $result;
+        return DatabaseExceptionLogger::tryFetch($stmt);
     }
 }

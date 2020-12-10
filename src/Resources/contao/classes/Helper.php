@@ -8,6 +8,7 @@ use Contao\StringUtil;
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
+use Netzhirsch\CookieOptInBundle\Logger\Logger;
 
 class Helper
 {
@@ -58,9 +59,7 @@ class Helper
 			    file_put_contents($path.$cssFile,$css);
             }
 		} catch (Exception $e) {
-		    dd($e);
+		    Logger::logExceptionInContaoSystemLog($e->getMessage());
 		}
-
-
 	}
 }
