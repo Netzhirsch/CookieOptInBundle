@@ -49,7 +49,15 @@ class DatabaseExceptionLogger
         return [];
     }
 
-
+    public static function tryFetchAssociative(Statement $stmt): array
+    {
+        try {
+            return $stmt->fetchAssociative();
+        } catch (\Doctrine\DBAL\Driver\Exception $e) {
+            Logger::logExceptionInContaoSystemLog($e->getMessage());
+        }
+        return [];
+    }
 
 
 }
