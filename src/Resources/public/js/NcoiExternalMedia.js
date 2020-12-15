@@ -100,7 +100,6 @@ class NcoiExternalMedia {
                     for (let i = 0; i < parent.length; i++) {
                         $('.'+parent[i].classList[3]).each(function (){
                             html = atob($(this).find('script').text().trim());
-                            test = $(this);
                         });
                     }
                 } else {
@@ -109,7 +108,6 @@ class NcoiExternalMedia {
             } catch (e) {
                 console.error('Das IFrame html enthält invalide Zeichen.')
             }
-            console.log(test);
             parent.addClass('ncoi---hidden');
             parent.after(html);
         }
