@@ -42,7 +42,10 @@ class DatabaseExceptionLogger
     public static function tryFetch($stmt): array
     {
         try {
-            return $stmt->fetchAllAssociative();
+            $result = $stmt->fetchAllAssociative();
+            if ($result === false)
+                return [];
+            return $result;
         } catch (\Doctrine\DBAL\Driver\Exception $e) {
             Logger::logExceptionInContaoSystemLog($e->getMessage());
         }
@@ -52,7 +55,10 @@ class DatabaseExceptionLogger
     public static function tryFetchAssociative(Statement $stmt): array
     {
         try {
-            return $stmt->fetchAssociative();
+            $result = $stmt->fetchAssociative();
+            if ($result === false)
+                return [];
+            return $result;
         } catch (\Doctrine\DBAL\Driver\Exception $e) {
             Logger::logExceptionInContaoSystemLog($e->getMessage());
         }
