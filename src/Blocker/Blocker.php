@@ -155,7 +155,7 @@ class Blocker
         $ids = self::getModuleIdsFromHtml($htmlInModules);
         if (!empty($ids)) {
             $barModule = $barRepo->findByIds($ids);
-            if (!empty($barModule))
+            if (!empty($barModule) && !empty($barModule['pid']))
                 $dataFromExternalMediaAndBar->setModId($barModule['pid']);
         }
     }
