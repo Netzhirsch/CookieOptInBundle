@@ -172,6 +172,22 @@ class Blocker
     }
     private static function getModuleIdFromHtml($html)
     {
+        if (is_array($html)) {
+            foreach ($html as $item) {
+                $id = self::getModuleIdFromOneHtml($item);
+                if (!empty($id))
+                    return $id;
+            }
+        } else {
+            $id = self::getModuleIdFromOneHtml($html);
+            if (!empty($id))
+                return $id;
+        }
+
+        return null;
+    }
+
+    private static function getModuleIdFromOneHtml($html){
         $position = strpos($html,'{{insert_module::');
         if ($position !== false) {
             $doc = new DOMDocument();
@@ -188,6 +204,7 @@ class Blocker
         }
         return null;
     }
+
     /**
      * @param Connection $conn
      * @param $url
