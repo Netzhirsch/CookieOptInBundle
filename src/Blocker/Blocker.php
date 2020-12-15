@@ -136,6 +136,7 @@ class Blocker
         }
 
         if (!$isModuleIdInLayout) {
+
             self::setModIdByInsertTagInModule($conn,$modIds,$barRepo,$dataFromExternalMediaAndBar);
         }
 
@@ -155,8 +156,10 @@ class Blocker
         $ids = self::getModuleIdsFromHtml($htmlInModules);
         if (!empty($ids)) {
             $barModule = $barRepo->findByIds($ids);
-            if (!empty($barModule) && !empty($barModule['pid']))
+            $barModule = $barModule[array_key_first($barModule)];
+            if (!empty($barModule) && !empty($barModule['pid'])) {
                 $dataFromExternalMediaAndBar->setModId($barModule['pid']);
+            }
         }
     }
 
@@ -370,7 +373,6 @@ class Blocker
         if (!$isCustomGmap) {
             $iframe = '<script type="text/template">' . base64_encode($html) . '</script>';
         }
-
         return $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
     }
 

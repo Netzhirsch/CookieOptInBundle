@@ -229,7 +229,6 @@ class CookieController extends AbstractController
 		$cookieNames = [];
 		$cookieTechnicalName = [];
 		$otherCookieIds = array_merge($cookieData['cookieTools'],$cookieData['otherScripts']);
-
         if (!empty($otherCookieIds)) {
             foreach ($otherCookieIds as $cookieTool) {
                 $cookieNames[] = $cookieTool['cookieToolsName'];
@@ -324,18 +323,17 @@ class CookieController extends AbstractController
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
         $conn = $this->get('database_connection');
-        $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?)";
+        $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime,cookieToolsName,cookieToolsTechnicalName FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, $modId);
         $stmt->bindValue(2, $iframe);
         $stmt->execute();
         $cookie = $stmt->fetch();
-
         if ($request->hasSession()) {
             $session = $request->getSession();
             $data = $this->getTlCookieData($modId);
             $cookieDatabase = $this->getModulData($modId,$data);
-            $id = $this->changeConsent([$cookie['id']],$data);
+            $id = $this->changeConsent(['cookieTools' => [$cookie],'otherScripts' => []],$data);
             if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi'])) {
                 $ncoi = $_SESSION['_sf2_attributes']['ncoi'];
                 $ncoi['cookieIds'][] = $cookie['id'];

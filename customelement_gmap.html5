@@ -11,49 +11,55 @@ $GoogleMapsApiKey = '';
  */
 if(strlen($GoogleMapsApiKey) < 1)
 {
-	echo ($GLOBALS['TL_LANGUAGE'] == 'de' ? 'Google Maps API Schlüssel benötigt. Bitte tragen Sie den API Schlüssel im Template customelement_gmap.html5 ein' : 'Google Maps requires a valid API Key!');	
-	#return '';
+    echo ($GLOBALS['TL_LANGUAGE'] == 'de' ? 'Google Maps API Schlüssel benötigt. Bitte tragen Sie den API Schlüssel im Template customelement_gmap.html5 ein' : 'Google Maps requires a valid API Key!');
+    return '';
 }
 ?>
 
 
 <?php
-$GLOBALS['TL_JAVASCRIPT'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&key='.$GoogleMapsApiKey;	
+#$GLOBALS['TL_JAVASCRIPT'][] = 'https://maps.googleapis.com/maps/api/js?v=3.exp&key='.$GoogleMapsApiKey;
+// Optin-Listener before loading from googleapis.com
+$GLOBALS['TL_HEAD'][] =
+    '<script id="googleapis_maps_'.$this->id.'"></script>
+<script>
+document.getElementById("googleapis_maps_'.$this->id.'").src = "https://maps.googleapis.com/maps/api/js?v=3.exp&key='.$GoogleMapsApiKey.'";
+</script>';
 ?>
 
 <div class="<?php echo $this->class; ?> block<?php if($this->field('margin_top')->value()): ?> <?php echo $this->field('margin_top')->value(); ?><?php endif; ?><?php if($this->field('margin_bottom')->value()): ?> <?php echo $this->field('margin_bottom')->value(); ?><?php endif; ?><?php if($this->field('margin_top_mobile')->value()): ?> <?php echo $this->field('margin_top_mobile')->value(); ?><?php endif; ?><?php if($this->field('margin_bottom_mobile')->value()): ?> <?php echo $this->field('margin_bottom_mobile')->value(); ?><?php endif; ?>"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
-<div class="ce_google_map_inside" id="gmap_<?php echo $this->id; ?>" style="height: <?php echo $this->field('height')->value(); ?>px;"></div>
+    <div class="ce_google_map_inside" id="gmap_<?php echo $this->id; ?>" style="height: <?php echo $this->field('height')->value(); ?>px;"></div>
 </div>
 
-<?php 
+<?php
 $arrLocations = array();
 if(count($this->group('adresse')) > 0)
 {
-foreach($this->group('adresse') as $i => $fields)
-{
-$arrLocations[$i] = array
-(
-'country'	=> $this->field('country#'.$i)->value(),
-'street' 	=> $this->field('street#'.$i)->value(),
-'zipcode'	=> $this->field('zipcode#'.$i)->value(),
-'city'		=> $this->field('place#'.$i)->value(),
-'infotext'	=> \StringUtil::substrHtml($this->field('description#'.$i)->value(),strlen($this->field('description#'.$i)->value())),
-#'latitude'	=> '',
-#'longitude'=> '',
-'markerTitle' => 'Location: '.$i,
-);
+    foreach($this->group('adresse') as $i => $fields)
+    {
+        $arrLocations[$i] = array
+        (
+            'country'	=> $this->field('country#'.$i)->value(),
+            'street' 	=> $this->field('street#'.$i)->value(),
+            'zipcode'	=> $this->field('zipcode#'.$i)->value(),
+            'city'		=> $this->field('place#'.$i)->value(),
+            'infotext'	=> \StringUtil::substrHtml($this->field('description#'.$i)->value(),strlen($this->field('description#'.$i)->value())),
+            #'latitude'	=> '',
+            #'longitude'=> '',
+            'markerTitle' => 'Location: '.$i,
+        );
 
-// marker icon
-if($this->field('icon#'.$i)->value())
-{
-$image = $this->field('icon#'.$i)->generate();
-$arrLocations[$i]['icon'] = \StringUtil::substrHtml($image,strlen($image));
-}
-}
+        // marker icon
+        if($this->field('icon#'.$i)->value())
+        {
+            $image = $this->field('icon#'.$i)->generate();
+            $arrLocations[$i]['icon'] = \StringUtil::substrHtml($image,strlen($image));
+        }
+    }
 }
 ?>
 
-<script type='text/javascript'>
+<script>
     /* <![CDATA[ */
 
     /**
@@ -65,12 +71,12 @@ $arrLocations[$i]['icon'] = \StringUtil::substrHtml($image,strlen($image));
         var center = {};
         var gray = [{featureType: "all", stylers: [{ saturation:-100},{gamma:0},{invert_lightness:0}]}];
         var ownstyles = [{featureType: "all", stylers: [
-            <?php if($this->field('hue')->value()): ?>{ hue: "#<?php echo $this->field('hue')->value(); ?>"},<?php endif; ?>
-    <?php if($this->field('weight')->value()): ?>{ weight: "<?php echo $this->field('weight')->value(); ?>"},<?php endif; ?>
-    <?php if($this->field('saturation')->value()): ?>{saturation:<?php echo $this->field('saturation')->value(); ?>},<?php endif; ?>
-    <?php if($this->field('gamma')->value()): ?>{gamma:<?php echo $this->field('gamma')->value(); ?>},<?php endif; ?>
-    <?php if($this->field('lightness')->value()): ?>{lightness:<?php echo $this->field('lightness')->value(); ?>},<?php endif; ?>
-    <?php if($this->field('invert_lightness')->value()): ?>{invert_lightness:1}<?php endif; ?>]}];
+                    <?php if($this->field('hue')->value()): ?>{ hue: "#<?php echo $this->field('hue')->value(); ?>"},<?php endif; ?>
+                    <?php if($this->field('weight')->value()): ?>{ weight: "<?php echo $this->field('weight')->value(); ?>"},<?php endif; ?>
+                    <?php if($this->field('saturation')->value()): ?>{saturation:<?php echo $this->field('saturation')->value(); ?>},<?php endif; ?>
+                    <?php if($this->field('gamma')->value()): ?>{gamma:<?php echo $this->field('gamma')->value(); ?>},<?php endif; ?>
+                    <?php if($this->field('lightness')->value()): ?>{lightness:<?php echo $this->field('lightness')->value(); ?>},<?php endif; ?>
+                    <?php if($this->field('invert_lightness')->value()): ?>{invert_lightness:1}<?php endif; ?>]}];
 
         var centers_lat = [];
         var centers_lng = [];
@@ -79,46 +85,57 @@ $arrLocations[$i]['icon'] = \StringUtil::substrHtml($image,strlen($image));
         var mapOptions =
             {
                 zoom: <?php echo $this->field('zoom')->value(); ?>,
-        scrollwheel: false,
-            styles: <?php if($this->field('grayscale')->value()): ?>gray<?php else: ?>ownstyles<?php endif; ?>,
-        mapTypeId: google.maps.MapTypeId.<?php if($this->field('map_type')->value()): ?><?php echo $this->field('map_type')->value(); ?><?php else: ?>ROADMAP<?php endif; ?>
-    };
+                scrollwheel: false,
+                styles: <?php if($this->field('grayscale')->value()): ?>gray<?php else: ?>ownstyles<?php endif; ?>,
+                mapTypeId: google.maps.MapTypeId.<?php if($this->field('map_type')->value()): ?><?php echo $this->field('map_type')->value(); ?><?php else: ?>ROADMAP<?php endif; ?>
+            };
 
         var map = new google.maps.Map(document.getElementById('gmap_<?php echo $this->id; ?>'),mapOptions);
 
         // build locations array
         var locations = [];
-    <?php foreach($arrLocations as $i => $location): ?>
+        <?php foreach($arrLocations as $i => $location): ?>
         var location = {};
-    <?php foreach($location as $k => $v): ?>
+        <?php foreach($location as $k => $v): ?>
         location.<?php echo $k; ?> = '<?php echo $v; ?>';
-    <?php endforeach; ?>
+        <?php endforeach; ?>
         locations.push(location);
-    <?php endforeach; ?>
+        <?php endforeach; ?>
 
         var infowindow = new google.maps.InfoWindow();
         var markers = new Array();
         var neededGeocoder = false;
+        var timeout = 0;
 
         // place markers
         for(var i = 0; i < locations.length; i++)
         {
-            (function(location) // must encapsule to avoid wrong index in geocoder callback
+            // stack timeouts to avoid query limit by Google
+            timeout = i * 400;
+
+            setTimeout(function(location)
             {
-                // need the geocoder to find coordinates
                 if(location.latitude == undefined || location.longitude == undefined)
                 {
                     var geocoder = new google.maps.Geocoder;
                     var address = location.street + ',' + location.zipcode + ',' + location.city + ',' + location.country;
+
                     geocoder.geocode({'address': address}, function(results, status)
                     {
-                        var marker = new google.maps.Marker({
-                            map: map,
-                            position: results[0].geometry.location,
-                            title: location.markerTitle,
-                            icon: location.icon
-                        });
-
+                        if( results == null )
+                        {
+                            console.log(status + ' Adress: '+address);
+                            return true;
+                        }
+                        else
+                        {
+                            var marker = new google.maps.Marker({
+                                map: map,
+                                position: results[0].geometry.location,
+                                title: location.markerTitle,
+                                icon: location.icon
+                            });
+                        }
                         google.maps.event.addListener(marker, 'click', function()
                         {
                             // go to marker position and zoom
@@ -156,29 +173,39 @@ $arrLocations[$i]['icon'] = \StringUtil::substrHtml($image,strlen($image));
                     centers_lat.push(location.latitude);
                     centers_lng.push(location.longitude);
                 }
-            })(locations[i]);  //closure passing in variables from loop
+            },timeout, locations[i]);
         }
 
         // find average coordinate as map center
-        if(locations.length > 0 || centers_lat.length > 0)
+        if(locations.length > 0)
         {
-            setTimeout(function()
-            {
-                var avg_lat = 0,avg_lng = 0;
-                var c = centers_lat.length;
-                for(var i = 0; i < c; i++)
+            let c = centers_lat.length;
+            if (c !== 0) {
+                setTimeout(function()
                 {
-                    avg_lat += centers_lat[i];
-                    avg_lng += centers_lng[i];
-                }
+                    var avg_lat = 0,avg_lng = 0;
 
-                var center =
+                    for(var i = 0; i < c; i++)
                     {
-                        lat: avg_lat/c,
-                        lng: avg_lng/c
-                    };
+                        avg_lat += centers_lat[i];
+                        avg_lng += centers_lng[i];
+                    }
+
+                    var center =
+                        {
+                            lat: avg_lat/c,
+                            lng: avg_lng/c
+                        };
+                    map.setCenter( center );
+                }, 10000);
+
+            } else {
+                center.lat = 51.1958685;
+                center.lng = 10.4809570;
+
                 map.setCenter( center );
-            }, 800);
+            }
+
         }
         // fallback to default center
         else
@@ -190,8 +217,21 @@ $arrLocations[$i]['icon'] = \StringUtil::substrHtml($image,strlen($image));
         }
     }
 
-    google.maps.event.addDomListener(window, 'load',initializeMap_<?php echo $this->id; ?>);
+    var mapInitialized_<?= $this->id; ?> = false;
 
+    jQuery('script#googleapis_maps_<?= $this->id; ?>').on('load',function()
+    {
+        initializeMap_<?php echo $this->id; ?>();
+        // flag if map has been initialized already
+        mapInitialized_<?= $this->id; ?> = true;
+    });
 
-    /* ]]> */
+    setTimeout(function()
+    {
+        // if map has not been initialized yet, do so
+        if(mapInitialized_<?= $this->id; ?> == false)
+        {
+            initializeMap_<?php echo $this->id; ?>();
+        }
+    }, 1000);
 </script>

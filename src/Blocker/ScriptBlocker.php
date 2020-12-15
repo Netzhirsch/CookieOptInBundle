@@ -32,7 +32,6 @@ class ScriptBlocker
          * Scripts encoden und in Container div einbetten.
          * Andere HTML Tags einfach ans Return anhängen.
          */
-
         $newBuffer = '';
         $doc = new DOMDocument();
 //        $clearBuffer = Blocker::clearHtmlComments($buffer);
@@ -76,6 +75,7 @@ class ScriptBlocker
         $barRepo = new BarRepository($conn);
         $blockText = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
 
+
         if (Blocker::isAllowed($dataFromExternalMediaAndBar))
             return $buffer;
 
@@ -83,6 +83,14 @@ class ScriptBlocker
             'height' => $DOMElement->getAttribute('height'),
             'width' => $DOMElement->getAttribute('width'),
         ];
+
+        $htmlContainer = Blocker::getHtmlContainer(
+            $dataFromExternalMediaAndBar,
+            $blockText,
+            $size,
+            $buffer
+        );
+
         return Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockText,
