@@ -11,7 +11,7 @@ class _NcoiTagManagerGoogleTemplate {
                 "gtag('js', new Date());"+
                 "gtag('config', "+trackingId+", {"+
                 "'cookie_update': false,"+
-                "'cookie_flags': 'SameSite=None;Secure'"+
+                "'cookie_flags': 'SameSite=none'"+
             "});"+
             "</script>"
         )
