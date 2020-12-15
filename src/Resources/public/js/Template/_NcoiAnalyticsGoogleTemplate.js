@@ -11,7 +11,7 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
     hasContaoGoogleTemplate() {
         let script = this.getScript();
         let wrapper = this.getWrapper();
-        return script.length > 0 && wrapper.length > 0;
+        return script.length > 0 && wrapper.length === 0;
     }
 
     addContaoTemplate(body) {

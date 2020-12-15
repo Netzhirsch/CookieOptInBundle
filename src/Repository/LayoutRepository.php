@@ -1,13 +1,11 @@
 <?php
 
-
 namespace Netzhirsch\CookieOptInBundle\Repository;
-
 
 use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
 
-class ModuleRepository
+class LayoutRepository
 {
     /** @var Connection $conn */
     private $conn;
@@ -16,15 +14,16 @@ class ModuleRepository
         $this->conn = $conn;
     }
 
-    public function findByIds($modIds): array
+    public function find($id): array
     {
-        $sql = "SELECT html FROM tl_module WHERE type = 'html' AND id IN (".implode(",",$modIds).")";
+        $sql = "SELECT analytics FROM tl_layout WHERE id = ?";
         $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
         if (empty($stmt))
             return [];
 
-        DatabaseExceptionLogger::tryExecute($stmt);
+        $stmt->bindValue(1, $id);
 
+        DatabaseExceptionLogger::tryExecute($stmt);
         $result = DatabaseExceptionLogger::tryFetch($stmt);
         if (empty($result))
             return [];

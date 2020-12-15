@@ -31,6 +31,11 @@ class NcoiApp {
 
         const ncoiApp = new NcoiApp($);
         let mainWrapper  = ncoiApp.getMainWrapper();
+        const ncoiRevoke = new NcoiRevoke($);
+        let storageKey = ncoiApp.getStorageKey();
+        let localStorage = ncoiApp.getLocalStorage(storageKey);
+        ncoiRevoke.addOnClickEvent(storageKey);
+
 
         const ncoiLoad = new NcoiLoad($);
         ncoiLoad.fixTooLateCssLoad(mainWrapper)
@@ -38,9 +43,8 @@ class NcoiApp {
         ncoiLoad.showAllMissingModuleMessage();
 
         const ncoiSaveButton = new NcoiSaveButton($);
-        let storageKey = ncoiApp.getStorageKey();
         const ncoiTrack = new NcoiTrack($);
-        ncoiSaveButton.addOnClickEvents(storageKey,ncoiTrack);
+        ncoiSaveButton.addOnClickEvents(storageKey);
 
         const ncoiExternalMedia = new NcoiExternalMedia($);
         ncoiExternalMedia.addOnClickEvent(storageKey);
@@ -50,11 +54,16 @@ class NcoiApp {
         ncoiInfoTable.onChangeGroupActive();
         ncoiInfoTable.onChangeCookieActive();
 
-        const ncoiRevoke = new NcoiRevoke($);
-        let localStorage = ncoiApp.getLocalStorage(storageKey);
-        ncoiRevoke.addOnClickEvent(storageKey);
-
         const ncoiCookie = new NcoiCookie($);
+        let isExcludePage = mainWrapper.find('.ncoi---container').data('is-exclude-page')
+        if  (isExcludePage === 1) {
+            mainWrapper.addClass('ncoi---hidden');
+            ncoiCookie.ajaxDeleteCookies(storageKey);
+            ncoiCookie.removeCookies(Cookies.get());
+            ncoiTrack.track(0, storageKey,localStorage);
+            return
+        }
+
         if (ncoiLoad.isLocalStorageIsUpToDate(localStorage,storageKey,mainWrapper)) {
             ncoiTrack.track(0, storageKey,localStorage);
             ncoiExternalMedia.onClick();

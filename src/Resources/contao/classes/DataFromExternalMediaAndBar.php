@@ -77,7 +77,7 @@ class DataFromExternalMediaAndBar
     /**
      * @param string $provider
      */
-    public function setProvider(string $provider): void
+    public function setProvider(string $provider)
     {
         $this->provider = $provider;
     }
@@ -93,15 +93,15 @@ class DataFromExternalMediaAndBar
     /**
      * @param string $privacyPolicyLink
      */
-    public function setPrivacyPolicyLink(string $privacyPolicyLink): void
+    public function setPrivacyPolicyLink(string $privacyPolicyLink)
     {
         $this->privacyPolicyLink = $privacyPolicyLink;
     }
 
     /**
-     * @return int
+     * @return null|int
      */
-    public function getModId(): ?int
+    public function getModId()
     {
         return $this->modId;
     }
@@ -109,7 +109,7 @@ class DataFromExternalMediaAndBar
     /**
      * @param int $modId
      */
-    public function setModId(int $modId): void
+    public function setModId(int $modId)
     {
         $this->modId = $modId;
     }
@@ -117,7 +117,7 @@ class DataFromExternalMediaAndBar
     /**
      * @return string|null
      */
-    public function getDisclaimer(): ?string
+    public function getDisclaimer()
     {
         return $this->disclaimer;
     }
@@ -125,7 +125,7 @@ class DataFromExternalMediaAndBar
     /**
      * @param string|null $disclaimer
      */
-    public function setDisclaimer(?string $disclaimer): void
+    public function setDisclaimer($disclaimer)
     {
         $this->disclaimer = $disclaimer;
     }
@@ -133,7 +133,7 @@ class DataFromExternalMediaAndBar
     /**
      * @return string|null
      */
-    public function getIFrameType(): ?string
+    public function getIFrameType()
     {
         return $this->iFrameType;
     }
@@ -141,7 +141,7 @@ class DataFromExternalMediaAndBar
     /**
      * @param string|null $iFrameType
      */
-    public function setIFrameType(?string $iFrameType): void
+    public function setIFrameType($iFrameType)
     {
         $this->iFrameType = $iFrameType;
     }
