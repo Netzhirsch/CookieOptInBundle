@@ -110,20 +110,21 @@ class NcoiExternalMedia {
             }
             parent.addClass('ncoi---hidden');
 
-            let scriptAppendOnBody = false;
-            if (html.indexOf('data-ncoi-script-button') >= 0)
-                scriptAppendOnBody = true;
-            if (scriptAppendOnBody) {
-                let tags = html.split('<script>');
-                tags.forEach(function (tag){
-                    if (tag.indexOf('script') >= 0)
-                        $('head').append(tag);
-                    else
-                        parent.after(tag);
-                    if (tag.indexOf('data-ncoi-script-button') >= 0)
-                        scriptAppendOnBody = true;
-                });
-            }
+            // let scriptAppendOnBody = false;
+            // if (html.indexOf('data-ncoi-script-button') >= 0)
+            //     scriptAppendOnBody = true;
+            // if (scriptAppendOnBody) {
+            //     let tags = html.split('<script>');
+            //     tags.forEach(function (tag){
+            //         if (tag.indexOf('script') >= 0)
+            //             $('head').append(tag);
+            //         else
+            //             parent.after(tag);
+            //         if (tag.indexOf('data-ncoi-script-button') >= 0)
+            //             scriptAppendOnBody = true;
+            //     });
+            // }
+            parent.after(html);
 
         }
     }
