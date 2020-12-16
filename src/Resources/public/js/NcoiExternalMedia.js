@@ -117,7 +117,7 @@ class NcoiExternalMedia {
                 let tags = html.split('<script>');
                 tags.forEach(function (tag){
                     if (tag.indexOf('script') >= 0)
-                        $('body').after(tag);
+                        $('head').append(tag);
                     else
                         parent.after(tag);
                     if (tag.indexOf('data-ncoi-script-button') >= 0)
