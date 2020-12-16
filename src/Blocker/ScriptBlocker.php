@@ -84,13 +84,6 @@ class ScriptBlocker
             'width' => $DOMElement->getAttribute('width'),
         ];
 
-        $htmlContainer = Blocker::getHtmlContainer(
-            $dataFromExternalMediaAndBar,
-            $blockText,
-            $size,
-            $buffer
-        );
-
         return Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockText,
@@ -104,7 +97,7 @@ class ScriptBlocker
         if (!empty($src))
             return $src;
 
-        $src = $DOMElement->getAttribute('data-src');
+        $src = $DOMElement->getAttribute('data-ncoi-src');
         if (!empty($src))
             return $src;
 
