@@ -61,7 +61,7 @@ class ParseFrontendTemplateListener
 
             $isScriptTemplate =
                    $template == 'ce_html' && strpos($buffer, '<script') !== false
-                || strpos($template, 'script_to_block') !== false && strpos($buffer, '<script') !== false
+                || strpos($template, 'script_to_block') !== false
             ;
             if ($isScriptTemplate) {
                 $scriptBlocker = new ScriptBlocker();
