@@ -127,7 +127,6 @@ class ModuleCookieOptInBar extends Module
         $data['noScriptTracking'] = [];
         $data['cookieGroupsSelected'] = [1];
 		foreach ($data['cookieTools'] as $cookieTool) {
-            $data['cookiesSelected'][] = $cookieTool->id;
             if (!empty($ncoiSession) && $data['noscript']) {
                 foreach ($ncoiSession['cookieIds'] as $cookieId) {
                     if ($cookieId == $cookieTool->id ) {

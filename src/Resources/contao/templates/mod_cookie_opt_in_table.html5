@@ -86,7 +86,7 @@
             data-group="<?= $tool->cookieToolGroup; ?>"
             data-cookie-id="<?=$tool->id;?>"
             data-block-class="ncoi---<?=$tool->cookieToolsSelect;?>"
-            <?=((in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == '1') ? ' checked' : '')?>
+            <?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == '1') ? 'checked' : ''?>
             <?=($tool->cookieToolGroup == '1' ) ? 'disabled' : ''?>
         />
         <label class="ncoi---sliding" for="<?=$tool->id?>"><i></i><span><?=$cookieGroup?></span></label>
