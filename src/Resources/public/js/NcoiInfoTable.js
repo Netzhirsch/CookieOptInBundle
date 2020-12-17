@@ -13,7 +13,7 @@ class NcoiInfoTable {
 
     addOnClickShowEvent(){
         let $ = this.$;
-        $('#ncoi---infos--show').on('click', function (e) {
+        $(document).on('click','#ncoi---infos--show', function (e) {
             e.preventDefault();
             $('.ncoi---cookie-groups').toggleClass('ncoi---hidden');
             $('.ncoi---hint').toggleClass('ncoi---hidden');
