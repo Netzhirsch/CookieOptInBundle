@@ -35,7 +35,9 @@
 </noscript>
 <div class="ncoi---behind <?php echo $class ?> <?= $animation?> ncoi---<?= $this->arrData['position']?>">
 	<div
-			id="<?php echo $id ?>"
+			<?=
+                $htmlId = ($id)?'id="'.$id.'"':'';
+            ?>
 			class="ncoi---container ncoi---mod-missing"
 			data-ncoi-cookie-version="<?php echo $this->arrData['cookieVersion']?>"
             data-is-exclude-page="<?=$this->arrData['isExcludePage']?>"

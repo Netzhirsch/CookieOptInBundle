@@ -122,19 +122,11 @@ class IFrameBlocker
         }
         $dataFromExternalMediaAndBar->setDisclaimer($disclaimerString);
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
-        $heightPosition = strpos($iframeHTML, 'height="')+strlen('height="');
-        $height = substr($iframeHTML, $heightPosition);
-        $heightPosition = strpos($height, '"');
-        $height = substr($height, 0,$heightPosition);
-
-        $widthPosition = strpos($iframeHTML, 'width="')+strlen('width="');
-        $width = substr($iframeHTML, $widthPosition);
-        $widthPosition = strpos($width, '"');
-        $width = substr($width, 0,$widthPosition);
         $size = [
-            'height' => $height,
-            'width' => $width
+            'height' => self::getHeight($iframeHTML),
+            'width' => self::getWidth($iframeHTML)
         ];
+
         $newBuffer = Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockTexts,
@@ -179,5 +171,41 @@ class IFrameBlocker
         }
 
         return '';
+    }
+
+    private static function getHeight($iframeHTML): string
+    {
+        $position = self::getPosition($iframeHTML,'height="') ;
+        if ($byStyle = empty($position))
+            $position = self::getPosition($iframeHTML,'height:');
+
+        return self::getSize($iframeHTML,$position,$byStyle);
+    }
+
+    private static function getWidth($iframeHTML) :string{
+        $position = self::getPosition($iframeHTML,'width="') ;
+        if ($byStyle = empty($position))
+            $position = self::getPosition($iframeHTML,'width:');
+
+        return self::getSize($iframeHTML,$position,$byStyle);
+    }
+
+    private static function getSize($iframeHTML,$position,$byStyle = false): string{
+
+        $size = substr($iframeHTML, $position);
+        if ($byStyle)
+            $size = strpos($size, '"');
+        else
+            $size = strpos($size, ';');
+        return substr($size, 0,$position);
+
+    }
+    private static function getPosition($iframeHTML,$needle): int
+    {
+        $heightPosition = strpos($iframeHTML, $needle);
+        if ($heightPosition === false)
+            return 0;
+
+        return $heightPosition + strlen($needle);
     }
 }
