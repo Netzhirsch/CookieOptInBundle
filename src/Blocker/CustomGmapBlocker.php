@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use DOMDocument;
 use DOMElement;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Netzhirsch\CookieOptInBundle\Logger\Logger;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\DBAL\Driver\Exception as DriverException;
@@ -66,10 +67,12 @@ class CustomGmapBlocker
 
         $doc = new DOMDocument();
         if (self::isDebugModus($buffer)) {
-            return 'Unfortunately no output in debug mode is possible.';
+            Logger::logExceptionInContaoSystemLog('HTML is no valid'.$buffer);
+            return $buffer;
         }
-        $doc->loadHTML($buffer);
-        $divs = $doc->getElementsByTagName('div');
+        @$doc->loadHTML($buffer);
+        $divs = @$doc->getElementsByTagName('div');
+
         /** @var DOMElement $div */
         $height = '100%';
         foreach ($divs as $div) {

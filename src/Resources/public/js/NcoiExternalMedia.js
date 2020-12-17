@@ -109,7 +109,11 @@ class NcoiExternalMedia {
                 console.error('Das IFrame html enthält invalide Zeichen.')
             }
             parent.addClass('ncoi---hidden');
-            parent.after(html);
+
+            if (html.indexOf('data-only-script') >= 0)
+                $('head').append(html);
+            else
+                parent.after(html);
         }
     }
 }

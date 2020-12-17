@@ -30,7 +30,6 @@ class PageLayoutListener {
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
-
         $removeModules = $this->shouldRemoveModules($pageModel);
         $moduleIds = [];
         $return = self::checkModules($layout, $removeModules, $moduleIds);

@@ -136,6 +136,7 @@ class Blocker
         }
 
         if (!$isModuleIdInLayout) {
+
             self::setModIdByInsertTagInModule($conn,$modIds,$barRepo,$dataFromExternalMediaAndBar);
         }
 
@@ -155,8 +156,10 @@ class Blocker
         $ids = self::getModuleIdsFromHtml($htmlInModules);
         if (!empty($ids)) {
             $barModule = $barRepo->findByIds($ids);
-            if (!empty($barModule))
+            $barModule = $barModule[array_key_first($barModule)];
+            if (!empty($barModule) && !empty($barModule['pid'])) {
                 $dataFromExternalMediaAndBar->setModId($barModule['pid']);
+            }
         }
     }
 
@@ -172,6 +175,22 @@ class Blocker
     }
     private static function getModuleIdFromHtml($html)
     {
+        if (is_array($html)) {
+            foreach ($html as $item) {
+                $id = self::getModuleIdFromOneHtml($item);
+                if (!empty($id))
+                    return $id;
+            }
+        } else {
+            $id = self::getModuleIdFromOneHtml($html);
+            if (!empty($id))
+                return $id;
+        }
+
+        return null;
+    }
+
+    private static function getModuleIdFromOneHtml($html){
         $position = strpos($html,'{{insert_module::');
         if ($position !== false) {
             $doc = new DOMDocument();
@@ -188,6 +207,7 @@ class Blocker
         }
         return null;
     }
+
     /**
      * @param Connection $conn
      * @param $url
@@ -353,7 +373,6 @@ class Blocker
         if (!$isCustomGmap) {
             $iframe = '<script type="text/template">' . base64_encode($html) . '</script>';
         }
-
         return $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
     }
 
