@@ -82,7 +82,7 @@
             value="<?=$tool->id?>"
             form="cookieBar"
             name="data[cookieIds][<?=$tool->id?>]"
-            class="ncoi---cookie ncoi---sliding"
+            class="ncoi---table-input ncoi---cookie ncoi---sliding"
             data-group="<?= $tool->cookieToolGroup; ?>"
             data-cookie-id="<?=$tool->id;?>"
             data-block-class="ncoi---<?=$tool->cookieToolsSelect;?>"
