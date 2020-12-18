@@ -1205,11 +1205,6 @@ class tl_module_ncoi extends tl_module {
         return $this->loadFromNcoiTable($value,$dca,'','excludePages');
     }
 
-    public function loadFromNcoiTableCombineConsent($value,DC_Table $dca)
-    {
-        return $this->loadFromNcoiTable($value,$dca,'','combineConsent');
-    }
-
     public function loadFromNcoiTableHeadlineCookieOptInBar($value,DC_Table $dca)
     {
         if ($value == 'a:2:{s:4:"unit";s:2:"h2";s:5:"value";s:0:"";}'){
@@ -1330,7 +1325,7 @@ class tl_module_ncoi extends tl_module {
     }
     public function saveInNcoiTableCheckbox($value,DC_Table $dca)
     {
-        $this->saveInNcoiTable($value,$dca);
+        $value = $this->saveInNcoiTable($value,$dca);
         if ($value === null) {
             return '';
         }
