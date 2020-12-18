@@ -23,6 +23,7 @@ class NcoiLoad {
 
     isLocalStorageUpToDate(localStorage, storageKey, mainWrapper) {
         let ncoiDate = new NcoiDate();
+        let $ = this.$;
         return localStorage !== '' && !this.doNotTrackByBrowserSetting(storageKey, mainWrapper) && localStorage.expireTime >= ncoiDate.dateString() && $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion);
     }
 
