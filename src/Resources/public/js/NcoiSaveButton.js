@@ -5,7 +5,7 @@ class NcoiSaveButton {
     }
 
 
-    addOnClickEvents(storageKey){
+    addOnClickEvents(storageKey,mainWrapper){
 
         let that = this;
         let $ = that.$;
@@ -29,6 +29,8 @@ class NcoiSaveButton {
         }
 
         function saveConsent(storageKey) {
+            const ncoiLoad = new NcoiLoad($);
+            ncoiLoad.removeAnimation(mainWrapper);
             let ncoiTrack = new NcoiTrack($);
             $('.ncoi---behind').addClass('ncoi---hidden');
             ncoiTrack.track(1, storageKey);

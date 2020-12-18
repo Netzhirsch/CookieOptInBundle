@@ -133,7 +133,6 @@ class IFrameBlocker
             $iframeHTML,
             $iconPath
         );
-
         $isUserCookieDontAllowMedia = false;
         if (
             isset($_SESSION)

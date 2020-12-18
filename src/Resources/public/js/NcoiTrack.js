@@ -87,18 +87,13 @@ class NcoiTrack {
     setNewUserSettings(userSettings) {
         let $ = this.$;
         userSettings.newConsent = true;
-        let cookieSelected = $('.ncoi---cookie');
-        Object.keys(cookieSelected).forEach(function (key) {
-            if (
-                key.localeCompare('length') !== 0
-                && key.localeCompare('prevObject') !== 0
-                && key.localeCompare('context') !== 0
-                && key.localeCompare('selector') !== 0
-            ) {
-                if ($(cookieSelected[key]).prop('checked')) {
-                    userSettings.cookieIds.push($(cookieSelected[key]).data('cookie-id'))
-                }
-            }
+        let cookieSelected = $('.ncoi---table-input');
+        cookieSelected.each(function (element){
+            let cookieElement = $('#ncoi---table-cookie-'+element);
+            let id = cookieElement.data('cookie-id');
+            let isChecked = cookieElement.prop('checked');
+            if (typeof id !== 'undefined' && isChecked)
+                userSettings.cookieIds.push(id)
         });
     }
 

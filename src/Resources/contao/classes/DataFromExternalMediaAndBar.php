@@ -44,7 +44,8 @@ class DataFromExternalMediaAndBar
 
     public function addCookieId(int $cookieId) {
         $cookieIds = $this->getCookieIds();
-        $cookieIds[] = $cookieId;
+        if (!in_array($cookieId,$cookieIds))
+            $cookieIds[] = $cookieId;
         $this->cookieIds = $cookieIds;
     }
 

@@ -3,7 +3,8 @@ class NcoiLoad {
     constructor($) {
         this.$ = $;
     }
-    fixTooLateCssLoad(mainWrapper){
+
+    removeAnimation(mainWrapper){
         mainWrapper.removeClass('ncoi---no-transition');
     }
 
@@ -22,7 +23,7 @@ class NcoiLoad {
 
     isLocalStorageUpToDate(localStorage, storageKey, mainWrapper) {
         let ncoiDate = new NcoiDate();
-        return localStorage !== '' && !this.doNotTrackByBrowserSetting(storageKey, mainWrapper) && localStorage.expireTime >= ncoiDate.dateString();
+        return localStorage !== '' && !this.doNotTrackByBrowserSetting(storageKey, mainWrapper) && localStorage.expireTime >= ncoiDate.dateString() && $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion);
     }
 
     showMissingModuleMessage(errorMessage){

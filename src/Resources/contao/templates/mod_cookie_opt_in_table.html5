@@ -78,7 +78,7 @@
     <td>
         <input
             type="checkbox"
-            id="<?=$tool->id?>"
+            id="ncoi---table-cookie-<?=$tool->id?>"
             value="<?=$tool->id?>"
             form="cookieBar"
             name="data[cookieIds][<?=$tool->id?>]"
@@ -89,6 +89,6 @@
             <?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == '1') ? 'checked' : ''?>
             <?=($tool->cookieToolGroup == '1' ) ? 'disabled' : ''?>
         />
-        <label class="ncoi---sliding" for="<?=$tool->id?>"><i></i><span><?=$cookieGroup?></span></label>
+        <label class="ncoi---sliding" for="ncoi---table-cookie-<?=$tool->id?>"><i></i><span><?=$cookieGroup?></span></label>
     </td>
 </tr>

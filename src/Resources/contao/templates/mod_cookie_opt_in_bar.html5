@@ -2,6 +2,7 @@
 <?php $class = $this->arrData['class'] ?>
 <?php $id = str_replace(' id=','',$id)?>
 <?php $id = str_replace('"','',$id)?>
+
 <?php $class = "ncoi---no-transition ncoi---hidden" ?>
 <?php
     if($this->arrData['noscript'])
@@ -42,7 +43,7 @@
 			data-ncoi-cookie-version="<?php echo $this->arrData['cookieVersion']?>"
             data-is-exclude-page="<?=$this->arrData['isExcludePage']?>"
 			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
-			data-ncoi-mod-id = "<?php echo $this->arrData['id']?>"
+			data-ncoi-mod-id="<?php echo $this->arrData['id']?>"
             data-ncoi-animation="<?=$this->arrData['animation']?>"
             data-ncoi-respect-do-not-track="<?=$this->arrData['respectDoNotTrack']?>"
 	>

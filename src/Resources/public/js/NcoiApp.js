@@ -11,14 +11,11 @@ class NcoiApp {
 
     getStorageKey() {
         let $ = this.$;
-        return 'ncoi'+$('[data-ncoi-cookie-version]').data('ncoi-cookie-version');
+        return 'ncoi_'+$('[data-ncoi-mod-id]').data('ncoi-mod-id');
     }
 
     getLocalStorage(storageKey) {
-        console.log(localStorage);
-        console.log(storageKey);
         let storageData = localStorage.getItem(storageKey);
-        console.log(storageData);
         if (storageData !== 'null' && storageData !== null) {
             return JSON.parse(storageData);
         }
@@ -40,15 +37,13 @@ class NcoiApp {
         let localStorage = ncoiApp.getLocalStorage(storageKey);
         ncoiRevoke.addOnClickEvent(storageKey);
 
-
         const ncoiLoad = new NcoiLoad($);
-        ncoiLoad.fixTooLateCssLoad(mainWrapper)
         ncoiLoad.removeLoadAlwaysForNoScript();
         ncoiLoad.showAllMissingModuleMessage();
 
         const ncoiSaveButton = new NcoiSaveButton($);
         const ncoiTrack = new NcoiTrack($);
-        ncoiSaveButton.addOnClickEvents(storageKey);
+        ncoiSaveButton.addOnClickEvents(storageKey,mainWrapper);
 
         const ncoiExternalMedia = new NcoiExternalMedia($);
         ncoiExternalMedia.addOnClickEvent(storageKey);
@@ -65,7 +60,7 @@ class NcoiApp {
             ncoiCookie.ajaxDeleteCookies(storageKey);
             ncoiCookie.removeCookies(Cookies.get());
             ncoiTrack.track(0, storageKey,localStorage);
-            return
+            return;
         }
 
         if (ncoiLoad.isLocalStorageUpToDate(localStorage,storageKey,mainWrapper)) {
