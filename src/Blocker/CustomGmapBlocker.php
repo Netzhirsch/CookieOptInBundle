@@ -62,7 +62,7 @@ class CustomGmapBlocker
         $barRepo = new BarRepository($conn);
         $blockText = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
 
-        if (Blocker::isAllowed($dataFromExternalMediaAndBar))
+        if (Blocker::noScriptFallbackRenderScript($dataFromExternalMediaAndBar))
             return $buffer;
 
         $doc = new DOMDocument();

@@ -7,6 +7,7 @@ namespace Netzhirsch\CookieOptInBundle\Blocker;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Netzhirsch\CookieOptInBundle\Logger\Logger;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use DOMDocument;
@@ -55,16 +56,22 @@ class ScriptBlocker
     private static function getScriptHTML(DOMElement $DOMElement, RequestStack $requestStack, Connection $conn,$buffer){
 
         $moduleData = Blocker::getModulData($requestStack);
-        if (empty($moduleData))
+        if (empty($moduleData)) {
+            Logger::logExceptionInContaoSystemLog('Request empty for'.$buffer);
             return $buffer;
+        }
 
         $src = self::getSrc($DOMElement);
-        if (empty($src))
+        if (empty($src)) {
+            Logger::logExceptionInContaoSystemLog('src empty for'.$buffer);
             return $buffer;
+        }
 
         $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $src);
-        if (empty($externalMediaCookiesInDB))
+        if (empty($externalMediaCookiesInDB)) {
+            Logger::logExceptionInContaoSystemLog('no data found by src:'.$src);
             return $buffer;
+        }
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
@@ -76,8 +83,10 @@ class ScriptBlocker
         $blockText = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
 
 
-        if (Blocker::isAllowed($dataFromExternalMediaAndBar))
+        if (Blocker::noScriptFallbackRenderScript($dataFromExternalMediaAndBar)) {
+            Logger::logExceptionInContaoSystemLog('no script fallback used:');
             return $buffer;
+        }
 
         $size = [
             'height' => $DOMElement->getAttribute('height'),

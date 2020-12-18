@@ -54,7 +54,7 @@ class Blocker
         return $moduleData;
     }
 
-    public static function isAllowed(DataFromExternalMediaAndBar $dataFromExternalMediaAndBar){
+    public static function noScriptFallbackRenderScript(DataFromExternalMediaAndBar $dataFromExternalMediaAndBar){
         if (
             isset($_SESSION)
             && isset($_SESSION['_sf2_attributes'])
