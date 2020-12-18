@@ -74,7 +74,6 @@ class IFrameBlocker
             $externalMediaCookiesInDB = Blocker::getExternalMediaByType($iframeHTML,$conn);
             $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($iframeHTML));
         }
-
         if (empty($externalMediaCookiesInDB))
             return $iframeHTML;
 

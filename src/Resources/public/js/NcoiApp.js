@@ -10,11 +10,15 @@ class NcoiApp {
     }
 
     getStorageKey() {
-        return 'ncoi';
+        let $ = this.$;
+        return 'ncoi'+$('[data-ncoi-cookie-version]').data('ncoi-cookie-version');
     }
 
     getLocalStorage(storageKey) {
+        console.log(localStorage);
+        console.log(storageKey);
         let storageData = localStorage.getItem(storageKey);
+        console.log(storageData);
         if (storageData !== 'null' && storageData !== null) {
             return JSON.parse(storageData);
         }
@@ -64,10 +68,9 @@ class NcoiApp {
             return
         }
 
-        if (ncoiLoad.isLocalStorageIsUpToDate(localStorage,storageKey,mainWrapper)) {
+        if (ncoiLoad.isLocalStorageUpToDate(localStorage,storageKey,mainWrapper)) {
             ncoiTrack.track(0, storageKey,localStorage);
-            ncoiExternalMedia.onClick();
-            ncoiExternalMedia.encode(localStorage.cookieIds);
+            ncoiExternalMedia.decode(storageKey);
             ncoiInfoTable.setCookieCheckboxes(localStorage.cookieIds);
             mainWrapper.addClass('ncoi---hidden');
         } else {

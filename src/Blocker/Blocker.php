@@ -126,7 +126,6 @@ class Blocker
                             $disclaimer = $externalMediaCookieInDB['i_frame_blocked_text'];
                             if (!empty($disclaimer))
                                 $dataFromExternalMediaAndBar->setDisclaimer($disclaimer);
-
                         }
                     }
                 }
@@ -138,6 +137,10 @@ class Blocker
         if (!$isModuleIdInLayout) {
 
             self::setModIdByInsertTagInModule($conn,$modIds,$barRepo,$dataFromExternalMediaAndBar);
+        }
+
+        foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
+            $dataFromExternalMediaAndBar->addCookieId($externalMediaCookieInDB['id']);
         }
 
         return $dataFromExternalMediaAndBar;
@@ -288,7 +291,6 @@ class Blocker
         $isCustomGmap = false
     ) {
 
-        $cookieIds = $dataFromExternalMediaAndBar->getCookieIds();
         $privacyPolicyLink = $dataFromExternalMediaAndBar->getPrivacyPolicyLink();
         $provider = $dataFromExternalMediaAndBar->getProvider();
 
@@ -328,15 +330,9 @@ class Blocker
         $htmlDisclaimer .= '</div>';
 
 
-        //$blockclass im JS um blocked Container ein. und auszublenden
-        $class = 'ncoi---blocked ncoi---iframes ncoi---'.$blockClass;
-        if (!empty($cookieIds)) {
-            if (count($cookieIds) == 1) {
-                $class .= ' ncoi---cookie-id-'.$cookieIds[0];
-            } else {
-                $class .= implode(' ncoi---cookie-id-',$cookieIds);
-            }
-        }
+        //$cookieId für JS um blocked Container ein. und auszublenden
+        $cookieIds = $dataFromExternalMediaAndBar->getCookieIds();
+        $class = 'ncoi---blocked ncoi---iframes ncoi---cookie-id-'.self::getCookieIdsAsString($cookieIds);
 
         $style = '';
         if (!$isCustomGmap) {
@@ -400,5 +396,19 @@ class Blocker
 
         }
         return false;
+    }
+
+    /**
+     * @param array $cookieIds
+     * @return string
+     */
+    private static function getCookieIdsAsString(array $cookieIds): string
+    {
+        if (count($cookieIds) == 1) {
+            $cookieIdsAsString = $cookieIds[0];
+        } else {
+            $cookieIdsAsString = implode(',', $cookieIds);
+        }
+        return $cookieIdsAsString;
     }
 }

@@ -8,6 +8,7 @@ use Contao\Module;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
@@ -68,10 +69,9 @@ class ModuleCookieOptInBar extends Module
      * @throws DBALException
      */
 	public function compile(){
-
+        /** @var Connection $conn */
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT * FROM tl_ncoi_cookie WHERE pid = ?";
-        /** @var Statement $stmt */
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, $this->__get('id'));
         $stmt->execute();

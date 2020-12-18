@@ -22,7 +22,7 @@ class NcoiExternalMedia {
                 blockClassIds.prop('checked', true).trigger('change');
                 let ncoiTrack = new NcoiTrack($);
                 ncoiTrack.track(1, storageKey);
-                that.onClick();
+                that.decode(storageKey);
 
                 let parents = $('.' + input.data('block-class'));
                 parents.each(function () {
@@ -34,41 +34,19 @@ class NcoiExternalMedia {
         });
     }
 
-    onClick() {
-        let $ = this.$;
+    decode(storageKey) {
         let that = this;
-        let cookiesInput = $('table tbody .ncoi---cookie');
-        cookiesInput.each(function () {
-            let blockClass = '.' + $(this).data('block-class');
-            let blockClassElement = $(blockClass);
-            if ($(this).prop('checked')) {
-                //Klasses des Blockcontainer aus input data-block-class auslesen
-                // Nur gefunden BlockContainer werden bearbeitet
-                // jedes Element separat
-                blockClassElement.each(function () {
-                    let customGmap = $(this).parent('.ncoi---custom_gmap');
-                    if (customGmap.length > 0) {
-                        $('.ce_google_map').removeClass('ncoi---hidden');
-                        $('.ncoi---custom_gmap').addClass('ncoi---hidden');
-                    } else {
-                        that.addIframe($(this));
-                    }
-                });
-            }
-        });
-    }
-
-    encode(cookieIds) {
-        let $ = this.$;
-        let that = this;
-        let showCustomGmap = this;
+        let $ = that.$;
+        let ncoiApp = new NcoiApp($);
+        let localStorage = ncoiApp.getLocalStorage(storageKey);
+        let cookieIds = localStorage.cookieIds;
         $('.ncoi---blocked').each(function (key,value) {
             let iframe = $(this);
             cookieIds.forEach(function (cookieId) {
                 if ($(value).hasClass('ncoi---cookie-id-'+cookieId)) {
                     if (iframe.length > 0) {
                         if (that.isCustomGmap(iframe)) {
-                            showCustomGmap.showCustomGmap(iframe)
+                            that.showCustomGmap(iframe)
                         } else {
                             that.addIframe(iframe);
                             iframe.trigger('change');

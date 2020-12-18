@@ -33,7 +33,7 @@ class NcoiSaveButton {
             $('.ncoi---behind').addClass('ncoi---hidden');
             ncoiTrack.track(1, storageKey);
             let externalMedia = new NcoiExternalMedia($);
-            externalMedia.onClick()
+            externalMedia.decode(storageKey)
         }
 
     }

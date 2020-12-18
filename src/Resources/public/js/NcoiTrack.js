@@ -5,7 +5,6 @@ class NcoiTrack {
     }
 
     track(newConsent, storageKey,localStorage) {
-        let $ = this.$;
         let that = this;
         let userSettings = this.getDefaultUserSettings(newConsent, storageKey);
         if (newConsent === 1) {
@@ -13,6 +12,13 @@ class NcoiTrack {
         } else {
            this.setUserSettings(userSettings,localStorage);
         }
+        that.makeAjax(userSettings,storageKey);
+
+    }
+
+    makeAjax(userSettings,storageKey){
+        let $ = this.$;
+        let that = this;
         $.ajax({
             dataType: "json",
             type: 'POST',
@@ -20,6 +26,7 @@ class NcoiTrack {
             data: {
                 data: userSettings
             },
+            async: false,
             success: function (response) {
                 let cookieVersion = response.cookieVersion;
                 that.saveUserSettings(

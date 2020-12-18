@@ -20,16 +20,9 @@ class NcoiLoad {
         });
     }
 
-    isLocalStorageIsUpToDate(localStorage,storageKey,mainWrapper) {
-        let $ = this.$
+    isLocalStorageUpToDate(localStorage, storageKey, mainWrapper) {
         let ncoiDate = new NcoiDate();
-
-        if(localStorage !== '' && !this.doNotTrackByBrowserSetting(storageKey,mainWrapper)) {
-            return $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion)
-                && localStorage.expireTime >= ncoiDate.dateString();
-        } else {
-            return false;
-        }
+        return localStorage !== '' && !this.doNotTrackByBrowserSetting(storageKey, mainWrapper) && localStorage.expireTime >= ncoiDate.dateString();
     }
 
     showMissingModuleMessage(errorMessage){
