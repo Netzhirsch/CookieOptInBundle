@@ -55,19 +55,19 @@ class Blocker
     }
 
     public static function noScriptFallbackRenderScript(DataFromExternalMediaAndBar $dataFromExternalMediaAndBar){
-        if (
-            isset($_SESSION)
-            && isset($_SESSION['_sf2_attributes'])
-            && isset($_SESSION['_sf2_attributes']['ncoi'])
-            && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])
-        ) {
-            $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
-            foreach ($dataFromExternalMediaAndBar->getCookieIds() as $id) {
-                if (in_array($id,$cookieIds)) {
-                    return true;
-                }
-            }
-        }
+//        if (
+//            isset($_SESSION)
+//            && isset($_SESSION['_sf2_attributes'])
+//            && isset($_SESSION['_sf2_attributes']['ncoi'])
+//            && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])
+//        ) {
+//            $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
+//            foreach ($dataFromExternalMediaAndBar->getCookieIds() as $id) {
+//                if (in_array($id,$cookieIds)) {
+//                    return true;
+//                }
+//            }
+//        }
 
         return false;
     }
