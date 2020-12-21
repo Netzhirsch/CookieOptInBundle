@@ -26,7 +26,7 @@ class NcoiInfoTable {
 
     onChangeGroupActive(){
         let $ = this.$;
-        $('.ncoi---sliding-input').on('change', function () {
+        $(document).on('click','.ncoi---sliding-input', function (e) {
             let group = $(this);
             $('.ncoi---cookie').each(function () {
                 let cookie = $(this).data('group');
@@ -39,18 +39,23 @@ class NcoiInfoTable {
     onChangeCookieActive(){
         let $ = this.$;
         let cookiesSelect = $('.ncoi---cookie');
-        cookiesSelect.on('change', function () {
+        $(document).on('click',cookiesSelect, function (e) {
             let cookie = $(this).data('group');
             let allChecked = true;
+            let id = $(this).data('cookie-id');
+            let checked = $(this).prop('checked');
+            let inputInBlockContainer = $('.ncoi---cookie-id-'+id).find('.ncoi---sliding');
+            inputInBlockContainer.prop('checked',checked)
             cookiesSelect.each(function () {
                 let group = $(this).data('group');
-                if (cookie === group && !$(this).prop('checked'))
+                if (cookie === group && !checked)
                     allChecked = false;
             });
             $('.ncoi---cookie-group input').each(function () {
                 let group = $(this).val();
                 if (group.localeCompare(cookie) === 0)
                     $(this).prop('checked', allChecked);
+
             });
 
         });

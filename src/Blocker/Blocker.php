@@ -306,33 +306,33 @@ class Blocker
         $iframeTypInHtml = $dataFromExternalMediaAndBar->getIFrameType();
         $blockClass = $dataFromExternalMediaAndBar->getIFrameType();
         $htmlReleaseAll = '';
+        //$cookieId für JS um blocked Container ein. und auszublenden
+        $cookieIds = $dataFromExternalMediaAndBar->getCookieIds();
+        $class = 'ncoi---blocked ncoi---iframes ncoi---cookie-id-'.self::getCookieIdsAsString($cookieIds);
         switch($iframeTypInHtml) {
             case 'youtube':
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="youtube" src="' . $iconPath . 'youtube-brands.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>YouTube '.$loadStrings['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" type="checkbox" name="'.$blockClass.'" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'" data-cookie-ids="'.implode(',',$cookieIds).'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>YouTube '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'googleMaps':
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'map-marker-alt-solid.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$loadStrings['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'" data-cookie-ids="'.implode(',',$cookieIds).'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Google Maps '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'vimeo':
                 $htmlIcon = '<div class="ncoi---blocked-icon"><img alt="map-marker" src="' . $iconPath . 'vimeo-v-brands.svg"></div>';
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$loadStrings['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked--vimeo" data-block-class="'.$blockClass.'" data-cookie-ids="'.implode(',',$cookieIds).'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Vimeo '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'iframe':
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$loadStrings['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="'.$blockClass.'" data-cookie-ids="'.implode(',',$cookieIds).'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>iFrames '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
             case 'script':
-                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="script"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Script '.$loadStrings['i_frame_always_load'].'</span></label>';
+                $htmlReleaseAll = '<input id="'.$id.'" name="'.$blockClass.'" type="checkbox" class="ncoi---sliding ncoi---blocked" data-block-class="script" data-cookie-ids="'.implode(',',$cookieIds).'"><label for="'.$id.'" class="ncoi--release-all ncoi---sliding ncoi---hidden"><i></i><span>Script '.$loadStrings['i_frame_always_load'].'</span></label>';
                 break;
         }
 
         $htmlDisclaimer .= '</div>';
 
 
-        //$cookieId für JS um blocked Container ein. und auszublenden
-        $cookieIds = $dataFromExternalMediaAndBar->getCookieIds();
-        $class = 'ncoi---blocked ncoi---iframes ncoi---cookie-id-'.self::getCookieIdsAsString($cookieIds);
 
         $style = '';
         if (!$isCustomGmap) {
