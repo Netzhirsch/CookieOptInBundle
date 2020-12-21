@@ -24,7 +24,8 @@ class NcoiTrack {
             type: 'POST',
             url: '/cookie/allowed',
             data: {
-                data: userSettings
+                data: userSettings,
+                isJava:true
             },
             async: false,
             success: function (response) {
@@ -88,11 +89,9 @@ class NcoiTrack {
         let $ = this.$;
         userSettings.newConsent = true;
         let cookieSelected = $('.ncoi---table-input');
-        cookieSelected.each(function (element){
-            let cookieElement = $('#ncoi---table-cookie-'+element);
-            let id = cookieElement.data('cookie-id');
-            let isChecked = cookieElement.prop('checked');
-            if (typeof id !== 'undefined' && isChecked)
+        cookieSelected.each(function (){
+            let isChecked = $(this).prop('checked');
+            if ($(this).data('cookie-id') && isChecked)
                 userSettings.cookieIds.push(id)
         });
     }

@@ -80,7 +80,7 @@ class CookieController extends AbstractController
 
         $expireTime = self::getExpireTime($cookieDatabase['expireTime']);
 
-        if (isset($data['isNoJavaScript'])) {
+        if (isset($data['isNoJavaScript']) && !$request->get('isJava')) {
             if ($request->hasSession()) {
                 $session = $request->getSession();
                 $session->set('ncoi',[

@@ -40,6 +40,7 @@ class NcoiApp {
         const ncoiLoad = new NcoiLoad($);
         ncoiLoad.removeLoadAlwaysForNoScript();
         ncoiLoad.showAllMissingModuleMessage();
+        ncoiLoad.removeNoScriptInputs();
 
         const ncoiSaveButton = new NcoiSaveButton($);
         const ncoiTrack = new NcoiTrack($);
