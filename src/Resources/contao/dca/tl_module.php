@@ -1168,28 +1168,6 @@ class tl_module_ncoi extends tl_module {
 		return $fieldValue;
 	}
 
-    public function saveInNcoiTable($value,DC_Table $dca,$pid = null,$field = null){
-	    $conn = $dca->Database;
-        if (empty($pid))
-            $pid = $dca->__get('id');
-        $sql = "SELECT id FROM tl_ncoi_cookie WHERE pid=?";
-        $stmt = $conn->prepare($sql);
-        $data = $stmt->execute($pid);
-        $id = $data->fetchAssoc();
-        if (empty($field))
-            $field = $dca->__get('field');
-        $set = [$field => $value];
-        if (!empty($id)) {
-            $sql = "UPDATE tl_ncoi_cookie %s WHERE pid =?";
-        } else {
-            $sql = "INSERT tl_ncoi_cookie %s";
-            $set['pid'] = $pid;
-        }
-        $stmt = $conn->prepare($sql);
-        $stmt->set($set);
-        $stmt->execute($pid);
-    }
-
     public function loadFromNcoiTableImpress($value,DC_Table $dca)
     {
         return $this->loadFromNcoiTable($value,$dca,'','imprint');
@@ -1403,6 +1381,28 @@ class tl_module_ncoi extends tl_module {
             if (isset($cookieOptInBarMod->cookieTools))
                 $this->saveInNcoiTable($cookieOptInBarMod->cookieTools,$dca,$modulId,'cookieTools');
         }
+    }
+
+    public function saveInNcoiTable($value,DC_Table $dca,$pid = null,$field = null){
+        $conn = $dca->Database;
+        if (empty($pid))
+            $pid = $dca->__get('id');
+        $sql = "SELECT id FROM tl_ncoi_cookie WHERE pid=?";
+        $stmt = $conn->prepare($sql);
+        $data = $stmt->execute($pid);
+        $id = $data->fetchAssoc();
+        if (empty($field))
+            $field = $dca->__get('field');
+        $set = [$field => $value];
+        if (!empty($id)) {
+            $sql = "UPDATE tl_ncoi_cookie %s WHERE pid =?";
+        } else {
+            $sql = "INSERT tl_ncoi_cookie %s";
+            $set['pid'] = $pid;
+        }
+        $stmt = $conn->prepare($sql);
+        $stmt->set($set);
+        $stmt->execute($pid);
     }
 
     public function deleteTool(DC_Table $dca)

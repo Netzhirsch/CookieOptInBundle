@@ -16,7 +16,7 @@ else
 	
 $root = 'rootfallback';
 
-$replace = '{ncoi_license_legend},bar_disabled,ncoi_license_key,ncoi_license_expiry_date,ncoi_license_protected;{global_legend';
+$replace = '{ncoi_license_legend},bar_disabled,ncoi_license_key,ncoi_license_expiry_date,ncoi_license_protected,imprint,privacyPolicy;{global_legend';
 $search = '{global_legend';
 
 $GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace($search, $replace, $GLOBALS['TL_DCA']['tl_page']['palettes'][$root]);
@@ -58,6 +58,24 @@ $arrFields = [
             ],
             'sql' => "tinyint(1) NULL",
         ],
+        'imprint' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_page']['imprint'],
+            'exclude'   => true,
+            'inputType' => 'pageTree',
+            'eval' => [
+                'tl_class'  =>  'w50'
+            ],
+            'sql' => "varchar(255) NULL",
+        ],
+        'privacyPolicy' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_page']['privacyPolicy'],
+            'exclude'   => true,
+            'inputType' => 'pageTree',
+            'eval' => [
+                'tl_class'  =>  'w50'
+            ],
+            'sql' => "varchar(255) NULL",
+        ]
 ];
 
 $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] = ['tl_page_ncoi','showLicenseWarning'];
