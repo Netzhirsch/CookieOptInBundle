@@ -92,7 +92,7 @@ class NcoiTrack {
         cookieSelected.each(function (){
             let isChecked = $(this).prop('checked');
             if ($(this).data('cookie-id') && isChecked)
-                userSettings.cookieIds.push(id)
+                userSettings.cookieIds.push($(this).data('cookie-id'))
         });
     }
 
