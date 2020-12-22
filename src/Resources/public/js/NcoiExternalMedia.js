@@ -7,7 +7,7 @@ class NcoiExternalMedia {
     addOnClickEvent(storageKey) {
         let $ = this.$;
         let that = this;
-        $(document).on('click','.ncoi---release',function(){
+        $(document).on('click','.ncoi---release',function(e){
             e.preventDefault();
             //Um richtige Chechbox zu finden
             //und um Blockcontainer vielleicht auszublenden und iFrame anzuhängen
@@ -36,7 +36,7 @@ class NcoiExternalMedia {
 
     onChangeSliding(){
         let $ = this.$;
-        $(document).on('click','.ncoi---sliding.ncoi---blocked', function (e) {
+        $(document).on('click','.ncoi---sliding.ncoi---blocked', function () {
             let checked = $(this).prop('checked');
             let ids = $(this).data('cookie-ids')+'';
             if (ids.indexOf(',') > 0) {
