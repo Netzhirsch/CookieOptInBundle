@@ -7,7 +7,7 @@ class NcoiExternalMedia {
     addOnClickEvent(storageKey) {
         let $ = this.$;
         let that = this;
-        $('.ncoi---release').on('click', function (e) {
+        $(document).on('click','.ncoi---release',function(){
             e.preventDefault();
             //Um richtige Chechbox zu finden
             //und um Blockcontainer vielleicht auszublenden und iFrame anzuhängen
