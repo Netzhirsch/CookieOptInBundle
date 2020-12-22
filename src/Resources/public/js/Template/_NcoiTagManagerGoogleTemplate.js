@@ -1,6 +1,7 @@
-class _NcoiTagManagerGoogleTemplate {
+class _NcoiTagManagerGoogleTemplate extends NcoiTemplate {
 
-    setCookies(trackingId,body) {
+    setCookies(tool,body) {
+        let trackingId = this.getTrackingId(tool)
         body.append(
         " <script type=\"text/javascript\">"+
                 "$.getScript('https://www.googletagmanager.com/gtag/js?id=" + trackingId+"');"+

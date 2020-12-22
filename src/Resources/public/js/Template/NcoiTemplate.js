@@ -7,7 +7,7 @@ class NcoiTemplate {
     addToolTemplates(tool, body) {
         let template = this.getChildTemplate(this.getToolsType(tool));
         if (typeof template !== 'undefined')
-            template.setCookies(this.getTrackingId(tool),body);
+            template.setCookies(tool,body);
     }
 
     addOtherScriptTemplate(otherScripts,body) {

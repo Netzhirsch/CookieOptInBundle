@@ -1,10 +1,10 @@
 class _NcoiMatomoTemplate extends NcoiTemplate{
 
-    setCookies (trackingId) {
+    setCookies (tool,body) {
         if (this.hasContaoTemplate()) {
             this.addContaoTemplate();
         } else {
-            this.executeDefault(trackingId)
+            this.executeDefault(tool,body)
         }
     }
 

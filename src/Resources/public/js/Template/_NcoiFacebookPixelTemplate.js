@@ -1,6 +1,7 @@
 class _NcoiFacebookPixelTemplate extends NcoiTemplate{
 
-    setCookies(trackingId,body) {
+    setCookies(tool,body) {
+        let trackingId = this.getTrackingId(tool);
         body.append(
             '<script type=\"text/javascript\">'+
                 '!function (f, b, e, v, n, t, s) {'+
