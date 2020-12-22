@@ -187,15 +187,9 @@ class ModuleCookieOptInBar extends Module
 		if (!empty($questionHint))
 			$data['questionHint'] = $questionHint;
 
-		$imprint = PageModel::findById($result['imprint']);
-		if (!empty($imprint)) {
-			$data['imprint'] = '<a class="ncoi---link" href="'.$imprint->getFrontendUrl().'" title ="'.$imprint->title.'"> '.$imprint->title.' </a>';
-		}
+        $data['imprint'] = self::getImprint($objPage,$result['imprint']);
 
-		$privacyPolicy = PageModel::findById($result['privacyPolicy']);
-		if (!empty($privacyPolicy)) {
-			$data['privacyPolicy'] = '<a class="ncoi---link" href="'.$privacyPolicy->getFrontendUrl().'" title ="'.$privacyPolicy->title.'"> '.$privacyPolicy->title.' </a>';
-		}
+        $data['privacyPolicy'] = self::getPrivacyPolicy($objPage,$result['privacyPolicy']);
 
 		$infoTitle = $result['infoTitle'];
 		if (!empty($infoTitle)) {
@@ -408,6 +402,31 @@ class ModuleCookieOptInBar extends Module
         }
 
         return false;
+    }
+
+    private static function getImprint($objPage,$id){
+
+        $rootPage = PageModel::findById($objPage->pid);
+        $details = $rootPage->loadDetails();
+        if (!empty($details->imprint))
+            return self::getLink($details->imprint);
+
+        return self::getLink($id);
+    }
+
+    private static function getPrivacyPolicy($objPage,$id){
+
+        $rootPage = PageModel::findById($objPage->pid);
+        $details = $rootPage->loadDetails();
+        if (!empty($details->privacyPolicy))
+            return self::getLink($details->privacyPolicy);
+
+        return self::getLink($id);
+    }
+
+    private static function getLink($id){
+        $page = PageModel::findById($id);
+	    return '<a class="ncoi---link" href="'.$page->getFrontendUrl().'" title ="'.$page->title.'"> '.$page->title.' </a>';
     }
 
 }

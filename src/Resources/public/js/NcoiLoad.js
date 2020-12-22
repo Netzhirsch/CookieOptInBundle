@@ -51,9 +51,7 @@ class NcoiLoad {
     removeNoScriptInputs(){
         let $ = this.$;
         $('.ncoi---no-script--hidden').each(function (){
-            console.log($(this));
             $(this).remove();
-            console.log($(this));
         });
     }
 }

@@ -48,6 +48,7 @@ class NcoiApp {
 
         const ncoiExternalMedia = new NcoiExternalMedia($);
         ncoiExternalMedia.addOnClickEvent(storageKey);
+        ncoiExternalMedia.onChangeSliding();
 
         const ncoiInfoTable = new NcoiInfoTable($);
         ncoiInfoTable.addOnClickShowEvent();

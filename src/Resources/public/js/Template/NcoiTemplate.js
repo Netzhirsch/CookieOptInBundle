@@ -46,6 +46,8 @@ class NcoiTemplate {
             template = new _NcoiTagManagerGoogleTemplate();
         } else if (toolType.localeCompare('facebookPixel') === 0) {
             template = new _NcoiFacebookPixelTemplate(this.$);
+        } else if (toolType.localeCompare('matomo') === 0) {
+            template = new _NcoiMatomoTemplate(this.$);
         }
         return template;
     }

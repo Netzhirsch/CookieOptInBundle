@@ -34,6 +34,22 @@ class NcoiExternalMedia {
         });
     }
 
+    onChangeSliding(){
+        let $ = this.$;
+        $(document).on('click','.ncoi---sliding.ncoi---blocked', function (e) {
+            let checked = $(this).prop('checked');
+            let ids = $(this).data('cookie-ids')+'';
+            if (ids.indexOf(',') > 0) {
+                ids = ids.split(',');
+                ids.forEach(function (id){
+                    $('#ncoi---table-cookie-'+id).prop('checked',checked);
+                });
+            } else {
+                $('#ncoi---table-cookie-'+ids).prop('checked',checked);
+            }
+        });
+    }
+
     decode(storageKey) {
         let that = this;
         let $ = that.$;
