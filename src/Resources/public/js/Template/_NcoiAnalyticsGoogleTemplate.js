@@ -1,10 +1,10 @@
 class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
 
-    setCookies (trackingId,body = null) {
+    setCookies (tool,body = null) {
         if (this.hasContaoGoogleTemplate()) {
             this.addContaoTemplate(body);
         } else {
-            this.executeDefault(trackingId)
+            this.executeDefault(this.getTrackingId(tool))
         }
     }
 
