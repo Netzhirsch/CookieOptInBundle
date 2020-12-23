@@ -28,6 +28,9 @@ class ParseFrontendTemplateListener
         if (empty($objPage))
             return $buffer;
 
+        if (PageLayoutListener::isDisabled($objPage))
+            return $buffer;
+
         if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
             if (strpos($buffer, '<iframe') !== false) {
                 if (

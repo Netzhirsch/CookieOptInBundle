@@ -30,6 +30,7 @@ class PageLayoutListener {
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
+
         $removeModules = $this->shouldRemoveModules($pageModel);
         $moduleIds = [];
         $return = self::checkModules($layout, $removeModules, $moduleIds);
@@ -350,7 +351,7 @@ class PageLayoutListener {
                 if (!empty($layoutModule['enable'])) {
                     if (!empty($bars)) {
                         foreach ($bars as $bar) {
-                            if ($removeModules) {
+                            if ($removeModules && $bar['pid'] == $layoutModule['mod']) {
                                 unset($layoutModules[$key]);
                             }
                             elseif(!in_array($bar['pid'],$moduleIds)) {
@@ -419,6 +420,20 @@ class PageLayoutListener {
             $fieldPalette->save();
     }
 
+    public static function isDisabled(PageModel $pageModel)
+    {
+        $rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
+
+        if (empty($rootPage)) {
+            $rootId = $pageModel->__get('rootId');
+            $rootPage = PageModel::findByIdOrAlias($rootId);
+        }
+
+        if ($rootPage->__get('bar_disabled'))
+            return true;
+
+        return false;
+    }
     /**
      * @param PageModel $pageModel
      * @return bool
@@ -426,51 +441,49 @@ class PageLayoutListener {
      */
     public static function shouldRemoveModules(PageModel $pageModel)
     {
-        $removeModules = false;
+
+        if (self::isDisabled($pageModel))
+            return true;
+
         $rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
         if (empty($rootPage)) {
             $rootPage = $pageModel->__get('rootId');
             $rootPage = PageModel::findByIdOrAlias($rootPage);
         }
 
-        if ($rootPage->__get('bar_disabled')) {
-            $removeModules = true;
+        $licenseKey = (!empty($rootPage->__get('ncoi_license_key'))) ? $rootPage->__get(
+            'ncoi_license_key'
+        ) : Config::get('ncoi_license_key');
 
-        } else {
-            $licenseKey = (!empty($rootPage->__get('ncoi_license_key'))) ? $rootPage->__get(
-                'ncoi_license_key'
-            ) : Config::get('ncoi_license_key');
+        $licenseExpiryDate = (!empty($rootPage->__get('ncoi_license_expiry_date'))) ? $rootPage->__get(
+            'ncoi_license_expiry_date'
+        ) : Config::get('ncoi_license_expiry_date');
 
-            $licenseExpiryDate = (!empty($rootPage->__get('ncoi_license_expiry_date'))) ? $rootPage->__get(
-                'ncoi_license_expiry_date'
-            ) : Config::get('ncoi_license_expiry_date');
+        if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense(
+                $licenseKey,
+                $licenseExpiryDate,
+                $_SERVER['HTTP_HOST']
+            ) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
 
-            if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense(
-                    $licenseKey,
-                    $licenseExpiryDate,
-                    $_SERVER['HTTP_HOST']
-                ) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
-
-                $licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
-                if ($licenseAPIResponse->getSuccess()) {
-                    $licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
-                    $licenseKey = $licenseAPIResponse->getLicenseKey();
-                    LicenseController::setLicense($licenseExpiryDate, $licenseKey, $rootPage);
-                }
-            }
-
-            if (!self::checkLicense(
-                    $licenseKey,
-                    $licenseExpiryDate,
-                    $_SERVER['HTTP_HOST']
-                ) && empty(self::checkLicenseRemainingTrialPeriod())) {
-
-                $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError']
-                    = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
-                $removeModules = true;
+            $licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+            if ($licenseAPIResponse->getSuccess()) {
+                $licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
+                $licenseKey = $licenseAPIResponse->getLicenseKey();
+                LicenseController::setLicense($licenseExpiryDate, $licenseKey, $rootPage);
             }
         }
 
-        return $removeModules;
+        if (!self::checkLicense(
+                $licenseKey,
+                $licenseExpiryDate,
+                $_SERVER['HTTP_HOST']
+            ) && empty(self::checkLicenseRemainingTrialPeriod())) {
+
+            $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError']
+                = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
+            return true;
+        }
+
+        return false;
     }
 }

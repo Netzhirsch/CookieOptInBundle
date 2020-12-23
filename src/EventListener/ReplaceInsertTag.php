@@ -35,7 +35,7 @@ class ReplaceInsertTag
                 $return = $barRepo->findByIds($modIdsInBuffer);
                 if (!empty($return)) {
                     $cookieBarId = $return['pid'];
-                    $insertTag = str_replace('{{insert_module::'.$cookieBarId.'}}','',$insertTag);
+                    return str_replace('{{insert_module::'.$cookieBarId.'}}','',$insertTag);
                 }
             }
         }
