@@ -492,7 +492,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
 				'eval' => [
-					'mandatory' => true,
 					'tl_class'  =>  'long clr',
 				],
 			],
