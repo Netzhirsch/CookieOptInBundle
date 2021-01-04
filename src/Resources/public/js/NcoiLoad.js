@@ -41,9 +41,9 @@ class NcoiLoad {
             let ncoiCookie = new NcoiCookie($);
             ncoiCookie.ajaxDeleteCookies(storageKey);
             ncoiCookie.removeCookies(Cookies.get());
+            mainWrapper.removeClass('ncoi---hidden');
             return true;
         } else {
-            mainWrapper.removeClass('ncoi---hidden');
             return false;
         }
     }
