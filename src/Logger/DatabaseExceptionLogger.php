@@ -48,7 +48,10 @@ class DatabaseExceptionLogger
             return $result;
         } catch (\Doctrine\DBAL\Driver\Exception $e) {
             Logger::logExceptionInContaoSystemLog($e->getMessage());
+        } catch (\Exception $e) {
+            Logger::logExceptionInContaoSystemLog($e->getMessage());
         }
+
         return [];
     }
 
@@ -60,6 +63,8 @@ class DatabaseExceptionLogger
                 return [];
             return $result;
         } catch (\Doctrine\DBAL\Driver\Exception $e) {
+            Logger::logExceptionInContaoSystemLog($e->getMessage());
+        } catch (\Exception $e) {
             Logger::logExceptionInContaoSystemLog($e->getMessage());
         }
         return [];

@@ -18,8 +18,7 @@ class BarRepository
 
     public function findAll(): array
     {
-        $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie ";
-        $stmt = null;
+        $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie";
 
         $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
 
