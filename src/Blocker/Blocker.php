@@ -407,7 +407,7 @@ class Blocker
         if (count($cookieIds) == 1) {
             $cookieIdsAsString = $cookieIds[0];
         } else {
-            $cookieIdsAsString = implode(' ncoi---cookie-id', $cookieIds);
+            $cookieIdsAsString = implode(' ncoi---cookie-id-', $cookieIds);
         }
         return $cookieIdsAsString;
     }
