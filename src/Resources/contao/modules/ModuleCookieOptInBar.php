@@ -407,6 +407,8 @@ class ModuleCookieOptInBar extends Module
     private static function getImprint($objPage,$id){
 
         $rootPage = PageModel::findById($objPage->pid);
+        if (empty($rootPage))
+            return '';
         $details = $rootPage->loadDetails();
         if (!empty($details->imprint))
             return self::getLink($details->imprint);
@@ -417,6 +419,8 @@ class ModuleCookieOptInBar extends Module
     private static function getPrivacyPolicy($objPage,$id){
 
         $rootPage = PageModel::findById($objPage->pid);
+        if (empty($rootPage))
+            return '';
         $details = $rootPage->loadDetails();
         if (!empty($details->privacyPolicy))
             return self::getLink($details->privacyPolicy);
@@ -425,7 +429,11 @@ class ModuleCookieOptInBar extends Module
     }
 
     private static function getLink($id){
+
         $page = PageModel::findById($id);
+        if (empty($page))
+            return '';
+
 	    return '<a class="ncoi---link" href="'.$page->getFrontendUrl().'" title ="'.$page->title.'"> '.$page->title.' </a>';
     }
 
