@@ -40,7 +40,7 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
 
         gtag('config', trackingId, {
             'cookie_update': false,
-            'cookie_flags': 'SameSite=none'
+            'cookie_flags': 'SameSite=none;Secure'
         });
     }
 
