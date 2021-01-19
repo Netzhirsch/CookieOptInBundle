@@ -884,7 +884,16 @@ class tl_module_ncoi extends tl_module {
             $stmt = $conn->prepare($sql);
             $data = $stmt->execute(Input::get('id'));
             $data = $data->fetchAssoc();
-            Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$data['maxWidth'],$data['blockSite'],$data['zIndex'],true);
+            Helper::parseLessToCss
+                (
+                    'netzhirschCookieOptIn.less',
+                    'netzhirschCookieOptIn.css',
+                    $data['maxWidth'],
+                    $data['blockSite'],
+                    $data['zIndex'],
+                    true
+                )
+            ;
         }
 		return $dca;
 	}
@@ -1280,20 +1289,20 @@ class tl_module_ncoi extends tl_module {
     {
         if ($this->checkRightModule($dca->__get('field'))) {
             $activeRecord = $dca->__get('activeRecord');
-            $privacyPolicy = $activeRecord->__get('privacyPolicy');
-            $privacyPolicyOld = $this->loadFromNcoiTable('',$dca,null,'privacyPolicy');
-            if (!empty($privacyPolicy) && empty($privacyPolicyOld)) {
-                $this->saveInNcoiTable($privacyPolicy,$dca,'','privacyPolicy');
+            $privacyPolicyOld = $activeRecord->__get('privacyPolicy');
+            $privacyPolicyNew = $this->loadFromNcoiTable('',$dca,null,'privacyPolicy');
+            if (!empty($privacyPolicyOld) && empty($privacyPolicyNew)) {
+                $this->saveInNcoiTable($privacyPolicyNew,$dca,'','privacyPolicy');
             }
-            $imprint = $activeRecord->__get('imprint');
-            $imprintOld = $this->loadFromNcoiTable('',$dca,null,'imprint');
-            if (!empty($imprint) && empty($imprintOld)) {
-                $this->saveInNcoiTable($imprint,$dca,'','imprint');
+            $imprintOLd = $activeRecord->__get('imprint');
+            $imprintNew = $this->loadFromNcoiTable('',$dca,null,'imprint');
+            if (!empty($imprintOLd) && empty($imprintNew)) {
+                $this->saveInNcoiTable($imprintNew,$dca,'','imprint');
             }
-            $excludePages = $activeRecord->__get('excludePages');
-            $excludePagesOld = $this->loadFromNcoiTable('',$dca,null,'excludePages');
-            if (!empty($excludePages) && empty($excludePagesOld)) {
-                $this->saveInNcoiTable($excludePages,$dca,'','excludePages');
+            $excludePagesOld = $activeRecord->__get('excludePages');
+            $excludePagesNew = $this->loadFromNcoiTable('',$dca,null,'excludePages');
+            if (!empty($excludePagesOld) && empty($excludePagesNew)) {
+                $this->saveInNcoiTable($excludePagesNew,$dca,'','excludePages');
             }
             $activeRecord->__set('privacyPolicy',null);
             $activeRecord->__set('imprint',null);
