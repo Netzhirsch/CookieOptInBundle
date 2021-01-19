@@ -59,9 +59,6 @@ class NcoiApp {
         let isExcludePage = mainWrapper.find('.ncoi---container').data('is-exclude-page')
         if  (isExcludePage === 1) {
             mainWrapper.addClass('ncoi---hidden');
-            ncoiCookie.ajaxDeleteCookies(storageKey);
-            ncoiCookie.removeCookies(Cookies.get());
-            ncoiTrack.track(0, storageKey,localStorage);
             return;
         }
 
