@@ -12,6 +12,7 @@ use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use DOMDocument;
 use DOMElement;
+use System;
 
 class ScriptBlocker
 {
@@ -56,20 +57,24 @@ class ScriptBlocker
     private static function getScriptHTML(DOMElement $DOMElement, RequestStack $requestStack, Connection $conn,$buffer){
 
         $moduleData = Blocker::getModulData($requestStack);
+        $container = System::getContainer();
         if (empty($moduleData)) {
-            Logger::logExceptionInContaoSystemLog('Request empty for'.$buffer);
+            if ($container->getParameter('kernel.debug'))
+                Logger::logExceptionInContaoSystemLog('Request empty for'.$buffer);
             return $buffer;
         }
 
         $src = self::getSrc($DOMElement);
         if (empty($src)) {
-            Logger::logExceptionInContaoSystemLog('src empty for'.$buffer);
+            if ($container->getParameter('kernel.debug'))
+                Logger::logExceptionInContaoSystemLog('src empty for'.$buffer);
             return $buffer;
         }
 
         $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $src);
         if (empty($externalMediaCookiesInDB)) {
-            Logger::logExceptionInContaoSystemLog('no data found by src:'.$src);
+            if ($container->getParameter('kernel.debug'))
+                Logger::logExceptionInContaoSystemLog('no data found by src:'.$src);
             return $buffer;
         }
 
@@ -84,7 +89,8 @@ class ScriptBlocker
 
 
         if (Blocker::noScriptFallbackRenderScript($dataFromExternalMediaAndBar)) {
-            Logger::logExceptionInContaoSystemLog('no script fallback used:');
+            if ($container->getParameter('kernel.debug'))
+                Logger::logExceptionInContaoSystemLog('no script fallback used:');
             return $buffer;
         }
 
