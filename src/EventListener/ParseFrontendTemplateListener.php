@@ -55,6 +55,7 @@ class ParseFrontendTemplateListener
                 = (
                     strpos($template, 'analytics_piwik') !== false
                     || strpos($template, 'analytics_matomo') !== false
+                    || strpos($template, 'mod_matomo_Tracking') !== false
             );
 
             if ($isAnalyticsTemplateMatomo) {
