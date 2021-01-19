@@ -406,7 +406,7 @@ class ModuleCookieOptInBar extends Module
 
     private static function getImprint($objPage,$id){
 
-        $rootPage = PageModel::findById($objPage->pid);
+        $rootPage = PageModel::findById($objPage->rootId);
         if (empty($rootPage))
             return '';
         $details = $rootPage->loadDetails();
@@ -418,7 +418,7 @@ class ModuleCookieOptInBar extends Module
 
     private static function getPrivacyPolicy($objPage,$id){
 
-        $rootPage = PageModel::findById($objPage->pid);
+        $rootPage = PageModel::findById($objPage->rootId);
         if (empty($rootPage))
             return '';
         $details = $rootPage->loadDetails();
