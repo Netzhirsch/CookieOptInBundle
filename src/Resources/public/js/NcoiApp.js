@@ -34,10 +34,16 @@ class NcoiApp {
         let mainWrapper  = ncoiApp.getMainWrapper();
         const ncoiRevoke = new NcoiRevoke($);
         let storageKey = ncoiApp.getStorageKey();
+        const ncoiLoad = new NcoiLoad($);
+
+        if (ncoiLoad.doNotTrackByBrowserSetting(storageKey, mainWrapper)) {
+            mainWrapper.addClass('ncoi---hidden');
+            return;
+        }
+
         let localStorage = ncoiApp.getLocalStorage(storageKey);
         ncoiRevoke.addOnClickEvent(storageKey);
 
-        const ncoiLoad = new NcoiLoad($);
         ncoiLoad.removeLoadAlwaysForNoScript();
         ncoiLoad.showAllMissingModuleMessage();
         ncoiLoad.removeNoScriptInputs();
