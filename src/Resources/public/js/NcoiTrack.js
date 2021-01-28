@@ -4,11 +4,11 @@ class NcoiTrack {
         this.$ = $;
     }
 
-    track(newConsent, storageKey,localStorage) {
+    track(newConsent, storageKey,localStorage,optOut) {
         let that = this;
         let userSettings = this.getDefaultUserSettings(newConsent, storageKey);
         if (newConsent === 1) {
-            this.setNewUserSettings(userSettings);
+            this.setNewUserSettings(userSettings,optOut);
         } else {
            this.setUserSettings(userSettings,localStorage);
         }
@@ -36,7 +36,8 @@ class NcoiTrack {
                         id: response.id,
                         cookieVersion: cookieVersion,
                         cookieIds: userSettings.cookieIds,
-                        expireTime: response.expireTime
+                        expireTime: response.expireTime,
+                        optOut:userSettings.optOut
                     })
                 );
 
@@ -85,9 +86,12 @@ class NcoiTrack {
         };
     }
 
-    setNewUserSettings(userSettings) {
+    setNewUserSettings(userSettings,optOut) {
         let $ = this.$;
         userSettings.newConsent = true;
+        if (optOut === "default") {
+            userSettings.optOut = true
+        }
         let cookieSelected = $('.ncoi---table-input');
         cookieSelected.each(function (){
             let isChecked = $(this).prop('checked');
@@ -97,6 +101,7 @@ class NcoiTrack {
     }
 
     setUserSettings(userSettings,localStorage) {
+        userSettings.optOut = "modified";
         userSettings.cookieIds = localStorage.cookieIds;
         userSettings.id = localStorage.id;
         userSettings.cookieVersion = localStorage.cookieVersion;

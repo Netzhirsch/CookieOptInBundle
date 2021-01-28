@@ -92,6 +92,9 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
         'respectDoNotTrack' => [
             'sql' => "varchar(1) NULL default '0' ",
         ],
+        'optOut' => [
+            'sql' => "varchar(1) NULL default '0' ",
+        ],
         'zIndex' => [
             'sql' => "int(7) NULL DEFAULT '1' ",
         ],

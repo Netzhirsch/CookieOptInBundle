@@ -4,39 +4,40 @@ class NcoiSaveButton {
         this.$ = $;
     }
 
-
     addOnClickEvents(storageKey,mainWrapper){
+        this.onClickSaveAllConsent(storageKey,mainWrapper);
+        this.onClickSaveConsent(storageKey,mainWrapper);
+    }
 
+    onClickSaveConsent(storageKey,mainWrapper){
+        let $ = this.$;
         let that = this;
-        let $ = that.$;
-        onClickSaveAllConsent(storageKey);
-        onClickSaveConsent(storageKey);
 
-        function  onClickSaveAllConsent(storageKey) {
-            $(document).on('click','#ncoi---allowed--all', function (e) {
-                e.preventDefault();
-                $('.ncoi---cookie-group input').prop('checked', true);
-                $('.ncoi---sliding').prop('checked', true);
-                saveConsent(storageKey);
-            });
-        }
+        $(document).on('click','#ncoi---allowed', function (e) {
+            e.preventDefault();
+            that.saveConsent(storageKey,mainWrapper,'modified');
+        });
+    }
 
-        function onClickSaveConsent(storageKey){
-            $(document).on('click','#ncoi---allowed', function (e) {
-                e.preventDefault();
-                saveConsent(storageKey);
-            });
-        }
+    onClickSaveAllConsent(storageKey,mainWrapper) {
+        let $ = this.$;
+        let that = this;
+        $(document).on('click','#ncoi---allowed--all', function (e) {
+            e.preventDefault();
+            $('.ncoi---cookie-group input').prop('checked', true);
+            $('.ncoi---sliding').prop('checked', true);
+            that.saveConsent(storageKey,mainWrapper,'default');
+        });
+    }
 
-        function saveConsent(storageKey) {
-            const ncoiLoad = new NcoiLoad($);
-            ncoiLoad.removeAnimation(mainWrapper);
-            let ncoiTrack = new NcoiTrack($);
-            $('.ncoi---behind').addClass('ncoi---hidden');
-            ncoiTrack.track(1, storageKey);
-            let externalMedia = new NcoiExternalMedia($);
-            externalMedia.decode(storageKey)
-        }
-
+    saveConsent(storageKey,mainWrapper,optOut) {
+        let $ = this.$;
+        const ncoiLoad = new NcoiLoad($);
+        ncoiLoad.removeAnimation(mainWrapper);
+        let ncoiTrack = new NcoiTrack($);
+        $('.ncoi---behind').addClass('ncoi---hidden');
+        ncoiTrack.track(1, storageKey,optOut);
+        let externalMedia = new NcoiExternalMedia($);
+        externalMedia.decode(storageKey)
     }
 }

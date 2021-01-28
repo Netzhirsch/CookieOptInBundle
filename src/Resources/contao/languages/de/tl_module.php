@@ -167,6 +167,8 @@ $GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Cookie Bar auf folgenden Se
 
 $GLOBALS['TL_LANG']['tl_module']['respectDoNotTrack'] = ['"Do Not Track" Browser-Einstellung respektieren','Wenn diese Browser-Einstellung gesetzt ist, wird die Cookie Bar nicht eingeblendet.'];
 
+$GLOBALS['TL_LANG']['tl_module']['optOut'] = ['Opt Out','Cookies setzen und bei Ablehnung löschen, nur in einigen Länder erlaubt. Nicht in Deutschland.'];
+
 $GLOBALS['TL_LANG']['tl_module']['blockSite'] = ['Nutzung der Seite unterbinden','Elemente der Seite können erst angeklickt werden, wenn Cookies aktzeptiert oder abgelehnt wurden.'];
 
 $GLOBALS['TL_LANG']['tl_module']['zIndex'] = ['z-index-Einstellung','Erhöhen Sie diesen Wert, wenn das Cookie-Banner von anderen Elementen überdeckt wird.'];

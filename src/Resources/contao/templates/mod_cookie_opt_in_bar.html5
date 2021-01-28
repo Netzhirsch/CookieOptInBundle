@@ -46,6 +46,7 @@
 			data-ncoi-mod-id="<?php echo $this->arrData['id']?>"
             data-ncoi-animation="<?=$this->arrData['animation']?>"
             data-ncoi-respect-do-not-track="<?=$this->arrData['respectDoNotTrack']?>"
+            data-ncoi-opt-out="<?=$this->arrData['optOut']?>"
 	>
 		<?=(empty($this->arrData['headlineCookieOptInBar'])?'':$this->arrData['headlineCookieOptInBar']) ?>
 

@@ -237,6 +237,11 @@ class ModuleCookieOptInBar extends Module
 
         $data['highlightSaveAllButton'] = $result['highlightSaveAllButton'];
 
+        if ($result['optOut'] == 1)
+            $data['optOut'] = 'default';
+        else
+            $data['optOut'] = 'no';
+
 		$this->Template->setData($data);
 	}
 

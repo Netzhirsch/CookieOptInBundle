@@ -68,8 +68,20 @@ class NcoiApp {
             return;
         }
 
+        let optOut = $('[data-ncoi-opt-out]').data('ncoi-opt-out');
+
+        if (localStorage === '' && optOut === 'default') {
+            $('#ncoi---allowed--all').trigger('click');
+            localStorage = ncoiApp.getLocalStorage(storageKey);
+            ncoiTrack.track(0, storageKey,localStorage,optOut);
+            ncoiExternalMedia.decode(storageKey);
+            ncoiInfoTable.setCookieCheckboxes(localStorage.cookieIds);
+            mainWrapper.addClass('ncoi---hidden');
+            return;
+        }
+
         if (ncoiLoad.isLocalStorageUpToDate(localStorage,storageKey,mainWrapper)) {
-            ncoiTrack.track(0, storageKey,localStorage);
+            ncoiTrack.track(0, storageKey,localStorage,optOut);
             ncoiExternalMedia.decode(storageKey);
             ncoiInfoTable.setCookieCheckboxes(localStorage.cookieIds);
             mainWrapper.addClass('ncoi---hidden');
