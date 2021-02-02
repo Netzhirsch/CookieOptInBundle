@@ -78,7 +78,7 @@ class ModuleCookieOptInBar extends Module
         $result = $stmt->fetch();
         $maxWidth = $result['maxWidth'];
 
-		$this->strTemplate = 'mod_cookie_opt_in_bar';
+		$this->strTemplate = $result['templateBar'];
 		$this->Template = new FrontendTemplate($this->strTemplate);
 		$data = $this->Template->getData();
         $data['respectDoNotTrack'] = $result['respectDoNotTrack'];
