@@ -29,7 +29,12 @@ class NcoiExternalMedia {
                     that.addIframe($(this));
                 })
             } else {
-                that.addIframe(parent);
+                if (that.isCustomGmap(parent)) {
+                    that.showCustomGmap(parent)
+                } else {
+                    that.addIframe(parent);
+                    parent.trigger('change');
+                }
             }
         });
     }
