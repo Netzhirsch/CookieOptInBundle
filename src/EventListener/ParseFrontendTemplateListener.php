@@ -72,7 +72,7 @@ class ParseFrontendTemplateListener
                 return $scriptBlocker->script($buffer,$this->getConnection(),$this->getRequestStack());
             }
 
-            $isCustomElementGmapTemplate = strpos($template, 'customelement_gmap') !== false;
+            $isCustomElementGmapTemplate = strpos($template, 'customelement_gmap') !== false || strpos($template, 'mod_catalog_map_default') !== false;
             if ($isCustomElementGmapTemplate) {
                 $customGmapBlocker = new CustomGmapBlocker();
                 return $customGmapBlocker->block($buffer,$this->getConnection(),$this->getRequestStack());
