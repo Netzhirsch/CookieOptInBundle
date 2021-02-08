@@ -100,6 +100,7 @@ class CustomGmapBlocker
         $html .='</div>';
 
         $buffer = str_replace('ce_google_map','ce_google_map ncoi---hidden',$buffer);
+        $buffer = str_replace('mod_catalogUniversalView block','mod_catalogUniversalView block ncoi---hidden',$buffer);
 
         return $html.$buffer;
     }

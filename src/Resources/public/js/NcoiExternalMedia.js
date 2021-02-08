@@ -76,6 +76,7 @@ class NcoiExternalMedia {
     showCustomGmap() {
         let $ = this.$;
         $('.ce_google_map').removeClass('ncoi---hidden');
+        $('.mod_catalogUniversalView').removeClass('ncoi---hidden');
         $('.ncoi---custom_gmap').addClass('ncoi---hidden');
     }
 
