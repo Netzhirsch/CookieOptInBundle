@@ -49,7 +49,7 @@ class Helper
                 if (is_dir($dir)) {
                     if ($dh = opendir($dir)) {
                         while (($file = readdir($dh)) !== false) {
-                            if($file == '.' || $file == '..' || strpos($file,'netzhirsch') === false)
+                            if($file == '.' || $file == '..' || !str_contains($file, 'netzhirsch'))
                                 continue;
                             unlink($dir.DIRECTORY_SEPARATOR.$file);
                         }

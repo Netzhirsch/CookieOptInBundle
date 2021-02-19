@@ -7,7 +7,7 @@ use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Contao\CoreBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
@@ -15,12 +15,15 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 class ConsentController extends AbstractController
 {
 	/**
-	 * @Route("/consent/download", name="consent_download")
+	 * @Route("/consent/download", name="consent_download",  defaults={"_scope" = "backend"})
 	 * @throws DBALException
 	 * @throws Exception
 	 */
 	public function indexAction()
 	{
+        $hasBackendUser = $this->getUser();
+        if (empty($hasBackendUser))
+            return $this->redirectToRoute('contao_backend');
 		/* @var Connection $conn */
 		/** @noinspection PhpParamsInspection */
         /** @noinspection MissingService */
