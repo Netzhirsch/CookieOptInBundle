@@ -192,9 +192,9 @@ class IFrameBlocker
 
         $size = substr($iframeHTML, $position);
         if ($byStyle)
-            $size = strpos($size, '"');
+            $position = strpos($size, ';');
         else
-            $size = strpos($size, ';');
+            $position = strpos($size, '"');
         return substr($size, 0,$position);
 
     }

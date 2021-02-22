@@ -40,7 +40,6 @@ class NcoiApp {
             mainWrapper.addClass('ncoi---hidden');
             return;
         }
-
         let localStorage = ncoiApp.getLocalStorage(storageKey);
         ncoiRevoke.addOnClickEvent(storageKey);
 
