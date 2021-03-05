@@ -24,7 +24,9 @@ class NcoiLoad {
     isLocalStorageUpToDate(localStorage) {
         let ncoiDate = new NcoiDate();
         let $ = this.$;
-        return localStorage !== '' && localStorage.expireTime >= ncoiDate.dateString() && $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion);
+        return localStorage !== ''
+            && localStorage.expireTime >= ncoiDate.dateString()
+            && $('[data-ncoi-cookie-version]').data('ncoi-cookie-version') === parseInt(localStorage.cookieVersion);
     }
 
     showMissingModuleMessage(errorMessage){

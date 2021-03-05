@@ -85,7 +85,6 @@ class ModuleCookieOptInBar extends Module
 
         $data['id'] = $this->id;
 
-
         $data['cookieVersion'] = 1;
         if (isset($result['cookieVersion']) && !empty($result['cookieVersion']))
             $data['cookieVersion'] = $result['cookieVersion'];
