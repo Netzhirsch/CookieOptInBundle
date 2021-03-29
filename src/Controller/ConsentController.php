@@ -7,7 +7,7 @@ use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Exception;
-use Contao\CoreBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
@@ -25,8 +25,6 @@ class ConsentController extends AbstractController
         if (empty($hasBackendUser))
             return $this->redirectToRoute('contao_backend');
 		/* @var Connection $conn */
-		/** @noinspection PhpParamsInspection */
-        /** @noinspection MissingService */
         $conn = $this->get('database_connection');
         $sql = "SELECT * FROM tl_consentDirectory";
 		$stmt = $conn->prepare($sql);
@@ -65,7 +63,6 @@ class ConsentController extends AbstractController
 			$response->headers->set('Content-Length', strlen($serielleData));
 			return $response;
 		} else {
-			/** @noinspection PhpParamsInspection */
 			return $this->redirectToRoute('contao_backend');
 		}
 	}

@@ -38,9 +38,12 @@ class ScriptBlocker
         $doc = new DOMDocument();
 //        $clearBuffer = Blocker::clearHtmlComments($buffer);
         $doc->loadHTML($buffer);
-        $htmlArray = self::getAllDOMElement($doc);
-        foreach ($htmlArray as $html) {
-            $newBuffer .= self::getScriptHTML($html,$requestStack,$conn,$buffer);
+        $DOMElements = self::getAllDOMElement($doc);
+        foreach ($DOMElements as $DOMElement) {
+
+            $wrapWithBlockContainer = $DOMElement->getAttribute('data-ncoi-no-block-container');
+            if (empty($wrapWithBlockContainer))
+                $newBuffer .= self::getScriptHTML($DOMElement,$requestStack,$conn,$buffer);
         }
         return $newBuffer;
     }
@@ -108,26 +111,28 @@ class ScriptBlocker
     }
 
     private static function getSrc(DOMElement $DOMElement){
-        $src = $DOMElement->getAttribute('src');
-        if (!empty($src))
-            return $src;
 
         $src = $DOMElement->getAttribute('data-ncoi-src');
         if (!empty($src))
             return $src;
 
+        $src = $DOMElement->getAttribute('src');
+        if (!empty($src))
+            return $src;
+
+
         return null;
     }
 
 
-    private static function getAllDOMElement($doc) {
+    private static function getAllDOMElement(DOMDocument $doc) {
         $domElementArray = [];
         $domElementArray = self::addToDomElementArray($doc,$domElementArray,'script');
         $domElementArray = self::addToDomElementArray($doc,$domElementArray,'link');
         return $domElementArray;
     }
 
-    private static function addToDomElementArray($doc,$domElementArray,$tag) {
+    private static function addToDomElementArray(DOMDocument $doc,$domElementArray,$tag) {
         $scriptElements = $doc->getElementsByTagName($tag);
         foreach ($scriptElements as $scriptElement) {
             $domElementArray[] = $scriptElement;
