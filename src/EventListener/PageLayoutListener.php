@@ -139,6 +139,10 @@ class PageLayoutListener {
 
         if (empty($licenseKey) || empty($licenseExpiryDate))
             return false;
+        
+        // Allow localhost
+        if (in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
+            return true;
 
         // in Frontend Y-m-d in Backend d.m.Y
         $licenseExpiryDate = date("Y-m-d", strtotime($licenseExpiryDate));
