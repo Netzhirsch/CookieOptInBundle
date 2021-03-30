@@ -205,8 +205,6 @@ class PageLayoutListener {
                 $dateInterval = date_diff($fileTime, $today);
             }
         }
-        // Only for testing
-//		$dateInterval = null;
         return $dateInterval;
     }
 
