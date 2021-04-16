@@ -9,6 +9,7 @@ use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
+use Netzhirsch\CookieOptInBundle\Blocker\VideoPreviewBlocker;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -42,6 +43,9 @@ class ParseFrontendTemplateListener
                     $iframeBlocker = new IFrameBlocker();
                     return $iframeBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
                 }
+            } elseif(strpos($buffer, '<figure class="video_container">') !== false) {
+                $videoPreviewBlocker = new VideoPreviewBlocker();
+                return $videoPreviewBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
             }
 
 
