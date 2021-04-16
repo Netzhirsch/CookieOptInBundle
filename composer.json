@@ -32,7 +32,7 @@
 		"ext-curl": "*",
 		"ext-gettext": "*",
 		"doctrine/data-fixtures": "*",
-		"doctrine/dbal": "^2.12"
+		"doctrine/dbal": "*"
 	},
 	"conflict": {
 		"contao/core": "*"
