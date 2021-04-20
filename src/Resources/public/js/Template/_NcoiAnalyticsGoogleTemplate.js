@@ -24,7 +24,9 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
         } catch (e) {
             console.error('Das Analyse Template enthält invalide Zeichen.')
         }
-        body.append(templateScriptsEncode);
+        // body.append(templateScriptsEncode);
+        let $ = this.$;
+        $('head').prepend(templateScriptsEncode);
     }
 
     executeDefault(trackingId) {
