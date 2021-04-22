@@ -107,6 +107,11 @@ class VideoPreviewBlocker
             'width' => self::getWidth($html)
         ];
 
+        if (!empty($sizeBackground['height']) && !Blocker::hasUnit($sizeBackground['height']))
+            $sizeBackground['height'] .= 'px';
+        if (!empty($sizeBackground['width']) &&  !Blocker::hasUnit($sizeBackground['width']))
+            $sizeBackground['width'] .= 'px';
+
         $imageSrc = $this->getImageSrc($html);
 
         $innerFigure = substr($html,strpos($html,'<figure'));
@@ -124,16 +129,13 @@ class VideoPreviewBlocker
         );
 
         $search = 'style="';
-        $newBuffer = str_replace(
-            $search,
-            $search.' background-image:url('.$imageSrc.');
+        $replace = $search.' background-image:url('.$imageSrc.');
                 background-repeat: no-repeat;
-                background-position: center;
-                background-size: '.$sizeBackground['width'].'px '.$sizeBackground['height'].'px;
-            '
+                background-position: center;';
+        if (!empty($sizeBackground['width']) || !empty($sizeBackground['height']))
+            $replace .=  'background-size: '.$sizeBackground['width'].' '.$sizeBackground['height'].';';
 
-            , $newBuffer
-        );
+        $newBuffer = str_replace($search, $replace, $newBuffer);
 
         $isUserCookieDontAllowMedia = false;
         if (
@@ -214,31 +216,53 @@ class VideoPreviewBlocker
 
     private static function getHeight($iframeHTML): string
     {
-        $position = self::getPosition($iframeHTML,'height="') ;
-        if ($byStyle = empty($position))
-            $position = self::getPosition($iframeHTML,'height:');
+        $position = self::getPosition($iframeHTML,'max-height:');
+        if (!empty($position))
+            return '';
 
-        return self::getSize($iframeHTML,$position,$byStyle);
+        $position = self::getPosition($iframeHTML,'height="');
+        if (!empty($position))
+            return self::getSizeFromAttribute($iframeHTML,$position);
+
+        $position = self::getPosition($iframeHTML,'height:');
+        if (!empty($position))
+            return self::getSizeFromStyle($iframeHTML,$position);
+
+        return '';
     }
 
     private static function getWidth($iframeHTML) :string{
-        $position = self::getPosition($iframeHTML,'width="') ;
-        if ($byStyle = empty($position))
-            $position = self::getPosition($iframeHTML,'width:');
+        $position = self::getPosition($iframeHTML,'max-width:') ;
+        if (!empty($position))
+            return '';
 
-        return self::getSize($iframeHTML,$position,$byStyle);
+        $position = self::getPosition($iframeHTML,'width="');
+        if (!empty($position))
+            return self::getSizeFromAttribute($iframeHTML,$position);
+
+        $position = self::getPosition($iframeHTML,'width:');
+        if (!empty($position))
+            return self::getSizeFromStyle($iframeHTML,$position);
+
+        return '';
     }
 
-    private static function getSize($iframeHTML,$position,$byStyle = false): string{
-
+    private static function getSizeFromAttribute(string $iframeHTML,int $position) {
+        if (empty($position))
+            return '';
         $size = substr($iframeHTML, $position);
-        if ($byStyle)
-            $position = strpos($size, ';');
-        else
-            $position = strpos($size, '"');
+        $position = strpos($size, '"');
         return substr($size, 0,$position);
-
     }
+
+    private static function getSizeFromStyle(string $iframeHTML,int $position) {
+        if (empty($position))
+            return '';
+        $size = substr($iframeHTML, $position);
+        $position = strpos($size, ';');
+        return substr($size, 0,$position);
+    }
+
     private static function getPosition($iframeHTML,$needle): int
     {
         $heightPosition = strpos($iframeHTML, $needle);
