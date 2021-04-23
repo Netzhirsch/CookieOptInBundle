@@ -13,11 +13,7 @@ $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = [Netzhirsch\CookieOptInBundle\
 /**
  * Add back end modules
  */
-$GLOBALS['BE_MOD']['accounts']['consentDirectory'] = [
-	'tables' => [
-		'tl_consentDirectory'
-	],
-];
+$GLOBALS['BE_MOD']['accounts']['consentDirectory']['tables'][] = 'tl_consentDirectory';
 /**
  * Front end modules
  */
