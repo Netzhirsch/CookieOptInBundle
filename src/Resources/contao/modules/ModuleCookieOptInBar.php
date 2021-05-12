@@ -125,32 +125,34 @@ class ModuleCookieOptInBar extends Module
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
         $data['noScriptTracking'] = [];
         $data['cookieGroupsSelected'] = [1];
-		foreach ($data['cookieTools'] as $cookieTool) {
-            if (!empty($ncoiSession) && $data['noscript']) {
-                foreach ($ncoiSession['cookieIds'] as $cookieId) {
-                    if ($cookieId == $cookieTool->id ) {
+		if (!empty($data['cookieTools'])) {
+            foreach ($data['cookieTools'] as $cookieTool) {
+                if (!empty($ncoiSession) && $data['noscript']) {
+                    foreach ($ncoiSession['cookieIds'] as $cookieId) {
+                        if ($cookieId == $cookieTool->id ) {
 
-                        if (!in_array($cookieId,$data['cookieGroupsSelected']))
-                            $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
+                            if (!in_array($cookieId,$data['cookieGroupsSelected']))
+                                $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
 
-                        $cookieToolsSelect = $cookieTool->cookieToolsSelect;
-                        if (self::hasTemplate($conn,$objPage->layout,$cookieToolsSelect))
-                            continue;
+                            $cookieToolsSelect = $cookieTool->cookieToolsSelect;
+                            if (self::hasTemplate($conn,$objPage->layout,$cookieToolsSelect))
+                                continue;
 
-                        $trackingId = $cookieTool->cookieToolsTrackingId;
+                            $trackingId = $cookieTool->cookieToolsTrackingId;
 
-                        if ($cookieTool->cookieToolsSelect == 'facebookPixel') {
-                            $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='.$cookieTool->cookieToolsTrackingId.'&ev=PageView&noscript=1"/>';
-                        } elseif ($cookieTool->cookieToolsSelect == 'googleAnalytics') {
+                            if ($cookieTool->cookieToolsSelect == 'facebookPixel') {
+                                $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='.$cookieTool->cookieToolsTrackingId.'&ev=PageView&noscript=1"/>';
+                            } elseif ($cookieTool->cookieToolsSelect == 'googleAnalytics') {
 
-                            $data['noScriptTracking'][] = '<img src="http://www.google-analytics.com/collect?v=1&t=pageview&tid='.$trackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
-                        } elseif ($cookieTool->cookieToolsSelect == 'matomo') {
+                                $data['noScriptTracking'][] = '<img src="https://www.google-analytics.com/collect?v=1&t=pageview&tid='.$trackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
+                            } elseif ($cookieTool->cookieToolsSelect == 'matomo') {
 
-                            $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$trackingId.'&amp;rec=1" style="border:0" alt="" />';
+                                $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$trackingId.'&amp;rec=1" style="border:0" alt="" />';
+                            }
                         }
                     }
                 }
-            }
+        }
 
 		    $technicalName = null;
             $name = null;
@@ -315,7 +317,7 @@ class ModuleCookieOptInBar extends Module
 
     private static function isNcoiJsAlreadyLoaded()
     {
-        return self::isJsAlreadyLoaded('NcoiApp.js');
+        return self::isJsAlreadyLoaded('NcoiApp.min.js');
 	}
 
     private static function loadNcoiJs()
@@ -330,7 +332,8 @@ class ModuleCookieOptInBar extends Module
                 self::includeFilesInDir($file);
             }
             else {
-                $GLOBALS['TL_JAVASCRIPT'][$file] = $relativDir.DIRECTORY_SEPARATOR.$file.'|static';
+                if (strpos($file, 'min') !== false)
+                    $GLOBALS['TL_JAVASCRIPT'][$file] = $relativDir.DIRECTORY_SEPARATOR.$file.'|static';
             }
         }
 	}
@@ -343,8 +346,8 @@ class ModuleCookieOptInBar extends Module
             if (self::isPresentDirOrParentDir($templateFile))
                 continue;
             $filepath = $relativPath.DIRECTORY_SEPARATOR.$dir.DIRECTORY_SEPARATOR.$templateFile.'|static';
-            $GLOBALS['TL_JAVASCRIPT'][$templateFile]
-                = $filepath;
+            if (strpos($filepath, 'min') !== false)
+                $GLOBALS['TL_JAVASCRIPT'][$templateFile] = $filepath;
         }
 	}
 

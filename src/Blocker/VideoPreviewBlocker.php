@@ -102,15 +102,6 @@ class VideoPreviewBlocker
         }
         $dataFromExternalMediaAndBar->setDisclaimer($disclaimerString);
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
-        $sizeBackground = [
-            'height' => self::getHeight($html),
-            'width' => self::getWidth($html)
-        ];
-
-        if (!empty($sizeBackground['height']) && !Blocker::hasUnit($sizeBackground['height']))
-            $sizeBackground['height'] .= 'px';
-        if (!empty($sizeBackground['width']) &&  !Blocker::hasUnit($sizeBackground['width']))
-            $sizeBackground['width'] .= 'px';
 
         $imageSrc = $this->getImageSrc($html);
 
@@ -127,6 +118,16 @@ class VideoPreviewBlocker
             $html,
             $iconPath
         );
+
+        $sizeBackground = [
+            'height' => self::getHeight($html),
+            'width' => self::getWidth($html)
+        ];
+
+        if (!empty($sizeBackground['height']) && !Blocker::hasUnit($sizeBackground['height']))
+            $sizeBackground['height'] .= 'px';
+        if (!empty($sizeBackground['width']) &&  !Blocker::hasUnit($sizeBackground['width']))
+            $sizeBackground['width'] .= 'px';
 
         $search = 'style="';
         $replace = $search.' background-image:url('.$imageSrc.');
@@ -248,19 +249,22 @@ class VideoPreviewBlocker
     }
 
     private static function getSizeFromAttribute(string $iframeHTML,int $position) {
-        if (empty($position))
-            return '';
-        $size = substr($iframeHTML, $position);
-        $position = strpos($size, '"');
-        return substr($size, 0,$position);
+        return self::getSizeFrom($iframeHTML,$position,'"');
     }
 
     private static function getSizeFromStyle(string $iframeHTML,int $position) {
+        return self::getSizeFrom($iframeHTML,$position,';');
+    }
+
+    private static function getSizeFrom(string $iframeHTML,int $position,string $needle) {
         if (empty($position))
             return '';
         $size = substr($iframeHTML, $position);
-        $position = strpos($size, ';');
-        return substr($size, 0,$position);
+        $position = strpos($size, $needle);
+        $size = substr($size, 0,$position);
+        if (strpos($size, 'figure') !== false)
+            return '';
+        return $size;
     }
 
     private static function getPosition($iframeHTML,$needle): int

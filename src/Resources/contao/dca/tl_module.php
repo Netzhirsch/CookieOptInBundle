@@ -5,11 +5,12 @@ use Contao\ModuleModel;
 use Contao\StringUtil;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
-
 /** Revoke Modul ***********************************************/
-$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
-$GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
-$GLOBALS['TL_JAVASCRIPT']['ncoi'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.js|static';
+if (TL_MODE == 'BE') {
+    $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
+    $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
+    $GLOBALS['TL_JAVASCRIPT']['ncoi'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.js|static';
+}
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInRevoke'] =
 	'name,

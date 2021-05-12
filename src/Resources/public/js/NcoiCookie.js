@@ -54,6 +54,7 @@ class NcoiCookie {
             });
             cookiesToDeleteIndex++;
         }
+        return cookiesToDelete;
     }
 
     removeCookies(cookiesToDelete) {
