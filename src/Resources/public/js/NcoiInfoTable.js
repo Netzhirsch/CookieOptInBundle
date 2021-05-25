@@ -26,7 +26,7 @@ class NcoiInfoTable {
 
     onChangeGroupActive(){
         let $ = this.$;
-        $(document).on('click','.ncoi---sliding-input', function (e) {
+        $(document).on('click','.ncoi---sliding-input', function () {
             let group = $(this);
             $('.ncoi---cookie').each(function () {
                 let cookie = $(this).data('group');
@@ -38,15 +38,14 @@ class NcoiInfoTable {
 
     onChangeCookieActive(){
         let $ = this.$;
-        let cookiesSelect = $('.ncoi---cookie');
-        $(document).on('click',cookiesSelect, function (e) {
+        $(document).on('click','.ncoi---cookie', function () {
             let cookie = $(this).data('group');
             let allChecked = true;
             let id = $(this).data('cookie-id');
             let checked = $(this).prop('checked');
             let inputInBlockContainer = $('.ncoi---cookie-id-'+id).find('.ncoi---sliding');
             inputInBlockContainer.prop('checked',checked)
-            cookiesSelect.each(function () {
+            $('.ncoi---cookie').each(function () {
                 let group = $(this).data('group');
                 if (cookie === group && !checked)
                     allChecked = false;
