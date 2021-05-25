@@ -1,6 +1,7 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\EventListener;
 
+use Contao\LayoutModel;
 use Netzhirsch\CookieOptInBundle\Blocker\AnalyticsBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\CustomGmapBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\IFrameBlocker;
@@ -30,6 +31,9 @@ class ParseFrontendTemplateListener
             return $buffer;
 
         if (PageLayoutListener::isDisabled($objPage))
+            return $buffer;
+
+        if (!$this->isBarInLayoutOrPage($objPage))
             return $buffer;
 
         if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
@@ -112,5 +116,31 @@ class ParseFrontendTemplateListener
         return System::getContainer();
     }
 
+    private function isBarInLayoutOrPage($objPage){
+        $data = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout), [], []);
 
+        if ($this->isBarIn($data))
+            return true;
+
+        $data = PageLayoutListener::checkModules($objPage, [], []);
+
+        if ($this->isBarIn($data))
+            return true;
+
+        return false;
+
+    }
+
+    private function isBarIn($data){
+        if (
+            isset($data['moduleIds'])
+            && isset($data['tlCookieIds'])
+            && isset($data['allModuleIds'])
+            && !in_array($data['moduleIds'][0], $data['allModuleIds'])
+        )
+        {
+            return false;
+        }
+        return true;
+    }
 }
