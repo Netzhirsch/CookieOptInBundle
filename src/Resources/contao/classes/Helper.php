@@ -44,12 +44,12 @@ class Helper
 
 		try {
 			$css = $parser->getCss();
-                $dir = dirname(__DIR__,7).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'css';
+            $dir = dirname(__DIR__,7).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'css';
             if (!file_exists($path.$cssFile) || $makeNew) {
                 if (is_dir($dir)) {
                     if ($dh = opendir($dir)) {
                         while (($file = readdir($dh)) !== false) {
-                            if($file == '.' || $file == '..' || !str_contains($file, 'netzhirsch'))
+                            if($file == '.' || $file == '..' || stripos($file, 'netzhirsch') === false)
                                 continue;
                             unlink($dir.DIRECTORY_SEPARATOR.$file);
                         }
