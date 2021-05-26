@@ -125,18 +125,20 @@ class ModuleCookieOptInBar extends Module
 		$data['cookieTools'] = FieldPaletteModel::findByPid($this->id);
         $data['noScriptTracking'] = [];
         $data['cookieGroupsSelected'] = [1];
-		if (!empty($data['cookieTools'])) {
+        if (!empty($data['cookieTools'])) {
             foreach ($data['cookieTools'] as $cookieTool) {
                 if (!empty($ncoiSession) && $data['noscript']) {
                     foreach ($ncoiSession['cookieIds'] as $cookieId) {
-                        if ($cookieId == $cookieTool->id ) {
+                        if ($cookieId == $cookieTool->id) {
 
-                            if (!in_array($cookieId,$data['cookieGroupsSelected']))
+                            if (!in_array($cookieId, $data['cookieGroupsSelected'])) {
                                 $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
+                            }
 
                             $cookieToolsSelect = $cookieTool->cookieToolsSelect;
-                            if (self::hasTemplate($conn,$objPage->layout,$cookieToolsSelect))
+                            if (self::hasTemplate($conn, $objPage->layout, $cookieToolsSelect)) {
                                 continue;
+                            }
 
                             $trackingId = $cookieTool->cookieToolsTrackingId;
 
@@ -152,32 +154,33 @@ class ModuleCookieOptInBar extends Module
                         }
                     }
                 }
-        }
 
-		    $technicalName = null;
-            $name = null;
-            foreach ($groups as $group) {
-                if ($group['key'] == $cookieTool->cookieToolGroup) {
-                    $technicalName = $group['key'];
-                    $name = $group['value'];
-                    $cookieTool->cookieToolGroupName = $name;
-                }
-            }
-            if (!empty($technicalName) && !empty($name)) {
-                $newGroup = true;
-                foreach ($data['cookieGroups'] as $cookieGroup) {
-                    if ($cookieGroup['technicalName'] == $technicalName) {
-                        $newGroup = false;
+                $technicalName = null;
+                $name = null;
+                foreach ($groups as $group) {
+                    if ($group['key'] == $cookieTool->cookieToolGroup) {
+                        $technicalName = $group['key'];
+                        $name = $group['value'];
+                        $cookieTool->cookieToolGroupName = $name;
                     }
                 }
-                if ($newGroup) {
-                    $data['cookieGroups'][] = [
-                        'technicalName' => $technicalName,
-                        'name' => $name
-                    ];
+                if (!empty($technicalName) && !empty($name)) {
+                    $newGroup = true;
+                    foreach ($data['cookieGroups'] as $cookieGroup) {
+                        if ($cookieGroup['technicalName'] == $technicalName) {
+                            $newGroup = false;
+                        }
+                    }
+                    if ($newGroup) {
+                        $data['cookieGroups'][] = [
+                            'technicalName' => $technicalName,
+                            'name' => $name,
+                        ];
+                    }
                 }
             }
-		}
+
+        }
 
         $headlineData = StringUtil::deserialize($result['headlineCookieOptInBar']);
 		if (!empty($headlineData['value'])) {
