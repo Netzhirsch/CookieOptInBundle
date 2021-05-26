@@ -1,10 +1,14 @@
 (function($){
 	$(document).ready(function () {
 		let bodyField = $('body');
+		let newKey = 1;
 		bodyField.on('click','[data-command="copy"]',function () {
-			let prevKey = $(this).parents('tr').find('input').val();
-			let newKey = parseInt(prevKey) + 1;
-			$('[name="cookieGroups['+prevKey+'][key]"]').val(newKey);
+			$(this).parents('tbody').find('[name$="[key]"]').each(function () {
+				let tmpPrevKey = parseInt($(this).val());
+				if (newKey < tmpPrevKey)
+					newKey = tmpPrevKey;
+			});
+			$('[name="cookieGroups['+newKey+'][key]"]').val(++newKey);
 		});
 		$('body [name$="[key]"]').prop('readonly',"true");
 
