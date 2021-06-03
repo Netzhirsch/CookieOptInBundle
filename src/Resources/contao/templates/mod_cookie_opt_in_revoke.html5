@@ -3,7 +3,7 @@
 <?php $id = str_replace('"','',$id)?>
 <?php $class = $this->arrData['class'] ?>
 <div
-	id="<?php echo $id ?>"
+    <?php if (!empty($id)) echo 'id="'.$id.'"'; ?>
 	class="ncoi---revoke ncoi---mod-missing <?php echo $class ?>"
 	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
 

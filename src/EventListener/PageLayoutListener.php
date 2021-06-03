@@ -303,6 +303,9 @@ class PageLayoutListener {
         $modId = [];
         $stringPositionEnd = 0;
         $saveEnd = 0;
+        if (is_array($htmlElement))
+            return $modId;
+
         while($stringPositionEnd < strlen($htmlElement)) {
             $stringPositionStart = strpos($htmlElement,'{{insert_module::',$stringPositionEnd);
             if ($stringPositionStart !== false) {

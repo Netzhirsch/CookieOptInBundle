@@ -136,14 +136,12 @@
                 </div>
                 <div class="ncoi---action ncoi---link ncoi---infos-show">
                         <button type="button" id="ncoi---infos--show" title="<?=$this->arrData['infoButtonShow']?>">
-                            <label for="infos--show">
-                                <span class="ncoi---infos--show-active ncoi---hidden">
-                                    <?=$this->arrData['infoButtonHide']?>
-                                </span>
-                                <span class="ncoi---infos--show-deactivate">
-                                    <?=$this->arrData['infoButtonShow']?>
-                                </span>
-                            </label>
+                            <span class="ncoi---infos--show-active ncoi---hidden">
+                                <?=$this->arrData['infoButtonHide']?>
+                            </span>
+                            <span class="ncoi---infos--show-deactivate">
+                                <?=$this->arrData['infoButtonShow']?>
+                            </span>
                         </button>
                 </div>
             </div>
