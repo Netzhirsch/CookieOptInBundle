@@ -37,6 +37,9 @@ $arrFields = [
 			],
 			'sql' => "varchar(64) NULL NULL default ''"
 	],
+    'ncoi_last_license_check' => [
+        'sql' => "varchar(64) NULL NULL default ''"
+    ]
 ];
 
 $dc['fields'] = array_merge($dc['fields'], $arrFields);
@@ -45,7 +48,7 @@ class tl_settings_ncoi {
 
 	public function saveLicenseData($licenseKey) {
 		if (!empty($licenseKey)){
-			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST'],false);
 			if ($licenseAPIResponse->getSuccess()) {
 				$licenseKey = $licenseAPIResponse->getLicenseKey();
 				$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();

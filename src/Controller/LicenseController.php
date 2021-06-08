@@ -5,6 +5,7 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 
 
 use Contao\Config;
+use DateTime;
 use Netzhirsch\CookieOptInBundle\Classes\LicenseAPIResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Contao\PageModel;
@@ -31,7 +32,7 @@ class LicenseController extends AbstractController
 		foreach ($rootPages as $rootPage) {
 			if (!empty($rootPage->__get('ncoi_license_key'))) {
 			    $domain = ($rootPage->__get('dns')) ? $rootPage->__get('dns') : $_SERVER['HTTP_HOST'];
-				$licenseAPIResponse = self::callAPI($domain);
+				$licenseAPIResponse = self::callAPI($domain,false);
 				if ($licenseAPIResponse->getSuccess())
 					self::setLicense($licenseAPIResponse->getDateOfExpiry(), $licenseAPIResponse->getLicenseKey(), $rootPage);
 			}
@@ -39,12 +40,11 @@ class LicenseController extends AbstractController
 
 		$licenseKey = Config::get('ncoi_license_key');
 		if (!empty($licenseKey)) {
-			$licenseAPIResponse = self::callAPI($_SERVER['HTTP_HOST']);
+			$licenseAPIResponse = self::callAPI($_SERVER['HTTP_HOST'],false);
 			if ($licenseAPIResponse->getSuccess())
 				self::setLicense($licenseAPIResponse->getDateOfExpiry(),$licenseAPIResponse->getLicenseKey());
 		}
 
-		/** @noinspection PhpParamsInspection */
 		return $this->redirectToRoute('contao_backend');
 	}
 
@@ -75,8 +75,39 @@ class LicenseController extends AbstractController
 	 *
 	 * @return LicenseAPIResponse
 	 */
-	public static function callAPI($domain) {
-		$licenseAPIResponse = new LicenseAPIResponse();
+	public static function callAPI($domain,$isFrontendCall) {
+
+	    $licenseAPIResponse = new LicenseAPIResponse();
+
+	    if ($isFrontendCall) {
+            $licenseInPage = true;
+            if (!empty(Config::get('ncoi_license_key')))
+                $licenseInPage = false;
+
+
+            $today = (new DateTime())->format('Y-m-d');
+            if ($licenseInPage) {
+                $pages = PageModel::findByDNs($domain);
+                if (empty($pages))
+                    return $licenseAPIResponse;
+
+                $lastLicenseCheck = $pages->__get('ncoi_last_license_check');
+                if (empty($lastLicenseCheck)) {
+                    $pages->__set('ncoi_last_license_check',$today);
+                    $pages->save();
+                    return $licenseAPIResponse;
+                }
+            } else {
+                $lastLicenseCheck = Config::get('ncoi_last_license_check');
+                if (empty($lastLicenseCheck)) {
+                    Config::persist('ncoi_last_license_check',$today);
+                    return $licenseAPIResponse;
+                }
+            }
+
+            if ($lastLicenseCheck == $today)
+                return $licenseAPIResponse;
+        }
 
 		$curl = curl_init('https://buero.netzhirsch.de/license/verify/' . $domain);
 		//response as string

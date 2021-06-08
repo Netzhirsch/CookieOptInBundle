@@ -76,6 +76,9 @@ $arrFields = [
                 'tl_class'  =>  'w50'
             ],
             'sql' => "varchar(255) NULL",
+        ],
+        'ncoi_last_license_check' => [
+            'sql' => "varchar(64) NULL "
         ]
 ];
 
@@ -100,7 +103,7 @@ class tl_page_ncoi extends tl_page {
 				if (empty($domain))
 					$domain = $_SERVER['HTTP_HOST'];
 
-				$licenseAPIResponse = LicenseController::callAPI($domain);
+				$licenseAPIResponse = LicenseController::callAPI($domain,false);
 
 				if ($licenseAPIResponse->getSuccess()) {
 					$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();

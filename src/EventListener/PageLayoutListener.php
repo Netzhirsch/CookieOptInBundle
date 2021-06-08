@@ -74,7 +74,6 @@ class PageLayoutListener {
             $modId = $moduleIds;
 
         /********* update groups for a version < 1.3.0 ************************************************************/
-        /** @noinspection MissingService */
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
         /** @var Statement $stmt */
@@ -110,7 +109,6 @@ class PageLayoutListener {
         $doNotTrack = false;
         if (empty($respectDoNotTrack)) {
             /** @var Connection $conn */
-            /** @noinspection MissingService */
             $conn = System::getContainer()->get('database_connection');
             $barRepository = new BarRepository($conn);
             $respectDoNotTrack = $barRepository->findByPid($moduleId);
@@ -246,7 +244,6 @@ class PageLayoutListener {
         ];
         $id = $page->__get('id');
         /** @var Connection $conn */
-        /** @noinspection MissingService */
         $conn = System::getContainer()->get('database_connection');
         $sql = "SELECT html FROM tl_content as tc 
         LEFT JOIN tl_article ta on tc.pid = ta.id
@@ -343,7 +340,6 @@ class PageLayoutListener {
         $tlCookieIds = [];
         $allModuleIds = [];
         /** @var Connection $conn */
-        /** @noinspection MissingService */
         $conn = System::getContainer()->get('database_connection');
         $barRepository = new BarRepository($conn);
 
@@ -469,7 +465,7 @@ class PageLayoutListener {
                 $_SERVER['HTTP_HOST']
             ) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
 
-            $licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST']);
+            $licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST'],true);
             if ($licenseAPIResponse->getSuccess()) {
                 $licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
                 $licenseKey = $licenseAPIResponse->getLicenseKey();
