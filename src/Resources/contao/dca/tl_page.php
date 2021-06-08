@@ -5,6 +5,7 @@
 //Contao 4.9 need rootfallback and root
 use Contao\Config;
 use Contao\PageModel;
+use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener;
 
@@ -123,9 +124,11 @@ class tl_page_ncoi extends tl_page {
 	 */
 	public function showLicenseWarning() {
 		if (Contao\Input::get('act') != '')
-		{
 			return;
-		}
+
+        if (!Helper::isAdmin())
+            return;
+
 		$rootPoints = PageModel::findByType('root');
 		$message = '';
 		$domainNoDuplicate = [];

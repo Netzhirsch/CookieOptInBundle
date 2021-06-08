@@ -5,6 +5,7 @@ namespace Netzhirsch\CookieOptInBundle\Classes;
 
 
 use Contao\StringUtil;
+use Contao\System;
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
@@ -62,4 +63,12 @@ class Helper
 		    Logger::logExceptionInContaoSystemLog($e->getMessage());
 		}
 	}
+
+	public static function isAdmin() {
+        $tokenStorage = System::getContainer()->get('security.token_storage');
+        $token = $tokenStorage->getToken();
+        $user = $token->getUser();
+        $roles = $user->getRoles();
+        return in_array('ROLE_ADMIN', $roles);
+    }
 }

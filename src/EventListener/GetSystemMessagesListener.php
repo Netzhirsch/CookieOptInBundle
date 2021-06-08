@@ -6,6 +6,7 @@ namespace Netzhirsch\CookieOptInBundle\EventListener;
 use Contao\Config;
 use Contao\PageModel;
 use Exception;
+use Netzhirsch\CookieOptInBundle\Classes\Helper;
 
 class GetSystemMessagesListener
 {
@@ -14,6 +15,10 @@ class GetSystemMessagesListener
 	 * @throws Exception
 	 */
 	public function onGetSystemMessages() {
+
+        if (!Helper::isAdmin())
+            return '';
+
 		$rootPoints = PageModel::findByType('root');
 		$licenseExpiryDates = [];
 		$licenseKeys = [];
