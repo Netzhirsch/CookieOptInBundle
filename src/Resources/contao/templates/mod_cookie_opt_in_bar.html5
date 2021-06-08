@@ -20,20 +20,6 @@
 
 <?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
 
-<noscript>
-    <style>
-        .ncoi---behind.ncoi---no-transition.ncoi---hidden.ncoi---on-no-script {
-            display: flex !important;
-            visibility: unset !important;
-            opacity: 1 !important;
-        }
-        .ncoi---behind.ncoi---no-transition.ncoi---hidden.ncoi---on-no-script-hidden {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-        }
-    </style>
-</noscript>
 <div class="ncoi---behind <?php echo $class ?> <?= $animation?> ncoi---<?= $this->arrData['position']?>">
 	<div
 			<?=
@@ -55,12 +41,8 @@
             <?php $class .= ' ncoi---inconspicuous' ?>
         <?php endif ?>
         <form id="cookieBar" class="<?=$class?>" name="cookieBar" action="/cookie/allowed" method="post">
-            <input id="infos--show" name="infos--show" type="checkbox" class="ncoi---no-script--hidden">
-            <?php $class = 'ncoi---hint ncoi---question'?>
-            <?php if($this->arrData['inconspicuous'] == 1) : ?>
-                <?php $class .= ' ncoi---inconspicuous' ?>
-            <?php endif ?>
-                <div class="<?=$class?>">
+            <label for="infos--show" class="ncoi---no-script--hidden"></label><input id="infos--show" name="infos--show" type="checkbox" class="ncoi---no-script--hidden">
+            <div class="<?=$class?>">
                     <?php echo $this->arrData['questionHint'] ?>
                 </div>
                 <div class="ncoi---hint ncoi---hint-info ncoi---hidden">
