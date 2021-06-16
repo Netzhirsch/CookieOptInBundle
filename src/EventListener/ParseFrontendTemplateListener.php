@@ -40,6 +40,7 @@ class ParseFrontendTemplateListener
             if (strpos($buffer, '<iframe') !== false) {
                 if (
                     strpos($template, 'ce_html') !== false
+                    || strpos($template, 'ce_text') !== false
                     || strpos($template, 'ce_youtube') !== false
                     || strpos($template, 'ce_vimeo') !== false
                     || strpos($template, 'ce_metamodel_list') !== false
