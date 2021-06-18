@@ -201,16 +201,25 @@ class VideoPreviewBlocker
     private function getIframeSize($html): array
     {
         $position = self::getPosition($html,'iframe.width = ');
-        $width = substr($html,$position);
-        $width = substr($width,0,strpos($width,';'));
-        $width = str_replace('\'','',$width);
-        $size['width'] = $width;
+        if (empty($position)) {
+            $size['width'] = 0;
+        }
+        else {
+            $width = substr($html,$position);
+            $width = substr($width,0,strpos($width,';'));
+            $width = str_replace('\'','',$width);
+            $size['width'] = $width;
+        }
 
         $position = self::getPosition($html,'iframe.height = ');
-        $height = substr($html,$position);
-        $height = substr($height,0,strpos($height,';'));
-        $height = str_replace('\'','',$height);
-        $size['height'] = $height;
+        if (empty($position)) {
+            $size['height'] = 0;
+        } else {
+            $height = substr($html,$position);
+            $height = substr($height,0,strpos($height,';'));
+            $height = str_replace('\'','',$height);
+            $size['height'] = $height;
+        }
 
         return $size;
     }

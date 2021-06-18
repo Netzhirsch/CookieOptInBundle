@@ -336,16 +336,16 @@ class Blocker
 
         $style = '';
         if (!$isCustomGmap) {
-            $width = $size['width'];
             $height = $size['height'];
-            if (!self::hasUnit($width)) {
+            if (!empty($height) && !self::hasUnit($height)) {
+                $height .= 'px';
+                $style .= 'style="height:'.$height.';';
+            }
+            $width = $size['width'];
+            if (!empty($size['width']) && !self::hasUnit($width)) {
                 $width .= 'px';
             }
-            if (!self::hasUnit($height)) {
-                $height .= 'px';
-            }
-
-            $style = 'style="height:'.$height.'; width:'.$width.'"';
+            $style .= ' width:'.$width.';"';
         }
         //Umschliedender Container damit Kinder zentiert werden könne
         $htmlContainer = '<div class="'.$class.'" '.$style.' >';
