@@ -161,7 +161,9 @@ class VideoPreviewBlocker
     }
 
     private function replacePreviewImageWithIframe(string $html,string $imageSrc, array $size){
-
+        if (strpos($html, '<img') === false) {
+            return $html;
+        }
         $src = self::getFullURL($html);
 
         $iframe = '<iframe src="'.$src.'" allowfullscreen="" width="'.$size['width'].'" height="'.$size['height'].'"></iframe>';
@@ -170,9 +172,12 @@ class VideoPreviewBlocker
     }
 
     private function getImageSrc(string $html){
-        $imageSrc = substr($html,strpos($html,'src="'));
-        $imageSrc = str_replace('src="','',$imageSrc);
-        $imageSrc = substr($imageSrc,0,strpos($imageSrc,'"'));
+        $imageSrc = '';
+        if (strpos($html, '<img') !== false) {
+            $imageSrc = substr($html,strpos($html,'src="'));
+            $imageSrc = str_replace('src="','',$imageSrc);
+            $imageSrc = substr($imageSrc,0,strpos($imageSrc,'"'));
+        }
         return $imageSrc;
     }
 

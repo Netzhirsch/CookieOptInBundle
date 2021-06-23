@@ -4,6 +4,7 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\InsertTags;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -366,6 +367,7 @@ class Blocker
 
         //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
         $iframe = '';
+        $html = InsertTags::replaceInsertTags($html);
         if (!$isCustomGmap) {
             $iframe = '<script type="text/template">' . base64_encode($html) . '</script>';
         }

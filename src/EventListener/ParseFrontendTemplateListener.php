@@ -37,7 +37,7 @@ class ParseFrontendTemplateListener
             return $buffer;
 
         if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
-            if (strpos($buffer, '<iframe') !== false) {
+            if (strpos($buffer, '<iframe') !== false && strpos($buffer, '<figure class="video_container">') == false) {
                 if (
                     strpos($template, 'ce_html') !== false
                     || strpos($template, 'ce_text') !== false
