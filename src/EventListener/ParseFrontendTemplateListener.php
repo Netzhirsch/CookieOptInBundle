@@ -37,7 +37,10 @@ class ParseFrontendTemplateListener
             return $buffer;
 
         if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
-            if (strpos($buffer, '<iframe') !== false && strpos($buffer, '<figure class="video_container">') == false) {
+            if (
+                strpos($buffer, '<iframe') !== false
+                && strpos($buffer, '<figure class="video_container">') == false
+            ) {
                 if (
                     strpos($template, 'ce_html') !== false
                     || strpos($template, 'ce_text') !== false
@@ -48,7 +51,10 @@ class ParseFrontendTemplateListener
                     $iframeBlocker = new IFrameBlocker();
                     return $iframeBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
                 }
-            } elseif(strpos($buffer, '<figure class="video_container">') !== false) {
+            } elseif(
+                strpos($buffer, '<iframe') !== false
+                && strpos($buffer, '<figure class="video_container">') !== false
+            ) {
                 $videoPreviewBlocker = new VideoPreviewBlocker();
                 return $videoPreviewBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
             }

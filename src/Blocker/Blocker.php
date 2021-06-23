@@ -369,7 +369,7 @@ class Blocker
         $iframe = '';
         $html = InsertTags::replaceInsertTags($html);
         if (!$isCustomGmap) {
-            $iframe = '<script type="text/template">' . base64_encode($html) . '</script>';
+            $iframe = '<script type="text/template">' . ($html) . '</script>';
         }
         return $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
     }

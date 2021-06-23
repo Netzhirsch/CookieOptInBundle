@@ -7,7 +7,7 @@ class NcoiExternalMedia {
     addOnClickEvent(storageKey) {
         let $ = this.$;
         let that = this;
-        $(document).on('click','.ncoi---release',function(e){
+        $(document).on('click', '.ncoi---release', function (e) {
             e.preventDefault();
             //Um richtige Chechbox zu finden
             //und um Blockcontainer vielleicht auszublenden und iFrame anzuhängen
@@ -17,7 +17,7 @@ class NcoiExternalMedia {
             if (input.prop('checked')) {
                 //In der Info Tabelle entsprechen checken damit über track() gespeichert werden kann.
                 blockClass.prop('checked', true).trigger('change');
-                let inputClass = input.data('block-class')+"";
+                let inputClass = input.data('block-class') + "";
                 let blockClassIds = $('[data-block-class="ncoi---' + inputClass + '"]');
                 blockClassIds.prop('checked', true).trigger('change');
                 let ncoiTrack = new NcoiTrack($);
@@ -39,18 +39,18 @@ class NcoiExternalMedia {
         });
     }
 
-    onChangeSliding(){
+    onChangeSliding() {
         let $ = this.$;
-        $(document).on('click','.ncoi---sliding.ncoi---blocked', function () {
+        $(document).on('click', '.ncoi---sliding.ncoi---blocked', function () {
             let checked = $(this).prop('checked');
-            let ids = $(this).data('cookie-ids')+'';
+            let ids = $(this).data('cookie-ids') + '';
             if (ids.indexOf(',') > 0) {
                 ids = ids.split(',');
-                ids.forEach(function (id){
-                    $('#ncoi---table-cookie-'+id).prop('checked',checked);
+                ids.forEach(function (id) {
+                    $('#ncoi---table-cookie-' + id).prop('checked', checked);
                 });
             } else {
-                $('#ncoi---table-cookie-'+ids).prop('checked',checked);
+                $('#ncoi---table-cookie-' + ids).prop('checked', checked);
             }
         });
     }
@@ -61,10 +61,10 @@ class NcoiExternalMedia {
         let ncoiApp = new NcoiApp($);
         let localStorage = ncoiApp.getLocalStorage(storageKey);
         let cookieIds = localStorage.cookieIds;
-        $('.ncoi---blocked').each(function (key,value) {
+        $('.ncoi---blocked').each(function (key, value) {
             let iframe = $(this);
             cookieIds.forEach(function (cookieId) {
-                if ($(value).hasClass('ncoi---cookie-id-'+cookieId)) {
+                if ($(value).hasClass('ncoi---cookie-id-' + cookieId)) {
                     if (iframe.length > 0) {
                         if (that.isCustomGmap(iframe)) {
                             that.showCustomGmap(iframe)
@@ -95,19 +95,17 @@ class NcoiExternalMedia {
         let $ = this.$;
         if (!parent.hasClass('ncoi---hidden')) {
             let html = '';
-            try {
-                if (parent.length > 1) {
-                    for (let i = 0; i < parent.length; i++) {
-                        $('.'+parent[i].classList[3]).each(function (){
-                            html = atob($(this).find('script').text().trim());
-                        });
-                    }
-                } else {
-                    html = atob(parent.find('script').text().trim());
+
+            if (parent.length > 1) {
+                for (let i = 0; i < parent.length; i++) {
+                    $('.' + parent[i].classList[3]).each(function () {
+                        html = $(this).find('script').text().trim();
+                    });
                 }
-            } catch (e) {
-                console.error('Das IFrame html enthält invalide Zeichen.')
+            } else {
+                html = parent.find('script').text().trim();
             }
+
             parent.addClass('ncoi---hidden');
 
             if (html.indexOf('data-only-script') >= 0)
