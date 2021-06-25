@@ -68,7 +68,12 @@ class Helper
         $tokenStorage = System::getContainer()->get('security.token_storage');
         $token = $tokenStorage->getToken();
         $user = $token->getUser();
-        $roles = $user->getRoles();
-        return in_array('ROLE_ADMIN', $roles);
+        /** Contao 4.9 diff Contao 4.4 */
+        if (method_exists($user, 'getRoles')) {
+            $roles = $user->getRoles();
+            return in_array('ROLE_ADMIN', $roles);
+        } else {
+            return $user->isAdmin;
+        }
     }
 }
