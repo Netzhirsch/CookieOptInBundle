@@ -54,6 +54,8 @@ class ParseFrontendTemplateListener
             } elseif(
                 strpos($buffer, '<iframe') !== false
                 && strpos($buffer, '<figure class="video_container">') !== false
+                && strpos($template, 'mod') === false
+                && strpos($template, 'fe_page') === false
             ) {
                 $videoPreviewBlocker = new VideoPreviewBlocker();
                 return $videoPreviewBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
