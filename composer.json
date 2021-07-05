@@ -32,7 +32,8 @@
 		"ext-curl": "*",
 		"ext-gettext": "*",
 		"doctrine/data-fixtures": "*",
-		"doctrine/dbal": "*"
+		"doctrine/dbal": "*",
+		"symfony/framework-bundle":"^4.4"
 	},
 	"conflict": {
 		"contao/core": "*",
