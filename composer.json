@@ -32,12 +32,12 @@
 		"ext-curl": "*",
 		"ext-gettext": "*",
 		"doctrine/data-fixtures": "*",
-		"doctrine/dbal": "*",
-		"symfony/framework-bundle":"^4.4"
+		"doctrine/dbal": "*"
 	},
 	"conflict": {
 		"contao/core": "*",
-		"heimrichhannot/contao-utils-bundle": "<2.188.10"
+		"heimrichhannot/contao-utils-bundle": "<2.188.10",
+		"symfony/framework-bundle":"^4.4"
 	},
 	"autoload": {
 		"classmap": [
