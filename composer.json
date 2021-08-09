@@ -25,7 +25,6 @@
 	"require": {
 		"php": ">=7.0",
 		"contao/core-bundle": "^4.4",
-		"symfony/web-profiler-bundle": "^4.4",
 		"heimrichhannot/contao-fieldpalette-bundle": "~0.5.1",
 		"symfony/serializer": "*",
 		"ext-dom": "*",
