@@ -375,7 +375,7 @@ class PageLayoutListener {
             }
             $layoutOrPage->__set('modules', serialize($layoutModules));
         }
-        if (empty($moduleIds)) {
+        if (empty($moduleIds) || empty($allModuleIds)) {
 
             $pageId = $layoutOrPage->__get('id');
             $bars = $barRepository->findByLayoutOrPage($pageId);
@@ -383,6 +383,7 @@ class PageLayoutListener {
                 foreach ($bars as $bar) {
                     $tlCookieIds[] = $bar['id'];
                     $moduleIds[] = $bar['pid'];
+                    $allModuleIds[] = $bar['pid'];
                 }
             }
         }
