@@ -335,7 +335,7 @@ class Blocker
 
 
 
-        $style = '';
+        $style = 'style="';
         if (!$isCustomGmap) {
             $height = $size['height'];
             if (!empty($height) && !self::hasUnit($height)) {
@@ -346,8 +346,9 @@ class Blocker
             if (!empty($size['width']) && !self::hasUnit($width)) {
                 $width .= 'px';
             }
-            $style .= ' width:'.$width.';"';
+            $style .= ' width:'.$width.';';
         }
+        $style .= '"';
         //Umschliedender Container damit Kinder zentiert werden könne
         $htmlContainer = '<div class="'.$class.'" '.$style.' >';
         $htmlContainerEnd = '</div>';
