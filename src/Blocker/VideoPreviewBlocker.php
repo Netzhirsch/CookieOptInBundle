@@ -4,10 +4,12 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\LayoutModel;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -64,6 +66,18 @@ class VideoPreviewBlocker
             $externalMediaCookiesInDB,
             $moduleData
         );
+
+        if (empty($dataFromExternalMediaAndBar->getModId())) {
+            global $objPage;
+            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout), [], []);
+            $moduleData[] =['mod' => $return['moduleIds'][0]];
+            $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
+                $dataFromExternalMediaAndBar,
+                $conn,
+                $externalMediaCookiesInDB,
+                $moduleData
+            );
+        }
 
         $isIFrameTypInDB = false;
         $blockedIFrames = $dataFromExternalMediaAndBar->getBlockedIFrames();

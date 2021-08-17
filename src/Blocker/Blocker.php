@@ -346,7 +346,8 @@ class Blocker
             if (!empty($size['width']) && !self::hasUnit($width)) {
                 $width .= 'px';
             }
-            $style .= ' width:'.$width.';';
+            if (!empty($size['width']))
+                $style .= ' width:'.$width.';';
         }
         $style .= '"';
         //Umschliedender Container damit Kinder zentiert werden könne
