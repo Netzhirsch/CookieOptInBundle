@@ -385,6 +385,10 @@ class PageLayoutListener {
                     $moduleIds[] = $bar['pid'];
                     $allModuleIds[] = $bar['pid'];
                 }
+            } else {
+                $tlCookieIds[] = $moduleIds[0];
+                $moduleIds[] = $moduleIds[0];
+                $allModuleIds[] = $moduleIds[0];
             }
         }
 
