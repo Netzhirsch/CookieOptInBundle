@@ -407,15 +407,10 @@ class PageLayoutListener {
                 $dir .= '.html5';
                 $content = file_get_contents($dir);
 
-
-                $modId = self::getModuleIdFromTemplate($content);
-                $barRepo = new BarRepository($conn);
-                $return = $barRepo->findByIds([$modId]);
-                if (!empty($return)) {
-                    $tlCookieIds[] = $modId;
-                    $moduleIds[] = $modId;
-                    $allModuleIds[] = $modId;
-                }
+                $modId = self::getModuleIdFromTemplate($content,$conn);
+                $tlCookieIds[] = $modId;
+                $moduleIds[] = $modId;
+                $allModuleIds[] = $modId;
             }
         }
 
@@ -519,30 +514,38 @@ class PageLayoutListener {
         return false;
     }
 
-    public static function getModuleIdFromTemplate($fileContent)
+    public static function getModuleIdFromTemplate($fileContent,$conn)
     {
         $modId = null;
-        $stringPositionEnd = 0;
+        $stringPositionEndLang = 0;
+        $return = null;
+        while(empty($return)) {
+            $stringPositionStartLang = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEndLang);
+            $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStartLang+9);
+            $insertModule = substr(
+                $fileContent,
+                $stringPositionStartLang,
+                $stringPositionEndLang-$stringPositionStartLang);
 
-        $stringPositionStart = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEnd);
-        $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStart+9);
-        $insertModule = substr(
-            $fileContent,
-            $stringPositionStart,
-            $stringPositionEndLang-$stringPositionStart);
 
+            $stringPositionStart = strpos($insertModule,'{{insert_module::');
+            if ($stringPositionStart !== false) {
+                $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
+                $moduleTags
+                    = substr(
+                    $insertModule,
+                    $stringPositionStart,
+                    $stringPositionEnd-$stringPositionStart)
+                ;
+                $modId = str_replace('{{insert_module::','',$moduleTags);
+                $stringPositionEndLang += 9;
+                $barRepo = new BarRepository($conn);
+                $return = $barRepo->findByIds([$modId]);
+            }
 
-        $stringPositionStart = strpos($insertModule,'{{insert_module::',$stringPositionEnd);
-        if ($stringPositionStart !== false) {
-            $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
-            $moduleTags
-                = substr(
-                $insertModule,
-                $stringPositionStart,
-                $stringPositionEnd-$stringPositionStart)
-            ;
-            $modId = str_replace('{{insert_module::','',$moduleTags);
         }
+
         return $modId;
+
     }
 }
