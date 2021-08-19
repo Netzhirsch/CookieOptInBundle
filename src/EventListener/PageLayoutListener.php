@@ -14,6 +14,7 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Statement;
 use Exception;
+use Netzhirsch\CookieOptInBundle\Blocker\Blocker;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
@@ -386,9 +387,18 @@ class PageLayoutListener {
                     $allModuleIds[] = $bar['pid'];
                 }
             } else {
-                $tlCookieIds[] = $moduleIds[0];
-                $moduleIds[] = $moduleIds[0];
-                $allModuleIds[] = $moduleIds[0];
+                $dir = TL_ROOT;
+                $dir .= DIRECTORY_SEPARATOR;
+                global $objPage;
+                $dir .= $objPage->templateGroup;
+                $dir .= DIRECTORY_SEPARATOR;
+                $dir .= $objPage->template;
+                $dir .= '.html5';
+                $content = file_get_contents($dir);
+                $modId = Blocker::getModuleIdFromTemplate($content);
+                $tlCookieIds[] = $modId;
+                $moduleIds[] = $modId;
+                $allModuleIds[] = $modId;
             }
         }
 

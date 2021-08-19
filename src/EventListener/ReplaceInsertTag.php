@@ -26,16 +26,16 @@ class ReplaceInsertTag
             return $insertTag;
 
         if (PageLayoutListener::shouldRemoveModules($objPage)) {
-            $modIdsInBuffer = PageLayoutListener::getModuleIdFromHtmlElement($insertTag);
-            if (!empty($modIdsInBuffer)) {
-                /** @var Connection $conn */
-                /** @noinspection MissingService */
-                $conn = System::getContainer()->get('database_connection');
-                $barRepo = new BarRepository($conn);
+        $modIdsInBuffer = PageLayoutListener::getModuleIdFromHtmlElement($insertTag);
+        if (!empty($modIdsInBuffer)) {
+            /** @var Connection $conn */
+            /** @noinspection MissingService */
+            $conn = System::getContainer()->get('database_connection');
+            $barRepo = new BarRepository($conn);
                 $return = $barRepo->findByIds($modIdsInBuffer);
                 if (!empty($return)) {
                     $cookieBarId = $return['pid'];
-                    return str_replace('{{insert_module::'.$cookieBarId.'}}','',$insertTag);
+                return str_replace('{{insert_module::'.$cookieBarId.'}}','',$insertTag);
                 }
             }
         }

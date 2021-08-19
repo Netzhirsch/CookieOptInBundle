@@ -140,6 +140,18 @@ class Blocker
             self::setModIdByInsertTagInModule($conn,$modIds,$barRepo,$dataFromExternalMediaAndBar);
         }
 
+        if (empty($dataFromExternalMediaAndBar->getModId())) {
+            $dir = TL_ROOT;
+            $dir .= DIRECTORY_SEPARATOR;
+            $dir .= $objPage->templateGroup;
+            $dir .= DIRECTORY_SEPARATOR;
+            $dir .= $objPage->template;
+            $dir .= '.html5';
+            $content = file_get_contents($dir);
+            $modId = self::getModuleIdFromTemplate($content);
+            $dataFromExternalMediaAndBar->setModId($modId);
+        }
+
         foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
             $dataFromExternalMediaAndBar->addCookieId($externalMediaCookieInDB['id']);
         }
@@ -414,5 +426,32 @@ class Blocker
             $cookieIdsAsString = implode(' ncoi---cookie-id-', $cookieIds);
         }
         return $cookieIdsAsString;
+    }
+
+    public static function getModuleIdFromTemplate($fileContent)
+    {
+        $modId = null;
+        $stringPositionEnd = 0;
+
+        $stringPositionStart = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEnd);
+        $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStart+9);
+        $insertModule = substr(
+            $fileContent,
+            $stringPositionStart,
+            $stringPositionEndLang-$stringPositionStart);
+
+
+        $stringPositionStart = strpos($insertModule,'{{insert_module::',$stringPositionEnd);
+        if ($stringPositionStart !== false) {
+            $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
+            $moduleTags
+                = substr(
+                $insertModule,
+                $stringPositionStart,
+                $stringPositionEnd-$stringPositionStart)
+            ;
+            $modId = str_replace('{{insert_module::','',$moduleTags);
+        }
+        return $modId;
     }
 }
