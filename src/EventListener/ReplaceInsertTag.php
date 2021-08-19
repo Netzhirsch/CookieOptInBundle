@@ -32,11 +32,11 @@ class ReplaceInsertTag
             /** @noinspection MissingService */
             $conn = System::getContainer()->get('database_connection');
             $barRepo = new BarRepository($conn);
-                $return = $barRepo->findByIds($modIdsInBuffer);
-                if (!empty($return)) {
-                    $cookieBarId = $return['pid'];
-                return str_replace('{{insert_module::'.$cookieBarId.'}}','',$insertTag);
-                }
+            $return = $barRepo->findByIds($modIdsInBuffer);
+            if (!empty($return)) {
+                $cookieBarId = $return['pid'];
+            return str_replace('{{insert_module::'.$cookieBarId.'}}','',$insertTag);
+            }
             }
         }
 

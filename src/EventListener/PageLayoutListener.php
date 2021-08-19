@@ -396,9 +396,13 @@ class PageLayoutListener {
                 $dir .= '.html5';
                 $content = file_get_contents($dir);
                 $modId = Blocker::getModuleIdFromTemplate($content);
-                $tlCookieIds[] = $modId;
-                $moduleIds[] = $modId;
-                $allModuleIds[] = $modId;
+                $barRepo = new BarRepository($conn);
+                $return = $barRepo->findByIds($modId);
+                if (!empty($return)) {
+                    $tlCookieIds[] = $modId;
+                    $moduleIds[] = $modId;
+                    $allModuleIds[] = $modId;
+                }
             }
         }
 

@@ -149,7 +149,11 @@ class Blocker
             $dir .= '.html5';
             $content = file_get_contents($dir);
             $modId = self::getModuleIdFromTemplate($content);
-            $dataFromExternalMediaAndBar->setModId($modId);
+            $barRepo = new BarRepository($conn);
+            $return = $barRepo->findByIds($modId);
+            if (!empty($return)) {
+                $dataFromExternalMediaAndBar->setModId($modId);
+            }
         }
 
         foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
