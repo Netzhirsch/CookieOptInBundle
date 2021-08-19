@@ -386,7 +386,7 @@ class PageLayoutListener {
                     $moduleIds[] = $bar['pid'];
                     $allModuleIds[] = $bar['pid'];
                 }
-            } else {
+            } elseif(get_class($layoutOrPage) == PageModel::class) {
 
                 global $objPage;
                 // Get the page layout
@@ -408,9 +408,11 @@ class PageLayoutListener {
                 $content = file_get_contents($dir);
 
                 $modId = self::getModuleIdFromTemplate($content,$conn);
-                $tlCookieIds[] = $modId;
-                $moduleIds[] = $modId;
-                $allModuleIds[] = $modId;
+                if (!empty($modId)) {
+                    $tlCookieIds[] = $modId;
+                    $moduleIds[] = $modId;
+                    $allModuleIds[] = $modId;
+                }
             }
         }
 
@@ -519,7 +521,7 @@ class PageLayoutListener {
         $modId = null;
         $stringPositionEndLang = 0;
         $return = null;
-        while(empty($return)) {
+        while(empty($return) || strlen($fileContent) >= $stringPositionEndLang) {
             $stringPositionStartLang = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEndLang);
             $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStartLang+9);
             $insertModule = substr(
@@ -529,6 +531,8 @@ class PageLayoutListener {
 
 
             $stringPositionStart = strpos($insertModule,'{{insert_module::');
+            if ($stringPositionStart == false && $stringPositionStartLang == false)
+                break;
             if ($stringPositionStart !== false) {
                 $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
                 $moduleTags
@@ -538,7 +542,6 @@ class PageLayoutListener {
                     $stringPositionEnd-$stringPositionStart)
                 ;
                 $modId = str_replace('{{insert_module::','',$moduleTags);
-                $stringPositionEndLang += 9;
                 $barRepo = new BarRepository($conn);
                 $return = $barRepo->findByIds([$modId]);
             }
