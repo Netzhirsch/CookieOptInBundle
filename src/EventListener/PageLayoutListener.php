@@ -7,6 +7,7 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\ThemeModel;
 use DateInterval;
 use DateTime;
 use Doctrine\DBAL\Connection;
@@ -14,7 +15,6 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Statement;
 use Exception;
-use Netzhirsch\CookieOptInBundle\Blocker\Blocker;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
@@ -387,17 +387,30 @@ class PageLayoutListener {
                     $allModuleIds[] = $bar['pid'];
                 }
             } else {
+
+                global $objPage;
+                // Get the page layout
+                $objLayout = LayoutModel::findByPk($objPage->layout);
+
+                /** @var ThemeModel $objTheme */
+                $objTheme = $objLayout->getRelated('pid');
+
+                // Set the layout template and template group
+                $template = $objLayout->template ?: 'fe_page';
+                $templateGroup = $objTheme->templates ?? null;
+
                 $dir = TL_ROOT;
                 $dir .= DIRECTORY_SEPARATOR;
-                global $objPage;
-                $dir .= $objPage->templateGroup;
+                $dir .= $templateGroup;
                 $dir .= DIRECTORY_SEPARATOR;
-                $dir .= $objPage->template;
+                $dir .= $template;
                 $dir .= '.html5';
                 $content = file_get_contents($dir);
-                $modId = Blocker::getModuleIdFromTemplate($content);
+
+
+                $modId = self::getModuleIdFromTemplate($content);
                 $barRepo = new BarRepository($conn);
-                $return = $barRepo->findByIds($modId);
+                $return = $barRepo->findByIds([$modId]);
                 if (!empty($return)) {
                     $tlCookieIds[] = $modId;
                     $moduleIds[] = $modId;
@@ -504,5 +517,32 @@ class PageLayoutListener {
         }
 
         return false;
+    }
+
+    public static function getModuleIdFromTemplate($fileContent)
+    {
+        $modId = null;
+        $stringPositionEnd = 0;
+
+        $stringPositionStart = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEnd);
+        $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStart+9);
+        $insertModule = substr(
+            $fileContent,
+            $stringPositionStart,
+            $stringPositionEndLang-$stringPositionStart);
+
+
+        $stringPositionStart = strpos($insertModule,'{{insert_module::',$stringPositionEnd);
+        if ($stringPositionStart !== false) {
+            $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
+            $moduleTags
+                = substr(
+                $insertModule,
+                $stringPositionStart,
+                $stringPositionEnd-$stringPositionStart)
+            ;
+            $modId = str_replace('{{insert_module::','',$moduleTags);
+        }
+        return $modId;
     }
 }
