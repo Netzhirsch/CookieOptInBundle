@@ -1,6 +1,7 @@
 services:
   _defaults:
     autoconfigure: true
+    public: true
 
   _instanceof:
     Symfony\Bundle\FrameworkBundle\Controller\AbstractController:
