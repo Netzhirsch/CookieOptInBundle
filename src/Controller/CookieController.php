@@ -2,12 +2,14 @@
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
 
@@ -16,6 +18,17 @@ use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
  */
 class CookieController extends AbstractController
 {
+
+    private Connection $connection;
+    private RequestStack $requestStack;
+    private ContaoFramework $contaoFramework;
+
+    public function __construct(Connection $connection,RequestStack $requestStack,ContaoFramework $contaoFramework)
+    {
+        $this->connection = $connection;
+        $this->requestStack = $requestStack;
+        $this->contaoFramework = $contaoFramework;
+    }
 
     /**
      * @Route("/cookie/allowed", name="cookie_allowed")
@@ -144,7 +157,8 @@ class CookieController extends AbstractController
 		$sql .= ' WHERE pid = ? AND pfield = ?';
 		/** @noinspection PhpParamsInspection */
 		/* @var Connection $conn */
-		$conn = $this->get('database_connection');
+//		$conn = $this->get('database_connection');
+		$conn = $this->connection;
 		$stmt = $conn->prepare($sql);
 		
 		$stmt->bindValue(1, $modId);
@@ -192,7 +206,8 @@ class CookieController extends AbstractController
 	private function changeConsent($cookieData,$data,$id = null)
 	{
 		/** @noinspection PhpParamsInspection */
-		$requestStack = $this->get('request_stack');
+//		$requestStack = $this->get('request_stack');
+		$requestStack = $this->requestStack;
 
         $ipFormatSave = $data['ipFormatSave'];
 
@@ -243,7 +258,8 @@ class CookieController extends AbstractController
         $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url,pid) VALUES(?,?,?,?,?,?,?)";
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
-        $conn = $this->get('database_connection');
+//        $conn = $this->get('database_connection');
+        $conn = $this->connection;
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(1, $userInfo['ip']);
         $stmt->bindValue(2, implode(', ', $cookieNames));
@@ -289,7 +305,8 @@ class CookieController extends AbstractController
     private function redirectToPageBefore($currentPage){
         /* @var ContaoFramework $framework */
         /** @noinspection PhpParamsInspection */
-        $framework = $this->get('contao.framework');
+//        $framework = $this->get('contao.framework');
+        $framework = $this->contaoFramework;
         $framework->initialize();
         if (empty($currentPage))
             $currentPage = '/';
@@ -326,7 +343,8 @@ class CookieController extends AbstractController
         $modId = $request->get('data')['modId'];
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
-        $conn = $this->get('database_connection');
+//        $conn = $this->get('database_connection');
+        $conn = $this->connection;
         $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime,cookieToolsName,cookieToolsTechnicalName FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(1, $modId);
@@ -420,9 +438,11 @@ class CookieController extends AbstractController
      * @throws DBALException
      */
     private function getTlCookieData($modId) {
+
         /* @var Connection $conn */
         /** @noinspection PhpParamsInspection */
-        $conn = $this->get('database_connection');
+//        $conn = $this->get('database_connection');
+        $conn = $this->connection;
 
         $sql = "SELECT ipFormatSave,cookieVersion,expireTime FROM tl_ncoi_cookie WHERE pid = ?";
         $stmt = $conn->prepare($sql);

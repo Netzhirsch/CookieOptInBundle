@@ -1,0 +1,28 @@
+services:
+  _defaults:
+    autoconfigure: true
+
+  _instanceof:
+    Symfony\Bundle\FrameworkBundle\Controller\AbstractController:
+      calls:
+        - [ setContainer, [ '@Psr\Container\ContainerInterface' ] ]
+
+  Netzhirsch\CookieOptInBundle\Controller\ConsentController:
+    arguments:
+      - '@Doctrine\DBAL\Connection'
+
+  Netzhirsch\CookieOptInBundle\Controller\CookieController:
+    arguments:
+      - '@Doctrine\DBAL\Connection'
+      - '@request_stack'
+      - '@Contao\CoreBundle\Framework\ContaoFramework'
+
+  Netzhirsch\CookieOptInBundle\Controller\LicenseController:
+
+  Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener:
+
+  Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener:
+
+  Netzhirsch\CookieOptInBundle\EventListener\ParseFrontendTemplateListener:
+
+  Netzhirsch\CookieOptInBundle\EventListener\ReplaceInsertTag:

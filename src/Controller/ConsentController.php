@@ -14,7 +14,16 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 
 class ConsentController extends AbstractController
 {
-	/**
+
+    private Connection $connection;
+
+    public function __construct(Connection $connection)
+    {
+
+        $this->connection = $connection;
+    }
+
+    /**
 	 * @Route("/consent/download", name="consent_download",  defaults={"_scope" = "backend"})
 	 * @throws DBALException
 	 * @throws Exception
@@ -25,7 +34,8 @@ class ConsentController extends AbstractController
         if (empty($hasBackendUser))
             return $this->redirectToRoute('contao_backend');
 		/* @var Connection $conn */
-        $conn = $this->get('database_connection');
+//        $conn = $this->get('database_connection');
+        $conn = $this->connection;
         $sql = "SELECT * FROM tl_consentDirectory";
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();

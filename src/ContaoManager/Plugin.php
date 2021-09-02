@@ -5,9 +5,12 @@ namespace Netzhirsch\CookieOptInBundle\ContaoManager;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Contao\ManagerPlugin\Config\ConfigPluginInterface;
 use Contao\ManagerPlugin\Routing\RoutingPluginInterface;
 use Exception;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -19,7 +22,7 @@ use Contao\CoreBundle\ContaoCoreBundle;
  * Plugin for the Contao Manager.
  *
  */
-class Plugin implements BundlePluginInterface, RoutingPluginInterface
+class Plugin implements BundlePluginInterface, RoutingPluginInterface, ConfigPluginInterface
 {
     /**
      * {@inheritdoc}
@@ -71,5 +74,13 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface
         return $extensionConfigs;
     }
 
+    public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig): void
+    {
+        $loader->load(
+            static function (ContainerBuilder $container) use ($loader): void {
+                $loader->load('@NetzhirschCookieOptInBundle/Resources/config/services.yml');
+            }
+        );
+    }
 }
 
