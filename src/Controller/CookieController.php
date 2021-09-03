@@ -2,7 +2,6 @@
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

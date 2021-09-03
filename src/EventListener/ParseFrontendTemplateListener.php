@@ -146,10 +146,13 @@ class ParseFrontendTemplateListener
             isset($data['moduleIds'])
             && isset($data['tlCookieIds'])
             && isset($data['allModuleIds'])
-            && !in_array($data['moduleIds'][0], $data['allModuleIds'])
         )
         {
-            return false;
+            foreach ($data['moduleIds'] as $moduleId) {
+                if (in_array($moduleId, $data['allModuleIds'])) {
+                    return true;
+                }
+            }
         }
         return true;
     }
