@@ -27,7 +27,7 @@ class CookieController extends AbstractController
 
     public function __construct(
         Connection $connection,
-        RequestStack $requestStack,
+        RequestStack $requestStack
 //        ContaoFramework $contaoFramework
     )
     {
