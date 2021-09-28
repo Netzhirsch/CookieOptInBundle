@@ -311,12 +311,14 @@ class CookieController extends AbstractController
     private function redirectToPageBefore($currentPage){
         /* @var ContaoFramework $framework */
         /** @noinspection PhpParamsInspection */
-        $framework = $this->get('contao.framework');
+//        $framework = $this->get('contao.framework');
 //        $framework = $this->contaoFramework;
-        $framework->initialize();
+//        $framework->initialize();
         if (empty($currentPage))
             $currentPage = '/';
         /** @noinspection PhpParamsInspection */
+//        return $this->redirect($currentPage);
+        $this->initializeContaoFramework();
         return $this->redirect($currentPage);
     }
 
