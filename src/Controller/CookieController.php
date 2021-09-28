@@ -22,14 +22,18 @@ class CookieController extends AbstractController
     private $connection;
     /** @var RequestStack $requestStack */
     private $requestStack;
-    /** @var ContaoFramework $contaoFramework */
-    private $contaoFramework;
+//    /** @var ContaoFramework $contaoFramework */
+//    private $contaoFramework;
 
-    public function __construct(Connection $connection,RequestStack $requestStack,ContaoFramework $contaoFramework)
+    public function __construct(
+        Connection $connection,
+        RequestStack $requestStack,
+//        ContaoFramework $contaoFramework
+    )
     {
         $this->connection = $connection;
         $this->requestStack = $requestStack;
-        $this->contaoFramework = $contaoFramework;
+//        $this->contaoFramework = $contaoFramework;
     }
 
     /**
@@ -307,8 +311,8 @@ class CookieController extends AbstractController
     private function redirectToPageBefore($currentPage){
         /* @var ContaoFramework $framework */
         /** @noinspection PhpParamsInspection */
-//        $framework = $this->get('contao.framework');
-        $framework = $this->contaoFramework;
+        $framework = $this->get('contao.framework');
+//        $framework = $this->contaoFramework;
         $framework->initialize();
         if (empty($currentPage))
             $currentPage = '/';
