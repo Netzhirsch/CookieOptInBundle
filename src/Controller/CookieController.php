@@ -18,9 +18,12 @@ use Terminal42\ServiceAnnotationBundle\Annotation\ServiceTag;
 class CookieController extends AbstractController
 {
 
-    private Connection $connection;
-    private RequestStack $requestStack;
-    private ContaoFramework $contaoFramework;
+    /** @var Connection $connection */
+    private $connection;
+    /** @var RequestStack $requestStack */
+    private $requestStack;
+    /** @var ContaoFramework $contaoFramework */
+    private $contaoFramework;
 
     public function __construct(Connection $connection,RequestStack $requestStack,ContaoFramework $contaoFramework)
     {

@@ -15,7 +15,8 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 class ConsentController extends AbstractController
 {
 
-    private Connection $connection;
+    /** @var Connection $connection */
+    private $connection;
 
     public function __construct(Connection $connection)
     {
