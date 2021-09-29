@@ -16,7 +16,6 @@ services:
     arguments:
       - '@Doctrine\DBAL\Connection'
       - '@request_stack'
-      - '@Contao\CoreBundle\Framework\ContaoFramework'
 
   Netzhirsch\CookieOptInBundle\Controller\LicenseController:
 
