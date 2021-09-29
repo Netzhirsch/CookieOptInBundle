@@ -518,6 +518,8 @@ class PageLayoutListener {
 
     public static function getModuleIdFromTemplate($fileContent,$conn)
     {
+        if (!$fileContent)
+            return;
         $modId = null;
         $stringPositionEndLang = 0;
         $return = null;
