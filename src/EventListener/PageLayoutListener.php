@@ -401,13 +401,17 @@ class PageLayoutListener {
 
                 $dir = TL_ROOT;
                 $dir .= DIRECTORY_SEPARATOR;
-                $dir .= $templateGroup;
-                $dir .= DIRECTORY_SEPARATOR;
+                if (!empty($templateGroup)) {
+                    $dir .= $templateGroup;
+                    $dir .= DIRECTORY_SEPARATOR;
+                }
                 $dir .= $template;
                 $dir .= '.html5';
-                $content = file_get_contents($dir);
-
-                $modId = self::getModuleIdFromTemplate($content,$conn);
+                $modId = null;
+                if (file_exists($dir)) {
+                    $content = file_get_contents($dir);
+                    $modId = self::getModuleIdFromTemplate($content,$conn);
+                }
                 if (!empty($modId)) {
                     $tlCookieIds[] = $modId;
                     $moduleIds[] = $modId;
@@ -519,7 +523,7 @@ class PageLayoutListener {
     public static function getModuleIdFromTemplate($fileContent,$conn)
     {
         if (!$fileContent)
-            return;
+            return '';
         $modId = null;
         $stringPositionEndLang = 0;
         $return = null;

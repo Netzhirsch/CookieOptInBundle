@@ -2,6 +2,9 @@
 
 use Netzhirsch\CookieOptInBundle\Controller\ConsentController;
 
+$deleteConfirm = 'Soll das Element ID %s wirklich gelöscht werden?';
+if (isset($GLOBALS['TL_LANG']['MSC']['deleteConfirm']))
+    $deleteConfirm = $GLOBALS['TL_LANG']['MSC']['deleteConfirm'];
 $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 	// Config
 	'config' => array
@@ -63,7 +66,7 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 			(
 				'href'                => 'act=delete',
 				'icon'                => 'delete.svg',
-				'attributes'          => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"'
+				'attributes'          => 'onclick="if(!confirm(\'' . $deleteConfirm . '\'))return false;Backend.getScrollOffset()"'
 			),
 		)
 	),
