@@ -1227,17 +1227,17 @@ class tl_module_ncoi extends tl_module {
             $valueNew = $data->fetchAssoc();
             $value = $valueNew[$field];
         }
-        if (empty($value)) {
-            $value = $oldValue;
-        }
-        if (empty($value)) {
+
+        if ($value === null) {
             if (isset($GLOBALS['TL_LANG']['tl_module'][$field.'Default'])) {
-                $value = $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
+                return $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
             }
+        } elseif($value == "0") {
+            return false;
         }
         /********* checkboxes ****************************************************************************************/
         if ($value == "1")
-            $value = true;
+            return true;
         return $value;
     }
 
@@ -1325,7 +1325,7 @@ class tl_module_ncoi extends tl_module {
     }
     public function saveInNcoiTableCheckbox($value,DC_Table $dca)
     {
-        $value = $this->saveInNcoiTable($value,$dca);
+        $this->saveInNcoiTable($value,$dca);
         if ($value === null) {
             return '';
         }
