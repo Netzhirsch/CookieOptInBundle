@@ -1323,9 +1323,10 @@ class tl_module_ncoi extends tl_module {
             $activeRecord->__set('excludePages',null);
         }
     }
+
     public function saveInNcoiTableCheckbox($value,DC_Table $dca)
     {
-        $this->saveInNcoiTable($value,$dca);
+        $value = $this->saveInNcoiTable($value,$dca);
         if ($value === null) {
             return '';
         }
