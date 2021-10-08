@@ -36,8 +36,12 @@ class CookieController extends AbstractController
      */
 	public function allowedAction(Request $request)
 	{
-        $data = $request->get('data');
         $jsonResponse = new JsonResponse();
+        $files = $request->files->all();
+        if (!empty($files))
+            return $jsonResponse;
+
+        $data = $request->get('data');
         if (empty($data['modId']))
             return $jsonResponse;
 
@@ -83,7 +87,6 @@ class CookieController extends AbstractController
 
         self::deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
 
-        $cookieData = null;
         $id = null;
         if (isset($data['id']))
             $id = $data['id'];
@@ -106,7 +109,6 @@ class CookieController extends AbstractController
                 ]);
                 $session->save();
             }
-            return $this->redirectToPageBefore($data['currentPage']);
         }
 
         $jsonResponse->setData([
