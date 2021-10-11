@@ -1228,6 +1228,8 @@ class tl_module_ncoi extends tl_module {
         if ($data->count() > 0) {
             $valueNew = $data->fetchAssoc();
             $value = $valueNew[$field];
+        } else {
+            return '';
         }
 
         if ($value === null) {
