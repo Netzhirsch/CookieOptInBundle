@@ -1215,6 +1215,8 @@ class tl_module_ncoi extends tl_module {
 
     public function loadFromNcoiTable($oldValue,DC_Table $dca,$pid = null,$field = null)
     {
+        if (!empty($oldValue))
+            return $oldValue;
         if (empty($field))
             $field = $dca->__get('field');
         if (empty($pid))
