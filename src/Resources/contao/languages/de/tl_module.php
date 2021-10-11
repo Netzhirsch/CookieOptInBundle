@@ -201,7 +201,7 @@ $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'] = 'hell';
 
 $GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Breite','Bitte geben Sie die Breite der Cookie Bar an.'];
 
-$GLOBALS['TL_LANG']['tl_module']['templateBar'] = ['Template' , 'Der Template-Name muss mit mod_cookie_opt_in_bar beginnen.'];
+$GLOBALS['TL_LANG']['tl_module']['templateBar'] = ['Template' , 'Der Template-Name muss mit mod_cookie_opt_in_bar beginnen. Achtung auch das Template mod_cookie_opt_in_table muss überschrieben werden.'];
 
 $GLOBALS['TL_LANG']['tl_module']['animation'] = ['Animation', 'Bei Klick auf die Buttons im Frontend'];
 
