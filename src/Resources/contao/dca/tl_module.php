@@ -629,7 +629,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['expireTime'] = [
     ],
     'foreignKey' => 'tl_ncoi_cookie.expireTime',
     'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
-    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableDebug']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
@@ -1242,34 +1242,6 @@ class tl_module_ncoi extends tl_module {
         /********* checkboxes ****************************************************************************************/
         if ($value == "1")
             return true;
-        return $value;
-    }
-
-    public function loadFromNcoiTableDebug($oldValue,DC_Table $dca,$pid = null,$field = null)
-    {
-        if (empty($field))
-            $field = $dca->__get('field');
-        if (empty($pid))
-            $pid = $dca->__get('id');
-        $conn = $dca->Database;
-        $sql = "SELECT ".$field." FROM tl_ncoi_cookie WHERE pid=?";
-        $stmt = $conn->prepare($sql);
-        $data = $stmt->execute($pid);
-        if ($data->count() > 0) {
-            $valueNew = $data->fetchAssoc();
-            $value = $valueNew[$field];
-        }
-        if (empty($value)) {
-            $value = $oldValue;
-        }
-        if (empty($value)) {
-            if (isset($GLOBALS['TL_LANG']['tl_module'][$field.'Default'])) {
-                $value = $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
-            }
-        }
-        /********* checkboxes ****************************************************************************************/
-        if ($value == "1")
-            $value = true;
         return $value;
     }
 
