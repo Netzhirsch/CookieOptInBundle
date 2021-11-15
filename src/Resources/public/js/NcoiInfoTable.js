@@ -6,9 +6,11 @@ class NcoiInfoTable {
 
     setCookieCheckboxes(cookieIds) {
         let $ = this.$;
-        cookieIds.forEach(function (cookieId) {
-            $('.ncoi---cookie-id-' + cookieId).prop('checked');
-        });
+        if (typeof cookieId !== undefined) {
+            cookieIds.forEach(function (cookieId) {
+                $('.ncoi---cookie-id-' + cookieId).prop('checked');
+            });
+        }
     }
 
     addOnClickShowEvent(){

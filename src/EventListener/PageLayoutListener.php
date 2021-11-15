@@ -239,10 +239,14 @@ class PageLayoutListener {
      */
     public static function getModuleIdFromInsertTag($page,LayoutModel $layout,$allModuleIds = null)
     {
+        if (is_string($page))
+            $page = PageModel::findById($page);
+
         $parameters = [
             'moduleIds' => null,
             'tlCookieIds' => null
         ];
+
         $id = $page->__get('id');
         /** @var Connection $conn */
         $conn = System::getContainer()->get('database_connection');
@@ -336,6 +340,8 @@ class PageLayoutListener {
      * @throws DBALException
      */
     public static function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
+        if (is_string($layoutOrPage))
+            $layoutOrPage = PageModel::findById($layoutOrPage);
 
         $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
         $tlCookieIds = [];

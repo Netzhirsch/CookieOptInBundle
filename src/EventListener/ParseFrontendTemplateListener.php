@@ -2,6 +2,8 @@
 namespace Netzhirsch\CookieOptInBundle\EventListener;
 
 use Contao\LayoutModel;
+use Contao\PageModel;
+use Contao\ThemeModel;
 use Netzhirsch\CookieOptInBundle\Blocker\AnalyticsBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\CustomGmapBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\IFrameBlocker;
@@ -11,6 +13,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use Netzhirsch\CookieOptInBundle\Blocker\VideoPreviewBlocker;
+use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Netzhirsch\CookieOptInBundle\Repository\RevokeRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -127,33 +131,84 @@ class ParseFrontendTemplateListener
     }
 
     private function isBarInLayoutOrPage($objPage){
-        $data = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout), [], []);
 
-        if ($this->isBarIn($data))
+        if ($this->checkModulesEmpty(LayoutModel::findById($objPage->layout)))
             return true;
 
-        $data = PageLayoutListener::checkModules($objPage, [], []);
-
-        if ($this->isBarIn($data))
+        if ($this->checkModulesEmpty($objPage))
             return true;
 
         return false;
 
     }
 
-    private function isBarIn($data){
-        if (
-            isset($data['moduleIds'])
-            && isset($data['tlCookieIds'])
-            && isset($data['allModuleIds'])
-        )
-        {
-            foreach ($data['moduleIds'] as $moduleId) {
-                if (in_array($moduleId, $data['allModuleIds'])) {
-                    return true;
+    public static function checkModulesEmpty($layoutOrPage) {
+        /**TODO luhmann return überarbeiten damit die Funktion öfter genutzt werden kann
+        $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
+        /** @var Connection $conn */
+        $conn = System::getContainer()->get('database_connection');
+        $barRepository = new BarRepository($conn);
+
+        if (!empty($layoutModules)) {
+            $bars = $barRepository->findAll();
+            $revokeRepository = new RevokeRepository($conn);
+
+            foreach ($layoutModules as $key => $layoutModule) {
+                if (!empty($layoutModule['enable'])) {
+                    if (!empty($bars)) {
+                        foreach ($bars as $bar) {
+                            if ($bar['pid'] == $layoutModule['mod']) {
+                                return true;
+                            }
+                        }
+                    }
+                    $revokes = $revokeRepository->findByPid($layoutModule['mod']);
+                    if (!empty($revokes)) {
+                        foreach ($revokes as $revoke) {
+                            if ($revoke['pid'] == $layoutModule['mod']) {
+                                return true;
+                            }
+                        }
+                    }
                 }
             }
         }
-        return true;
+
+        $pageId = $layoutOrPage->__get('id');
+        $bars = $barRepository->findByLayoutOrPage($pageId);
+        if (!empty($bars)) {
+            return true;
+        } elseif(get_class($layoutOrPage) == PageModel::class) {
+
+            global $objPage;
+            // Get the page layout
+            $objLayout = LayoutModel::findByPk($objPage->layout);
+
+            /** @var ThemeModel $objTheme */
+            $objTheme = $objLayout->getRelated('pid');
+
+            // Set the layout template and template group
+            $template = $objLayout->template ?: 'fe_page';
+            $templateGroup = $objTheme->templates ?? null;
+
+            $dir = TL_ROOT;
+            $dir .= DIRECTORY_SEPARATOR;
+            if (!empty($templateGroup)) {
+                $dir .= $templateGroup;
+                $dir .= DIRECTORY_SEPARATOR;
+            }
+            $dir .= $template;
+            $dir .= '.html5';
+            $modId = null;
+            if (file_exists($dir)) {
+                $content = file_get_contents($dir);
+                $modId = PageLayoutListener::getModuleIdFromTemplate($content,$conn);
+            }
+            if (!empty($modId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -38,6 +38,9 @@ class Blocker
             $pageModel = $GLOBALS['objPage'];
 
         // Achtung moduleData enthält nur die ID
+         if (is_string($pageModel))
+            $pageModel = PageModel::findById($pageModel);
+
         $layout = LayoutModel::findById($pageModel->layout);
         // Achtung moduleData enthält die ID, col, enable
         $moduleData = StringUtil::deserialize($layout->modules);

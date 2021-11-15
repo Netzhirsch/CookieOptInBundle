@@ -5,6 +5,7 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -300,13 +301,16 @@ class CookieController extends AbstractController
 
     /**
      * @param $currentPage
-     * @return RedirectResponse
+     * @return RedirectResponse|void
      */
     private function redirectToPageBefore($currentPage){
-        /* @var ContaoFramework $framework */
-        /** @noinspection PhpParamsInspection */
-        $framework = $this->get('contao.framework');
-        $framework->initialize();
+        try {
+            /* @var ContaoFramework $framework */
+            $framework = $this->get('contao.framework');
+            $framework->initialize();
+        }catch(ServiceNotFoundException $exception){
+            return;
+        }
         if (empty($currentPage))
             $currentPage = '/';
         /** @noinspection PhpParamsInspection */
