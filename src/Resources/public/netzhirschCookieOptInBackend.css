@@ -9,8 +9,8 @@
  {
 	 display: inline;
  }
-#tl_module_cookieTools_1 .delete
-, #tl_module_cookieTools_2 .delete
+
+#tl_module_cookieTools_2 .delete
 , #tl_module_cookieTools_3 .delete
 {
 	display: none;

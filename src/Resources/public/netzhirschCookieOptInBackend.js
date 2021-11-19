@@ -45,7 +45,6 @@
 				cookieName = cookieName.trim();
 				cookieName = cookieName.toLowerCase();
 				let notRemove = [
-					'contao csrf token',
 					'contao https csrf token',
 					'php session id'
 				];
