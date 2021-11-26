@@ -15,6 +15,7 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Statement;
 use Exception;
+use Folder;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
@@ -403,19 +404,20 @@ class PageLayoutListener {
 
                 // Set the layout template and template group
                 $template = $objLayout->template ?: 'fe_page';
+                $template = 'fe_page';
+                $template .= '.html5';
                 $templateGroup = $objTheme->templates ?? null;
 
-                $dir = TL_ROOT;
-                $dir .= DIRECTORY_SEPARATOR;
-                if (!empty($templateGroup)) {
-                    $dir .= $templateGroup;
-                    $dir .= DIRECTORY_SEPARATOR;
-                }
-                $dir .= $template;
-                $dir .= '.html5';
+                $dir = TL_ROOT
+                    . DIRECTORY_SEPARATOR
+                    . 'templates'
+                ;
                 $modId = null;
-                if (file_exists($dir)) {
-                    $content = file_get_contents($dir);
+
+                $templateFile = self::getTemplateFile($dir,$template);
+
+                if (file_exists($templateFile)) {
+                    $content = file_get_contents($templateFile);
                     $modId = self::getModuleIdFromTemplate($content,$conn);
                 }
                 if (!empty($modId)) {
@@ -431,6 +433,20 @@ class PageLayoutListener {
             'tlCookieIds' => $tlCookieIds,
             'allModuleIds' => $allModuleIds
         ];
+    }
+
+    private static function getTemplateFile($dir,$template){
+        foreach (Folder::scan($dir) as $file) {
+            if (is_dir($dir.DIRECTORY_SEPARATOR.$file)) {
+                $subDir = $dir.DIRECTORY_SEPARATOR.$file;
+                return self::getTemplateFile($subDir,$template);
+            } else {
+                if ($file == $template) {
+                    return $dir.DIRECTORY_SEPARATOR.$file;
+                }
+            }
+        }
+        return '';
     }
 
     public static function setNewGroups($fieldPalette)
@@ -535,14 +551,33 @@ class PageLayoutListener {
         $return = null;
         while(empty($return) || strlen($fileContent) >= $stringPositionEndLang) {
             $stringPositionStartLang = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEndLang);
-            $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStartLang+9);
+            if (empty($stringPositionEndLang))
+                $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStartLang+9);
             $insertModule = substr(
                 $fileContent,
                 $stringPositionStartLang,
                 $stringPositionEndLang-$stringPositionStartLang);
 
-
             $stringPositionStart = strpos($insertModule,'{{insert_module::');
+                if (empty($insertModule)) {
+                    $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
+                    $stringPositionStartLang = strpos($fileContent,'{{insert_module::',$stringPositionEndLang);
+                    $stringPositionEndLang = strpos($fileContent,'{{insert_module::',$stringPositionStartLang+9);
+                    $insertModule = substr(
+                        $fileContent,
+                        $stringPositionStartLang,
+                        $stringPositionEndLang-$stringPositionStartLang)
+                    ;
+                    $modId = str_replace('{{insert_module::','',$insertModule);
+                    $modId = str_replace('}}','',$modId);
+                    $modId = trim($modId);
+                    $barRepo = new BarRepository($conn);
+
+                    $return = $barRepo->findByIds([$modId]);
+                    if (!empty($return))
+                        break;
+
+                }
             if ($stringPositionStart == false && $stringPositionStartLang == false)
                 break;
             if ($stringPositionStart !== false) {

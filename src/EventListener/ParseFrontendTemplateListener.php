@@ -183,22 +183,29 @@ class ParseFrontendTemplateListener
             global $objPage;
             // Get the page layout
             $objLayout = LayoutModel::findByPk($objPage->layout);
+            $test = $objPage->loadDetails();
 
             /** @var ThemeModel $objTheme */
             $objTheme = $objLayout->getRelated('pid');
 
             // Set the layout template and template group
             $template = $objLayout->template ?: 'fe_page';
-            $templateGroup = $objTheme->templates ?? null;
+            $templateGroup = $objTheme->templates ?? '';
 
             $dir = TL_ROOT;
             $dir .= DIRECTORY_SEPARATOR;
             if (!empty($templateGroup)) {
-                $dir .= $templateGroup;
-                $dir .= DIRECTORY_SEPARATOR;
+                $dir .=
+                    $templateGroup
+                    .DIRECTORY_SEPARATOR
+                ;
             }
-            $dir .= $template;
-            $dir .= '.html5';
+            $dir .=
+                'templates'
+                .DIRECTORY_SEPARATOR
+                .$template
+                .'.html5'
+            ;
             $modId = null;
             if (file_exists($dir)) {
                 $content = file_get_contents($dir);
