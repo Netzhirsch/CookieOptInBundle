@@ -15,7 +15,6 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Statement;
 use Exception;
-use Folder;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
@@ -436,7 +435,9 @@ class PageLayoutListener {
     }
 
     private static function getTemplateFile($dir,$template){
-        foreach (Folder::scan($dir) as $file) {
+        foreach (scandir($dir) as $file) {
+            if ($file == '.' || $file == '..')
+                continue;
             if (is_dir($dir.DIRECTORY_SEPARATOR.$file)) {
                 $subDir = $dir.DIRECTORY_SEPARATOR.$file;
                 return self::getTemplateFile($subDir,$template);
