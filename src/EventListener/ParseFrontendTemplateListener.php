@@ -143,8 +143,7 @@ class ParseFrontendTemplateListener
     }
 
     public static function checkModulesEmpty($layoutOrPage) {
-        /**TODO luhmann return überarbeiten damit die Funktion öfter genutzt werden kann
-        $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
+        $layoutModules = unserialize($layoutOrPage->__get('modules'));
         /** @var Connection $conn */
         $conn = System::getContainer()->get('database_connection');
         $barRepository = new BarRepository($conn);
