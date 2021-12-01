@@ -39,7 +39,8 @@ class PageLayoutListener {
         $moduleIds = $return['moduleIds'];
         if (!empty($return['tlCookieIds']))
             $tlCookieIds[] = $return['tlCookieIds'];
-        $return = self::checkModules($pageModel, $removeModules, $moduleIds);
+        else
+            $return = self::checkModules($pageModel, $removeModules, $moduleIds);
         $moduleIds = $return['moduleIds'];
         if (empty($moduleIds)) {
             // remove in done on onParseFrontendTemplate event listener
@@ -403,9 +404,7 @@ class PageLayoutListener {
 
                 // Set the layout template and template group
                 $template = $objLayout->template ?: 'fe_page';
-                $template = 'fe_page';
                 $template .= '.html5';
-                $templateGroup = $objTheme->templates ?? null;
 
                 $dir = TL_ROOT
                     . DIRECTORY_SEPARATOR
