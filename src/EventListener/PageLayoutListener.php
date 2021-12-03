@@ -572,10 +572,11 @@ class PageLayoutListener {
                     $modId = str_replace('}}','',$modId);
                     $modId = trim($modId);
                     $barRepo = new BarRepository($conn);
-
-                    $return = $barRepo->findByIds([$modId]);
-                    if (!empty($return))
-                        break;
+                    if (!empty($modId)) {
+                        $return = $barRepo->findByIds([$modId]);
+                        if (!empty($return))
+                            break;
+                    }
 
                 }
             if ($stringPositionStart == false && $stringPositionStartLang == false)
@@ -590,7 +591,9 @@ class PageLayoutListener {
                 ;
                 $modId = str_replace('{{insert_module::','',$moduleTags);
                 $barRepo = new BarRepository($conn);
-                $return = $barRepo->findByIds([$modId]);
+                if (!empty($modId)) {
+                    $return = $barRepo->findByIds([$modId]);
+                }
             }
 
         }
