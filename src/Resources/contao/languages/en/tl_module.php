@@ -160,7 +160,9 @@ $GLOBALS['TL_LANG']['tl_module']['imprint'] = ['Imprint'];
 
 $GLOBALS['TL_LANG']['tl_module']['excludePages'] = ['Do not display cookie bar on the following pages.'];
 
-$GLOBALS['TL_LANG']['tl_module']['respectDoNotTrack'] = ['"Do Not Track" respect browser settings. If this browser setting is set, the cookie bar will not be shown.'];
+$GLOBALS['TL_LANG']['tl_module']['respectDoNotTrack'] = ['"Do Not Track" respect browser settings.',' If this browser setting is set, the cookie bar will not be shown.'];
+
+$GLOBALS['TL_LANG']['tl_module']['optOut'] = ['Opt Out','Set cookies and delete them if rejected, only allowed in some countries. Not in Germany.'];
 
 $GLOBALS['TL_LANG']['tl_module']['blockSite'] = ['Disable use of the site','Elements of the page can only be clicked on after cookies have been accepted or rejected.'];
 
@@ -192,7 +194,7 @@ $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['dark'] = 'dark';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'] = 'light';
 
-$GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Width' , 'in pixels'];
+$GLOBALS['TL_LANG']['tl_module']['maxWidth'] = ['Width' , 'Please enter the width of the cookie bar.'];
 
 $GLOBALS['TL_LANG']['tl_module']['templateBar'] =
 	['Template' , 'The template name must begin with mod_cookie_opt_in_bar.'];
@@ -208,4 +210,9 @@ $GLOBALS['TL_LANG']['tl_module']['ipFormatSave'] = ['IP storage','Select the typ
 
 $GLOBALS['TL_LANG']['tl_module']['uncut'] = 'uncut';
 $GLOBALS['TL_LANG']['tl_module']['pseudo'] = 'pseudonymisiert';
-$GLOBALS['TL_LANG']['tl_module']['anon'] = 'anonymized';
+$GLOBALS['TL_LANG']['tl_module']['anon'] = 'anonymize';
+
+$GLOBALS['TL_LANG']['tl_module']['external'] = ['Extern','HTML elements with iFrame integrated into articles are only loaded with consent.'];
+
+$GLOBALS['TL_LANG']['tl_module']['youtube'] = 'YouTube';
+$GLOBALS['TL_LANG']['tl_module']['googleMaps'] = 'Google maps';
