@@ -39,10 +39,10 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
             'sql' => "varchar(1) NULL default '1'"
         ],
         'infoButtonShow' => [
-            'sql' => "varchar(255) NULL default ''"
+            'sql' => "varchar(255) NULL"
         ],
         'infoButtonHide' => [
-            'sql' => "varchar(255) NULL default ''"
+            'sql' => "varchar(255) NULL"
         ],
         'infoHint' => [
             'sql' => "text  NULL default ''",

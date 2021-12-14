@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Netzhirsch\CookieOptInBundle\EventListener;
-
 
 use Contao\System;
 use Doctrine\DBAL\Connection;
