@@ -559,26 +559,6 @@ class PageLayoutListener {
                 $stringPositionEndLang-$stringPositionStartLang);
 
             $stringPositionStart = strpos($insertModule,'{{insert_module::');
-                if (empty($insertModule)) {
-                    $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
-                    $stringPositionStartLang = strpos($fileContent,'{{insert_module::',$stringPositionEndLang);
-                    $stringPositionEndLang = strpos($fileContent,'{{insert_module::',$stringPositionStartLang+9);
-                    $insertModule = substr(
-                        $fileContent,
-                        $stringPositionStartLang,
-                        $stringPositionEndLang-$stringPositionStartLang)
-                    ;
-                    $modId = str_replace('{{insert_module::','',$insertModule);
-                    $modId = str_replace('}}','',$modId);
-                    $modId = trim($modId);
-                    $barRepo = new BarRepository($conn);
-                    if (!empty($modId)) {
-                        $return = $barRepo->findByIds([$modId]);
-                        if (!empty($return))
-                            break;
-                    }
-
-                }
             if ($stringPositionStart == false && $stringPositionStartLang == false)
                 break;
             if ($stringPositionStart !== false) {
@@ -593,9 +573,35 @@ class PageLayoutListener {
                 $barRepo = new BarRepository($conn);
                 if (!empty($modId)) {
                     $return = $barRepo->findByIds([$modId]);
+                } else {
+                    $modId = null;
                 }
             }
 
+        }
+        $offset = 0;
+        while(empty($return)) {
+            $stringPositionStartLWithoutIfLang = strpos($fileContent,'{{insert_module::',$offset);
+            $stringPositionEndWithoutIfLang = strpos($fileContent,'}}',$stringPositionStartLWithoutIfLang);
+            if ($stringPositionStartLWithoutIfLang == false)
+                break;
+            $offset = $stringPositionEndWithoutIfLang;
+            $insertModule = substr(
+                $fileContent,
+                $stringPositionStartLWithoutIfLang,
+                $stringPositionEndWithoutIfLang-$stringPositionStartLWithoutIfLang)
+            ;
+            $modId = str_replace('{{insert_module::','',$insertModule);
+            $modId = str_replace('}}','',$modId);
+            $modId = trim($modId);
+            $barRepo = new BarRepository($conn);
+            if (!empty($modId)) {
+                $return = $barRepo->findByIds([$modId]);
+                if (!empty($return))
+                    break;
+                else
+                    $modId = null;
+            }
         }
 
         return $modId;
