@@ -546,10 +546,21 @@ class PageLayoutListener {
     {
         if (!$fileContent)
             return '';
-        $modId = null;
+
+        $modId = self::findModIdInFileContentWithInLangTag($fileContent,$conn);
+        if (empty($modId))
+            $modId = self::findModIdInFileContent($fileContent,$conn);
+
+
+
+        return $modId;
+    }
+
+    public static function findModIdInFileContentWithInLangTag($fileContent,$conn) {
         $stringPositionEndLang = 0;
-        $return = null;
-        while(empty($return) || strlen($fileContent) >= $stringPositionEndLang) {
+        $stringPositionStartLang = true;
+        $modId = null;
+        while($stringPositionStartLang != false) {
             $stringPositionStartLang = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEndLang);
             if (empty($stringPositionEndLang))
                 $stringPositionEndLang = strpos($fileContent,'{{iflng',$stringPositionStartLang+9);
@@ -559,8 +570,6 @@ class PageLayoutListener {
                 $stringPositionEndLang-$stringPositionStartLang);
 
             $stringPositionStart = strpos($insertModule,'{{insert_module::');
-            if ($stringPositionStart == false && $stringPositionStartLang == false)
-                break;
             if ($stringPositionStart !== false) {
                 $stringPositionEnd = strpos($insertModule,'}}',$stringPositionStart);
                 $moduleTags
@@ -573,18 +582,23 @@ class PageLayoutListener {
                 $barRepo = new BarRepository($conn);
                 if (!empty($modId)) {
                     $return = $barRepo->findByIds([$modId]);
-                } else {
-                    $modId = null;
+                    if (empty($return))
+                        $modId = null;
+                    else
+                        break;
                 }
             }
-
         }
+        return $modId;
+    }
+
+    public static function findModIdInFileContent($fileContent,$conn) {
         $offset = 0;
-        while(empty($return)) {
+        $modId = null;
+        $stringPositionStartLWithoutIfLang = true;
+        while($stringPositionStartLWithoutIfLang != false) {
             $stringPositionStartLWithoutIfLang = strpos($fileContent,'{{insert_module::',$offset);
             $stringPositionEndWithoutIfLang = strpos($fileContent,'}}',$stringPositionStartLWithoutIfLang);
-            if ($stringPositionStartLWithoutIfLang == false)
-                break;
             $offset = $stringPositionEndWithoutIfLang;
             $insertModule = substr(
                 $fileContent,
@@ -597,14 +611,13 @@ class PageLayoutListener {
             $barRepo = new BarRepository($conn);
             if (!empty($modId)) {
                 $return = $barRepo->findByIds([$modId]);
-                if (!empty($return))
-                    break;
-                else
+                if (empty($return))
                     $modId = null;
+                else
+                    break;
             }
         }
 
         return $modId;
-
     }
 }
