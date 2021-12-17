@@ -61,6 +61,9 @@ class BarRepository
     public function findByIds($ids): array
     {
 
+        if (!is_array($ids))
+            return [];
+
         $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (".implode(",",$ids).") LIMIT 1";
 
         $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);

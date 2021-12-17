@@ -281,7 +281,7 @@ class PageLayoutListener {
             $modIds = [];
             foreach ($htmlElements as $htmlElement) {
                 $modId = self::getModuleIdFromHtmlElement($htmlElement);
-                if (!empty($modId))
+                if (!empty($modId) && is_array($modId))
                     $modIds = array_merge($modId,$modIds);
             }
         }
@@ -323,7 +323,9 @@ class PageLayoutListener {
                     $stringPositionStart,
                     $stringPositionEnd-$stringPositionStart)
                 ;
-                $modId[] = str_replace('{{insert_module::','',$moduleTags);
+                $id = str_replace('{{insert_module::','',$moduleTags);
+                if (is_numeric($id))
+                    $modId[] = $id;
                 $saveEnd = $stringPositionEnd;
             } else {
                 $stringPositionEnd = strlen($htmlElement);
@@ -582,7 +584,7 @@ class PageLayoutListener {
                 ;
                 $modId = str_replace('{{insert_module::','',$moduleTags);
                 $barRepo = new BarRepository($conn);
-                if (!empty($modId)) {
+                if (!empty($modId) && is_numeric($modId)) {
                     $return = $barRepo->findByIds([$modId]);
                     if (empty($return)) {
                         $stringPositionEndLang = strpos($fileContent,'{{iflng}}',$stringPositionStartLang+strlen('{{iflng::'));
@@ -616,7 +618,7 @@ class PageLayoutListener {
             $modId = str_replace('}}','',$modId);
             $modId = trim($modId);
             $barRepo = new BarRepository($conn);
-            if (!empty($modId)) {
+            if (!empty($modId) && is_numeric($modId)) {
                 $return = $barRepo->findByIds([$modId]);
                 if (empty($return))
                     $modId = null;
