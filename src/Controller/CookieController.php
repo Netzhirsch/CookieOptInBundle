@@ -277,47 +277,6 @@ class CookieController extends AbstractController
 	}
 
     /**
-     * @Route("/cookie/revoke", name="cookie_revoke")
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function revokeAction(Request $request)
-    {
-        $query = $request->query;
-        $currentPage = '/';
-        if (!empty($query)) {
-            $currentPage = $query->get('currentPage');
-            if (empty($currentPage))
-                $currentPage = '';
-        }
-        if ($request->hasSession()) {
-            $session = $request->getSession();
-            $session->set('ncoi',null);
-            $session->save();
-        }
-
-        return $this->redirectToPageBefore($currentPage);
-    }
-
-    /**
-     * @param $currentPage
-     * @return RedirectResponse|void
-     */
-    private function redirectToPageBefore($currentPage){
-        try {
-            /* @var ContaoFramework $framework */
-            $framework = $this->get('contao.framework');
-            $framework->initialize();
-        }catch(ServiceNotFoundException $exception){
-            return;
-        }
-        if (empty($currentPage))
-            $currentPage = '/';
-        /** @noinspection PhpParamsInspection */
-        return $this->redirect($currentPage);
-    }
-
-    /**
      * @param Connection $conn
      * @param $modId
      * @return false|mixed
