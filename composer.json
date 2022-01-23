@@ -1,6 +1,7 @@
 {
 	"name": "netzhirsch/cookie-opt-in-bundle",
 	"description": "Cookie Bar für Contao CMS. Cookies werden erst nach einer Einwilligung gesetzt. Einwilligungen werden aufgezeichnet und können vom Besucher widerrufen werden. Einzelne Cookies und oder ganze Gruppen können angenommen bzw. abgelehnt werden. Weitere Infos auf Github und https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html",
+	"version": "3",
 	"keywords": [
 		"contao",
 		"cookie",
@@ -54,5 +55,9 @@
 	},
 	"extra": {
 		"contao-manager-plugin": "Netzhirsch\\CookieOptInBundle\\ContaoManager\\Plugin"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.5",
+		"symfony/test-pack": "^1.0"
 	}
 }

@@ -12,3 +12,6 @@ src/Resources/public/netzhirschCookieOptInDarkVersion.css
 .idea
 /Unterschied mod_cookie_opt_in_bar.png
 /Unterschied mod_cookie_opt_in_table.png
+/vendor
+.phpunit.result.cache
+composer.lock
