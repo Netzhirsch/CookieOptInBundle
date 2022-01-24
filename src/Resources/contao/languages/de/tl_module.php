@@ -23,6 +23,10 @@ $GLOBALS['TL_LANG']['tl_module']['saveAllButtonDefault'] = 'Alle annehmen';
 
 $GLOBALS['TL_LANG']['tl_module']['saveAllButton'] = ['Alle annehmen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookies annimmt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'];
 
+$GLOBALS['TL_LANG']['tl_module']['rejectAllButtonDefault'] = 'Alle ablehnen';
+
+$GLOBALS['TL_LANG']['tl_module']['rejectAllButton'] = ['Alle ablehnen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle nicht essenziell Cookies ablehnt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'];
+
 $GLOBALS['TL_LANG']['tl_module']['highlightSaveAllButton'] = ['Alle annehmen-Button hervorheben'];
 
 $GLOBALS['TL_LANG']['tl_module']['headlineCookieOptInBar'] = ['Überschrift'];

@@ -1,4 +1,4 @@
-class NcoiSaveButton {
+class NcoiButtons {
 
     constructor($) {
         this.$ = $;
@@ -7,6 +7,7 @@ class NcoiSaveButton {
     addOnClickEvents(storageKey,mainWrapper){
         this.onClickSaveAllConsent(storageKey,mainWrapper);
         this.onClickSaveConsent(storageKey,mainWrapper);
+        this.onClickRejectAllConsent(storageKey,mainWrapper);
     }
 
     onClickSaveConsent(storageKey,mainWrapper){
@@ -26,6 +27,21 @@ class NcoiSaveButton {
             e.preventDefault();
             $('.ncoi---cookie-group input').prop('checked', true);
             $('.ncoi---sliding').prop('checked', true);
+            that.saveConsent(storageKey,mainWrapper,'default');
+        });
+    }
+
+
+    onClickRejectAllConsent(storageKey,mainWrapper) {
+        let $ = this.$;
+        let that = this;
+        $(document).on('click','#ncoi---reject--all', function (e) {
+            e.preventDefault();
+            $('.ncoi---cookie-group input').each(function (){
+                if (!$(this).prop('disabled') && $(this).prop('checked')) {
+                    $(this).trigger('click');
+                }
+            });
             that.saveConsent(storageKey,mainWrapper,'default');
         });
     }

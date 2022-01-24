@@ -47,9 +47,9 @@ class NcoiApp {
         ncoiLoad.showAllMissingModuleMessage();
         ncoiLoad.removeNoScriptInputs();
 
-        const ncoiSaveButton = new NcoiSaveButton($);
+        const ncoiButtons = new NcoiButtons($);
         const ncoiTrack = new NcoiTrack($);
-        ncoiSaveButton.addOnClickEvents(storageKey,mainWrapper);
+        ncoiButtons.addOnClickEvents(storageKey,mainWrapper);
 
         const ncoiExternalMedia = new NcoiExternalMedia($);
         ncoiExternalMedia.addOnClickEvent(storageKey);

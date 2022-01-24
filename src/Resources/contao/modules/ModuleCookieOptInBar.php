@@ -219,6 +219,7 @@ class ModuleCookieOptInBar extends Module
 
 		$data['saveButton'] = $result['saveButton'];
 		$data['saveAllButton'] = $result['saveAllButton'];
+		$data['rejectAllButton'] = $result['rejectAllButton'];
 
         /********* load $GLOBALS['TL_LANG']['tl_module'] **************************************************************/
 		System::loadLanguageFile('tl_module');
