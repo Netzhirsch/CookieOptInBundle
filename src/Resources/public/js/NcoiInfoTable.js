@@ -12,7 +12,7 @@ class NcoiInfoTable {
             });
         }
     }
-
+    
     addOnClickShowEvent(){
         let $ = this.$;
         $(document).on('click','#ncoi---infos--show', function (e) {

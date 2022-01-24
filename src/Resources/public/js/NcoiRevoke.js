@@ -17,5 +17,4 @@ class NcoiRevoke {
             $('#matomoTracking').remove();
         });
     }
-
 }

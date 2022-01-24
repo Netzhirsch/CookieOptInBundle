@@ -13,8 +13,8 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
         let wrapper = this.getWrapper();
         return script.length > 0 && wrapper.length === 0;
     }
-
-    addContaoTemplate(body) {
+    
+    addContaoTemplate() {
         let script = this.getScript();
         let templateScriptsEncode = script.html();
         templateScriptsEncode = templateScriptsEncode.replace('<!--', '');
@@ -24,7 +24,6 @@ class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
         } catch (e) {
             console.error('Das Analyse Template enthält invalide Zeichen.')
         }
-        // body.append(templateScriptsEncode);
         let $ = this.$;
         $('head').prepend(templateScriptsEncode);
     }
