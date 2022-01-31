@@ -43,7 +43,7 @@
         <form id="cookieBar" class="<?=$class?>" name="cookieBar" action="/cookie/allowed" method="post">
             <label for="infos--show" class="ncoi---no-script--hidden"></label><input id="infos--show" name="infos--show" type="checkbox" class="ncoi---no-script--hidden">
             <div class="<?=$class?>">
-                    <?php echo $this->arrData['questionHint'] ?>
+                    <p><?php echo $this->arrData['questionHint'] ?></p>
                 </div>
                 <div class="ncoi---hint ncoi---hint-info ncoi---hidden">
                     <?php echo $this->arrData['infoHint'] ?>
@@ -52,8 +52,21 @@
                     <?php if(!empty($this->arrData['cookieTools'])) : ?>
                     <table>
                         <?php if(!empty($this->arrData['cookieTools'])) : ?>
+                        <?php $groupNames = [] ?>
                             <?php foreach($this->arrData['cookieTools'] as $toolsKey => $tool): ?>
                                 <tbody>
+                                	<?php if (!in_array($tool->cookieToolGroupName,$groupNames)) : ?>
+                                		<?php $groupNames[] = $tool->cookieToolGroupName ?>
+	                                	<tr class="group-name">
+										    <?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
+										    <th>
+										        <?php echo $tlLang['group']; ?>
+										    </th>
+										    <td>
+										        <?php echo $tool->cookieToolGroupName; ?>
+										    </td>
+										</tr>
+									<?php endif;?>
                                     <?php include('mod_cookie_opt_in_table.html5') ?>
                                 </tbody>
                             <?php endforeach;?>
