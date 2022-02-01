@@ -36,10 +36,10 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
             'sql' => "text NULL default ''"
         ],
         'rejectAllButton' => [
-            'sql' => "varchar(255) NULL"
+            'sql' => "varchar(255) NULL default 'Alle Ablehnen' "
         ],
         'highlightSaveAllButton' => [
-            'sql' => "varchar(1) NULL default '1'"
+            'sql' => "varchar(1) NULL default '0'"
         ],
         'infoButtonShow' => [
             'sql' => "varchar(255) NULL"
