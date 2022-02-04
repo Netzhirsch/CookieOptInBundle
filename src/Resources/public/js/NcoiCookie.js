@@ -13,7 +13,10 @@ class NcoiCookie {
             url: '/cookie/delete',
             success: function () {
                 ncoiApp.setLocalStorage(storageKey, null);
-            }
+            },
+            error: function () {
+                ncoiApp.setLocalStorage(storageKey, null);
+            },
         });
     }
 
