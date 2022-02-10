@@ -19,7 +19,6 @@ class NcoiTrack {
     makeAjax(userSettings,storageKey){
         let $ = this.$;
         let that = this;
-        console.log(userSettings);
         $.ajax({
             dataType: "json",
             type: 'POST',

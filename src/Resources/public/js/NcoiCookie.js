@@ -3,7 +3,7 @@ class NcoiCookie {
     constructor($) {
         this.$ = $;
     }
-
+    
     ajaxDeleteCookies(storageKey) {
         let $ = this.$;
         let ncoiApp = new NcoiApp($);

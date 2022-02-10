@@ -3,7 +3,7 @@ class NcoiInfoTable {
     constructor($) {
         this.$ = $;
     }
-
+    
     setCookieCheckboxes(cookieIds) {
         let $ = this.$;
         if (typeof cookieId !== undefined) {

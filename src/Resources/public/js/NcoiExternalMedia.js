@@ -1,5 +1,5 @@
 class NcoiExternalMedia {
-
+    
     constructor($) {
         this.$ = $;
     }

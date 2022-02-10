@@ -1,5 +1,5 @@
 class _NcoiTagManagerGoogleTemplate extends NcoiTemplate {
-
+    
     setCookies(tool,body) {
         let trackingId = this.getTrackingId(tool)
         body.append(
