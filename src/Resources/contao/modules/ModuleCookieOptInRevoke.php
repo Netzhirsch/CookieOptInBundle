@@ -66,11 +66,6 @@ class ModuleCookieOptInRevoke extends Module
         if (!empty($result))
 			$data['revokeButton'] = $result;
 
-        //********* revoke link für noscript **************************************************************************/
-        $data['url'] = '/cookie/revoke';
-        if (!empty($_SERVER['REDIRECT_URL']))
-            $data['url'] .= '?currentPage='.$_SERVER['REDIRECT_URL'];
-
 		$this->Template->setData($data);
 	}
 }
