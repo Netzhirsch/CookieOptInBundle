@@ -38,6 +38,7 @@ class CookieController extends AbstractController
 	public function allowedAction(Request $request)
 	{
         $jsonResponse = new JsonResponse();
+        $jsonResponse->setData(['success' => false]);
         $files = $request->files->all();
         if (!empty($files))
             return $jsonResponse;
@@ -51,6 +52,9 @@ class CookieController extends AbstractController
         $data['cookieVersion'] = $return['cookieVersion'];
         $data['expireTime'] = $return['expireTime'];
 		$cookieDatabase = $this->getModulData($data['modId'],$data);
+        if (count($cookieDatabase) == 0)
+            return $jsonResponse;
+
         //nur ohne JS gesetzt
         if (isset($data['isNoJavaScript'])) {
             if (!isset($data['cookieIds']))
@@ -113,6 +117,7 @@ class CookieController extends AbstractController
         }
 
         $jsonResponse->setData([
+            'success' => true,
             'tools' => $cookiesToSet['cookieTools'],
             'otherScripts' => $cookiesToSet['otherScripts'],
             'id' => $id,

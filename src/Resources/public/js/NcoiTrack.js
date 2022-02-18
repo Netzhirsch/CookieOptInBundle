@@ -29,6 +29,9 @@ class NcoiTrack {
             },
             async: false,
             success: function (response) {
+                if (!response.success)
+                    return;
+
                 let cookieVersion = response.cookieVersion;
                 that.saveUserSettings(
                     storageKey

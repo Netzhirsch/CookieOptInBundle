@@ -15,7 +15,7 @@ class NcoiTemplate {
             body.append(otherScript.cookieToolsCode);
         });
     }
-
+    
     getTrackingId(tool) {
         return tool.cookieToolsTrackingID;
     }

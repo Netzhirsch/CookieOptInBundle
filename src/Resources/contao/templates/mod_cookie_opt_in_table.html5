@@ -4,17 +4,8 @@
         $tool = null;
         $cookieGroup = null;
     }
+    $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template'];
 ?>
-
-<tr>
-    <?php $tlLang = $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn']['template']; ?>
-    <th>
-        <?php echo $tlLang['group']; ?>
-    </th>
-    <td>
-        <?php echo $tool->cookieToolGroupName; ?>
-    </td>
-</tr>
 <tr>
     <th>
         <?php echo $tlLang['name']; ?>

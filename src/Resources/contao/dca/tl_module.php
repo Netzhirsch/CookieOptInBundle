@@ -60,9 +60,10 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,type
 	;headlineCookieOptInBar
 	,questionHint
-	,saveButton
+	;saveButton
 	,saveAllButton
 	,highlightSaveAllButton
+	,rejectAllButton
 	;infoButtonShow
 	,infoButtonHide
 	,infoHint
@@ -146,7 +147,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
 	'exclude'   => true,
 	'inputType' => 'text',
 	'eval' => [
-		'tl_class' => 'w50',
+		'tl_class' => 'long',
 		'alwaysSave' => true,
         'doNotSaveEmpty' => true,
 	],
@@ -169,16 +170,31 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
     'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_module']['highlightSaveAllButton'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
-        'tl_class'  =>  'w50',
+        'tl_class'  =>  'w50 clr',
         'doNotSaveEmpty' => true,
     ],
     'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
     'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['rejectAllButton'] = [
+	'label' => &$GLOBALS['TL_LANG']['tl_module']['rejectAllButton'],
+	'exclude'   => true,
+	'inputType' => 'text',
+	'eval' => [
+		'tl_class' => 'long clr',
+		'alwaysSave' => true,
+        'doNotSaveEmpty' => true,
+	],
+    'foreignKey' => 'tl_ncoi_cookie.rejectAllButton',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonShow'] = [
@@ -880,7 +896,7 @@ class tl_module_ncoi extends tl_module {
 
         $value = $this->loadFromNcoiTable($value,$dca);
 	    if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')
-			$value = 'a:2:{s:5:"value";s:3:"400";s:4:"unit";s:2:"px";}';
+			$value = 'a:2:{s:5:"value";s:3:"500";s:4:"unit";s:2:"px";}';
 		
 		return $value;
 	}

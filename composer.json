@@ -19,13 +19,14 @@
 	"support": {
 		"email": "coockies@netzhirsch.de",
 		"issues": "https://github.com/Netzhirsch/CookieOptInBundle/issues",
-		"wiki": "https://github.com/Netzhirsch/CookieOptInBundle/wiki",
+		"wiki": "https://netzhirsch.de/contao-cookie-opt-in-bundle.html",
 		"source": "https://github.com/Netzhirsch/CookieOptInBundle"
 	},
 	"require": {
 		"php": ">=7.0",
 		"contao/core-bundle": "^4.4",
-		"heimrichhannot/contao-fieldpalette-bundle": "~0.5.1",
+		"heimrichhannot/contao-utils-bundle": ">2.195.1",
+		"heimrichhannot/contao-fieldpalette-bundle": "^0.6.0",
 		"symfony/serializer": "*",
 		"ext-dom": "*",
 		"ext-json": "*",

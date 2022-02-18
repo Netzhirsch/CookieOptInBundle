@@ -3,7 +3,7 @@ class NcoiInfoTable {
     constructor($) {
         this.$ = $;
     }
-
+    
     setCookieCheckboxes(cookieIds) {
         let $ = this.$;
         if (typeof cookieId !== undefined) {
@@ -12,7 +12,7 @@ class NcoiInfoTable {
             });
         }
     }
-
+    
     addOnClickShowEvent(){
         let $ = this.$;
         $(document).on('click','#ncoi---infos--show', function (e) {

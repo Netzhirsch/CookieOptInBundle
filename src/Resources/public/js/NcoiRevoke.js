@@ -3,7 +3,7 @@ class NcoiRevoke {
     constructor($) {
         this.$ = $;
     }
-
+    
     addOnClickEvent(storageKey) {
         let $ = this.$;
         let ncoiCookie = new NcoiCookie($);
@@ -17,5 +17,4 @@ class NcoiRevoke {
             $('#matomoTracking').remove();
         });
     }
-
 }

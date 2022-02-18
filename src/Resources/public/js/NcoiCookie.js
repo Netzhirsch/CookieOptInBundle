@@ -3,7 +3,7 @@ class NcoiCookie {
     constructor($) {
         this.$ = $;
     }
-
+    
     ajaxDeleteCookies(storageKey) {
         let $ = this.$;
         let ncoiApp = new NcoiApp($);
@@ -13,7 +13,10 @@ class NcoiCookie {
             url: '/cookie/delete',
             success: function () {
                 ncoiApp.setLocalStorage(storageKey, null);
-            }
+            },
+            error: function () {
+                ncoiApp.setLocalStorage(storageKey, null);
+            },
         });
     }
 
