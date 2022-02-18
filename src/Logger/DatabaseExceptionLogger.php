@@ -7,6 +7,7 @@ namespace Netzhirsch\CookieOptInBundle\Logger;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\SyntaxErrorException;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Statement;
 
 class DatabaseExceptionLogger
@@ -39,7 +40,11 @@ class DatabaseExceptionLogger
     public static function tryFetch($stmt): array
     {
         try {
-            $result = $stmt->fetchAll();
+            $result = false;
+            if  (method_exists($stmt, 'fetchAll'))
+                $result = $stmt->fetchAll();
+            elseif (method_exists($stmt, 'fetchAllAssociative'))
+                $result = $stmt->fetchAllAssociative();
             if ($result === false)
                 return [];
             return $result;
@@ -52,7 +57,14 @@ class DatabaseExceptionLogger
     public static function tryFetchAssociative(Statement $stmt): array
     {
         try {
-            $result = $stmt->fetch();
+            if (method_exists($stmt, 'fetchAssociative')) {
+                $result = $stmt->fetchAssociative();
+            } elseif (method_exists($stmt, 'fetch')){
+                $result = $stmt->fetch();
+            } elseif (method_exists(Result::class, 'fetchAssociative')) {
+                $result =$stmt->executeQuery();
+                $result = $result->fetchAssociative();
+            }
             if ($result === false)
                 return [];
             return $result;
@@ -60,6 +72,4 @@ class DatabaseExceptionLogger
             return [];
         }
     }
-
-
 }
