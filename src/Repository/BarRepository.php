@@ -2,60 +2,40 @@
 
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
-use Doctrine\DBAL\Connection;
-
-use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
+use Contao\Database;
 use Netzhirsch\CookieOptInBundle\Classes\GlobalDefaultText;
 
-class BarRepository
+class BarRepository extends Repository
 {
-    /** @var Connection $conn */
-    private $conn;
-    public function __construct(Connection $conn)
+
+    public function __construct(Database $database)
     {
-        $this->conn = $conn;
+        parent::__construct($database);
     }
 
     public function findAll(): array
     {
-        $sql = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie";
+        $strQuery = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie";
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-
-        if (empty($stmt))
+        $founded = $this->findAllAssoc($strQuery, [],[]);
+        if (empty($founded))
             return [];
-
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
-        if (!empty($result))
-            return $result;
-
-        return [];
+        return $founded;
     }
 
     public function loadBlockContainerTexts($modId): array
     {
-        $sql
+        $strQuery
             = "SELECT i_frame_video,i_frame_maps,i_frame_i_frame,i_frame_always_load,i_frame_load 
-                FROM tl_ncoi_cookie WHERE pid = ? ";
+                FROM tl_ncoi_cookie WHERE pid = %s ";
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-
-        $globalDefaultText = new GlobalDefaultText();
-        if (empty($stmt))
+        $founded = $this->findRow($strQuery,[], [$modId]);
+        if (empty($founded)) {
+            $globalDefaultText = new GlobalDefaultText();
             return $globalDefaultText->getAllAssoc();
+        }
 
-        $stmt->bindValue(1, $modId);
-
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        $result = DatabaseExceptionLogger::tryFetchAssociative($stmt);
-        if (!empty($result))
-            return $result;
-
-
-        return $globalDefaultText->getAllAssoc();
+        return $founded;
     }
 
     public function findByIds($ids): array
@@ -64,62 +44,34 @@ class BarRepository
         if (!is_array($ids))
             return [];
 
-        $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (".implode(",",$ids).") LIMIT 1";
+        $strQuery = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (%s) LIMIT 1";
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-
-        if (empty($stmt))
+        $founded = $this->findAllAssoc($strQuery,[], [implode(",",$ids)]);
+        if (empty($founded))
             return [];
-
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
-        if (!empty($result))
-            return $result;
-
-        return [];
+        return $founded;
     }
 
 
     public function findByLayoutOrPage($pageId)
     {
-        $sql = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (SELECT module FROM tl_content AS content LEFT JOIN tl_article AS article ON article.id = content.pid LEFT JOIN tl_page AS page ON page.id = article.pid WHERE page.id = ? AND content.module <> 0 OR page.pid = ? AND content.module <> 0)";
+        $strQuery = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (SELECT module FROM tl_content AS content LEFT JOIN tl_article AS article ON article.id = content.pid LEFT JOIN tl_page AS page ON page.id = article.pid WHERE page.id = %s AND content.module <> 0 OR page.pid = %s AND content.module <> 0)";
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-
-        $stmt->bindValue(1, $pageId);
-        $stmt->bindValue(2, $pageId);
-
-        if (empty($stmt))
+        $founded = $this->findAllAssoc($strQuery,[], [[$pageId,$pageId]]);
+        if (empty($founded))
             return [];
-
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
-        if (!empty($result))
-            return $result;
-
-        return [];
+        return $founded;
     }
 
     public function findByPid($id): array
     {
-        $sql = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
+        $strQuery = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = %s";
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-
-        $stmt->bindValue(1, $id);
-
-        if (empty($stmt))
+        $founded = $this->findRow($strQuery,[], [$id]);
+        if (empty($founded))
             return [];
 
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
-        if (!empty($result))
-            return $result;
-
-        return [];
+        return $founded;
 
     }
 }

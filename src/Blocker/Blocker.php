@@ -4,6 +4,7 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\Database;
 use Contao\InsertTags;
 use Contao\LayoutModel;
 use Contao\PageModel;
@@ -21,7 +22,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class Blocker
 {
 
-    public static function getModulData(RequestStack $requestStack) {
+    public static function getModulData(RequestStack $requestStack,Database $database) {
         $moduleData = [];
         $attributes = $requestStack->getCurrentRequest()->attributes;
         if (empty($attributes))
@@ -45,14 +46,14 @@ class Blocker
         // Achtung moduleData enthält die ID, col, enable
         $moduleData = StringUtil::deserialize($layout->modules);
 
-        $moduleInPage = PageLayoutListener::checkModules($pageModel, [], []);
+        $moduleInPage = PageLayoutListener::checkModules($pageModel,$database, [], []);
         foreach ($moduleInPage as $modulInPage) {
             if (isset($modulInPage['moduleIds']))
                 $moduleData[] = ['mod' => $modulInPage['moduleIds']];
             else
                 $moduleData[] = ['mod' => $modulInPage[0]];
         }
-        $moduleInContent = PageLayoutListener::getModuleIdFromInsertTag($pageModel, $layout);
+        $moduleInContent = PageLayoutListener::getModuleIdFromInsertTag($pageModel, $layout,$database);
         $moduleData[] = ['mod' => $moduleInContent['moduleIds']];
 
         return $moduleData;
@@ -78,14 +79,14 @@ class Blocker
 
     /**
      * @param DataFromExternalMediaAndBar $dataFromExternalMediaAndBar
-     * @param Connection $conn
+     * @param Database $database
      * @param array $externalMediaCookiesInDB
      * @param $moduleData
      * @return DataFromExternalMediaAndBar
      */
     public static function getDataFromExternalMediaAndBar(
         DataFromExternalMediaAndBar $dataFromExternalMediaAndBar,
-        Connection $conn,
+        Database $database,
         $externalMediaCookiesInDB,
         $moduleData
     )
@@ -94,7 +95,7 @@ class Blocker
         $provider = $objPage->rootTitle;
         $dataFromExternalMediaAndBar->setProvider($provider);
 
-        $barRepo = new BarRepository($conn);
+        $barRepo = new BarRepository($database);
         $cookieBars = $barRepo->findAll();
         $isModuleIdInLayout = false;
         $modIds = [];
@@ -140,7 +141,7 @@ class Blocker
 
         if (!$isModuleIdInLayout) {
 
-            self::setModIdByInsertTagInModule($conn,$modIds,$barRepo,$dataFromExternalMediaAndBar);
+            self::setModIdByInsertTagInModule($database,$modIds,$barRepo,$dataFromExternalMediaAndBar);
         }
 
         foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
@@ -153,12 +154,12 @@ class Blocker
 
     private static function setModIdByInsertTagInModule
     (
-        Connection $conn,
+        Database $database,
         array $modIds,
         BarRepository $barRepo,
         DataFromExternalMediaAndBar $dataFromExternalMediaAndBar
     ) {
-        $moduleRepo = new ModuleRepository($conn);
+        $moduleRepo = new ModuleRepository($database);
         $htmlInModules = $moduleRepo->findByIds($modIds);
         $ids = self::getModuleIdsFromHtml($htmlInModules);
         if (!empty($ids)) {
@@ -216,12 +217,12 @@ class Blocker
     }
 
     /**
-     * @param Connection $conn
+     * @param Database $database
      * @param $url
      * @return mixed[]
      */
-    public static function getExternalMediaByUrl(Connection $conn, $url) {
-        $toolRepo = new ToolRepository($conn);
+    public static function getExternalMediaByUrl(Database $database, $url) {
+        $toolRepo = new ToolRepository($database);
         $topLevelPosition = self::getTopLevel($url);
         if (!empty($topLevelPosition)) {
             $url = substr($url,0,$topLevelPosition);
@@ -253,15 +254,13 @@ class Blocker
 
     /**
      * @param $iframeHTML
-     * @param Connection $conn
+     * @param Database $database
      * @param null $type
      * @return array
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
      */
-    public static function getExternalMediaByType($iframeHTML,Connection $conn,$type = null){
+    public static function getExternalMediaByType($iframeHTML,Database $database,$type = null){
 
-        $toolRepo = new ToolRepository($conn);
+        $toolRepo = new ToolRepository($database);
 
         if (empty($type))
             $type = self::getIFrameType($iframeHTML);

@@ -7,6 +7,7 @@ use Contao\FrontendTemplate;
 use Contao\Module;
 use Contao\System;
 use Doctrine\DBAL\Statement;
+use Netzhirsch\CookieOptInBundle\Repository\Repository;
 
 class ModuleCookieOptInRevoke extends Module
 {
@@ -57,12 +58,10 @@ class ModuleCookieOptInRevoke extends Module
         }
         //********* revokue button aus der Datenbank ******************************************************************/
         $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT revokeButton FROM tl_ncoi_cookie_revoke WHERE pid = ?";
+        $repo = new Repository($this->Database);
+        $strQuery = "SELECT revokeButton FROM tl_ncoi_cookie_revoke WHERE pid = ?";
         /** @var Statement $stmt */
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $this->__get('id'));
-        $stmt->execute();
-        $result = $stmt->fetchColumn();
+        $result = $repo->findRow($strQuery,[], [$this->__get('id')]);
         if (!empty($result))
 			$data['revokeButton'] = $result;
 

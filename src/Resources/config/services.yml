@@ -9,12 +9,8 @@ services:
         - [ setContainer, [ '@Psr\Container\ContainerInterface' ] ]
 
   Netzhirsch\CookieOptInBundle\Controller\ConsentController:
-    arguments:
-      - '@Doctrine\DBAL\Connection'
 
   Netzhirsch\CookieOptInBundle\Controller\CookieController:
-    arguments:
-      - '@Doctrine\DBAL\Connection'
       - '@request_stack'
 
   Netzhirsch\CookieOptInBundle\Controller\LicenseController:

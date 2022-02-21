@@ -3,10 +3,10 @@
 
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
+use Contao\Database;
 use DateTime;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
 use Exception;
+use Netzhirsch\CookieOptInBundle\Repository\Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,18 +15,17 @@ use Symfony\Component\Serializer\Encoder\CsvEncoder;
 class ConsentController extends AbstractController
 {
 
-    /** @var Connection $connection */
-    private $connection;
+    /** @var Database $database */
+    private $database;
 
-    public function __construct(Connection $connection)
+    public function __construct()
     {
 
-        $this->connection = $connection;
+        $this->database = Database::getInstance();
     }
 
     /**
 	 * @Route("/consent/download", name="consent_download",  defaults={"_scope" = "backend"})
-	 * @throws DBALException
 	 * @throws Exception
 	 */
 	public function indexAction()
@@ -34,13 +33,10 @@ class ConsentController extends AbstractController
         $hasBackendUser = $this->getUser();
         if (empty($hasBackendUser))
             return $this->redirectToRoute('contao_backend');
-		/* @var Connection $conn */
-//        $conn = $this->get('database_connection');
-        $conn = $this->connection;
-        $sql = "SELECT * FROM tl_consentDirectory";
-		$stmt = $conn->prepare($sql);
-		$stmt->execute();
-		$consents = $stmt->fetchAll();
+
+        $repo = new Repository($this->database);
+        $strQuery = "SELECT * FROM tl_consentDirectory";
+		$consents = $repo->findAllAssoc($strQuery,[], []);
 		
 		$datum = new Datetime("now");
 		

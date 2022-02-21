@@ -2,18 +2,23 @@
 
 namespace Netzhirsch\CookieOptInBundle\EventListener;
 
-use Contao\System;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Contao\Database;
 use Exception;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 
 class ReplaceInsertTag
 {
+    /** @var Database $database */
+    private $database;
+
+    public function __construct(Database $database)
+    {
+        $this->database = $database;
+    }
+
     /**
      * @param $insertTag
      * @return mixed
-     * @throws DBALException
      * @throws Exception
      */
     public function onReplaceInsertTagsListener($insertTag)
@@ -26,9 +31,7 @@ class ReplaceInsertTag
         if (PageLayoutListener::shouldRemoveModules($objPage)) {
             $modIdsInBuffer = PageLayoutListener::getModuleIdFromHtmlElement($insertTag);
             if (!empty($modIdsInBuffer)) {
-                /** @var Connection $conn */
-                /** @noinspection MissingService */
-                $conn = System::getContainer()->get('database_connection');
+                $conn = $this->database;
                 $barRepo = new BarRepository($conn);
                 $return = $barRepo->findByIds($modIdsInBuffer);
                 if (!empty($return)) {

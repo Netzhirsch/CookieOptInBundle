@@ -3,6 +3,7 @@
 namespace Netzhirsch\CookieOptInBundle\EventListener;
 
 use Contao\Config;
+use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -10,38 +11,43 @@ use Contao\System;
 use Contao\ThemeModel;
 use DateInterval;
 use DateTime;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Statement;
 use Exception;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
+use Netzhirsch\CookieOptInBundle\Repository\Repository;
 use Netzhirsch\CookieOptInBundle\Repository\RevokeRepository;
 
 class PageLayoutListener {
+
+    /** @var Database $database */
+    private $database;
+
+    public function __construct()
+    {
+        $this->database = Database::getInstance();
+    }
 
     /**
      * @param PageModel $pageModel
      * @param LayoutModel $layout
      *
      * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
 
         $removeModules = $this->shouldRemoveModules($pageModel);
         $moduleIds = [];
-        $return = self::checkModules($layout, $removeModules, $moduleIds);
+        $return = self::checkModules($layout,$this->database, $removeModules, $moduleIds);
         $allModuleIdsInLayout = $return['allModuleIds'];
         $moduleIds = $return['moduleIds'];
         if (!empty($return['tlCookieIds']))
             $tlCookieIds[] = $return['tlCookieIds'];
         else
-            $return = self::checkModules($pageModel, $removeModules, $moduleIds);
+            $return = self::checkModules($pageModel,$this->database, $removeModules, $moduleIds);
         $moduleIds = $return['moduleIds'];
+        $repo = new Repository($this->database);
         if (empty($moduleIds)) {
             // remove in done on onParseFrontendTemplate event listener
             if (!$removeModules) {
@@ -76,14 +82,9 @@ class PageLayoutListener {
             $modId = $moduleIds;
 
         /********* update groups for a version < 1.3.0 ************************************************************/
-        $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
-        /** @var Statement $stmt */
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $modId);
-        $stmt->execute();
-        $result = $stmt->fetch();
-        if (!$result)
+        $strQuerySelectCookieGroups = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = %s";
+        $result = $repo->findAllAssoc($strQuerySelectCookieGroups,[],[$modId]);
+        if (count($result) == 0)
             return;
 
         $cookieGroups = StringUtil::deserialize($result['cookieGroups']);
@@ -96,22 +97,18 @@ class PageLayoutListener {
                     'value' => $cookieGroup
                 ];
             }
-            $sql = "UPDATE tl_ncoi_cookie SET cookieGroups = ? WHERE pid = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(1, serialize($newValues));
-            $stmt->bindValue(2, $modId);
-            $stmt->execute();
+            $strQueryUpdateCookieGroups = "UPDATE tl_ncoi_cookie SET cookieGroups = %s WHERE pid = %s";
+            $repo->executeStatement($strQueryUpdateCookieGroups,[serialize($newValues)],[$modId]);
         }
 
         if (self::doNotTrackBrowserSetting($result['respectDoNotTrack']))
             CookieController::deleteCookies();
     }
 
-    public static function doNotTrackBrowserSetting($respectDoNotTrack,$moduleId = null) {
+    private function doNotTrackBrowserSetting($respectDoNotTrack,$moduleId = null) {
         $doNotTrack = false;
         if (empty($respectDoNotTrack)) {
-            /** @var Connection $conn */
-            $conn = System::getContainer()->get('database_connection');
+            $conn = $this->database;
             $barRepository = new BarRepository($conn);
             $respectDoNotTrack = $barRepository->findByPid($moduleId);
         }
@@ -230,52 +227,42 @@ class PageLayoutListener {
     }
 
     /**
-     * @param PageModel $page
+     * @param PageModel|string $page
      * @param LayoutModel $layout
-     * @param $allModuleIds
-     * @return mixed[]
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws \Doctrine\DBAL\Exception
+     * @param Database $database
+     * @param null $allModuleIds
+     * @return array
      */
-    public static function getModuleIdFromInsertTag($page,LayoutModel $layout,$allModuleIds = null)
+    public static function getModuleIdFromInsertTag($page,LayoutModel $layout,Database $database,$allModuleIds = null)
     {
         if (is_string($page))
             $page = PageModel::findById($page);
+
+        $id = $page->__get('id');
+        $repo = new Repository($database);
+        $strQueryContent = "SELECT html FROM tl_content as tc 
+        LEFT JOIN tl_article ta on tc.pid = ta.id
+        LEFT JOIN tl_page tp on ta.pid = tp.id
+        WHERE tp.id = ?";
+        $htmlElements = $repo->findAllAssoc($strQueryContent,[], [$id]);
+
+        $id = $layout->__get('id');
+        $strQueryModule = "SELECT html FROM tl_module as tm 
+                LEFT JOIN tl_layout tlayout on tlayout.id = tm.pid
+                WHERE tlayout.id = ?"
+        ;
+        $htmlElementsLayout = $repo->findAllAssoc($strQueryModule,[], [$id]);
+        $htmlElements = array_merge($htmlElementsLayout,$htmlElements);
 
         $parameters = [
             'moduleIds' => null,
             'tlCookieIds' => null
         ];
-
-        $id = $page->__get('id');
-        /** @var Connection $conn */
-        $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT html FROM tl_content as tc 
-        LEFT JOIN tl_article ta on tc.pid = ta.id
-        LEFT JOIN tl_page tp on ta.pid = tp.id
-        WHERE tp.id = ?";
-        /** @var Statement $stmt */
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $id);
-        $stmt->execute();
-        $htmlElements = $stmt->fetchAll(FetchMode::COLUMN);
-        $id = $layout->__get('id');
-        $sql = "SELECT html FROM tl_module as tm 
-                LEFT JOIN tl_layout tlayout on tlayout.id = tm.pid
-                WHERE tlayout.id = ?"
-        ;
-        /** @var Statement $stmt */
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $id);
-        $stmt->execute();
-        $htmlElementsLayout = $stmt->fetchAll(FetchMode::COLUMN);
-        $htmlElements = array_merge($htmlElementsLayout,$htmlElements);
         if (empty($htmlElements))
             return $parameters;
 
         if (!empty($allModuleIds)) {
-            $repoModule = new ModuleRepository($conn);
+            $repoModule = new ModuleRepository($database);
             $htmlElementsModule= $repoModule->findByIds($allModuleIds);
             $htmlElements = array_merge($htmlElementsModule,$htmlElements);
             $modIds = [];
@@ -288,7 +275,7 @@ class PageLayoutListener {
 
         if (empty($modIds))
             return $parameters;
-        $barRepo = new BarRepository($conn);
+        $barRepo = new BarRepository($database);
 
         $return = $barRepo->findByIds($modIds);
         if (empty($return))
@@ -338,24 +325,21 @@ class PageLayoutListener {
      * @param LayoutModel|PageModel $layoutOrPage
      * @param                        $removeModules
      * @param array $moduleIds
-     *
      * @return array
-     * @throws DBALException
      */
-    public static function checkModules($layoutOrPage, $removeModules, array $moduleIds) {
+    public static function checkModules($layoutOrPage, Database $database,$removeModules, array $moduleIds) {
         if (is_string($layoutOrPage))
             $layoutOrPage = PageModel::findById($layoutOrPage);
 
         $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
         $tlCookieIds = [];
         $allModuleIds = [];
-        /** @var Connection $conn */
         $conn = System::getContainer()->get('database_connection');
-        $barRepository = new BarRepository($conn);
+        $barRepository = new BarRepository($database);
 
         if (!empty($layoutModules)) {
             $bars = $barRepository->findAll();
-            $revokeRepository = new RevokeRepository($conn);
+            $revokeRepository = new RevokeRepository($database);
 
             foreach ($layoutModules as $key => $layoutModule) {
                 if (!empty($layoutModule['enable'])) {
@@ -370,6 +354,8 @@ class PageLayoutListener {
                             $tlCookieIds[] = $bar['id'];
                         }
                     }
+                    if ($layoutModule['mod'] == 0)
+                        continue;
                     $revokes = $revokeRepository->findByPid($layoutModule['mod']);
                     if (!empty($revokes)) {
                         foreach ($revokes as $revoke) {
@@ -377,7 +363,7 @@ class PageLayoutListener {
                             if ($removeModules)
                                 unset($layoutModules[$key]);
                             elseif(!in_array($revoke,$moduleIds))
-                                $moduleIds[] = $revoke['pid'];
+                                $moduleIds[] = $revoke;
                         }
                     }
                     $allModuleIds[] = $layoutModule['mod'];

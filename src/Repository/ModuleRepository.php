@@ -1,34 +1,24 @@
 <?php
 
-
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
+use Contao\Database;
 
-use Doctrine\DBAL\Connection;
-use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
-
-class ModuleRepository
+class ModuleRepository extends Repository
 {
-    /** @var Connection $conn */
-    private $conn;
-    public function __construct(Connection $conn)
+
+    public function __construct(Database $database)
     {
-        $this->conn = $conn;
+        parent::__construct($database);
     }
 
     public function findByIds($modIds): array
     {
-        $sql = "SELECT html FROM tl_module WHERE type = 'html' AND id IN (".implode(",",$modIds).")";
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-        if (empty($stmt))
+        $strQuery = "SELECT html FROM tl_module WHERE type = 'html' AND id IN %s";
+
+        $founded = $this->findAllAssoc($strQuery,[], [implode(",",$modIds)]);
+        if (empty($founded))
             return [];
-
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
-        if (empty($result))
-            return [];
-
-        return $result;
+        return $founded;
     }
 }

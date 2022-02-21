@@ -1,6 +1,7 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\EventListener;
 
+use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\ThemeModel;
@@ -10,7 +11,6 @@ use Netzhirsch\CookieOptInBundle\Blocker\IFrameBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\ScriptBlocker;
 use Contao\System;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
 use Netzhirsch\CookieOptInBundle\Blocker\VideoPreviewBlocker;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
@@ -20,11 +20,18 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ParseFrontendTemplateListener
 {
+    /** @var Database $database */
+    private $database;
+
+    public function __construct(Database $database)
+    {
+        $this->database = $database;
+    }
+
     /**
      * @param $buffer
      * @param $template
      * @return string
-     * @throws DBALException|Exception
      * @throws \Exception
      */
     public function onParseFrontendTemplate($buffer, $template)
@@ -53,7 +60,7 @@ class ParseFrontendTemplateListener
                     || strpos($template, 'ce_metamodel_list') !== false
                 ) {
                     $iframeBlocker = new IFrameBlocker();
-                    return $iframeBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
+                    return $iframeBlocker->iframe($buffer,$this->database,$this->getRequestStack());
                 }
             } elseif(
                 strpos($buffer, '<iframe') !== false
@@ -63,7 +70,7 @@ class ParseFrontendTemplateListener
 
             ) {
                 $videoPreviewBlocker = new VideoPreviewBlocker();
-                return $videoPreviewBlocker->iframe($buffer,$this->getConnection(),$this->getRequestStack());
+                return $videoPreviewBlocker->iframe($buffer,$this->database,$this->getRequestStack());
             }
 
 
@@ -91,13 +98,13 @@ class ParseFrontendTemplateListener
             ;
             if ($isScriptTemplate) {
                 $scriptBlocker = new ScriptBlocker();
-                return $scriptBlocker->script($buffer,$this->getConnection(),$this->getRequestStack());
+                return $scriptBlocker->script($buffer,$this->database,$this->getRequestStack());
             }
 
             $isCustomElementGmapTemplate = strpos($template, 'customelement_gmap') !== false || strpos($template, 'mod_catalog_map_default') !== false;
             if ($isCustomElementGmapTemplate) {
                 $customGmapBlocker = new CustomGmapBlocker();
-                return $customGmapBlocker->block($buffer,$this->getConnection(),$this->getRequestStack());
+                return $customGmapBlocker->block($buffer,$this->database,$this->getRequestStack());
             }
         }
 
@@ -142,10 +149,9 @@ class ParseFrontendTemplateListener
 
     }
 
-    public static function checkModulesEmpty($layoutOrPage) {
+    public function checkModulesEmpty($layoutOrPage) {
         $layoutModules = unserialize($layoutOrPage->__get('modules'));
-        /** @var Connection $conn */
-        $conn = System::getContainer()->get('database_connection');
+        $conn = $this->database;
         $barRepository = new BarRepository($conn);
 
         if (!empty($layoutModules)) {

@@ -4,10 +4,9 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\Database;
 use Contao\LayoutModel;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception;
-use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
@@ -17,13 +16,11 @@ class IFrameBlocker
 {
     /**
      * @param $buffer
-     * @param Connection $conn
+     * @param Database $database
      * @param RequestStack $requestStack
      * @return string
-     * @throws DBALException
-     * @throws Exception
      */
-    public function iframe($buffer,Connection $conn, RequestStack$requestStack){
+    public function iframe($buffer,Database $database, RequestStack$requestStack) {
 
         if (empty($requestStack))
             return $buffer;
@@ -40,7 +37,11 @@ class IFrameBlocker
                 if ($iframeArray !== false) {
                     $iframe = substr($html,0,$iframeArray);
                     $iframeHTML = '<iframe'.$iframe;
-                    $return .= $this->getIframeHTML($iframeHTML,$requestStack,$conn);
+                    try {
+                        $return .= $this->getIframeHTML($iframeHTML, $requestStack, $database);
+                    } catch (Exception $e) {
+                        return $buffer;
+                    }
                 }
                 $return .= substr($html,$iframeArray,strlen($html));
             } else {
@@ -53,27 +54,24 @@ class IFrameBlocker
     /**
      * @param $iframeHTML
      * @param $requestStack
-     * @param $conn
-     * @param string $html
+     * @param Database $database
      * @return string
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
      */
-    private function getIframeHTML($iframeHTML,$requestStack,$conn)
+    private function getIframeHTML($iframeHTML,$requestStack,$database)
     {
         //Frontendvariablen diese werden an das Template übergeben
         $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
 
-        $moduleData = Blocker::getModulData($requestStack);
+        $moduleData = Blocker::getModulData($requestStack,$database);
         if (empty($moduleData))
             return $iframeHTML;
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $url = $this->getUrl($iframeHTML);
         if (!empty($url))
-            $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $url);
+            $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($database, $url);
         if (empty($externalMediaCookiesInDB)) {
-            $externalMediaCookiesInDB = Blocker::getExternalMediaByType($iframeHTML,$conn);
+            $externalMediaCookiesInDB = Blocker::getExternalMediaByType($iframeHTML,$database);
             $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($iframeHTML));
         }
         if (empty($externalMediaCookiesInDB))
@@ -81,17 +79,17 @@ class IFrameBlocker
 
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
             $dataFromExternalMediaAndBar,
-            $conn,
+            $database,
             $externalMediaCookiesInDB,
             $moduleData
         );
         if (empty($dataFromExternalMediaAndBar->getModId())) {
             global $objPage;
-            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout), [], []);
+            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout),$database, [], []);
             $moduleData[] =['mod' => $return['moduleIds'][0]];
             $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
                 $dataFromExternalMediaAndBar,
-                $conn,
+                $database,
                 $externalMediaCookiesInDB,
                 $moduleData
             );
@@ -107,7 +105,7 @@ class IFrameBlocker
         // alle icons liegen im gleich Ordner
         // root der bundle assets
         $iconPath = 'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR;
-        $barRepo = new BarRepository($conn);
+        $barRepo = new BarRepository($database);
         $blockTexts = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
 
         if (!empty($dataFromExternalMediaAndBar->getDisclaimer())) {

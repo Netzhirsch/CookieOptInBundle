@@ -4,6 +4,7 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\Database;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
@@ -18,13 +19,13 @@ class ScriptBlocker
 {
     /**
      * @param $buffer
-     * @param Connection $conn
+     * @param Database $conn
      * @param RequestStack $requestStack
      * @return string
      * @throws Exception
      * @throws \Doctrine\DBAL\Exception
      */
-    public function script($buffer,Connection $conn,RequestStack $requestStack) {
+    public function script($buffer,Database $database,RequestStack $requestStack) {
 
         if (empty($requestStack))
             return $buffer;
@@ -43,7 +44,7 @@ class ScriptBlocker
 
             $wrapWithBlockContainer = $DOMElement->getAttribute('data-ncoi-no-block-container');
             if (empty($wrapWithBlockContainer))
-                $newBuffer .= self::getScriptHTML($DOMElement,$requestStack,$conn,$buffer);
+                $newBuffer .= $this->getScriptHTML($DOMElement,$requestStack,$database,$buffer);
         }
         return $newBuffer;
     }
@@ -57,9 +58,9 @@ class ScriptBlocker
      * @throws Exception
      * @throws \Doctrine\DBAL\Exception
      */
-    private static function getScriptHTML(DOMElement $DOMElement, RequestStack $requestStack, Connection $conn,$buffer){
+    private function getScriptHTML(DOMElement $DOMElement, RequestStack $requestStack, Database $database,$buffer){
 
-        $moduleData = Blocker::getModulData($requestStack);
+        $moduleData = Blocker::getModulData($requestStack,$database);
         $container = System::getContainer();
         if (empty($moduleData)) {
             if ($container->getParameter('kernel.debug'))
@@ -74,7 +75,7 @@ class ScriptBlocker
             return $buffer;
         }
 
-        $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($conn, $src);
+        $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($database, $src);
         if (empty($externalMediaCookiesInDB)) {
             if ($container->getParameter('kernel.debug'))
                 Logger::logExceptionInContaoSystemLog('no data found by src:'.$src);
@@ -83,11 +84,11 @@ class ScriptBlocker
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-            $dataFromExternalMediaAndBar,$conn,$externalMediaCookiesInDB,$moduleData
+            $dataFromExternalMediaAndBar,$database,$externalMediaCookiesInDB,$moduleData
         );
         $dataFromExternalMediaAndBar->setDisclaimer($externalMediaCookiesInDB[0]['i_frame_blocked_text']);
         $dataFromExternalMediaAndBar->setIFrameType('script');
-        $barRepo = new BarRepository($conn);
+        $barRepo = new BarRepository($database);
         $blockText = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
 
 

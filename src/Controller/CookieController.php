@@ -1,11 +1,9 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
-use Contao\CoreBundle\Framework\ContaoFramework;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Contao\Database;
+use Netzhirsch\CookieOptInBundle\Repository\Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,17 +13,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class CookieController extends AbstractController
 {
 
-    /** @var Connection $connection */
-    private $connection;
+    /** @var Database $database */
+    private $database;
     /** @var RequestStack $requestStack */
     private $requestStack;
 
     public function __construct(
-        Connection $connection,
         RequestStack $requestStack
     )
     {
-        $this->connection = $connection;
+        $this->database = Database::getInstance();
         $this->requestStack = $requestStack;
     }
 
@@ -33,7 +30,6 @@ class CookieController extends AbstractController
      * @Route("/cookie/allowed", name="cookie_allowed")
      * @param Request $request
      * @return JsonResponse|RedirectResponse
-     * @throws DBALException
      */
 	public function allowedAction(Request $request)
 	{
@@ -131,8 +127,7 @@ class CookieController extends AbstractController
     /**
      * @param $modId
      * @param $data
-     * @return mixed
-     * @throws DBALException
+     * @return array
      */
 	private function getModulData($modId,$data){
 		
@@ -159,20 +154,11 @@ class CookieController extends AbstractController
 			'cookieToolGroup',
 			'cookieToolExpiredTime',
 		];
-		$sql = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
-		$sql .= ' WHERE pid = ? AND pfield = ?';
-		/** @noinspection PhpParamsInspection */
-		/* @var Connection $conn */
-//		$conn = $this->get('database_connection');
-		$conn = $this->connection;
-		$stmt = $conn->prepare($sql);
-		
-		$stmt->bindValue(1, $modId);
-		$stmt->bindValue(2, 'cookieTools');
-		
-		$stmt->execute();
-		$tools = $stmt->fetchAll();
-		
+        $repo = new Repository($this->database);
+        $strQueryTools = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
+		$strQueryTools .= ' WHERE pid = %s AND pfield = %s';
+        $tools = $repo->findAllAssoc($strQueryTools,[], [$modId,'cookieTools']);
+
 		$select = [
 			'id',
 			'cookieToolsName',
@@ -185,16 +171,11 @@ class CookieController extends AbstractController
 			'cookieToolExpiredTime',
 			'cookieToolGroup',
 		];
-		$sql = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
-		$sql .= ' WHERE pid = ? AND pfield = ?';
+
+		$strQueryOtherScripts = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
+		$strQueryOtherScripts .= ' WHERE pid = %s AND pfield = %s';
 		
-		$stmt = $conn->prepare($sql);
-		
-		$stmt->bindValue(1, $modId);
-		$stmt->bindValue(2, 'otherScripts');
-		
-		$stmt->execute();
-		$otherScripts = $stmt->fetchAll();
+		$otherScripts = $repo->findAllAssoc($strQueryOtherScripts,[], [$modId,'otherScripts']);
 		
 		$response['cookieTools'] = $tools;
 		$response['otherScripts'] = $otherScripts;
@@ -207,12 +188,9 @@ class CookieController extends AbstractController
      * @param $data
      * @param $id
      * @return string
-     * @throws DBALException
      */
 	private function changeConsent($cookieData,$data,$id = null)
 	{
-		/** @noinspection PhpParamsInspection */
-//		$requestStack = $this->get('request_stack');
 		$requestStack = $this->requestStack;
 
         $ipFormatSave = $data['ipFormatSave'];
@@ -261,63 +239,47 @@ class CookieController extends AbstractController
             }
         }
 
-        $sql = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url,pid) VALUES(?,?,?,?,?,?,?)";
-        /* @var Connection $conn */
-        /** @noinspection PhpParamsInspection */
-//        $conn = $this->get('database_connection');
-        $conn = $this->connection;
-		$stmt = $conn->prepare($sql);
-		$stmt->bindValue(1, $userInfo['ip']);
-        $stmt->bindValue(2, implode(', ', $cookieNames));
-        $stmt->bindValue(3, implode(', ', $cookieTechnicalName));
-        $stmt->bindValue(4, date('Y-m-d H:i'));
-        $stmt->bindValue(5, $_SERVER['HTTP_HOST']?$_SERVER['HTTP_HOST']:'');
-        $stmt->bindValue(6, $userInfo['consentURL']);
-        $stmt->bindValue(7, $userInfo['cookieId']?$userInfo['cookieId']:1);
+        $strQuery = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url,pid) VALUES(%s,%s,%s,%s,%s,%s,%s)";
+        $conn = $this->database;
+		$stmt = $conn->prepare($strQuery);
+        if (empty($stmt))
+            return $id;
 
-        $stmt->execute();
+        $host = $_SERVER['HTTP_HOST']?$_SERVER['HTTP_HOST']:'';
+        $repo = new Repository($this->database);
+        $set =
+            [
+                $userInfo['ip'],
+                implode(', ', $cookieNames),
+                implode(', ', $cookieTechnicalName),
+                date('Y-m-d H:i'),
+                $host,
+                $userInfo['consentURL'],
+                $userInfo['cookieId'] ? $userInfo['cookieId'] : 1,
+        ];
 
-        return $conn->lastInsertId();
+        $result = $repo->executeStatement($strQuery, $set,[]);
+
+        return $result->last()['id'];
 
 	}
 
     /**
-     * @param Connection $conn
-     * @param $modId
-     * @return false|mixed
-     * @throws DBALException
-     */
-    public static function getOptInTechnicalCookieName($conn, $modId)
-    {
-        $sql = "SELECT cookieToolsTechnicalName FROM tl_fieldpalette WHERE cookieToolsSelect = ? AND pid = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, 'optInCookie');
-        $stmt->bindValue(2, $modId);
-        $stmt->execute();
-        return $stmt->fetchColumn();
-
-    }
-
-    /**
      * @Route("/cookie/allowed/iframe", name="cookie_allowed_iframe")
      * @param Request $request
-     * @return RedirectResponse
-     * @throws DBALException
      */
     public function allowedIframeAction(Request $request)
     {
         $iframe = $request->get('iframe');
         $modId = $request->get('data')['modId'];
-        /* @var Connection $conn */
-        /** @noinspection PhpParamsInspection */
-//        $conn = $this->get('database_connection');
-        $conn = $this->connection;
-        $sql = "SELECT id,cookieToolsSelect,cookieToolExpiredTime,cookieToolsName,cookieToolsTechnicalName FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $modId);
-        $stmt->bindValue(2, $iframe);
-        $stmt->execute();
-        $cookie = $stmt->fetch();
+
+        $strQuery = "SELECT id,cookieToolsSelect,cookieToolExpiredTime,cookieToolsName,cookieToolsTechnicalName FROM tl_fieldpalette WHERE (pid = %s AND cookieToolsSelect = %s)";
+
+        $repo = new Repository($this->database);
+        $cookie = $repo->findAllAssoc($strQuery,[], [$modId,$iframe]);
+
+        if (count($cookie) == 0)
+            return;
         if ($request->hasSession()) {
             $session = $request->getSession();
             $data = $this->getTlCookieData($modId);
@@ -337,8 +299,6 @@ class CookieController extends AbstractController
             $session->set('ncoi',$ncoi);
             $session->save();
         }
-
-        return $this->redirectToPageBefore($request->get('currentPage'));
     }
 
     /**
@@ -402,20 +362,11 @@ class CookieController extends AbstractController
     /**
      * @param $modId
      * @return mixed
-     * @throws DBALException
      */
     private function getTlCookieData($modId) {
-
-        /* @var Connection $conn */
-        /** @noinspection PhpParamsInspection */
-//        $conn = $this->get('database_connection');
-        $conn = $this->connection;
-
-        $sql = "SELECT ipFormatSave,cookieVersion,expireTime FROM tl_ncoi_cookie WHERE pid = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $modId);
-        $stmt->execute();
-        return $stmt->fetch();
+        $repo = new Repository($this->database);
+        $strQuery = "SELECT ipFormatSave,cookieVersion,expireTime FROM tl_ncoi_cookie WHERE pid = %s";
+        return $repo->findRow($strQuery,[], [$modId]);
     }
 
     private static function unsetCookiesFromArray($cookieNotToDelete)

@@ -3,34 +3,18 @@
 
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
+use Contao\Database;
 
-use Doctrine\DBAL\Connection;
-use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
-
-class RevokeRepository
+class RevokeRepository extends Repository
 {
-    /** @var Connection */
-    private $conn;
 
-    /**
-     * RevokeRepository constructor.
-     * @param Connection $conn
-     */
-    public function __construct(Connection $conn)
+    public function __construct(Database $database)
     {
-        $this->conn = $conn;
+        parent::__construct($database);
     }
 
     public function findByPid($pid){
-        $sql = "SELECT id,pid FROM tl_ncoi_cookie_revoke WHERE pid = ?";
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-        if (empty($stmt))
-            return [];
-
-        $stmt->bindValue(1, $pid);
-
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        return DatabaseExceptionLogger::tryFetch($stmt);
+        $strQuery = "SELECT id,pid FROM tl_ncoi_cookie_revoke WHERE pid = ?";
+        return $this->findRow($strQuery,[], [$pid]);
     }
 }

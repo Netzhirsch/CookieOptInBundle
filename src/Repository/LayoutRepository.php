@@ -2,32 +2,23 @@
 
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
-use Doctrine\DBAL\Connection;
-use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
+use Contao\Database;
 
-class LayoutRepository
+class LayoutRepository extends Repository
 {
-    /** @var Connection $conn */
-    private $conn;
-    public function __construct(Connection $conn)
+
+    public function __construct(Database $database)
     {
-        $this->conn = $conn;
+        parent::__construct($database);
     }
 
     public function find($id): array
     {
-        $sql = "SELECT analytics FROM tl_layout WHERE id = ?";
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-        if (empty($stmt))
+        $strQuery = "SELECT analytics FROM tl_layout WHERE id = ?";
+        $founded = $this->findRow($strQuery,[], [$id]);
+        if (empty($founded))
             return [];
 
-        $stmt->bindValue(1, $id);
-
-        DatabaseExceptionLogger::tryExecute($stmt);
-        $result = DatabaseExceptionLogger::tryFetch($stmt);
-        if (empty($result))
-            return [];
-
-        return $result;
+        return $founded;
     }
 }

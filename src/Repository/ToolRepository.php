@@ -2,17 +2,14 @@
 
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
-use Doctrine\DBAL\Connection;
-use Netzhirsch\CookieOptInBundle\Logger\DatabaseExceptionLogger;
+use Contao\Database;
 
-class ToolRepository
+class ToolRepository extends Repository
 {
 
-    /** @var Connection $conn */
-    private $conn;
-    public function __construct(Connection $conn)
+    public function __construct(Database $database)
     {
-        $this->conn = $conn;
+        parent::__construct($database);
     }
 
     /**
@@ -21,19 +18,17 @@ class ToolRepository
      */
     public function findByUrl($url): array
     {
-        $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = ? AND i_frame_blocked_urls LIKE ? AND i_frame_blocked_urls <> ?";
+        $strQuery = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = %s AND i_frame_blocked_urls LIKE %s AND i_frame_blocked_urls <> %s";
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-        if (empty($stmt))
+        $founded = $this->findRow($strQuery,[], [
+            'cookieTools',
+            '%'.$url.'%',
+            ''
+        ]);
+        if (empty($founded))
             return [];
 
-
-        $stmt->bindValue(1, 'cookieTools');
-        $stmt->bindValue(2, '%'.$url.'%');
-        $stmt->bindValue(3, '');
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        return DatabaseExceptionLogger::tryFetch($stmt);
+        return $founded;
     }
 
     /**
@@ -42,20 +37,15 @@ class ToolRepository
      */
     public function findByType($type)
     {
-        $sql = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
+        $strQuery = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = %s AND cookieToolsSelect = %s";
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-        if (empty($stmt))
+        $founded = $this->findRow($strQuery,[], [
+            'cookieTools',
+            $type,
+        ]);
+        if (empty($founded))
             return [];
 
-        $stmt = DatabaseExceptionLogger::tryPrepare($sql,$this->conn);
-        if (empty($stmt))
-            return [];
-
-        $stmt->bindValue(1, 'cookieTools');
-        $stmt->bindValue(2, $type);
-        DatabaseExceptionLogger::tryExecute($stmt);
-
-        return DatabaseExceptionLogger::tryFetch($stmt);
+        return $founded;
     }
 }

@@ -9,12 +9,12 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Statement;
 use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Repository\LayoutRepository;
+use Netzhirsch\CookieOptInBundle\Repository\Repository;
 
 class ModuleCookieOptInBar extends Module
 {
@@ -26,7 +26,7 @@ class ModuleCookieOptInBar extends Module
 
     /**
      * @return string
-     * @throws DBALException|Less_Exception_Parser
+     * @throws Less_Exception_Parser
      */
 	public function generate() {
 		
@@ -42,16 +42,13 @@ class ModuleCookieOptInBar extends Module
 			return $objTemplate->parse();
 		}
 
-        $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectDoNotTrack 
+        $strQuery = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectDoNotTrack 
                 FROM tl_ncoi_cookie 
-                WHERE pid = ?
+                WHERE pid = %s
         ";
-        /** @var Statement $stmt */
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $this->__get('id'));
-        $stmt->execute();
-        $result = $stmt->fetch();
+
+        $repo = new Repository($this->Database);
+        $result = $repo->findRow($strQuery,[], [$this->__get('id')]);
 
         $this->setCss(
             $result['defaultCss'],
@@ -65,17 +62,12 @@ class ModuleCookieOptInBar extends Module
 		return parent::generate();
 	}
 
-    /**
-     * @throws DBALException
-     */
 	public function compile(){
-        /** @var Connection $conn */
-        $conn = System::getContainer()->get('database_connection');
-        $sql = "SELECT * FROM tl_ncoi_cookie WHERE pid = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(1, $this->__get('id'));
-        $stmt->execute();
-        $result = $stmt->fetch();
+
+        $conn = $this->Database;
+        $repo = new Repository($conn);
+        $strQuery = "SELECT * FROM tl_ncoi_cookie WHERE pid = ?";
+        $result = $repo->findRow($strQuery,[], [$this->__get('id')]);
         $maxWidth = $result['maxWidth'];
 
 		$this->strTemplate = $result['templateBar'];

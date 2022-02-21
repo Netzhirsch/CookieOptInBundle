@@ -2,7 +2,7 @@
 
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
-use Doctrine\DBAL\Connection;
+use Contao\Database;
 use DOMDocument;
 use DOMElement;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
@@ -16,18 +16,18 @@ class CustomGmapBlocker
 {
     /**
      * @param $buffer
-     * @param Connection $conn
+     * @param Database $database
      * @param RequestStack $requestStack
      * @return mixed
      * @throws DBALException
      * @throws DriverException
      */
-    public function block($buffer,Connection $conn,RequestStack $requestStack) {
+    public function block($buffer,Database $database,RequestStack $requestStack) {
 
         if (empty($requestStack))
             return $buffer;
 
-        $newBuffer = $this->getCustomGmapHtml($buffer,$conn,$requestStack);
+        $newBuffer = $this->getCustomGmapHtml($buffer,$database,$requestStack);
         if (!empty($newBuffer))
             return $newBuffer;
 
@@ -36,30 +36,30 @@ class CustomGmapBlocker
 
     /**
      * @param $buffer
-     * @param $conn
+     * @param Database $database
      * @param $requestStack
      * @return null
      * @throws DriverException
      * @throws DBALException
      */
-    private function getCustomGmapHtml($buffer,$conn,$requestStack) {
+    private function getCustomGmapHtml($buffer,Database $database,$requestStack) {
 
-        $moduleData = Blocker::getModulData($requestStack);
+        $moduleData = Blocker::getModulData($requestStack,$database);
         if (empty($moduleData))
             return $buffer;
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
-        $externalMediaCookiesInDB = Blocker::getExternalMediaByType('maps.google',$conn,'googleMaps');
+        $externalMediaCookiesInDB = Blocker::getExternalMediaByType('maps.google',$database,'googleMaps');
         if (empty($externalMediaCookiesInDB))
             return $buffer;
 
         $dataFromExternalMediaAndBar->setIFrameType('googleMaps');
 
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-            $dataFromExternalMediaAndBar,$conn,$externalMediaCookiesInDB,$moduleData
+            $dataFromExternalMediaAndBar,$database,$externalMediaCookiesInDB,$moduleData
         );
 
-        $barRepo = new BarRepository($conn);
+        $barRepo = new BarRepository($database);
         $blockText = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
 
         if (Blocker::noScriptFallbackRenderScript($dataFromExternalMediaAndBar))
