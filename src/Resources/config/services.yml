@@ -12,6 +12,7 @@ services:
 
   Netzhirsch\CookieOptInBundle\Controller\CookieController:
       - '@request_stack'
+      - '@contao.framework'
 
   Netzhirsch\CookieOptInBundle\Controller\LicenseController:
 

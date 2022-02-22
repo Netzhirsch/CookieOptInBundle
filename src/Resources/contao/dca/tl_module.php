@@ -74,7 +74,6 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,space
 	,cssID
 	;cookieGroups
-	,defaultTools
 	,cookieTools
 	,otherScripts
 	,i_frame_video
@@ -444,7 +443,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 		],
 	],
 ];
-
 $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 	'label'     => &$GLOBALS['TL_LANG']['tl_module']['otherScripts'],
 	'exclude'   => true,
@@ -912,7 +910,7 @@ class tl_module_ncoi extends tl_module {
 	public function setLessVariables(DC_Table $dca){
         if ($this->checkRightModule($dca->__get('field'))) {
             $repo = new Repository($dca->Database);
-            $strQuery = "SELECT maxWidth,blockSite,zIndex FROM tl_ncoi_cookie WHERE pid= %s";
+            $strQuery = "SELECT maxWidth,blockSite,zIndex FROM tl_ncoi_cookie WHERE pid = ?";
             $data = $repo->findAllAssoc($strQuery,[], [Input::get('id')]);
             Helper::parseLessToCss
                 (
@@ -1003,7 +1001,6 @@ class tl_module_ncoi extends tl_module {
         } else {
             $fieldPaletteModel = FieldPaletteModel::findById($id);
         }
-
         $cookieToolGroups = '';
         if (!empty($fieldPaletteModel)) {
 
@@ -1031,7 +1028,7 @@ class tl_module_ncoi extends tl_module {
 	public function setCookieVersion(DC_Table $dca)
 	{
 	    if ($this->checkRightModule($dca->__get('field'))) {
-		    $isNewCookieVersion = $this->loadFromNcoiTable('',$dca,null,'isNewCookieVersion');
+            $isNewCookieVersion = $this->loadFromNcoiTable('',$dca,null,'isNewCookieVersion');
             $cookieVersion = $this->loadFromNcoiTable('',$dca,null,'cookieVersion');
             if (!empty($isNewCookieVersion) || empty($cookieVersion)) {
                 if ($cookieVersion === true) {
@@ -1237,26 +1234,26 @@ class tl_module_ncoi extends tl_module {
             $field = $dca->__get('field');
         if (empty($pid))
             $pid = $dca->__get('id');
+
         $conn = $dca->Database;
         $repo = new Repository($conn);
-        $strQuery = "SELECT ".$field." FROM tl_ncoi_cookie WHERE pid= %s";
-        $valueNew = $repo->findAllAssoc($strQuery,[], [$pid]);
-        if (count($valueNew) == 0)
-            return '';
+        $strQuery = "SELECT ".$field." FROM tl_ncoi_cookie WHERE pid = ?";
+        $data = $repo->findRow($strQuery,[], [$pid]);
+        $valueFromNetzhirschTable = null;
+        if (isset($data[$field]))
+            $valueFromNetzhirschTable = $data[$field];
 
-        $value = $valueNew[$field];
-
-        if ($value === null) {
+        if ($valueFromNetzhirschTable === null) {
             if (isset($GLOBALS['TL_LANG']['tl_module'][$field.'Default'])) {
                 return $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
             }
-        } elseif($value == "0") {
+        } elseif($valueFromNetzhirschTable == "0") {
             return false;
         }
         /********* checkboxes ****************************************************************************************/
-        if ($value == "1")
+        if ($valueFromNetzhirschTable == "1")
             return true;
-        return $value;
+        return $valueFromNetzhirschTable;
     }
 
     public function loadFromNcoiTableRevoke($oldValue,DC_Table $dca)
@@ -1266,14 +1263,13 @@ class tl_module_ncoi extends tl_module {
         $conn = $dca->Database;
         $repo = new Repository($conn);
         $strQuery = "SELECT ".$field." FROM tl_ncoi_cookie_revoke WHERE pid=?";
-        $valueNew = $repo->findAllAssoc($strQuery,[], [$pid]);
-        if (count($valueNew) == 0)
-            return $oldValue;
+        $valueFromNetzhirschTable = $repo->findRow($strQuery,[], [$pid])[$field];
 
-        if (isset($valueNew[$field]))
-            return $valueNew[$field];
+        if ($valueFromNetzhirschTable === null)
+            return $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
 
-        return $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
+        return $valueFromNetzhirschTable;
+
     }
 
     public function loadFromNcoiTableCheckbox($value,DC_Table $dca)
@@ -1331,22 +1327,8 @@ class tl_module_ncoi extends tl_module {
     public function saveInNcoiTableRevoke($value,DC_Table $dca)
     {
         $conn = $dca->Database;
-        $pid = $dca->__get('id');
         $repo = new Repository($conn);
-        $strQuery = "SELECT id FROM tl_ncoi_cookie_revoke WHERE pid= %s";
-        $id = $repo->findRow($strQuery,[], [$pid]);
-        $field = $dca->__get('field');
-        $set = [$field => $value];
-        if (!empty($id)) {
-            $sql = "UPDATE tl_ncoi_cookie_revoke %s WHERE pid =?";
-        } else {
-            $sql = "INSERT tl_ncoi_cookie_revoke %s";
-            $set['pid'] = $pid;
-        }
-        $stmt = $conn->prepare($sql);
-        $stmt->set($set);
-        $stmt->execute($pid);
-        return '';
+        return $repo->updateOrInsert($dca, 'tl_ncoi_cookie_revoke', $value);
     }
 
     public function saveInNcoiTablePageTree($value,DC_Table $dca)
@@ -1363,8 +1345,12 @@ class tl_module_ncoi extends tl_module {
         $pid = $activeRecord->__get('pid');
         $repo = new Repository($conn);
         $strQuery = "SELECT ".$field." FROM tl_ncoi_cookie WHERE pid=?";
-        $cookieGroups = $repo->findAllAssoc($strQuery,[],[$pid]);
-        $cookieGroups = StringUtil::deserialize($cookieGroups[$field]);
+        $data = $repo->findRow($strQuery,[],[$pid]);
+        $cookieGroups = null;
+        if (isset($data[$field])) {
+            $cookieGroups = $data[$field];
+            $cookieGroups = StringUtil::deserialize($cookieGroups);
+        }
         if (empty($cookieGroups)) {
             $cookieGroups[] = $id;
         } else {
@@ -1390,27 +1376,14 @@ class tl_module_ncoi extends tl_module {
 
     public function saveInNcoiTable($value,DC_Table $dca,$pid = null,$field = null){
         $conn = $dca->Database;
-        if (empty($pid))
-            $pid = $dca->__get('id');
         $repo = new Repository($conn);
-        $strQuerySelect = "SELECT id FROM tl_ncoi_cookie WHERE pid=%s";
-        $id = $repo->findRow($strQuerySelect,[], [$pid]);
-        if (empty($field))
-            $field = $dca->__get('field');
-        $set = [$field => $value];
-        if (!empty($id)) {
-            $sqlUpdateOrInsert = "UPDATE tl_ncoi_cookie %s WHERE pid =?";
-            $repo->executeStatement($sqlUpdateOrInsert,[$field => $value], [$pid]);
-        } else {
-            $sqlUpdateOrInsert = "INSERT tl_ncoi_cookie %s";
-            $repo->executeStatement($sqlUpdateOrInsert,[$field => $value],[]);
-        }
+        return $repo->updateOrInsert($dca, 'tl_ncoi_cookie', $value,$pid,$field);
     }
 
     public function deleteTool(DC_Table $dca)
     {
         $id = Input::get('id');
-        $strQueryFieldPalette = "SELECT pid,cookieToolsTechnicalName FROM tl_fieldpalette WHERE id=%s";
+        $strQueryFieldPalette = "SELECT pid,cookieToolsTechnicalName FROM tl_fieldpalette WHERE id = ?";
         $conn = $dca->Database;
         $repo = new Repository($conn);
         $return = $repo->findRow($strQueryFieldPalette,[], [$id]);

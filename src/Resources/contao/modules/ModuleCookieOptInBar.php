@@ -44,7 +44,7 @@ class ModuleCookieOptInBar extends Module
 
         $strQuery = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectDoNotTrack 
                 FROM tl_ncoi_cookie 
-                WHERE pid = %s
+                WHERE pid = ?
         ";
 
         $repo = new Repository($this->Database);

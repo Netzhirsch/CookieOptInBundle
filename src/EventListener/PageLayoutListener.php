@@ -82,9 +82,9 @@ class PageLayoutListener {
             $modId = $moduleIds;
 
         /********* update groups for a version < 1.3.0 ************************************************************/
-        $strQuerySelectCookieGroups = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = %s";
-        $result = $repo->findAllAssoc($strQuerySelectCookieGroups,[],[$modId]);
-        if (count($result) == 0)
+        $strQuerySelectCookieGroups = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
+        $result = $repo->findRow($strQuerySelectCookieGroups,[],[$modId]);
+        if (empty($result))
             return;
 
         $cookieGroups = StringUtil::deserialize($result['cookieGroups']);
@@ -97,20 +97,20 @@ class PageLayoutListener {
                     'value' => $cookieGroup
                 ];
             }
-            $strQueryUpdateCookieGroups = "UPDATE tl_ncoi_cookie SET cookieGroups = %s WHERE pid = %s";
+            $strQueryUpdateCookieGroups = "UPDATE tl_ncoi_cookie SET cookieGroups = %s WHERE pid = ?";
             $repo->executeStatement($strQueryUpdateCookieGroups,[serialize($newValues)],[$modId]);
         }
 
-        if (self::doNotTrackBrowserSetting($result['respectDoNotTrack']))
+        if (self::doNotTrackBrowserSetting($result['respectDoNotTrack'],$modId))
             CookieController::deleteCookies();
     }
 
-    private function doNotTrackBrowserSetting($respectDoNotTrack,$moduleId = null) {
+    private function doNotTrackBrowserSetting($respectDoNotTrack,$moduleId) {
         $doNotTrack = false;
         if (empty($respectDoNotTrack)) {
             $conn = $this->database;
             $barRepository = new BarRepository($conn);
-            $respectDoNotTrack = $barRepository->findByPid($moduleId);
+            $respectDoNotTrack = $barRepository->findByPid($moduleId)['respectDoNotTrack'];
         }
         if (
             array_key_exists('HTTP_DNT', $_SERVER) && (1 === (int) $_SERVER['HTTP_DNT']) && $respectDoNotTrack

@@ -15,6 +15,6 @@ class RevokeRepository extends Repository
 
     public function findByPid($pid){
         $strQuery = "SELECT id,pid FROM tl_ncoi_cookie_revoke WHERE pid = ?";
-        return $this->findRow($strQuery,[], [$pid]);
+        return $this->findAllAssoc($strQuery,[], [$pid]);
     }
 }

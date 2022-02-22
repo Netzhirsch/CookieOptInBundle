@@ -1,6 +1,7 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\Controller;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,17 +14,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class CookieController extends AbstractController
 {
 
-    /** @var Database $database */
-    private $database;
     /** @var RequestStack $requestStack */
     private $requestStack;
+    /**
+     * @var ContaoFramework
+     */
+    private $contaoFramework;
 
     public function __construct(
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        ContaoFramework $contaoFramework
     )
     {
-        $this->database = Database::getInstance();
         $this->requestStack = $requestStack;
+        $this->contaoFramework = $contaoFramework;
     }
 
     /**
@@ -43,11 +47,14 @@ class CookieController extends AbstractController
         if (empty($data['modId']))
             return $jsonResponse;
 
-        $return = $this->getTlCookieData($data['modId']);
+        $this->contaoFramework->initialize();
+        $database = Database::getInstance();
+
+        $return = $this->getTlCookieData($database,$data['modId']);
         $data['ipFormatSave'] = $return['ipFormatSave'];
         $data['cookieVersion'] = $return['cookieVersion'];
         $data['expireTime'] = $return['expireTime'];
-		$cookieDatabase = $this->getModulData($data['modId'],$data);
+		$cookieDatabase = $this->getModulData($database,$data['modId'],$data);
         if (count($cookieDatabase) == 0)
             return $jsonResponse;
 
@@ -86,7 +93,7 @@ class CookieController extends AbstractController
 				$cookiesToSet['otherScripts'][] = $otherScripts;
 		}
 
-        self::deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
+        $this->deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
 
         $id = null;
         if (isset($data['id']))
@@ -94,7 +101,7 @@ class CookieController extends AbstractController
 
         $newConsent = $data['newConsent'];
         if ($newConsent) {
-            $id = $this->changeConsent($cookiesToSet,$data,$id);
+            $id = $this->changeConsent($database,$cookiesToSet,$data,$id);
         }
 
         $expireTime = self::getExpireTime($cookieDatabase['expireTime']);
@@ -125,11 +132,12 @@ class CookieController extends AbstractController
 	}
 
     /**
+     * @param Database $database
      * @param $modId
      * @param $data
      * @return array
      */
-	private function getModulData($modId,$data){
+	private function getModulData(Database $database,$modId,$data){
 		
 		$response = [];
 
@@ -154,9 +162,10 @@ class CookieController extends AbstractController
 			'cookieToolGroup',
 			'cookieToolExpiredTime',
 		];
-        $repo = new Repository($this->database);
+
+        $repo = new Repository($database);
         $strQueryTools = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
-		$strQueryTools .= ' WHERE pid = %s AND pfield = %s';
+		$strQueryTools .= ' WHERE pid = ? AND pfield = ?';
         $tools = $repo->findAllAssoc($strQueryTools,[], [$modId,'cookieTools']);
 
 		$select = [
@@ -173,7 +182,7 @@ class CookieController extends AbstractController
 		];
 
 		$strQueryOtherScripts = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
-		$strQueryOtherScripts .= ' WHERE pid = %s AND pfield = %s';
+		$strQueryOtherScripts .= ' WHERE pid = ? AND pfield = ?';
 		
 		$otherScripts = $repo->findAllAssoc($strQueryOtherScripts,[], [$modId,'otherScripts']);
 		
@@ -189,7 +198,7 @@ class CookieController extends AbstractController
      * @param $id
      * @return string
      */
-	private function changeConsent($cookieData,$data,$id = null)
+	private function changeConsent(Database $database,$cookieData,$data,$id = null)
 	{
 		$requestStack = $this->requestStack;
 
@@ -239,33 +248,32 @@ class CookieController extends AbstractController
             }
         }
 
-        $strQuery = "INSERT INTO tl_consentDirectory (ip,cookieToolsName,cookieToolsTechnicalName,date,domain,url,pid) VALUES(%s,%s,%s,%s,%s,%s,%s)";
-        $conn = $this->database;
-		$stmt = $conn->prepare($strQuery);
+        $strQuery = "INSERT tl_consentDirectory %s";
+		$stmt = $database->prepare($strQuery);
         if (empty($stmt))
             return $id;
 
         $host = $_SERVER['HTTP_HOST']?$_SERVER['HTTP_HOST']:'';
-        $repo = new Repository($this->database);
+        $repo = new Repository($database);
         $set =
             [
-                $userInfo['ip'],
-                implode(', ', $cookieNames),
-                implode(', ', $cookieTechnicalName),
-                date('Y-m-d H:i'),
-                $host,
-                $userInfo['consentURL'],
-                $userInfo['cookieId'] ? $userInfo['cookieId'] : 1,
+                'ip' => $userInfo['ip'],
+                'cookieToolsName' => implode(', ', $cookieNames),
+                'cookieToolsTechnicalName' => implode(', ', $cookieTechnicalName),
+                'date' => date('Y-m-d H:i'),
+                'domain' => $host,
+                'url' => $userInfo['consentURL'],
+                'pid' => $userInfo['cookieId'] ? $userInfo['cookieId'] : 1,
         ];
+        $repo->executeStatement($strQuery, $set,[]);
+        $data = $repo->findRow('SELECT id FROM tl_consentDirectory  ORDER BY `tl_consentdirectory`.`id` DESC LIMIT 1', [],[]);
 
-        $result = $repo->executeStatement($strQuery, $set,[]);
-
-        return $result->last()['id'];
+        return $data['id'];
 
 	}
 
     /**
-     * @Route("/cookie/allowed/iframe", name="cookie_allowed_iframe")
+     * @Route("/cookie/allowed/iframe", name="cookie_allowed_iframe", defaults={"_scope": "frontend"})
      * @param Request $request
      */
     public function allowedIframeAction(Request $request)
@@ -273,18 +281,20 @@ class CookieController extends AbstractController
         $iframe = $request->get('iframe');
         $modId = $request->get('data')['modId'];
 
-        $strQuery = "SELECT id,cookieToolsSelect,cookieToolExpiredTime,cookieToolsName,cookieToolsTechnicalName FROM tl_fieldpalette WHERE (pid = %s AND cookieToolsSelect = %s)";
-
-        $repo = new Repository($this->database);
+        $strQuery = "SELECT id,cookieToolsSelect,cookieToolExpiredTime,cookieToolsName,cookieToolsTechnicalName FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?)";
+        $this->contaoFramework->initialize();
+        $database = Database::getInstance();
+        $repo = new Repository($database);
         $cookie = $repo->findAllAssoc($strQuery,[], [$modId,$iframe]);
 
-        if (count($cookie) == 0)
+        if (empty($cookie))
             return;
+
         if ($request->hasSession()) {
             $session = $request->getSession();
-            $data = $this->getTlCookieData($modId);
-            $cookieDatabase = $this->getModulData($modId,$data);
-            $id = $this->changeConsent(['cookieTools' => [$cookie],'otherScripts' => []],$data);
+            $data = $this->getTlCookieData($database,$modId);
+            $cookieDatabase = $this->getModulData($database,$modId,$data);
+            $id = $this->changeConsent($database,['cookieTools' => [$cookie],'otherScripts' => []],$data);
             if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi'])) {
                 $ncoi = $_SESSION['_sf2_attributes']['ncoi'];
                 $ncoi['cookieIds'][] = $cookie['id'];
@@ -306,7 +316,16 @@ class CookieController extends AbstractController
      * @param array|null $cookieNotToDelete Cookies that should not be deleted
      * @return JsonResponse
      */
-    public static function deleteCookies(Array $cookieNotToDelete = null) {
+    public function deleteCookiesAction(array $cookieNotToDelete = null)
+    {
+        return self::deleteCookies($cookieNotToDelete);
+    }
+
+    /**
+     * @param array|null $cookieNotToDelete Cookies that should not be deleted
+     * @return JsonResponse
+     */
+    public static function deleteCookies(array $cookieNotToDelete = null) {
         ob_start();
         $cookiesSet = CookieController::unsetCookiesFromArray($cookieNotToDelete);
 
@@ -360,12 +379,13 @@ class CookieController extends AbstractController
     }
 
     /**
+     * @param Database $database
      * @param $modId
      * @return mixed
      */
-    private function getTlCookieData($modId) {
-        $repo = new Repository($this->database);
-        $strQuery = "SELECT ipFormatSave,cookieVersion,expireTime FROM tl_ncoi_cookie WHERE pid = %s";
+    private function getTlCookieData(Database $database,$modId) {
+        $repo = new Repository($database);
+        $strQuery = "SELECT ipFormatSave,cookieVersion,expireTime FROM tl_ncoi_cookie WHERE pid = ?";
         return $repo->findRow($strQuery,[], [$modId]);
     }
 

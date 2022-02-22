@@ -137,14 +137,16 @@ class VideoPreviewBlocker
         if (!empty($sizeBackground['width']) &&  !Blocker::hasUnit($sizeBackground['width']))
             $sizeBackground['width'] .= 'px';
 
-        $search = 'style="';
-        $replace = $search.' background-image:url('.$imageSrc.');
-                background-repeat: no-repeat;
-                background-position: center;';
-        if (!empty($sizeBackground['width']) || !empty($sizeBackground['height']))
-            $replace .=  'background-size: '.$sizeBackground['width'].' '.$sizeBackground['height'].';';
+        if (!empty($imageSrc)) {
+            $search = 'style="';
+            $replace = $search.' background-image:url('.$imageSrc.');
+                    background-repeat: no-repeat;
+                    background-position: center;';
+            if (!empty($sizeBackground['width']) || !empty($sizeBackground['height']))
+                $replace .=  'background-size: '.$sizeBackground['width'].' '.$sizeBackground['height'].';';
 
-        $newBuffer = str_replace($search, $replace, $newBuffer);
+            $newBuffer = str_replace($search, $replace, $newBuffer);
+        }
 
         $isUserCookieDontAllowMedia = false;
         if (

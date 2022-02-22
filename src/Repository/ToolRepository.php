@@ -18,9 +18,9 @@ class ToolRepository extends Repository
      */
     public function findByUrl($url): array
     {
-        $strQuery = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = %s AND i_frame_blocked_urls LIKE %s AND i_frame_blocked_urls <> %s";
+        $strQuery = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl,i_frame_blocked_text FROM tl_fieldpalette WHERE pfield = ? AND i_frame_blocked_urls LIKE ? AND i_frame_blocked_urls <> ?";
 
-        $founded = $this->findRow($strQuery,[], [
+        $founded = $this->findAllAssoc($strQuery,[], [
             'cookieTools',
             '%'.$url.'%',
             ''
@@ -37,9 +37,9 @@ class ToolRepository extends Repository
      */
     public function findByType($type)
     {
-        $strQuery = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = %s AND cookieToolsSelect = %s";
+        $strQuery = "SELECT id,pid,cookieToolsSelect,cookieToolsProvider,cookieToolsPrivacyPolicyUrl FROM tl_fieldpalette WHERE pfield = ? AND cookieToolsSelect = ?";
 
-        $founded = $this->findRow($strQuery,[], [
+        $founded = $this->findAllAssoc($strQuery,[], [
             'cookieTools',
             $type,
         ]);

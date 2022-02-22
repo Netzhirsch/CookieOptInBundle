@@ -11,7 +11,6 @@ use Netzhirsch\CookieOptInBundle\Blocker\IFrameBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\ScriptBlocker;
 use Contao\System;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception;
 use Netzhirsch\CookieOptInBundle\Blocker\VideoPreviewBlocker;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Repository\RevokeRepository;
@@ -23,9 +22,9 @@ class ParseFrontendTemplateListener
     /** @var Database $database */
     private $database;
 
-    public function __construct(Database $database)
+    public function __construct()
     {
-        $this->database = $database;
+        $this->database = Database::getInstance();
     }
 
     /**
@@ -62,9 +61,8 @@ class ParseFrontendTemplateListener
                     $iframeBlocker = new IFrameBlocker();
                     return $iframeBlocker->iframe($buffer,$this->database,$this->getRequestStack());
                 }
-            } elseif(
-                strpos($buffer, '<iframe') !== false
-                && strpos($buffer, '<figure class="video_container">') !== false
+            } elseif (
+                strpos($buffer, '<figure class="video_container">') !== false
                 && strpos($template, 'mod') === false
                 && strpos($template, $objPage->template) === false
 
@@ -157,7 +155,6 @@ class ParseFrontendTemplateListener
         if (!empty($layoutModules)) {
             $bars = $barRepository->findAll();
             $revokeRepository = new RevokeRepository($conn);
-
             foreach ($layoutModules as $key => $layoutModule) {
                 if (!empty($layoutModule['enable'])) {
                     if (!empty($bars)) {

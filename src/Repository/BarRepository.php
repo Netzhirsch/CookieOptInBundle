@@ -27,7 +27,7 @@ class BarRepository extends Repository
     {
         $strQuery
             = "SELECT i_frame_video,i_frame_maps,i_frame_i_frame,i_frame_always_load,i_frame_load 
-                FROM tl_ncoi_cookie WHERE pid = %s ";
+                FROM tl_ncoi_cookie WHERE pid = ? ";
 
         $founded = $this->findRow($strQuery,[], [$modId]);
         if (empty($founded)) {
@@ -38,26 +38,26 @@ class BarRepository extends Repository
         return $founded;
     }
 
-    public function findByIds($ids): array
+    /**
+     * @param $ids
+     * @return array|null
+     */
+    public function findByIds($ids)
     {
-
         if (!is_array($ids))
-            return [];
+            return null;
 
-        $strQuery = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (%s) LIMIT 1";
+        $strQuery = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (?) LIMIT 1";
 
-        $founded = $this->findAllAssoc($strQuery,[], [implode(",",$ids)]);
-        if (empty($founded))
-            return [];
-        return $founded;
+        return $this->findRow($strQuery,[], [implode(",",$ids)]);
     }
 
 
     public function findByLayoutOrPage($pageId)
     {
-        $strQuery = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (SELECT module FROM tl_content AS content LEFT JOIN tl_article AS article ON article.id = content.pid LEFT JOIN tl_page AS page ON page.id = article.pid WHERE page.id = %s AND content.module <> 0 OR page.pid = %s AND content.module <> 0)";
+        $strQuery = "SELECT id,pid FROM tl_ncoi_cookie WHERE pid IN (SELECT module FROM tl_content AS content LEFT JOIN tl_article AS article ON article.id = content.pid LEFT JOIN tl_page AS page ON page.id = article.pid WHERE page.id = ? AND content.module <> 0 OR page.pid = ? AND content.module <> 0)";
 
-        $founded = $this->findAllAssoc($strQuery,[], [[$pageId,$pageId]]);
+        $founded = $this->findAllAssoc($strQuery,[], [$pageId,$pageId]);
         if (empty($founded))
             return [];
         return $founded;
@@ -65,7 +65,7 @@ class BarRepository extends Repository
 
     public function findByPid($id): array
     {
-        $strQuery = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = %s";
+        $strQuery = "SELECT cookieGroups,cookieVersion,respectDoNotTrack FROM tl_ncoi_cookie WHERE pid = ?";
 
         $founded = $this->findRow($strQuery,[], [$id]);
         if (empty($founded))

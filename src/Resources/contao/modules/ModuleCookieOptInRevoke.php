@@ -63,7 +63,7 @@ class ModuleCookieOptInRevoke extends Module
         /** @var Statement $stmt */
         $result = $repo->findRow($strQuery,[], [$this->__get('id')]);
         if (!empty($result))
-			$data['revokeButton'] = $result;
+			$data['revokeButton'] = $result['revokeButton'];
 
 		$this->Template->setData($data);
 	}

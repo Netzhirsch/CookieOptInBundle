@@ -1,4 +1,4 @@
 app:
-    resource: '@NetzhirschCookieOptInBundle/Controller/'
+    resource: '@NetzhirschCookieOptInBundle/Controller'
     type: annotation
 

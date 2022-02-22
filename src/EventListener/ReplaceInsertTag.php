@@ -11,9 +11,9 @@ class ReplaceInsertTag
     /** @var Database $database */
     private $database;
 
-    public function __construct(Database $database)
+    public function __construct()
     {
-        $this->database = $database;
+        $this->database = Database::getInstance();;
     }
 
     /**

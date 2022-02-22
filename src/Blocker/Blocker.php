@@ -9,8 +9,6 @@ use Contao\InsertTags;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception;
 use DOMDocument;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
@@ -143,7 +141,6 @@ class Blocker
 
             self::setModIdByInsertTagInModule($database,$modIds,$barRepo,$dataFromExternalMediaAndBar);
         }
-
         foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
             $dataFromExternalMediaAndBar->addCookieId($externalMediaCookieInDB['id']);
         }
@@ -164,7 +161,6 @@ class Blocker
         $ids = self::getModuleIdsFromHtml($htmlInModules);
         if (!empty($ids)) {
             $barModule = $barRepo->findByIds($ids);
-            $barModule = $barModule[array_key_first($barModule)];
             if (!empty($barModule) && !empty($barModule['pid'])) {
                 $dataFromExternalMediaAndBar->setModId($barModule['pid']);
             }

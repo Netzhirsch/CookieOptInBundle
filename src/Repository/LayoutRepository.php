@@ -15,7 +15,7 @@ class LayoutRepository extends Repository
     public function find($id): array
     {
         $strQuery = "SELECT analytics FROM tl_layout WHERE id = ?";
-        $founded = $this->findRow($strQuery,[], [$id]);
+        $founded = $this->findAllAssoc($strQuery,[], [$id]);
         if (empty($founded))
             return [];
 
