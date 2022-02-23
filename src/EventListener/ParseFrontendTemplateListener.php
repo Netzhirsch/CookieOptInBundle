@@ -110,16 +110,6 @@ class ParseFrontendTemplateListener
         return $buffer;
     }
 
-
-    /**
-     *
-     * @return Connection|object
-     */
-    private function getConnection() {
-        $container = $this->getContainer();
-        return $container->get('database_connection');
-    }
-
     /**
      * @return object|RequestStack|null
      */
@@ -137,10 +127,15 @@ class ParseFrontendTemplateListener
 
     private function isBarInLayoutOrPage($objPage){
 
-        if ($this->checkModulesEmpty(LayoutModel::findById($objPage->layout)))
+        $layout = LayoutModel::findById($objPage->layout);
+        if ($this->checkModulesEmpty($layout))
             return true;
 
         if ($this->checkModulesEmpty($objPage))
+            return true;
+
+        $data = PageLayoutListener::getModuleIdFromInsertTag($objPage, $layout, $this->database);
+        if (isset($data['moduleIds']) && !empty($data['moduleIds']))
             return true;
 
         return false;

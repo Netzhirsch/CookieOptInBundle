@@ -51,7 +51,7 @@ class PageLayoutListener {
         if (empty($moduleIds)) {
             // remove in done on onParseFrontendTemplate event listener
             if (!$removeModules) {
-                $return = self::getModuleIdFromInsertTag($pageModel,$layout,$allModuleIdsInLayout);
+                $return = self::getModuleIdFromInsertTag($pageModel,$layout,$this->database,$allModuleIdsInLayout);
                 if (!empty($return['moduleIds']))
                     $moduleIds = $return['moduleIds'];
             }
@@ -245,7 +245,6 @@ class PageLayoutListener {
         LEFT JOIN tl_page tp on ta.pid = tp.id
         WHERE tp.id = ?";
         $htmlElements = $repo->findAllAssoc($strQueryContent,[], [$id]);
-
         $id = $layout->__get('id');
         $strQueryModule = "SELECT html FROM tl_module as tm 
                 LEFT JOIN tl_layout tlayout on tlayout.id = tm.pid
@@ -265,13 +264,18 @@ class PageLayoutListener {
             $repoModule = new ModuleRepository($database);
             $htmlElementsModule= $repoModule->findByIds($allModuleIds);
             $htmlElements = array_merge($htmlElementsModule,$htmlElements);
-            $modIds = [];
-            foreach ($htmlElements as $htmlElement) {
-                $modId = self::getModuleIdFromHtmlElement($htmlElement);
-                if (!empty($modId) && is_array($modId))
-                    $modIds = array_merge($modId,$modIds);
-            }
         }
+
+        $modIds = [];
+        foreach ($htmlElements as $htmlElement) {
+            $html = $htmlElement['html'];
+            if (empty($html))
+                continue;
+            $modId = self::getModuleIdFromHtmlElement($html);
+            if (!empty($modId) && is_array($modId))
+                $modIds = array_merge($modId,$modIds);
+        }
+
 
         if (empty($modIds))
             return $parameters;
@@ -334,7 +338,6 @@ class PageLayoutListener {
         $layoutModules = StringUtil::deserialize($layoutOrPage->__get('modules'));
         $tlCookieIds = [];
         $allModuleIds = [];
-        $conn = System::getContainer()->get('database_connection');
         $barRepository = new BarRepository($database);
 
         if (!empty($layoutModules)) {
@@ -342,32 +345,30 @@ class PageLayoutListener {
             $revokeRepository = new RevokeRepository($database);
 
             foreach ($layoutModules as $key => $layoutModule) {
-                if (!empty($layoutModule['enable'])) {
-                    if (!empty($bars)) {
-                        foreach ($bars as $bar) {
-                            if ($removeModules && $bar['pid'] == $layoutModule['mod']) {
-                                unset($layoutModules[$key]);
-                            }
-                            elseif(!in_array($bar['pid'],$moduleIds)) {
-                                $moduleIds[] = $bar['pid'];
-                            }
-                            $tlCookieIds[] = $bar['id'];
-                        }
-                    }
-                    if ($layoutModule['mod'] == 0)
+                if (empty($layoutModule['enable']) || empty($layoutModule['mod']))
                         continue;
-                    $revokes = $revokeRepository->findByPid($layoutModule['mod']);
-                    if (!empty($revokes)) {
-                        foreach ($revokes as $revoke) {
-
-                            if ($removeModules)
-                                unset($layoutModules[$key]);
-                            elseif(!in_array($revoke,$moduleIds))
-                                $moduleIds[] = $revoke;
+                if (!empty($bars)) {
+                    foreach ($bars as $bar) {
+                        if ($removeModules && $bar['pid'] == $layoutModule['mod']) {
+                            unset($layoutModules[$key]);
                         }
+                        elseif(!in_array($bar['pid'],$moduleIds)) {
+                            $moduleIds[] = $bar['pid'];
+                        }
+                        $tlCookieIds[] = $bar['id'];
                     }
-                    $allModuleIds[] = $layoutModule['mod'];
                 }
+                $revokes = $revokeRepository->findByPid($layoutModule['mod']);
+                if (!empty($revokes)) {
+                    foreach ($revokes as $revoke) {
+
+                        if ($removeModules)
+                            unset($layoutModules[$key]);
+                        elseif(!in_array($revoke,$moduleIds))
+                            $moduleIds[] = $revoke;
+                    }
+                }
+                $allModuleIds[] = $layoutModule['mod'];
             }
             $layoutOrPage->__set('modules', serialize($layoutModules));
         }
@@ -404,7 +405,7 @@ class PageLayoutListener {
 
                 if (file_exists($templateFile)) {
                     $content = file_get_contents($templateFile);
-                    $modId = self::getModuleIdFromTemplate($content,$conn);
+                    $modId = self::getModuleIdFromTemplate($content,$database);
                 }
                 if (!empty($modId)) {
                     $tlCookieIds[] = $modId;
@@ -530,21 +531,21 @@ class PageLayoutListener {
         return false;
     }
 
-    public static function getModuleIdFromTemplate($fileContent,$conn)
+    public static function getModuleIdFromTemplate($fileContent,Database $database)
     {
         if (!$fileContent)
             return '';
 
-        $modId = self::findModIdInFileContentWithInLangTag($fileContent,$conn);
+        $modId = self::findModIdInFileContentWithInLangTag($fileContent,$database);
         if (empty($modId))
-            $modId = self::findModIdInFileContent($fileContent,$conn);
+            $modId = self::findModIdInFileContent($fileContent,$database);
 
 
 
         return $modId;
     }
 
-    public static function findModIdInFileContentWithInLangTag($fileContent,$conn) {
+    public static function findModIdInFileContentWithInLangTag($fileContent,Database $database) {
         $stringPositionEndLang = 0;
         $modId = null;
         $stringPositionStartLang = strpos($fileContent,'{{iflng::'.$GLOBALS['TL_LANGUAGE'],$stringPositionEndLang);
@@ -569,7 +570,7 @@ class PageLayoutListener {
                     $stringPositionEnd-$stringPositionStart)
                 ;
                 $modId = str_replace('{{insert_module::','',$moduleTags);
-                $barRepo = new BarRepository($conn);
+                $barRepo = new BarRepository($database);
                 if (!empty($modId) && is_numeric($modId)) {
                     $return = $barRepo->findByIds([$modId]);
                     if (empty($return)) {
@@ -587,7 +588,7 @@ class PageLayoutListener {
         return $modId;
     }
 
-    public static function findModIdInFileContent($fileContent,$conn) {
+    public static function findModIdInFileContent($fileContent,Database $database) {
         $offset = 0;
         $modId = null;
         $stringPositionStartLWithoutIfLang = true;
@@ -603,7 +604,7 @@ class PageLayoutListener {
             $modId = str_replace('{{insert_module::','',$insertModule);
             $modId = str_replace('}}','',$modId);
             $modId = trim($modId);
-            $barRepo = new BarRepository($conn);
+            $barRepo = new BarRepository($database);
             if (!empty($modId) && is_numeric($modId)) {
                 $return = $barRepo->findByIds([$modId]);
                 if (empty($return))

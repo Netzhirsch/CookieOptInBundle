@@ -57,7 +57,7 @@ class IFrameBlocker
      * @param Database $database
      * @return string
      */
-    private function getIframeHTML($iframeHTML,$requestStack,$database)
+    private function getIframeHTML($iframeHTML,$requestStack, Database $database)
     {
         //Frontendvariablen diese werden an das Template übergeben
         $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
