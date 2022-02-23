@@ -285,7 +285,7 @@ class CookieController extends AbstractController
         $this->contaoFramework->initialize();
         $database = Database::getInstance();
         $repo = new Repository($database);
-        $cookie = $repo->findAllAssoc($strQuery,[], [$modId,$iframe]);
+        $cookie = $repo->findRow($strQuery,[], [$modId,$iframe]);
 
         if (empty($cookie))
             return;

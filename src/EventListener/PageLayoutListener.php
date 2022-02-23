@@ -262,7 +262,7 @@ class PageLayoutListener {
 
         if (!empty($allModuleIds)) {
             $repoModule = new ModuleRepository($database);
-            $htmlElementsModule= $repoModule->findByIds($allModuleIds);
+            $htmlElementsModule = $repoModule->findByIds($allModuleIds);
             $htmlElements = array_merge($htmlElementsModule,$htmlElements);
         }
 

@@ -911,7 +911,7 @@ class tl_module_ncoi extends tl_module {
         if ($this->checkRightModule($dca->__get('field'))) {
             $repo = new Repository($dca->Database);
             $strQuery = "SELECT maxWidth,blockSite,zIndex FROM tl_ncoi_cookie WHERE pid = ?";
-            $data = $repo->findAllAssoc($strQuery,[], [Input::get('id')]);
+            $data = $repo->findRow($strQuery,[], [Input::get('id')]);
             Helper::parseLessToCss
                 (
                     'netzhirschCookieOptIn.less',

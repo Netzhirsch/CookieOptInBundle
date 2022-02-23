@@ -57,7 +57,6 @@ class ModuleCookieOptInRevoke extends Module
             $data['revokeButton'] = $GLOBALS['TL_LANG']['tl_module']['revokeButtonDefault'];
         }
         //********* revokue button aus der Datenbank ******************************************************************/
-        $conn = System::getContainer()->get('database_connection');
         $repo = new Repository($this->Database);
         $strQuery = "SELECT revokeButton FROM tl_ncoi_cookie_revoke WHERE pid = ?";
         /** @var Statement $stmt */
