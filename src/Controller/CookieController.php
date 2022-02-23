@@ -244,7 +244,10 @@ class CookieController extends AbstractController
         if (!empty($otherCookieIds)) {
             foreach ($otherCookieIds as $cookieTool) {
                 $cookieNames[] = $cookieTool['cookieToolsName'];
-                $cookieTechnicalName[] = $cookieTool['cookieToolsTechnicalName'];
+                $technicalName = $cookieTool['cookieToolsTechnicalName'];
+                if (empty($technicalName))
+                    $technicalName = 'kein Eintrag im Module';
+                $cookieTechnicalName[] = $technicalName;
             }
         }
 
@@ -266,7 +269,7 @@ class CookieController extends AbstractController
                 'pid' => $userInfo['cookieId'] ? $userInfo['cookieId'] : 1,
         ];
         $repo->executeStatement($strQuery, $set,[]);
-        $data = $repo->findRow('SELECT id FROM tl_consentDirectory  ORDER BY `tl_consentdirectory`.`id` DESC LIMIT 1', [],[]);
+        $data = $repo->findRow('SELECT id FROM tl_consentDirectory  ORDER BY `id` DESC LIMIT 1', [],[]);
 
         return $data['id'];
 
