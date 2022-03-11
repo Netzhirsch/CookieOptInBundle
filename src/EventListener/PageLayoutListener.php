@@ -240,7 +240,7 @@ class PageLayoutListener {
 
         $id = $page->__get('id');
         $repo = new Repository($database);
-        $strQueryContent = "SELECT html FROM tl_content as tc 
+        $strQueryContent = "SELECT html FROM tl_content as tc
         LEFT JOIN tl_article ta on tc.pid = ta.id
         LEFT JOIN tl_page tp on ta.pid = tp.id
         WHERE tp.id = ?";
@@ -248,7 +248,7 @@ class PageLayoutListener {
         if (empty($htmlElements))
             $htmlElements = [];
         $id = $layout->__get('id');
-        $strQueryModule = "SELECT html FROM tl_module as tm 
+        $strQueryModule = "SELECT html FROM tl_module as tm
                 LEFT JOIN tl_layout tlayout on tlayout.id = tm.pid
                 WHERE tlayout.id = ?"
         ;
