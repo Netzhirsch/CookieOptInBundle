@@ -240,7 +240,11 @@ class CookieController extends AbstractController
 
 		$cookieNames = [];
 		$cookieTechnicalName = [];
-		$otherCookieIds = array_merge($cookieData['cookieTools'],$cookieData['otherScripts']);
+        if  (is_array($cookieData['cookieTools']) && is_array($cookieData['otherScripts']))
+		    $otherCookieIds = array_merge($cookieData['cookieTools'],$cookieData['otherScripts']);
+        else
+            $otherCookieIds = [];
+
         if (!empty($otherCookieIds)) {
             foreach ($otherCookieIds as $cookieTool) {
                 $cookieNames[] = $cookieTool['cookieToolsName'];

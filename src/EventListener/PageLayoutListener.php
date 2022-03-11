@@ -245,12 +245,16 @@ class PageLayoutListener {
         LEFT JOIN tl_page tp on ta.pid = tp.id
         WHERE tp.id = ?";
         $htmlElements = $repo->findAllAssoc($strQueryContent,[], [$id]);
+        if (empty($htmlElements))
+            $htmlElements = [];
         $id = $layout->__get('id');
         $strQueryModule = "SELECT html FROM tl_module as tm 
                 LEFT JOIN tl_layout tlayout on tlayout.id = tm.pid
                 WHERE tlayout.id = ?"
         ;
         $htmlElementsLayout = $repo->findAllAssoc($strQueryModule,[], [$id]);
+        if (empty($htmlElementsLayout))
+            $htmlElementsLayout = [];
         $htmlElements = array_merge($htmlElementsLayout,$htmlElements);
 
         $parameters = [
