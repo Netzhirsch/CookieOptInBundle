@@ -760,15 +760,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
 	'exclude'   => true,
 	'inputType' => 'select',
 	'options' => [
-		'leftTop' => $GLOBALS['TL_LANG']['tl_module']['leftTop'],
-		'leftCenter' => $GLOBALS['TL_LANG']['tl_module']['leftCenter'],
-		'leftBottom' => $GLOBALS['TL_LANG']['tl_module']['leftBottom'],
-		'centerTop' => $GLOBALS['TL_LANG']['tl_module']['centerTop'],
-		'centerCenter' => $GLOBALS['TL_LANG']['tl_module']['centerCenter'],
-		'centerBottom' => $GLOBALS['TL_LANG']['tl_module']['centerBottom'],
-		'rightTop' => $GLOBALS['TL_LANG']['tl_module']['rightTop'],
-		'rightCenter' => $GLOBALS['TL_LANG']['tl_module']['rightCenter'],
-		'rightBottom' => $GLOBALS['TL_LANG']['tl_module']['rightBottom'],
+		'leftTop' => &$GLOBALS['TL_LANG']['tl_module']['leftTop'],
+		'leftCenter' => &$GLOBALS['TL_LANG']['tl_module']['leftCenter'],
+		'leftBottom' => &$GLOBALS['TL_LANG']['tl_module']['leftBottom'],
+		'centerTop' => &$GLOBALS['TL_LANG']['tl_module']['centerTop'],
+		'centerCenter' => &$GLOBALS['TL_LANG']['tl_module']['centerCenter'],
+		'centerBottom' => &$GLOBALS['TL_LANG']['tl_module']['centerBottom'],
+		'rightTop' => &$GLOBALS['TL_LANG']['tl_module']['rightTop'],
+		'rightCenter' => &$GLOBALS['TL_LANG']['tl_module']['rightCenter'],
+		'rightBottom' => &$GLOBALS['TL_LANG']['tl_module']['rightBottom'],
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
@@ -816,10 +816,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 	'exclude'   => true,
 	'inputType' => 'select',
 	'options' => [
-		'go-up' => $GLOBALS['TL_LANG']['tl_module']['go-up'],
-		'shrink' => $GLOBALS['TL_LANG']['tl_module']['shrink'],
-        'shrink-and-rotate' => $GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'],
-        'hinge' => $GLOBALS['TL_LANG']['tl_module']['hinge'],
+		'go-up' => &$GLOBALS['TL_LANG']['tl_module']['go-up'],
+		'shrink' => &$GLOBALS['TL_LANG']['tl_module']['shrink'],
+        'shrink-and-rotate' => &$GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'],
+        'hinge' => &$GLOBALS['TL_LANG']['tl_module']['hinge'],
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
@@ -865,9 +865,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
     'exclude'   => true,
     'inputType' => 'select',
     'options' => [
-        'uncut' => $GLOBALS['TL_LANG']['tl_module']['uncut'],
-        'pseudo' => $GLOBALS['TL_LANG']['tl_module']['pseudo'],
-        'anon' => $GLOBALS['TL_LANG']['tl_module']['anon'],
+        'uncut' => &$GLOBALS['TL_LANG']['tl_module']['uncut'],
+        'pseudo' => &$GLOBALS['TL_LANG']['tl_module']['pseudo'],
+        'anon' => &$GLOBALS['TL_LANG']['tl_module']['anon'],
     ],
     'eval' => [
         'tl_class'  =>  'w50 ncoi---list--container',
@@ -890,6 +890,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
     'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
     'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
+ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE);
 
 class tl_module_ncoi extends tl_module {
 
@@ -898,7 +899,7 @@ class tl_module_ncoi extends tl_module {
         $value = $this->loadFromNcoiTable($value,$dca);
 	    if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')
 			$value = 'a:2:{s:5:"value";s:3:"500";s:4:"unit";s:2:"px";}';
-		
+
 		return $value;
 	}
 
@@ -982,7 +983,7 @@ class tl_module_ncoi extends tl_module {
                 $temp = $groups[0];
                 $groups[0] = [
                     'key' => '1',
-                    'value' => $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential'],
+                    'value' => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential'],
                 ];
                 if (!empty($temp)) {
                     $groups[array_key_last($groups)+1] = $temp;
@@ -1042,7 +1043,7 @@ class tl_module_ncoi extends tl_module {
 	public function getNetzhirschCookie($fieldValue,DC_Table $dca)
 	{
 		$id = $dca->id;
-		
+
 		$fieldPalettes = FieldPaletteModel::findByPid($id);
 		$csrfCookieFieldModel = null;
         $csrfHttpsCookieFieldModel = null;
@@ -1092,7 +1093,7 @@ class tl_module_ncoi extends tl_module {
                 $csrfCookieFieldModel->cookieToolsProvider = '';
                 $csrfCookieFieldModel->cookieToolExpiredTime = '0';
                 $csrfCookieFieldModel->cookieToolsSelect = '-';
-                $csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
+                $csrfCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
                 $csrfCookieFieldModel->cookieToolGroup = '1';
 
                 $csrfCookieFieldModel->save();
@@ -1125,7 +1126,7 @@ class tl_module_ncoi extends tl_module {
                 $csrfHttpsCookieFieldModel->cookieToolsProvider = '';
                 $csrfHttpsCookieFieldModel->cookieToolExpiredTime = '0';
                 $csrfHttpsCookieFieldModel->cookieToolsSelect = '-';
-                $csrfHttpsCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
+                $csrfHttpsCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
                 $csrfHttpsCookieFieldModel->cookieToolGroup = '1';
 
                 $csrfHttpsCookieFieldModel->save();
@@ -1153,7 +1154,7 @@ class tl_module_ncoi extends tl_module {
                 $phpSessIdCookieFieldModel->cookieToolsProvider = '';
                 $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
                 $phpSessIdCookieFieldModel->cookieToolsSelect = '-';
-                $phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
+                $phpSessIdCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
                 $phpSessIdCookieFieldModel->cookieToolGroup = '1';
 
                 $phpSessIdCookieFieldModel->save();
@@ -1184,12 +1185,12 @@ class tl_module_ncoi extends tl_module {
                 $feUserAuthCookieFieldModel->cookieToolsProvider = '';
                 $feUserAuthCookieFieldModel->cookieToolExpiredTime = '0';
                 $feUserAuthCookieFieldModel->cookieToolsSelect = '-';
-                $feUserAuthCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'];
+                $feUserAuthCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'];
                 $feUserAuthCookieFieldModel->cookieToolGroup = '1';
                 $feUserAuthCookieFieldModel->save();
             }
         }
-		
+
 		if (!empty($fieldValue)) {
 			$fieldValues = StringUtil::deserialize($fieldValue);
 			$fieldValues[] = [
