@@ -29,7 +29,7 @@ class ModuleCookieOptInBar extends Module
      * @throws Less_Exception_Parser
      */
 	public function generate() {
-		
+
 		if (TL_MODE == 'BE') {
 			/** @var BackendTemplate|object $objTemplate */
 			$objTemplate = new BackendTemplate('be_wildcard');
@@ -42,8 +42,8 @@ class ModuleCookieOptInBar extends Module
 			return $objTemplate->parse();
 		}
 
-        $strQuery = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectDoNotTrack 
-                FROM tl_ncoi_cookie 
+        $strQuery = "SELECT defaultCss,cssTemplateStyle,blockSite,zIndex,maxWidth,respectDoNotTrack
+                FROM tl_ncoi_cookie
                 WHERE pid = ?
         ";
 
@@ -193,7 +193,7 @@ class ModuleCookieOptInBar extends Module
 
         $data['privacyPolicy'] = self::getPrivacyPolicy($objPage,$result['privacyPolicy']);
 
-		$infoTitle = $result['infoTitle'];
+		$infoTitle = isset($result['infoTitle']) ? $result['infoTitle'] : '';
 		if (!empty($infoTitle)) {
 			$infoTitle = StringUtil::deserialize($infoTitle);
 			$data['infoTitle'] = "<".$infoTitle['unit'].">".$infoTitle['value']."</".$infoTitle['unit'].">";
@@ -205,7 +205,7 @@ class ModuleCookieOptInBar extends Module
 
 		$data['isExcludePage'] = false;
 		$currentPageId = $objPage->id;
-		$data['currentPage'] = $_SERVER['REDIRECT_URL'];
+		$data['currentPage'] = (isset($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : '');
 		$excludePages = StringUtil::deserialize($result['excludePages']);
         if (!empty($excludePages)) {
             foreach ($excludePages as $excludePage) {
@@ -235,7 +235,7 @@ class ModuleCookieOptInBar extends Module
 		$data['animation'] = '';
 		if (!empty($result['animation']))
 			$data['animation'] = $result['animation'];
-		
+
 		$data['position'] = $result['position'];
 
         $data['highlightSaveAllButton'] = $result['highlightSaveAllButton'];
@@ -266,7 +266,7 @@ class ModuleCookieOptInBar extends Module
 				Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$maxWidth,$blockSite,$zIndex);
 			}
 			$GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptIn.css|static';
-			
+
 			if ($cssTemplateStyle == 'dark'){
 				if (!file_exists($path.'netzhirschCookieOptInDarkVersion.css')) {
 					Helper::parseLessToCss('netzhirschCookieOptInDarkVersion.less','netzhirschCookieOptInDarkVersion.css');

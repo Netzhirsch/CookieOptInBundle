@@ -28,7 +28,7 @@
 			class="ncoi---container ncoi---mod-missing"
 			data-ncoi-cookie-version="<?php echo $this->arrData['cookieVersion']?>"
             data-is-exclude-page="<?=$this->arrData['isExcludePage']?>"
-			data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
+			data-ncoi-mod-missing="<?=(isset($this->arrData['moduleMissing']) ? $this->arrData['moduleMissing'] : '' ) ?>"
 			data-ncoi-mod-id="<?php echo $this->arrData['id']?>"
             data-ncoi-animation="<?=$this->arrData['animation']?>"
             data-ncoi-respect-do-not-track="<?=$this->arrData['respectDoNotTrack']?>"
