@@ -5,7 +5,7 @@
 <div
     <?php if (!empty($id)) echo 'id="'.$id.'"'; ?>
 	class="ncoi---revoke ncoi---mod-missing <?php echo $class ?>"
-	data-ncoi-mod-missing="<?php echo $this->arrData['moduleMissing']?>"
+	data-ncoi-mod-missing="<?=(isset($this->arrData['moduleMissing']) ? $this->arrData['moduleMissing'] : '' ) ?>"
 
 >
     <a class="ncoi---revoke--button" rel="nofollow">
