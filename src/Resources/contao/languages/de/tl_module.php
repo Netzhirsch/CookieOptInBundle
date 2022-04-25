@@ -185,17 +185,17 @@ $GLOBALS['TL_LANG']['tl_module']['defaultCssDefault'] = true;
 
 $GLOBALS['TL_LANG']['tl_module']['position'] = ['Position'];
 
-$GLOBALS['TL_LANG']['tl_module']['leftTop'] = 'left top';
-$GLOBALS['TL_LANG']['tl_module']['leftCenter'] = 'left center';
-$GLOBALS['TL_LANG']['tl_module']['leftBottom'] = 'left bottom';
+$GLOBALS['TL_LANG']['tl_module']['leftTop'] = 'Links Oben';
+$GLOBALS['TL_LANG']['tl_module']['leftCenter'] = 'Links Mitte';
+$GLOBALS['TL_LANG']['tl_module']['leftBottom'] = 'Links Unten';
 
-$GLOBALS['TL_LANG']['tl_module']['centerTop'] = 'center top';
-$GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'center center';
-$GLOBALS['TL_LANG']['tl_module']['centerBottom'] = 'center bottom';
+$GLOBALS['TL_LANG']['tl_module']['centerTop'] = 'Mitte Oben';
+$GLOBALS['TL_LANG']['tl_module']['centerCenter'] = 'Mitte Mitte';
+$GLOBALS['TL_LANG']['tl_module']['centerBottom'] = 'Mitte Unten';
 
-$GLOBALS['TL_LANG']['tl_module']['rightTop'] = 'right top';
-$GLOBALS['TL_LANG']['tl_module']['rightCenter'] = 'right center';
-$GLOBALS['TL_LANG']['tl_module']['rightBottom'] = 'right bottom';
+$GLOBALS['TL_LANG']['tl_module']['rightTop'] = 'Rechts Oben';
+$GLOBALS['TL_LANG']['tl_module']['rightCenter'] = 'Rechts Mitte';
+$GLOBALS['TL_LANG']['tl_module']['rightBottom'] = 'Rechts Unten';
 
 $GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle'] = ['Template Style'];
 
