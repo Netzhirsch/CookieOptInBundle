@@ -1093,7 +1093,7 @@ class tl_module_ncoi extends tl_module {
                 $csrfCookieFieldModel->cookieToolsProvider = '';
                 $csrfCookieFieldModel->cookieToolExpiredTime = '0';
                 $csrfCookieFieldModel->cookieToolsSelect = '-';
-                $csrfCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
+                $csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
                 $csrfCookieFieldModel->cookieToolGroup = '1';
 
                 $csrfCookieFieldModel->save();
@@ -1126,7 +1126,7 @@ class tl_module_ncoi extends tl_module {
                 $csrfHttpsCookieFieldModel->cookieToolsProvider = '';
                 $csrfHttpsCookieFieldModel->cookieToolExpiredTime = '0';
                 $csrfHttpsCookieFieldModel->cookieToolsSelect = '-';
-                $csrfHttpsCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
+                $csrfHttpsCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
                 $csrfHttpsCookieFieldModel->cookieToolGroup = '1';
 
                 $csrfHttpsCookieFieldModel->save();
@@ -1154,7 +1154,7 @@ class tl_module_ncoi extends tl_module {
                 $phpSessIdCookieFieldModel->cookieToolsProvider = '';
                 $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
                 $phpSessIdCookieFieldModel->cookieToolsSelect = '-';
-                $phpSessIdCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
+                $phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
                 $phpSessIdCookieFieldModel->cookieToolGroup = '1';
 
                 $phpSessIdCookieFieldModel->save();
@@ -1185,7 +1185,7 @@ class tl_module_ncoi extends tl_module {
                 $feUserAuthCookieFieldModel->cookieToolsProvider = '';
                 $feUserAuthCookieFieldModel->cookieToolExpiredTime = '0';
                 $feUserAuthCookieFieldModel->cookieToolsSelect = '-';
-                $feUserAuthCookieFieldModel->cookieToolsUse = &$GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'];
+                $feUserAuthCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'];
                 $feUserAuthCookieFieldModel->cookieToolGroup = '1';
                 $feUserAuthCookieFieldModel->save();
             }
