@@ -48,7 +48,8 @@ class tl_settings_ncoi {
 
 	public function saveLicenseData($licenseKey) {
 		if (!empty($licenseKey)){
-			$licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST'],false);
+            $domain = $_SERVER['SERVER_NAME'];
+			$licenseAPIResponse = LicenseController::callAPI($domain,false);
 			if ($licenseAPIResponse->getSuccess()) {
 				$licenseKey = $licenseAPIResponse->getLicenseKey();
 				$licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();

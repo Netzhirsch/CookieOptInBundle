@@ -101,7 +101,7 @@ class tl_page_ncoi extends tl_page {
 			if (!empty($licenseKey)) {
 				$domain = $pageModel->__get('dns');
 				if (empty($domain))
-					$domain = $_SERVER['HTTP_HOST'];
+					$domain = $_SERVER['SERVER_NAME'];
 
 				$licenseAPIResponse = LicenseController::callAPI($domain,false);
 
@@ -141,7 +141,7 @@ class tl_page_ncoi extends tl_page {
 
             if (!$rootPoint->__get('bar_disabled')) {
 
-                $domain = (!empty($rootPoint->__get('dns'))) ? $rootPoint->__get('dns') : $_SERVER['HTTP_HOST'];
+                $domain = (!empty($rootPoint->__get('dns'))) ? $rootPoint->__get('dns') : $_SERVER['SERVER_NAME'];
                 if (!in_array($domain, $domainNoDuplicate)) {
                     $domainNoDuplicate[] = $domain;
                 }

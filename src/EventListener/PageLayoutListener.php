@@ -507,13 +507,14 @@ class PageLayoutListener {
             'ncoi_license_expiry_date'
         ) : Config::get('ncoi_license_expiry_date');
 
+        $domain = $_SERVER['SERVER_NAME'];
         if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense(
                 $licenseKey,
                 $licenseExpiryDate,
-                $_SERVER['HTTP_HOST']
-            ) && self::checkHash($licenseKey, $licenseExpiryDate, $_SERVER['HTTP_HOST'])) {
+                $domain
+            ) && self::checkHash($licenseKey, $licenseExpiryDate, $domain)) {
 
-            $licenseAPIResponse = LicenseController::callAPI($_SERVER['HTTP_HOST'],true);
+            $licenseAPIResponse = LicenseController::callAPI($domain,true);
             if ($licenseAPIResponse->getSuccess()) {
                 $licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
                 $licenseKey = $licenseAPIResponse->getLicenseKey();
@@ -524,7 +525,7 @@ class PageLayoutListener {
         if (!self::checkLicense(
                 $licenseKey,
                 $licenseExpiryDate,
-                $_SERVER['HTTP_HOST']
+                $domain
             ) && empty(self::checkLicenseRemainingTrialPeriod())) {
 
             $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError']
