@@ -32,7 +32,7 @@ $GLOBALS['TL_LANG']['FMD']['netzhirsch']['cookieOptIn'] = [
 ];
 $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn'] = [
 	'messages' => [
-		'contact' => 'Please contact netzhirsch at <a href="tel:045138943740">0451 / 38 94 37 40</a> or <a href="mailto:netzhirsch@netzhirsch.de">netzhirsch@netzhirsch.de</a>, to purchase a license key.',
+		'contact' => 'Please contact netzhirsch at <a href="tel:04516933389204">0451 / 69 333 89 204</a> or <a href="mailto:netzhirsch@netzhirsch.de">netzhirsch@netzhirsch.de</a>, to purchase a license key.',
 		'domain' => 'For your domain: ',
 		'errorTrial' => 'The trial month for the netzhirsch cookie opt in bundle has expired.',
 		'infoTrialStart' => 'Still',
