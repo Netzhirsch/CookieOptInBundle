@@ -31,7 +31,7 @@ class LicenseController extends AbstractController
 		$rootPages = PageModel::findByType('root');
 		foreach ($rootPages as $rootPage) {
 			if (!empty($rootPage->__get('ncoi_license_key'))) {
-			    $domain = ($rootPage->__get('dns')) ? $rootPage->__get('dns') : $_SERVER['HTTP_HOST'];
+			    $domain = ($rootPage->__get('dns')) ? $rootPage->__get('dns') : $_SERVER['SERVER_NAME'];
 				$licenseAPIResponse = self::callAPI($domain,false);
 				if ($licenseAPIResponse->getSuccess())
 					self::setLicense($licenseAPIResponse->getDateOfExpiry(), $licenseAPIResponse->getLicenseKey(), $rootPage);
@@ -40,7 +40,7 @@ class LicenseController extends AbstractController
 
 		$licenseKey = Config::get('ncoi_license_key');
 		if (!empty($licenseKey)) {
-			$licenseAPIResponse = self::callAPI($_SERVER['HTTP_HOST'],false);
+			$licenseAPIResponse = self::callAPI($_SERVER['SERVER_NAME'],false);
 			if ($licenseAPIResponse->getSuccess())
 				self::setLicense($licenseAPIResponse->getDateOfExpiry(),$licenseAPIResponse->getLicenseKey());
 		}
@@ -70,11 +70,11 @@ class LicenseController extends AbstractController
 	}
 
 	/** @noinspection PhpComposerExtensionStubsInspection ext-curl,ext-json is required in bundle composer.json phpStorm don't check that*/
-	/**
-	 * @param $domain
-	 *
-	 * @return LicenseAPIResponse
-	 */
+    /**
+     * @param $domain
+     * @param $isFrontendCall
+     * @return LicenseAPIResponse
+     */
 	public static function callAPI($domain,$isFrontendCall) {
 
 	    $licenseAPIResponse = new LicenseAPIResponse();

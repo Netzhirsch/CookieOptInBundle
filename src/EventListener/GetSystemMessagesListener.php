@@ -72,7 +72,7 @@ class GetSystemMessagesListener
 		$kontaktString = $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['contact'];
 
 		if (empty($domain)){
-			$domain = $_SERVER['HTTP_HOST'];
+			$domain = $_SERVER['SERVER_NAME'];
 		}
 		$domainString = $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['domain'].$domain.'<br/>';
 

@@ -260,7 +260,7 @@ class CookieController extends AbstractController
         if (empty($stmt))
             return $id;
 
-        $host = $_SERVER['HTTP_HOST']?$_SERVER['HTTP_HOST']:'';
+        $domain = $_SERVER['SERVER_NAME'];
         $repo = new Repository($database);
         $set =
             [
@@ -268,7 +268,7 @@ class CookieController extends AbstractController
                 'cookieToolsName' => implode(', ', $cookieNames),
                 'cookieToolsTechnicalName' => implode(', ', $cookieTechnicalName),
                 'date' => date('Y-m-d H:i'),
-                'domain' => $host,
+                'domain' => $domain,
                 'url' => $userInfo['consentURL'],
                 'pid' => $userInfo['cookieId'] ? $userInfo['cookieId'] : 1,
         ];
@@ -337,7 +337,8 @@ class CookieController extends AbstractController
         $cookiesSet = CookieController::unsetCookiesFromArray($cookieNotToDelete);
 
         //all possible subdomains
-        $subDomains = explode(".", $_SERVER['HTTP_HOST']);
+        $domain = $_SERVER['SERVER_NAME'];
+        $subDomains = explode(".", $domain);
         foreach ($subDomains as $key => $subDomain) {
             $domain = implode(".", $subDomains);
             unset($subDomains[$key]);
