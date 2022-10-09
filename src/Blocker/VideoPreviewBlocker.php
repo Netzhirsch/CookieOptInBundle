@@ -24,8 +24,15 @@ class VideoPreviewBlocker
 
         if (empty($requestStack))
             return $buffer;
-
-        return $this->getIframeHTML($buffer,$requestStack,$database);
+        $bufferParts = explode('<figure',$buffer);
+        $newBuffer = '';
+        foreach ($bufferParts as $bufferPart) {
+            if (strpos($bufferPart,'figure') > 0 && !strpos($bufferPart, 'ncoi---blocked'))
+                $newBuffer .= $this->getIframeHTML('<figure '.$bufferPart,$requestStack,$database);
+            else
+                $newBuffer .= $bufferPart;
+        }
+        return $newBuffer;
     }
 
     /**
