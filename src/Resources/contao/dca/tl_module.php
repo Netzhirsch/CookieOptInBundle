@@ -767,7 +767,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
     'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['Position'] = [
+$GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
 	'label' => ['Position'],
 	'exclude'   => true,
 	'inputType' => 'select',
