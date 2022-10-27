@@ -290,7 +290,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 			'hidePublished' => true,
 			'notSortable' => false,
             'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableCookieTools']],
-	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
+//	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
 		],
 		'list'     => [
 			'label' => [
