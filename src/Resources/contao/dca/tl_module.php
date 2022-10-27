@@ -1365,6 +1365,7 @@ class tl_module_ncoi extends tl_module {
             $cookieGroups = StringUtil::deserialize($cookieGroups);
         }
         if (empty($cookieGroups)) {
+            $cookieGroups = [];
             $cookieGroups[] = $id;
         } else {
             if (!in_array($id,$cookieGroups)) {
