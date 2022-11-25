@@ -73,6 +73,7 @@ class NcoiCookie {
                 && cookie !== 'csrf_https-contao_csrf_token'
                 && cookie !== 'PHPSESSID'
                 && cookie !== 'contao_settings'
+                && cookie !== 'ISOTOPE_TEMP_CART'
             ) {
                 //tries all paths from root to current subpage
                 let cookiePath = '',
