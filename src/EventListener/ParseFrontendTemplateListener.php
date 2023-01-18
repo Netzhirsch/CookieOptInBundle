@@ -22,7 +22,7 @@ class ParseFrontendTemplateListener
     /** @var Database $database */
     private $database;
 
-    private bool $isNews = false;
+    private $isNews = false;
 
     public function __construct()
     {

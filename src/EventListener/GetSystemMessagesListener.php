@@ -18,7 +18,6 @@ class GetSystemMessagesListener
 
         if (!Helper::isAdmin())
             return '';
-
 		$rootPoints = PageModel::findByType('root');
 		$licenseExpiryDates = [];
 		$licenseKeys = [];
