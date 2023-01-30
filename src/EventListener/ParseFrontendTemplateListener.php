@@ -167,7 +167,7 @@ class ParseFrontendTemplateListener
                             if (isset($bar['languageSwitch'])) {
                                 $languageSwitch = $bar['languageSwitch'];
                                 $languageSwitch = unserialize($languageSwitch);
-                                if ($languageSwitch['mod'] == $layoutModule['mod'])
+                                if (isset($languageSwitch[0]) && $languageSwitch[0]['mod'] == $layoutModule['mod'])
                                     return true;
                             }
                         }
