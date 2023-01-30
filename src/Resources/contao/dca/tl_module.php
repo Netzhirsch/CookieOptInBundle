@@ -97,6 +97,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,animation
 	;ipFormatSave
 	;isNewCookieVersion
+	;languageSwitch
 ';
 
 // setCookieVersion check for right modul
@@ -890,6 +891,16 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
     'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
     'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['languageSwitch'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['languageSwitch'],
+    'default' => [['mod' => 0]],
+    'exclude' => true,
+    'inputType' => 'moduleWizard',
+    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
+    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
+];
+
 ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE);
 
 class tl_module_ncoi extends tl_module {

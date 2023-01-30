@@ -41,3 +41,6 @@
 .ncoi---list--container .ncoi---list--list li {
 	list-style: outside;
 }
+#ctrl_languageSwitch th,#ctrl_languageSwitch td:nth-child(2),#ctrl_languageSwitch td:nth-child(3) {
+	display: none;
+}

@@ -22,7 +22,7 @@ class ParseFrontendTemplateListener
     /** @var Database $database */
     private $database;
 
-    private bool $isNews = false;
+    private $isNews = false;
 
     public function __construct()
     {
@@ -163,6 +163,12 @@ class ParseFrontendTemplateListener
                         foreach ($bars as $bar) {
                             if ($bar['pid'] == $layoutModule['mod']) {
                                 return true;
+                            }
+                            if (isset($bar['languageSwitch'])) {
+                                $languageSwitch = $bar['languageSwitch'];
+                                $languageSwitch = unserialize($languageSwitch);
+                                if ($languageSwitch['mod'] == $layoutModule['mod'])
+                                    return true;
                             }
                         }
                     }
