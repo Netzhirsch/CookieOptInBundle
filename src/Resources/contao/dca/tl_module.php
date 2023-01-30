@@ -26,7 +26,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInRevoke'] =
 ;
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['revokeButton'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['revokeButton'],
+	'label' => ['Button-Text','Bitte geben Sie den Text des Revoke-Buttons ein.'],
 	'exclude'   => true,
 	'inputType' => 'text',
 	'eval' => [
@@ -42,7 +42,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['revokeButton'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateRevoke'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['templateRevoke'],
+	'label' => ['Template' , 'Der Template-Name muss mit mod_cookie_opt_in_revoke beginnen.'],
 	'exclude'   => true,
 	'inputType' => 'select',
 	'options' => $this->getTemplateGroup('mod_cookie_opt_in_revoke'),
@@ -111,8 +111,8 @@ $GLOBALS['TL_DCA']['tl_module']['config']['ctable'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
-	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['headline'],
+	'label' => ['Überschrift'],
+	'explanation' => ['Überschrift'],
 	'exclude'   => true,
 	'inputType' => 'inputUnit',
 	'options' => [
@@ -131,8 +131,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
-	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['questionHint'],
+	'label' => ['Hinweistext in der Cookie Bar'],
+	'explanation' => ['Hinweistext in der Cookie Bar'],
 	'exclude'   => true,
 	'inputType' => 'textarea',
 	'eval' => [
@@ -146,7 +146,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['questionHint'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['saveButton'],
+	'label' => ['Speichern-Button','Bitte geben Sie die Beschriftung des Speichern-Buttons ein.'],
 	'exclude'   => true,
 	'inputType' => 'text',
 	'eval' => [
@@ -160,7 +160,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveButton'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['saveAllButton'],
+	'label' => ['Alle annehmen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookies annimmt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'],
 	'exclude'   => true,
 	'inputType' => 'text',
 	'eval' => [
@@ -175,7 +175,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['saveAllButton'] = [
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['highlightSaveAllButton'],
+    'label' => ['Alle annehmen-Button hervorheben'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
@@ -187,7 +187,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['highlightSaveAllButton'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['rejectAllButton'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['rejectAllButton'],
+	'label' => ['Alle ablehnen-Button','Bitte geben Sie die Beschriftung des Buttons ein, der alle nicht essenziell Cookies ablehnt. Falls es nur essenzielle Cookies gibt, wird dieser Button ausgeblendet.'],
 	'exclude'   => true,
 	'inputType' => 'text',
 	'eval' => [
@@ -201,8 +201,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['rejectAllButton'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonShow'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonShow'],
-    'explanation' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonShow'],
+    'label' => ['Info-anzeigen-Button', 'Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookie Informationen anzeigt.'],
+    'explanation' => ['Info-anzeigen-Button', 'Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookie Informationen anzeigt.'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval' => [
@@ -216,8 +216,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonShow'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonHide'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonHide'],
-    'explanation' => &$GLOBALS['TL_LANG']['tl_module']['infoButtonHide'],
+    'label' => ['Info-ausblenden-Button', 'Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookie Informationen ausblendet.'],
+    'explanation' => ['Info-ausblenden-Button', 'Bitte geben Sie die Beschriftung des Buttons ein, der alle Cookie Informationen ausblendet.'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval' => [
@@ -231,8 +231,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoButtonHide'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['infoHint'],
-	'explanation' => &$GLOBALS['TL_LANG']['tl_module']['infoHint'],
+	'label' => ['Informationen','Bitte geben Sie den Informationstext ein, der beim Blick auf den Info-anzeigen-Button erscheinen soll.'],
+	'explanation' => ['Informationen','Bitte geben Sie den Informationstext ein, der beim Blick auf den Info-anzeigen-Button erscheinen soll.'],
 	'exclude'   => true,
 	'inputType' => 'textarea',
 	'eval' => [
@@ -246,7 +246,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['infoHint'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieVersion'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['cookieVersion'],
+	'label' => ['Alle gesetzten Cookies zurücksetzen','Sie sollten diese Option bei datenschutzrelevanten Änderungen aktivieren. Jeder Besucher bekommt anschließend erneut die Cookie Bar angezeigt.'],
 	'exclude'   => true,
 	'inputType' => 'text',
 	'eval' => [
@@ -260,7 +260,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieVersion'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['cookieGroups'],
+	'label' => ['Cookie Gruppen','Der Schlüssel dient der internen Verarbeitung, der Wert wird im Frontend angezeigt.'],
 	'exclude'   => true,
 	'inputType' => 'keyValueWizard',
 	'eval' => [
@@ -280,7 +280,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
-	'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieTools'],
+	'label'     => ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Klicken Sie hier für eine Hilfestellung.</a>'],
 	'exclude'   => true,
 	'inputType' => 'fieldpalette',
 	'foreignKey'   => 'tl_fieldpalette.id',
@@ -291,7 +291,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 			'hidePublished' => true,
 			'notSortable' => false,
             'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableCookieTools']],
-	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
+//	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
 		],
 		'list'     => [
 			'label' => [
@@ -324,7 +324,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 		],
 		'fields' => [
 			'cookieToolsName' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsName'],
+				'label'     => ['Cookie Name','z.B. Facebook Pixel'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NULL default '' ",
@@ -334,17 +334,28 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
 			'cookieToolsSelect' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelect'],
+				'label'     => ['Type'],
 				'exclude'   => true,
 				'inputType' => 'select',
-				'options'   => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsSelectOptions'],
+				'options'   => [
+                    'googleAnalytics' => 'Google Analytics',
+                    'googleTagManager' => 'Google Tag Manager',
+                    'facebookPixel' => 'Facebook Pixel',
+                    'matomo' => 'Matomo',
+                    'youtube' => 'YouTube',
+                    'vimeo' => 'Vimeo',
+                    'googleMaps' => 'iFrame [Google Maps]',
+                    'iframe' => 'iFrame [Andere]',
+                    'script' => 'HTML-Element [script]',
+                    '-' => '-'
+                ],
 				'sql' => "varchar(32) default '' ",
 				'eval' => [
 					'tl_class'  =>  'long clr',
 				],
 			],
 			'cookieToolsTechnicalName' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'],
+				'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -353,7 +364,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
 			'cookieToolsTrackingId' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingId'],
+				'label'     => ['Tracking ID','z.B. UA-123456789-1 für Google Analytics'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -363,7 +374,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
 			'cookieToolsTrackingServerUrl' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTrackingServerUrl'],
+				'label'     => ['Tracking Server URL ','Nur für Matomo z.B. https://netzhirsch.matomo.cloud/'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -372,7 +383,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
 			'cookieToolsProvider' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsProvider'],
+				'label'     => ['Anbieter'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -381,7 +392,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
 			'cookieToolsPrivacyPolicyUrl' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'],
+				'label'     => ['Datenschutzerklärung URL','z.B. https://policies.google.com/privacy'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -390,7 +401,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
 			'cookieToolsUse' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'],
+				'label'     => ['Zweck','Bitte geben Sie den Zweck des Cookies an.'],
 				'exclude'   => true,
 				'inputType' => 'textarea',
 				'sql' => "text NULL default '' ",
@@ -400,7 +411,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
 			'cookieToolGroup' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'],
+				'label'     => ['Cookie Gruppe'],
 				'exclude'   => true,
 				'inputType' => 'select',
 				'options_callback' => ['tl_module_ncoi','getGroupKeys'],
@@ -411,7 +422,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				],
 			],
             'cookieToolExpiredTime' => [
-                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'],
+                'label' => 	['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'],
                 'exclude'   => true,
                 'inputType' => 'text',
                 'eval' => [
@@ -422,7 +433,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                 'sql' => "int(2) NULL ",
             ],
             'i_frame_blocked_urls' => [
-                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_urls'],
+                'label' => 	['Blockierte URL','Bitte geben Sie hier die URL des IFrames ein. Sollten Sie keine angeben wird die entsprechende URL des IFrame Typen verwendet. Mehrere URLS bitte mit Komma getrennt.'],
                 'exclude'   => true,
                 'inputType' => 'text',
                 'eval' => [
@@ -432,7 +443,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                 'sql' => "text NULL default ''",
             ],
             'i_frame_blocked_text' => [
-                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_text'],
+                'label' => 	['Blockierter Text','Bitte geben Sie hier den Text ein, der für dieses blockiert IFrame verwendet werden soll. Sollten Sie keinen angeben wird der entsprechende Text des IFrame Typen verwendet. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'],
                 'exclude'   => true,
                 'inputType' => 'text',
                 'eval' => [
@@ -445,7 +456,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 	],
 ];
 $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
-	'label'     => &$GLOBALS['TL_LANG']['tl_module']['otherScripts'],
+	'label'     => ['Andere Skripte'],
 	'exclude'   => true,
 	'inputType' => 'fieldpalette',
 	'foreignKey'   => 'tl_fieldpalette.id',
@@ -479,7 +490,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 		],
 		'fields' => [
 			'cookieToolsProvider' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsProvider'],
+				'label'     =>['Anbieter'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -488,7 +499,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				],
 			],
 			'cookieToolsUse' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsUse'],
+				'label'     => ['Zweck','Bitte geben Sie den Zweck des Cookies an.'],
 				'exclude'   => true,
 				'inputType' => 'textarea',
 				'sql' => "text NULL default '' ",
@@ -498,7 +509,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				],
 			],
 			'cookieToolsPrivacyPolicyUrl' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsPrivacyPolicyUrl'],
+				'label'     => ['Datenschutzerklärung URL','z.B. https://policies.google.com/privacy'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -507,7 +518,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				],
 			],
 			'cookieToolsTechnicalName' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsTechnicalName'],
+				'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NOT NULL default '' ",
@@ -516,7 +527,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				],
 			],
 			'cookieToolsName' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsName'],
+				'label'     => ['Cookie Name','z.B. Facebook Pixel'],
 				'exclude'   => true,
 				'inputType' => 'text',
 				'sql' => "varchar(255) NULL default '' ",
@@ -526,7 +537,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				],
 			],
 			'cookieToolGroup' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroup'],
+				'label'     => ['Cookie Gruppe'],
 				'exclude'   => true,
 				'inputType' => 'select',
 				'options_callback' => ['tl_module_ncoi','getGroupKeys'],
@@ -537,7 +548,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 				],
 			],
             'cookieToolExpiredTime' => [
-                'label' => 	&$GLOBALS['TL_LANG']['tl_module']['cookieToolExpiredTime'],
+                'label' => 	['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'],
                 'exclude'   => true,
                 'inputType' => 'text',
                 'eval' => [
@@ -548,7 +559,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
                 'sql' => "int(2) NULL ",
             ],
 			'cookieToolsCode' => [
-				'label'     => &$GLOBALS['TL_LANG']['tl_module']['cookieToolsCode'],
+				'label'     => ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'],
 				'exclude'   => true,
 				'inputType' => 'textarea',
 				'sql' => "text NULL default '' ",
@@ -565,7 +576,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_video'] = [
-    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['video'],
+    'label' => 	['Blockierte Videos','Bitte geben Sie hier den Text ein, der für blockiert Videos verwendet werden soll. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'],
     'exclude'   => true,
     'inputType' => 'textarea',
     'eval' => [
@@ -579,7 +590,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_video'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_maps'] = [
-    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['maps'],
+    'label' => 	['Blockierte Karten','Bitte geben Sie hier den Text ein, der für blockiert Karten verwendet werden soll. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'],
     'exclude'   => true,
     'inputType' => 'textarea',
     'eval' => [
@@ -593,7 +604,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_maps'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_i_frame'] = [
-    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['i_frame'],
+    'label' => 	['Blockierte iFrames','Bitte geben Sie hier den Text ein, der für blockiert iFrames verwendet werden soll. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'],
     'exclude'   => true,
     'inputType' => 'textarea',
     'eval' => [
@@ -608,7 +619,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_i_frame'] = [
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_always_load'] = [
-    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['always_load'],
+    'label' => 	['Immer-laden-Checkbock', 'Bitte geben Sie die Beschriftung der Checkbox ein, die die Entscheidung für diesen Typen ändert.'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval' => [
@@ -622,7 +633,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_always_load'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_load'] = [
-    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['i_frame']['load'],
+    'label' => 	['Laden-Button', 'Bitte geben Sie die Beschriftung des Buttons ein, der alle blockierten Inhalte eines Typs lädt.'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval' => [
@@ -636,7 +647,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_load'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['expireTime'] = [
-    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['expireTime'],
+    'label' => 	['Ablauf in Tagen'
+        ,'Bitte geben Sie die Laufzeit der Einwilligung an. Danach wird die Cookie Bar erneut eingeblendet.'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval' => [
@@ -651,7 +663,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['expireTime'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['privacyPolicy'],
+	'label' => ['Datenschutzerklärung'],
 	'exclude'   => true,
 	'inputType' => 'pageTree',
 	'eval' => [
@@ -664,7 +676,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['privacyPolicy'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['imprint'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['imprint'],
+	'label' => ['Impressum'],
 	'exclude'   => true,
 	'inputType' => 'pageTree',
 	'eval' => [
@@ -677,7 +689,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['imprint'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['excludePages'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['excludePages'],
+	'label' => ['Cookie Bar auf folgenden Seiten nicht anzeigen.'],
 	'exclude'   => true,
 	'inputType' => 'pageTree',
 	'eval' => [
@@ -693,7 +705,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['excludePages'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['respectDoNotTrack'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['respectDoNotTrack'],
+	'label' => ['"Do Not Track" Browser-Einstellung respektieren','Wenn diese Browser-Einstellung gesetzt ist, wird die Cookie Bar nicht eingeblendet.'],
 	'exclude'   => true,
 	'inputType' => 'checkbox',
 	'eval' => [
@@ -705,7 +717,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['respectDoNotTrack'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['optOut'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['optOut'],
+    'label' => ['Opt Out','Cookies setzen und bei Ablehnung löschen, nur in einigen Länder erlaubt. Nicht in Deutschland.'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
@@ -717,7 +729,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['optOut'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['zIndex'] = [
-    'label' => 	&$GLOBALS['TL_LANG']['tl_module']['zIndex'],
+    'label' => 	['z-index-Einstellung','Erhöhen Sie diesen Wert, wenn das Cookie-Banner von anderen Elementen überdeckt wird.'],
     'exclude'   => true,
     'inputType' => 'text',
     'eval' => [
@@ -732,7 +744,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['zIndex'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['blockSite'],
+    'label' => ['Nutzung der Seite unterbinden','Elemente der Seite können erst angeklickt werden, wenn Cookies aktzeptiert oder abgelehnt wurden.'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
@@ -745,7 +757,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['blockSite'] = [
 
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['defaultCss'],
+	'label' => ['Standard-CSS laden','Die CSS-Datei des Cookie Opt In Bar-Moduls laden.'],
 	'exclude'   => true,
 	'inputType' => 'checkbox',
 	'eval' => [
@@ -757,19 +769,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['defaultCss'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['position'],
+	'label' => ['Position'],
 	'exclude'   => true,
 	'inputType' => 'select',
 	'options' => [
-		'leftTop' => &$GLOBALS['TL_LANG']['tl_module']['leftTop'],
-		'leftCenter' => &$GLOBALS['TL_LANG']['tl_module']['leftCenter'],
-		'leftBottom' => &$GLOBALS['TL_LANG']['tl_module']['leftBottom'],
-		'centerTop' => &$GLOBALS['TL_LANG']['tl_module']['centerTop'],
-		'centerCenter' => &$GLOBALS['TL_LANG']['tl_module']['centerCenter'],
-		'centerBottom' => &$GLOBALS['TL_LANG']['tl_module']['centerBottom'],
-		'rightTop' => &$GLOBALS['TL_LANG']['tl_module']['rightTop'],
-		'rightCenter' => &$GLOBALS['TL_LANG']['tl_module']['rightCenter'],
-		'rightBottom' => &$GLOBALS['TL_LANG']['tl_module']['rightBottom'],
+		'leftTop' => 'Links Oben',
+		'leftCenter' => 'Links Mitte',
+		'leftBottom' => 'Links Unten',
+		'centerTop' => 'Mitte Oben',
+		'centerCenter' => 'Mitte Mitte',
+		'centerBottom' => 'Mitte Unten',
+		'rightTop' => 'Rechts Oben',
+		'rightCenter' => 'Rechts Mitte',
+		'rightBottom' => 'Rechts Unten',
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
@@ -780,12 +792,12 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['position'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle'],
+	'label' => ['Template Style'],
 	'exclude'   => true,
 	'inputType' => 'select',
 	'options' => [
-		'dark' => &$GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['dark'],
-		'light' => &$GLOBALS['TL_LANG']['tl_module']['cssTemplateStyle']['light'],
+		'dark' => 'dunkel',
+		'light' => 'hell',
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
@@ -800,7 +812,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cssTemplateStyle'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['templateBar'],
+	'label' => ['Template' , 'Der Template-Name muss mit mod_cookie_opt_in_bar beginnen. Achtung auch das Template mod_cookie_opt_in_table muss überschrieben werden.'],
 	'exclude'   => true,
 	'inputType' => 'select',
 	'options' => $this->getTemplateGroup('mod_cookie_opt_in_bar'),
@@ -813,14 +825,14 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['templateBar'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['animation'],
+	'label' => ['Animation', 'Bei Klick auf die Buttons im Frontend'],
 	'exclude'   => true,
 	'inputType' => 'select',
 	'options' => [
-		'go-up' => &$GLOBALS['TL_LANG']['tl_module']['go-up'],
-		'shrink' => &$GLOBALS['TL_LANG']['tl_module']['shrink'],
-        'shrink-and-rotate' => &$GLOBALS['TL_LANG']['tl_module']['shrink-and-rotate'],
-        'hinge' => &$GLOBALS['TL_LANG']['tl_module']['hinge'],
+		'go-up' => 'rein-/rauszoomen',
+		'shrink' => 'ein-/ausfahren',
+        'shrink-and-rotate' => 'schrumpfen und drehen',
+        'hinge' => 'Scharnier',
 	],
 	'eval' => [
 		'tl_class'  =>  'w50',
@@ -832,7 +844,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['animation'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_module']['maxWidth'],
+	'label' => ['Breite','Bitte geben Sie die Breite der Cookie Bar an.'],
 	'exclude'   => true,
 	'inputType' => 'inputUnit',
 	'options' => [
@@ -862,13 +874,13 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['maxWidth'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['ipFormatSave'],
+    'label' => ['IP-Speicherung','Wählen Sie die Art des Loggings der IP-Adressen.'],
     'exclude'   => true,
     'inputType' => 'select',
     'options' => [
-        'uncut' => &$GLOBALS['TL_LANG']['tl_module']['uncut'],
-        'pseudo' => &$GLOBALS['TL_LANG']['tl_module']['pseudo'],
-        'anon' => &$GLOBALS['TL_LANG']['tl_module']['anon'],
+        'uncut' => 'ungekürzt',
+        'pseudo' => 'pseudonymisiert',
+        'anon' => 'anonymisiert',
     ],
     'eval' => [
         'tl_class'  =>  'w50 ncoi---list--container',
@@ -881,7 +893,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ipFormatSave'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['isNewCookieVersion'],
+    'label' => ['Alle gesetzten Cookies zurücksetzen','Sie sollten diese Option bei datenschutzrelevanten Änderungen aktivieren. Jeder Besucher bekommt anschließend erneut die Cookie Bar angezeigt.'],
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval' => [
@@ -994,7 +1006,7 @@ class tl_module_ncoi extends tl_module {
                 $temp = $groups[0];
                 $groups[0] = [
                     'key' => '1',
-                    'value' => &$GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential'],
+                    'value' => $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential'],
                 ];
                 if (!empty($temp)) {
                     $groups[array_key_last($groups)+1] = $temp;
@@ -1364,6 +1376,7 @@ class tl_module_ncoi extends tl_module {
             $cookieGroups = StringUtil::deserialize($cookieGroups);
         }
         if (empty($cookieGroups)) {
+            $cookieGroups = [];
             $cookieGroups[] = $id;
         } else {
             if (!in_array($id,$cookieGroups)) {

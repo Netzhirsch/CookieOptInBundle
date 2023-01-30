@@ -17,16 +17,16 @@
 		}
 	],
 	"support": {
-		"email": "coockies@netzhirsch.de",
+		"email": "cookies@netzhirsch.de",
 		"issues": "https://github.com/Netzhirsch/CookieOptInBundle/issues",
 		"wiki": "https://netzhirsch.de/contao-cookie-opt-in-bundle.html",
 		"source": "https://github.com/Netzhirsch/CookieOptInBundle"
 	},
 	"require": {
-		"php": ">=7.4",
+		"php": ">=7.2",
 		"contao/core-bundle": ">=4.9 <5",
 		"heimrichhannot/contao-utils-bundle": ">2.195.1",
-		"heimrichhannot/contao-fieldpalette-bundle": "*",
+		"heimrichhannot/contao-fieldpalette-bundle": "0.6.11",
 		"symfony/serializer": "*",
 		"ext-dom": "*",
 		"ext-json": "*",

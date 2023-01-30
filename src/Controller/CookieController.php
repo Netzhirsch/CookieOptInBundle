@@ -360,6 +360,7 @@ class CookieController extends AbstractController
                     || $cookieSetTechnicalName == 'csrf_https-contao_csrf_token'
                     || $cookieSetTechnicalName == 'PHPSESSID'
                     || $cookieSetTechnicalName == 'contao_settings'
+                    || $cookieSetTechnicalName == 'ISOTOPE_TEMP_CART'
                 )
                     continue;
                 setrawcookie($cookieSetTechnicalName, '', time() - 36000000, '/');

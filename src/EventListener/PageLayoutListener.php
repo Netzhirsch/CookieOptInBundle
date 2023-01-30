@@ -219,7 +219,7 @@ class PageLayoutListener {
         $path = dirname(__DIR__);
         $filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
         if (file_exists($filename)) {
-            $fileTime = strtotime('+1 month',filemtime($filename));
+            $fileTime = strtotime('+1 month',filectime($filename));
             $datetimeFile = new DateTime();
             $datetimeFile->setTimestamp($fileTime);
         }

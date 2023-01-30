@@ -69,13 +69,13 @@ class ParseFrontendTemplateListener
                 && strpos($template, $objPage->template) === false
 
             ) {
-                if ($template == 'ce_youtube' && $this->isNews = true)
+                if (strpos($template, 'news') > 0)
                     return $buffer;
-                if (strpos($template, 'news') >= 0)
-                    $this->isNews = true;
+                if ($template == 'ce_youtube') {
+                    $videoPreviewBlocker = new VideoPreviewBlocker();
+                    return $videoPreviewBlocker->iframe($buffer,$this->database,$this->getRequestStack());
+                }
 
-                $videoPreviewBlocker = new VideoPreviewBlocker();
-                return $videoPreviewBlocker->iframe($buffer,$this->database,$this->getRequestStack());
             }
 
 
