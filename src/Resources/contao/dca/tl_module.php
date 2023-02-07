@@ -906,16 +906,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['languageSwitch'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_module']['languageSwitch'],
-    'default' => [['mod' => 0]],
-    'exclude' => true,
     'inputType' => 'moduleWizard',
-    'save_callback' => [['tl_module_ncoi', 'saveInNcoiTable']],
-    'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTable']],
+    'mandatory' => false,
+    'sql' => "blob NULL"
 ];
 
 ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE);
 
 class tl_module_ncoi extends tl_module {
+
 
 	public function getDefaultMaxWidth($value,DC_Table $dca){
 
@@ -1402,7 +1401,8 @@ class tl_module_ncoi extends tl_module {
     public function saveInNcoiTable($value,DC_Table $dca,$pid = null,$field = null){
         $conn = $dca->Database;
         $repo = new Repository($conn);
-        return $repo->updateOrInsert($dca, 'tl_ncoi_cookie', $value,$pid,$field);
+        $repo->updateOrInsert($dca, 'tl_ncoi_cookie', $value,$pid,$field);
+        return $field;
     }
 
     public function deleteTool(DC_Table $dca)

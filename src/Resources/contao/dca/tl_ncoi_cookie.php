@@ -128,9 +128,6 @@ $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
         'toolsDeactivate' => [
             'sql' => "varchar(255) NULL default '' ",
         ],
-        'languageSwitch' => [
-            'sql' => "blob NULL"
-        ],
     ]
 
 ];

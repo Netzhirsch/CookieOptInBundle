@@ -112,8 +112,6 @@ class LicenseController extends AbstractController
 		$curl = curl_init('https://buero.netzhirsch.de/license/verify/' . $domain);
 		//response as string
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		//to set HTTP-POST-request
-		curl_setopt($curl, CURLOPT_POST, true);
 		$response = curl_exec($curl);
 		if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
 			$response = json_decode($response);

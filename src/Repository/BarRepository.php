@@ -15,7 +15,7 @@ class BarRepository extends Repository
 
     public function findAll(): array
     {
-        $strQuery = "SELECT id,pid,privacyPolicy,languageSwitch FROM tl_ncoi_cookie";
+        $strQuery = "SELECT id,pid,privacyPolicy FROM tl_ncoi_cookie";
 
         $founded = $this->findAllAssoc($strQuery, [],[]);
         if (empty($founded))
