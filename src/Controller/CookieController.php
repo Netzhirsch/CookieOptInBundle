@@ -58,10 +58,10 @@ class CookieController extends AbstractController
         if (count($cookieDatabase) == 0)
             return $jsonResponse;
 
+        if (!isset($data['cookieIds']))
+            $data['cookieIds'] = [];
         //nur ohne JS gesetzt
         if (isset($data['isNoJavaScript'])) {
-            if (!isset($data['cookieIds']))
-                $data['cookieIds'] = [];
             foreach ($data['cookieGroups'] as $cookieGroup) {
                 foreach ($cookieDatabase['cookieTools'] as $cookieInDB) {
                     if (!empty($data['all']))
