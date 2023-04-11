@@ -137,7 +137,7 @@ class PageLayoutListener {
         if (empty($licenseKey) || empty($licenseExpiryDate))
             return false;
 
-        if (in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
+        if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE |  FILTER_FLAG_NO_RES_RANGE) === false)
             return true;
 
         // in Frontend Y-m-d in Backend d.m.Y

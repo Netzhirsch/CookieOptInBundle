@@ -26,7 +26,7 @@
 		"php": ">=7.2",
 		"contao/core-bundle": ">=4.9 <5",
 		"heimrichhannot/contao-utils-bundle": ">2.195.1",
-		"heimrichhannot/contao-fieldpalette-bundle": "0.6.11",
+		"heimrichhannot/contao-fieldpalette-bundle": "^0.6",
 		"symfony/serializer": "*",
 		"ext-dom": "*",
 		"ext-json": "*",

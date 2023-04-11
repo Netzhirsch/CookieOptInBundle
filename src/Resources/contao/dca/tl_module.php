@@ -13,6 +13,9 @@ if (TL_MODE == 'BE') {
     $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
     $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
     $GLOBALS['TL_JAVASCRIPT']['ncoi'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.js|static';
+
+    // Loading missing Language-File 'tl_layout'
+    \System::loadLanguageFile('tl_layout');  
 }
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInRevoke'] =
