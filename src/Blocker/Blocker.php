@@ -48,7 +48,7 @@ class Blocker
         foreach ($moduleInPage as $modulInPage) {
             if (isset($modulInPage['moduleIds']))
                 $moduleData[] = ['mod' => $modulInPage['moduleIds']];
-            else
+            elseif(isset($modulInPage[0]))
                 $moduleData[] = ['mod' => $modulInPage[0]];
         }
         $moduleInContent = PageLayoutListener::getModuleIdFromInsertTag($pageModel, $layout,$database);

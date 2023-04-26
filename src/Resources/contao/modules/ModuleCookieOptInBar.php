@@ -261,7 +261,7 @@ class ModuleCookieOptInBar extends Module
 	{
 
 		if ($defaultCss == "1") {
-			$path = dirname(__DIR__,5).DIRECTORY_SEPARATOR.'web'.DIRECTORY_SEPARATOR.'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
+			$path = System::getContainer()->getParameter('contao.web_dir').DIRECTORY_SEPARATOR.'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
 			if (!file_exists($path.'netzhirschCookieOptIn.css')) {
 				Helper::parseLessToCss('netzhirschCookieOptIn.less','netzhirschCookieOptIn.css',$maxWidth,$blockSite,$zIndex);
 			}
@@ -361,8 +361,6 @@ class ModuleCookieOptInBar extends Module
     {
         return self::getRootDir().
             DIRECTORY_SEPARATOR.
-            'web'.
-            DIRECTORY_SEPARATOR.
             'bundles'.
             DIRECTORY_SEPARATOR.
             'netzhirschcookieoptin'.
@@ -371,7 +369,7 @@ class ModuleCookieOptInBar extends Module
 	}
     private static function getRootDir()
     {
-        return dirname(__DIR__,7);
+        return System::getContainer()->getParameter('contao.web_dir');
 	}
 
     private static function isFileADir($file)
