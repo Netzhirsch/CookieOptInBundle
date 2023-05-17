@@ -59,6 +59,7 @@ class ParseFrontendTemplateListener
                     || strpos($template, 'ce_youtube') !== false
                     || strpos($template, 'ce_vimeo') !== false
                     || strpos($template, 'ce_metamodel_list') !== false
+                    || strpos($template, 'rsce_luxe_map') !== false
                 ) {
                     $iframeBlocker = new IFrameBlocker();
                     return $iframeBlocker->iframe($buffer,$this->database,$this->getRequestStack());
