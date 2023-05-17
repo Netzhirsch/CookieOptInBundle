@@ -63,6 +63,7 @@ $GLOBALS['TL_LANG']['tl_module']['cookieGroupsDefault'] = 'a:3:{i:0;a:2:{s:3:"ke
 $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['essential'] = 'Essential';
 $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['analysis'] = 'Analysis';
 $GLOBALS['TL_LANG']['tl_module']['cookieToolGroupNames']['external_media'] = 'External media';
+$GLOBALS['TL_LANG']['tl_module']['languageSwitch'] = ['Sprachwechsel Module','Dieses Module kann die verschiedenen Sprachversionen der Cookie Opt-in Bar mit Hilfe von {{ifnlng::*}} beinhalten.'];
 
 /*************** Fieldpalette Tools ***************/
 

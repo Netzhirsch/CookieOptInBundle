@@ -16,6 +16,9 @@ if (TL_MODE == 'BE') {
     $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
     $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
     $GLOBALS['TL_JAVASCRIPT']['ncoi'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.js|static';
+
+    // Loading missing Language-File 'tl_layout'
+    \System::loadLanguageFile('tl_layout');  
 }
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInRevoke'] =
@@ -100,6 +103,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInBar']   = '
 	,animation
 	;ipFormatSave
 	;isNewCookieVersion
+	;languageSwitch
 ';
 
 // setCookieVersion check for right modul
@@ -905,9 +909,18 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['isNewCookieVersion'] = [
     'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
     'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
 ];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['languageSwitch'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['languageSwitch'],
+    'inputType' => 'moduleWizard',
+    'mandatory' => false,
+    'sql' => "blob NULL"
+];
+
 ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE);
 
 class tl_module_ncoi extends tl_module {
+
 
 	public function getDefaultMaxWidth($value,DC_Table $dca){
 
@@ -1394,7 +1407,8 @@ class tl_module_ncoi extends tl_module {
     public function saveInNcoiTable($value,DC_Table $dca,$pid = null,$field = null){
         $conn = $dca->Database;
         $repo = new Repository($conn);
-        return $repo->updateOrInsert($dca, 'tl_ncoi_cookie', $value,$pid,$field);
+        $repo->updateOrInsert($dca, 'tl_ncoi_cookie', $value,$pid,$field);
+        return $field;
     }
 
     public function deleteTool(DC_Table $dca)

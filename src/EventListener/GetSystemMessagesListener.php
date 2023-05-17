@@ -65,7 +65,7 @@ class GetSystemMessagesListener
 	 */
 	public static function getMessage($licenseKey,$licenseExpiryDate,$domain = null) {
 
-	    if (in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
+		if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE |  FILTER_FLAG_NO_RES_RANGE) === false)
             return '';
 
 		$kontaktString = $GLOBALS['TL_LANG']['BE_MOD']['netzhirsch']['cookieOptIn']['messages']['contact'];
