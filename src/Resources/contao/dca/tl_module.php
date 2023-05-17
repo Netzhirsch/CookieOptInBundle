@@ -8,6 +8,9 @@ use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
 
+$GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root'] = [1];
+$GLOBALS['TL_DCA'][$this->strTable]['config']['dynamicPtable'] = null;
+
 /** Revoke Modul ***********************************************/
 if (TL_MODE == 'BE') {
     $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';

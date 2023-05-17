@@ -24,7 +24,8 @@ $GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace($search, $replace
 
 //Contao 4.4 need root, rootfallback will be ignored
 $root = 'root';
-$GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace($search, $replace, $GLOBALS['TL_DCA']['tl_page']['palettes'][$root]);
+if (isset($GLOBALS['TL_DCA']['tl_page']['palettes'][$root]))
+    $GLOBALS['TL_DCA']['tl_page']['palettes'][$root] = str_replace($search, $replace, $GLOBALS['TL_DCA']['tl_page']['palettes'][$root]);
 
 /**
  * Add fields to tl_page
