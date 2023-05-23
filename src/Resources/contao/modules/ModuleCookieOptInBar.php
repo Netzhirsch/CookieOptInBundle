@@ -8,9 +8,6 @@ use Contao\Module;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Statement;
-use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Less_Exception_Parser;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Repository\LayoutRepository;
@@ -29,8 +26,10 @@ class ModuleCookieOptInBar extends Module
      * @throws Less_Exception_Parser
      */
 	public function generate() {
-
-		if (TL_MODE == 'BE') {
+        $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
+        $requestStack = System::getContainer()->get('request_stack');
+        $request = $requestStack->getCurrentRequest();
+        if (!empty($request) && $scopeMatcher->isBackendRequest($request)) {
 			/** @var BackendTemplate|object $objTemplate */
 			$objTemplate = new BackendTemplate('be_wildcard');
 			$objTemplate->wildcard = '### Cookie Bar ###';

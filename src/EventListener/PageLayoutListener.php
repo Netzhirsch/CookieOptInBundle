@@ -18,13 +18,14 @@ use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
 use Netzhirsch\CookieOptInBundle\Repository\RevokeRepository;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class PageLayoutListener {
 
     /** @var Database $database */
     private $database;
 
-    public function __construct()
+    public function __construct(private readonly ParameterBag $parameterBag)
     {
         $this->database = Database::getInstance();
     }
@@ -39,13 +40,13 @@ class PageLayoutListener {
 
         $removeModules = $this->shouldRemoveModules($pageModel);
         $moduleIds = [];
-        $return = self::checkModules($layout,$this->database, $removeModules, $moduleIds);
+        $return = self::checkModules($layout,$this->database, $removeModules, $moduleIds,$this->parameterBag);
         $allModuleIdsInLayout = $return['allModuleIds'];
         $moduleIds = $return['moduleIds'];
         if (!empty($return['tlCookieIds']))
             $tlCookieIds[] = $return['tlCookieIds'];
         else
-            $return = self::checkModules($pageModel,$this->database, $removeModules, $moduleIds);
+            $return = self::checkModules($pageModel,$this->database, $removeModules, $moduleIds,$this->parameterBag);
         $moduleIds = $return['moduleIds'];
         $repo = new Repository($this->database);
         if (empty($moduleIds)) {
@@ -330,12 +331,17 @@ class PageLayoutListener {
     }
 
     /**
-     * @param LayoutModel|PageModel $layoutOrPage
+     * @param                        $layoutOrPage
+     * @param Database               $database
      * @param                        $removeModules
-     * @param array $moduleIds
+     * @param array                  $moduleIds
+     * @param ParameterBag           $parameterBag
+     *
      * @return array
+     * @throws Exception
      */
-    public static function checkModules($layoutOrPage, Database $database,$removeModules, array $moduleIds) {
+    public static function checkModules($layoutOrPage, Database $database,$removeModules, array $moduleIds,ParameterBag $parameterBag): array
+    {
         if (is_string($layoutOrPage))
             $layoutOrPage = PageModel::findById($layoutOrPage);
 
@@ -398,8 +404,7 @@ class PageLayoutListener {
                 // Set the layout template and template group
                 $template = $objLayout->template ?: 'fe_page';
                 $template .= '.html5';
-
-                $dir = TL_ROOT
+                $dir = $parameterBag->get('kernel.project_dir')
                     . DIRECTORY_SEPARATOR
                     . 'templates'
                 ;

@@ -1,4 +1,5 @@
 (function($){
+	$.noConflict();
 	$(document).ready(function () {
 		let bodyField = $('body');
 		let newKey = 1;

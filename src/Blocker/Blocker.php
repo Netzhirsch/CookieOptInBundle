@@ -15,12 +15,16 @@ use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ToolRepository;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class Blocker
 {
 
-    public static function getModulData(RequestStack $requestStack,Database $database) {
+    /**
+     * @throws \Exception
+     */
+    public static function getModulData(RequestStack $requestStack,Database $database,ParameterBag $parameterBag) {
         $moduleData = [];
         $attributes = $requestStack->getCurrentRequest()->attributes;
         if (empty($attributes))
@@ -44,7 +48,7 @@ class Blocker
         // Achtung moduleData enthält die ID, col, enable
         $moduleData = StringUtil::deserialize($layout->modules);
 
-        $moduleInPage = PageLayoutListener::checkModules($pageModel,$database, [], []);
+        $moduleInPage = PageLayoutListener::checkModules($pageModel,$database, [], [],$parameterBag);
         foreach ($moduleInPage as $modulInPage) {
             if (isset($modulInPage['moduleIds']))
                 $moduleData[] = ['mod' => $modulInPage['moduleIds']];

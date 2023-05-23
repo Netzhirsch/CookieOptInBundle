@@ -66,8 +66,9 @@ class Repository
         if (count($set) > 0)
             $stmt = $stmt->set($set);
         try {
-            if (count($conditions) > 0)
-                return $stmt->execute($conditions);
+            if (count($conditions) > 0) {
+                return $stmt->execute(...$conditions);
+            }
             return $stmt->execute();
         } catch (SyntaxErrorException $exception) {
             dump($exception);

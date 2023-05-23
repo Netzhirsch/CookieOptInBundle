@@ -1,5 +1,6 @@
 services:
   _defaults:
+    autowire: true
     autoconfigure: true
     public: true
 
@@ -19,7 +20,9 @@ services:
   Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener:
 
   Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener:
+    - '@parameter_bag'
 
   Netzhirsch\CookieOptInBundle\EventListener\ParseFrontendTemplateListener:
+    - '@parameter_bag'
 
   Netzhirsch\CookieOptInBundle\EventListener\ReplaceInsertTag:

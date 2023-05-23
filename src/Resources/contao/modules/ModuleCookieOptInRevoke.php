@@ -21,8 +21,11 @@ class ModuleCookieOptInRevoke extends Module
      * @return string
      */
 	public function generate() {
-		
-		if (TL_MODE == 'BE') {
+
+        $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
+        $requestStack = System::getContainer()->get('request_stack');
+        $request = $requestStack->getCurrentRequest();
+        if (!empty($request) && $scopeMatcher->isBackendRequest($request)) {
 			/** @var BackendTemplate|object $objTemplate */
 			$objTemplate = new BackendTemplate('be_wildcard');
 			$objTemplate->wildcard = '### Cookie Bar Revoke###';

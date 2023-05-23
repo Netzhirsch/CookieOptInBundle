@@ -15,6 +15,7 @@ use Netzhirsch\CookieOptInBundle\Blocker\VideoPreviewBlocker;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Repository\RevokeRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ParseFrontendTemplateListener
@@ -24,7 +25,7 @@ class ParseFrontendTemplateListener
 
     private $isNews = false;
 
-    public function __construct()
+    public function __construct(private readonly ParameterBag $parameterBag)
     {
         $this->database = Database::getInstance();
     }
@@ -62,7 +63,7 @@ class ParseFrontendTemplateListener
                     || strpos($template, 'rsce_luxe_map') !== false
                 ) {
                     $iframeBlocker = new IFrameBlocker();
-                    return $iframeBlocker->iframe($buffer,$this->database,$this->getRequestStack());
+                    return $iframeBlocker->iframe($buffer,$this->database,$this->getRequestStack(),$this->parameterBag);
                 }
             } elseif (
                 strpos($buffer, '<figure class="video_container">') !== false
@@ -74,7 +75,7 @@ class ParseFrontendTemplateListener
                     return $buffer;
                 if ($template == 'ce_youtube') {
                     $videoPreviewBlocker = new VideoPreviewBlocker();
-                    return $videoPreviewBlocker->iframe($buffer,$this->database,$this->getRequestStack());
+                    return $videoPreviewBlocker->iframe($buffer,$this->database,$this->getRequestStack(),$this->parameterBag);
                 }
 
             }
@@ -203,7 +204,7 @@ class ParseFrontendTemplateListener
             $template = $objLayout->template ?: 'fe_page';
             $templateGroup = $objTheme->templates ?? '';
 
-            $dir = TL_ROOT;
+            $dir = $this->parameterBag->get('kernel.project_dir');
             $dir .= DIRECTORY_SEPARATOR;
             if (!empty($templateGroup)) {
                 $dir .=

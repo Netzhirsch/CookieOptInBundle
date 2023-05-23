@@ -8,6 +8,7 @@ use Contao\PageModel;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener;
+use Contao\DC_Table;
 
 // on root page
 if (empty($GLOBALS['_GET']))

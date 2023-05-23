@@ -3,23 +3,37 @@
 use Contao\DC_Table;
 use Contao\ModuleModel;
 use Contao\StringUtil;
-use Doctrine\DBAL\Connection;
-use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
+use Netzhirsch\CookieOptInBundle\Entity\CookieToolContainer;
+use Netzhirsch\CookieOptInBundle\Entity\OtherScriptContainer;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Contao\System;
 
 $GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root'] = [1];
 $GLOBALS['TL_DCA'][$this->strTable]['config']['dynamicPtable'] = null;
 
-/** Revoke Modul ***********************************************/
-if (TL_MODE == 'BE') {
+/** @var RequestStack $requestStack */
+$scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
+$requestStack = System::getContainer()->get('request_stack');
+$request = $requestStack->getCurrentRequest();
+if (!empty($request) && $scopeMatcher->isBackendRequest($request)) {
     $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
-    $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'bundles/netzhirschcookieoptin/jquery.min.js|static';
+    if (!isset($GLOBALS['TL_JAVASCRIPT']))
+        $GLOBALS['TL_JAVASCRIPT'] = [];
+    $GLOBALS['TL_JAVASCRIPT']['jquery'] = 'assets/jquery/js/jquery.min.js|static';
     $GLOBALS['TL_JAVASCRIPT']['ncoi'] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.js|static';
-
     // Loading missing Language-File 'tl_layout'
-    \System::loadLanguageFile('tl_layout');  
+    System::loadLanguageFile('tl_layout');
 }
+/** Revoke Modul ***********************************************/
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['cookieOptInRevoke'] =
 	'name,
@@ -111,6 +125,7 @@ $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_n
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setPageTreeEntries'];
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setLessVariables'];
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setGroupsToNcoiTable'];
+$GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'][] = ['tl_module_ncoi','getNetzhirschCookie'];
 
 $GLOBALS['TL_DCA']['tl_module']['config']['ctable'] = [
   'tl_ncoi_cookie',
@@ -286,299 +301,240 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieGroups'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
-	'label'     => ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Klicken Sie hier für eine Hilfestellung.</a>'],
-	'exclude'   => true,
-	'inputType' => 'fieldpalette',
-	'foreignKey'   => 'tl_fieldpalette.id',
-	'relation'     => ['type' => 'hasMany', 'load' => 'eager'],
-	'load_callback' => [['tl_module_ncoi','getNetzhirschCookie']],
-	'fieldpalette' => [
-		'config' => [
-			'hidePublished' => true,
-			'notSortable' => false,
-            'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableCookieTools']],
-//	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
-		],
-		'list'     => [
-			'label' => [
-				'fields' => ['cookieToolsName','cookieToolGroup'],
-				'format' => '%s <span style="color:#b3b3b3;padding-left:3px">[%s]</span>',
-			],
-            'fields' => ['cookieToolGroup'],
-            'flag' => 11,
-            'panelLayout' => [
-                'sort' => true,
+    'label'     => ['Tools','<a href="https://www.netzhirsch.de/contao-cookie-opt-in-bundle.html#ccoi-examples" target="_blank">Klicken Sie hier für eine Hilfestellung.</a>'],
+    'exclude'   => true,
+    'inputType' => 'group',
+    'storage' => 'entity',
+    'entity' => CookieToolContainer::class,
+    'order' => true,
+    'palette' => [
+        'cookieToolsName',
+        'cookieToolsSelect',
+        'cookieToolsTechnicalName',
+        'cookieToolsTrackingId',
+        'cookieToolsTrackingServerUrl',
+        'cookieToolsProvider',
+        'cookieToolsPrivacyPolicyUrl',
+        'cookieToolsUse',
+        'cookieToolGroup',
+        'cookieToolExpiredTime',
+        'i_frame_blocked_urls',
+        'i_frame_blocked_text'
+    ],
+    'fields' => [
+        'cookieToolsName' => [
+            'label'     => ['Cookie Name','z.B. Google Analytics'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'mandatory' => true,
+                'tl_class'  =>  'w50',
             ],
-            'mode' => 2,
-		],
-		'palettes' => [
-			'default' =>
-				'
-				cookieToolsName,
-				cookieToolsSelect,
-				cookieToolsTechnicalName,
-				cookieToolsTrackingId,
-				cookieToolsTrackingServerUrl,
-				cookieToolsProvider,
-				cookieToolsPrivacyPolicyUrl,
-				cookieToolsUse,
-				cookieToolGroup,
-				cookieToolExpiredTime,
-				i_frame_blocked_urls,
-				i_frame_blocked_text
-				',
-		],
-		'fields' => [
-			'cookieToolsName' => [
-				'label'     => ['Cookie Name','z.B. Facebook Pixel'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NULL default '' ",
-				'eval' => [
-					'mandatory' => true,
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsSelect' => [
-				'label'     => ['Type'],
-				'exclude'   => true,
-				'inputType' => 'select',
-				'options'   => [
-                    'googleAnalytics' => 'Google Analytics',
-                    'googleTagManager' => 'Google Tag Manager',
-                    'facebookPixel' => 'Facebook Pixel',
-                    'matomo' => 'Matomo',
-                    'youtube' => 'YouTube',
-                    'vimeo' => 'Vimeo',
-                    'googleMaps' => 'iFrame [Google Maps]',
-                    'iframe' => 'iFrame [Andere]',
-                    'script' => 'HTML-Element [script]',
-                    '-' => '-'
-                ],
-				'sql' => "varchar(32) default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsTechnicalName' => [
-				'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsTrackingId' => [
-				'label'     => ['Tracking ID','z.B. UA-123456789-1 für Google Analytics'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-                    'mandatory' => false,
-				],
-			],
-			'cookieToolsTrackingServerUrl' => [
-				'label'     => ['Tracking Server URL ','Nur für Matomo z.B. https://netzhirsch.matomo.cloud/'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsProvider' => [
-				'label'     => ['Anbieter'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsPrivacyPolicyUrl' => [
-				'label'     => ['Datenschutzerklärung URL','z.B. https://policies.google.com/privacy'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsUse' => [
-				'label'     => ['Zweck','Bitte geben Sie den Zweck des Cookies an.'],
-				'exclude'   => true,
-				'inputType' => 'textarea',
-				'sql' => "text NULL default '' ",
-				'eval' => [
-					'mandatory' => true,
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolGroup' => [
-				'label'     => ['Cookie Gruppe'],
-				'exclude'   => true,
-				'inputType' => 'select',
-				'options_callback' => ['tl_module_ncoi','getGroupKeys'],
-				'sql' => "varchar(255) NULL default '' ",
-				'eval' => [
-					'mandatory' => true,
-					'tl_class'  =>  'long clr',
-				],
-			],
-            'cookieToolExpiredTime' => [
-                'label' => 	['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'],
-                'exclude'   => true,
-                'inputType' => 'text',
-                'eval' => [
-                    'mandatory' => true,
-                    'rgxp'=>'natural',
-                    'tl_class'=>'long',
-                ],
-                'sql' => "int(2) NULL ",
+        ],
+        'cookieToolsSelect' => [
+            'label'     => ['Type'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'options'   => [
+                'googleAnalytics' => 'Google Analytics',
+                'googleTagManager' => 'Google Tag Manager',
+                'facebookPixel' => 'Facebook Pixel',
+                'matomo' => 'Matomo',
+                'youtube' => 'YouTube',
+                'vimeo' => 'Vimeo',
+                'googleMaps' => 'iFrame [Google Maps]',
+                'iframe' => 'iFrame [Andere]',
+                'script' => 'HTML-Element [script]',
+                '-' => '-'
             ],
-            'i_frame_blocked_urls' => [
-                'label' => 	['Blockierte URL','Bitte geben Sie hier die URL des IFrames ein. Sollten Sie keine angeben wird die entsprechende URL des IFrame Typen verwendet. Mehrere URLS bitte mit Komma getrennt.'],
-                'exclude'   => true,
-                'inputType' => 'text',
-                'eval' => [
-                    'mandatory' => false,
-                    'tl_class'=>'long',
-                ],
-                'sql' => "text NULL default ''",
+            'eval' => [
+                'tl_class'  =>  'w50',
             ],
-            'i_frame_blocked_text' => [
-                'label' => 	['Blockierter Text','Bitte geben Sie hier den Text ein, der für dieses blockiert IFrame verwendet werden soll. Sollten Sie keinen angeben wird der entsprechende Text des IFrame Typen verwendet. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'],
-                'exclude'   => true,
-                'inputType' => 'text',
-                'eval' => [
-                    'mandatory' => false,
-                    'tl_class'=>'long',
-                ],
-                'sql' => "text NULL default ''",
-            ]
-		],
-	],
+        ],
+        'cookieToolsTechnicalName' => [
+            'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'w50',
+            ],
+        ],
+        'cookieToolsTrackingId' => [
+            'label'     => ['Tracking ID','z.B. UA-123456789-1 für Google Analytics'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'w50',
+                'mandatory' => false,
+            ],
+        ],
+        'cookieToolsTrackingServerUrl' => [
+            'label'     => ['Tracking Server URL ','Nur für Matomo z.B. https://netzhirsch.matomo.cloud/'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'w50',
+            ],
+        ],
+        'cookieToolsProvider' => [
+            'label'     => ['Anbieter'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'w50',
+            ],
+        ],
+        'cookieToolsPrivacyPolicyUrl' => [
+            'label'     => ['Datenschutzerklärung URL','z.B. https://policies.google.com/privacy'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'w50',
+            ],
+        ],
+        'cookieToolsUse' => [
+            'label'     => ['Zweck','Bitte geben Sie den Zweck des Cookies an.'],
+            'exclude'   => true,
+            'inputType' => 'textarea',
+            'eval' => [
+                'mandatory' => true,
+                'tl_class'  =>  'w50',
+            ],
+        ],
+        'cookieToolGroup' => [
+            'label'     => ['Cookie Gruppe'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'options_callback' => ['tl_module_ncoi','getGroupKeys'],
+            'eval' => [
+                'mandatory' => true,
+                'tl_class'  =>  'w50',
+            ],
+        ],
+        'cookieToolExpiredTime' => [
+            'label' => 	['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'mandatory' => true,
+                'rgxp'=>'natural',
+                'tl_class'=>'w50',
+            ],
+        ],
+        'i_frame_blocked_urls' => [
+            'label' => 	['Blockierte URL','Bitte geben Sie hier die URL des IFrames ein. Sollten Sie keine angeben wird die entsprechende URL des IFrame Typen verwendet. Mehrere URLS bitte mit Komma getrennt.'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'mandatory' => false,
+                'tl_class'=>'w50',
+            ],
+        ],
+        'i_frame_blocked_text' => [
+            'label' => 	['Blockierter Text','Bitte geben Sie hier den Text ein, der für dieses blockiert IFrame verwendet werden soll. Sollten Sie keinen angeben wird der entsprechende Text des IFrame Typen verwendet. {{provider}} wird, mit Datenschutzlink, durch den eingetragenen Anbieter des Tools ersetzt.'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'mandatory' => false,
+                'tl_class'=>'w50',
+            ],
+        ]
+    ],
 ];
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
 	'label'     => ['Andere Skripte'],
 	'exclude'   => true,
-	'inputType' => 'fieldpalette',
-	'foreignKey'   => 'tl_fieldpalette.id',
-	'relation'     => ['type' => 'hasMany', 'load' => 'eager'],
-	'fieldpalette' => [
-		'config' => [
-			'hidePublished' => true,
-            'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableOtherScripts']],
-		],
-		'list'     => array
-		(
-			'label' => array
-			(
-				'fields' => ['cookieToolsName','cookieToolGroup'],
-				'format' => '%s <span style="color:#b3b3b3;padding-left:3px">[%s]</span>',
-			),
-			'flag' => 11,
-		),
-		'palettes' => [
-			'default' =>
-				'
-				cookieToolsName,
-				cookieToolsTechnicalName,
-				cookieToolsProvider,
-				cookieToolsPrivacyPolicyUrl,
-				cookieToolsUse,
-				cookieToolGroup,
-				cookieToolExpiredTime,
-				cookieToolsCode
-				',
-		],
-		'fields' => [
-			'cookieToolsProvider' => [
-				'label'     =>['Anbieter'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsUse' => [
-				'label'     => ['Zweck','Bitte geben Sie den Zweck des Cookies an.'],
-				'exclude'   => true,
-				'inputType' => 'textarea',
-				'sql' => "text NULL default '' ",
-				'eval' => [
-					'mandatory' => true,
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsPrivacyPolicyUrl' => [
-				'label'     => ['Datenschutzerklärung URL','z.B. https://policies.google.com/privacy'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsTechnicalName' => [
-				'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NOT NULL default '' ",
-				'eval' => [
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolsName' => [
-				'label'     => ['Cookie Name','z.B. Facebook Pixel'],
-				'exclude'   => true,
-				'inputType' => 'text',
-				'sql' => "varchar(255) NULL default '' ",
-				'eval' => [
-					'mandatory' => true,
-					'tl_class'  =>  'long clr',
-				],
-			],
-			'cookieToolGroup' => [
-				'label'     => ['Cookie Gruppe'],
-				'exclude'   => true,
-				'inputType' => 'select',
-				'options_callback' => ['tl_module_ncoi','getGroupKeys'],
-				'sql' => "varchar(255) NULL default '' ",
-				'eval' => [
-					'mandatory' => true,
-					'tl_class'  =>  'long clr',
-				],
-			],
-            'cookieToolExpiredTime' => [
-                'label' => 	['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'],
-                'exclude'   => true,
-                'inputType' => 'text',
-                'eval' => [
-                    'mandatory' => true,
-                    'rgxp'=>'natural',
-                    'tl_class'=>'long',
-                ],
-                'sql' => "int(2) NULL ",
+	'inputType' => 'group',
+    'storage' => 'entity',
+    'entity' => OtherScriptContainer::class,
+    'order' => true,
+    'palettes' => [
+        'cookieToolsName',
+        'cookieToolsTechnicalName',
+        'cookieToolsProvider',
+        'cookieToolsPrivacyPolicyUrl',
+        'cookieToolsUse',
+        'cookieToolGroup',
+        'cookieToolExpiredTime',
+        'cookieToolsCode'
+    ],
+    'fields' => [
+        'cookieToolsName' => [
+            'label'     => ['Cookie Name','z.B. Facebook Pixel'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'mandatory' => true,
+                'tl_class'  =>  'long clr',
             ],
-			'cookieToolsCode' => [
-				'label'     => ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'],
-				'exclude'   => true,
-				'inputType' => 'textarea',
-				'sql' => "text NULL default '' ",
-				'eval' => [
-					'mandatory' => true,
-					'allowHtml' => true,
-					'rte' => 'ace',
-					'preserveTags' => true,
-					'tl_class'  =>  'long clr',
-				],
-			],
-		],
-	],
+        ],
+        'cookieToolsTechnicalName' => [
+            'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'long clr',
+            ],
+        ],
+        'cookieToolsProvider' => [
+            'label'     =>['Anbieter'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'long clr',
+            ],
+        ],
+        'cookieToolsPrivacyPolicyUrl' => [
+            'label'     => ['Datenschutzerklärung URL','z.B. https://policies.google.com/privacy'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'tl_class'  =>  'long clr',
+            ],
+        ],
+        'cookieToolsUse' => [
+            'label'     => ['Zweck','Bitte geben Sie den Zweck des Cookies an.'],
+            'exclude'   => true,
+            'inputType' => 'textarea',
+            'eval' => [
+                'mandatory' => true,
+                'tl_class'  =>  'long clr',
+            ],
+        ],
+        'cookieToolGroup' => [
+            'label'     => ['Cookie Gruppe'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'options_callback' => ['tl_module_ncoi','getGroupKeys'],
+            'eval' => [
+                'mandatory' => true,
+                'tl_class'  =>  'long clr',
+            ],
+        ],
+        'cookieToolExpiredTime' => [
+            'label' => 	['Ablauf in Tagen','Bitte geben Sie die Laufzeit des Cookies an.'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'eval' => [
+                'mandatory' => true,
+                'rgxp'=>'natural',
+                'tl_class'=>'long',
+            ],
+        ],
+        'cookieToolsCode' => [
+            'label'     => ['JavaScript Code','Mit script-Tag. jQuery kann über $ genutzt werden.'],
+            'exclude'   => true,
+            'inputType' => 'textarea',
+            'eval' => [
+                'mandatory' => true,
+                'allowHtml' => true,
+                'rte' => 'ace',
+                'preserveTags' => true,
+                'tl_class'  =>  'long clr',
+            ],
+        ],
+    ],
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['i_frame_video'] = [
@@ -921,8 +877,7 @@ ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE);
 
 class tl_module_ncoi extends tl_module {
 
-
-	public function getDefaultMaxWidth($value,DC_Table $dca){
+    public function getDefaultMaxWidth($value,DC_Table $dca){
 
         $value = $this->loadFromNcoiTable($value,$dca);
 	    if (empty($value) || $value == 'a:2:{s:5:"value";s:0:"";s:4:"unit";s:2:"px";}')
@@ -1026,9 +981,10 @@ class tl_module_ncoi extends tl_module {
 	public function getGroups(DC_Table $dca,$id = null)
 	{
         if (empty($id)) {
-	        $fieldPaletteModel = FieldPaletteModel::findByPid($dca->id)[0];
+            //TODO*luhmann 2020-12-14: hier muss noch die richtige ID gefunden werden
+//	        $fieldPaletteModel = FieldPaletteModel::findByPid($dca->id)[0];
         } else {
-            $fieldPaletteModel = FieldPaletteModel::findById($id);
+//            $fieldPaletteModel = FieldPaletteModel::findById($id);
         }
         $cookieToolGroups = '';
         if (!empty($fieldPaletteModel)) {
@@ -1068,168 +1024,65 @@ class tl_module_ncoi extends tl_module {
 		}
 	}
 
-	public function getNetzhirschCookie($fieldValue,DC_Table $dca)
+	public function getNetzhirschCookie(DC_Table $dca)
 	{
-		$id = $dca->id;
+        $em = $dca->getContainer()->get('doctrine.orm.entity_manager');
+        $repoCookieToolContainer = $em->getRepository(CookieToolContainer::class);
+        $cookieToolContainer = $repoCookieToolContainer->findOneBy([]);
+        if (empty($cookieToolContainer)) {
+            $cookieToolContainer = new CookieToolContainer();
+        }
+        $repoCookieTool = $em->getRepository(CookieTool::class);
 
-		$fieldPalettes = FieldPaletteModel::findByPid($id);
-		$csrfCookieFieldModel = null;
-        $csrfHttpsCookieFieldModel = null;
-		$phpSessIdCookieFieldModel = null;
-        $feUserAuthCookieFieldModel = null;
-		if (!empty($fieldPalettes)) {
-		    /** @var FieldPaletteModel $fieldPalette */
-            foreach ($fieldPalettes as $fieldPalette) {
-				if ($fieldPalette->cookieToolsTechnicalName == '_netzhirsch_cookie_opt_in'
-                    || $fieldPalette->cookieToolsSelect == 'optInCookie'
-                ) {
-					$fieldPalette->delete();
-				} elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_contao_csrf_token') {
-					$csrfCookieFieldModel = $fieldPalette;
-                } elseif ($fieldPalette->cookieToolsTechnicalName == 'csrf_https-contao_csrf_token') {
-                    $csrfHttpsCookieFieldModel = $fieldPalette;
-				} elseif ($fieldPalette->cookieToolsTechnicalName == 'PHPSESSID') {
-					$phpSessIdCookieFieldModel = $fieldPalette;
-				} elseif ($fieldPalette->cookieToolsTechnicalName == 'FE_USER_AUTH') {
-                    $feUserAuthCookieFieldModel = $fieldPalette;
-                }
-			}
-		}
-        $toolsDeactivate = $this->loadFromNcoiTable('',$dca,$id,'toolsDeactivate');
-        if (!empty($toolsDeactivate))
-            $toolsDeactivate = StringUtil::deserialize($toolsDeactivate);
-
-		if (empty($csrfCookieFieldModel)) {
-		    $cookieToolsTechnicalName = 'csrf_contao_csrf_token';
-			if (
-			    !empty($toolsDeactivate)
-                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
-                || empty($toolsDeactivate)
-            ) {
-                $csrfCookieFieldModel = new FieldPaletteModel();
-
-                $csrfCookieFieldModel->pid = $id;
-                $csrfCookieFieldModel->ptable = 'tl_module';
-                $csrfCookieFieldModel->pfield = 'cookieTools';
-                $csrfCookieFieldModel->sorting = '1';
-                $csrfCookieFieldModel->tstamp = time();
-                $csrfCookieFieldModel->dateAdded = time();
-                $csrfCookieFieldModel->published = '1';
-                $csrfCookieFieldModel->cookieToolsName = 'Contao CSRF Token';
-                $csrfCookieFieldModel->cookieToolsTechnicalName = $cookieToolsTechnicalName;
-                $csrfCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
-                $csrfCookieFieldModel->cookieToolsProvider = '';
-                $csrfCookieFieldModel->cookieToolExpiredTime = '0';
-                $csrfCookieFieldModel->cookieToolsSelect = '-';
-                $csrfCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'];
-                $csrfCookieFieldModel->cookieToolGroup = '1';
-
-                $csrfCookieFieldModel->save();
-            }
-
-		} elseif (!isset($csrfCookieFieldModel->cookieToolExpiredTime)) {
-            $csrfCookieFieldModel->cookieToolExpiredTime = '0';
-            $csrfCookieFieldModel->save();
+        $csrfToken = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'csrf_contao_csrf_token']);
+        if (empty($csrfToken)) {
+            $csrfToken = CookieTool::createDefault(
+                $cookieToolContainer,
+                'Contao CSRF Token',
+                'csrf_contao_csrf_token',
+                $GLOBALS['TL_LANG']['tl_module']['contaoCsrfToken']['cookieToolsUse'],
+                1
+            );
+            $em->persist($csrfToken);
         }
 
-		if (empty($csrfHttpsCookieFieldModel)) {
-            $cookieToolsTechnicalName = 'csrf_https-contao_csrf_token';
-            if (
-                !empty($toolsDeactivate)
-                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
-                || empty($toolsDeactivate)
-            ) {
-                $csrfHttpsCookieFieldModel = new FieldPaletteModel();
-
-                $csrfHttpsCookieFieldModel->pid = $id;
-                $csrfHttpsCookieFieldModel->ptable = 'tl_module';
-                $csrfHttpsCookieFieldModel->pfield = 'cookieTools';
-                $csrfHttpsCookieFieldModel->sorting = '1';
-                $csrfHttpsCookieFieldModel->tstamp = time();
-                $csrfHttpsCookieFieldModel->dateAdded = time();
-                $csrfHttpsCookieFieldModel->published = '1';
-                $csrfHttpsCookieFieldModel->cookieToolsName = 'Contao HTTPS CSRF Token';
-                $csrfHttpsCookieFieldModel->cookieToolsTechnicalName = $cookieToolsTechnicalName;
-                $csrfHttpsCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
-                $csrfHttpsCookieFieldModel->cookieToolsProvider = '';
-                $csrfHttpsCookieFieldModel->cookieToolExpiredTime = '0';
-                $csrfHttpsCookieFieldModel->cookieToolsSelect = '-';
-                $csrfHttpsCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'];
-                $csrfHttpsCookieFieldModel->cookieToolGroup = '1';
-
-                $csrfHttpsCookieFieldModel->save();
-            }
-        }
-		if (empty($phpSessIdCookieFieldModel)) {
-            $cookieToolsTechnicalName = 'PHPSESSID';
-            if (
-                !empty($toolsDeactivate)
-                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
-                || empty($toolsDeactivate)
-            ) {
-                $phpSessIdCookieFieldModel = new FieldPaletteModel();
-
-                $phpSessIdCookieFieldModel->pid = $id;
-                $phpSessIdCookieFieldModel->ptable = 'tl_module';
-                $phpSessIdCookieFieldModel->pfield = 'cookieTools';
-                $phpSessIdCookieFieldModel->sorting = '1';
-                $phpSessIdCookieFieldModel->tstamp = time();
-                $phpSessIdCookieFieldModel->dateAdded = time();
-                $phpSessIdCookieFieldModel->published = '1';
-                $phpSessIdCookieFieldModel->cookieToolsName = 'PHP SESSION ID';
-                $phpSessIdCookieFieldModel->cookieToolsTechnicalName = 'PHPSESSID';
-                $phpSessIdCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
-                $phpSessIdCookieFieldModel->cookieToolsProvider = '';
-                $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
-                $phpSessIdCookieFieldModel->cookieToolsSelect = '-';
-                $phpSessIdCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'];
-                $phpSessIdCookieFieldModel->cookieToolGroup = '1';
-
-                $phpSessIdCookieFieldModel->save();
-            }
-
-		} elseif (!isset($phpSessIdCookieFieldModel->cookieToolExpiredTime)) {
-            $phpSessIdCookieFieldModel->cookieToolExpiredTime = '0';
-            $phpSessIdCookieFieldModel->save();
-        }
-        if (empty($feUserAuthCookieFieldModel)) {
-            $cookieToolsTechnicalName = 'FE_USER_AUTH';
-            if (
-                !empty($toolsDeactivate)
-                && !in_array($cookieToolsTechnicalName,$toolsDeactivate)
-                || empty($toolsDeactivate)
-            ) {
-                $feUserAuthCookieFieldModel = new FieldPaletteModel();
-                $feUserAuthCookieFieldModel->pid = $id;
-                $feUserAuthCookieFieldModel->ptable = 'tl_module';
-                $feUserAuthCookieFieldModel->pfield = 'cookieTools';
-                $feUserAuthCookieFieldModel->sorting = '4';
-                $feUserAuthCookieFieldModel->tstamp = time();
-                $feUserAuthCookieFieldModel->dateAdded = time();
-                $feUserAuthCookieFieldModel->published = '1';
-                $feUserAuthCookieFieldModel->cookieToolsName = 'FE USER AUTH';
-                $feUserAuthCookieFieldModel->cookieToolsTechnicalName = $cookieToolsTechnicalName;
-                $feUserAuthCookieFieldModel->cookieToolsPrivacyPolicyUrl = '';
-                $feUserAuthCookieFieldModel->cookieToolsProvider = '';
-                $feUserAuthCookieFieldModel->cookieToolExpiredTime = '0';
-                $feUserAuthCookieFieldModel->cookieToolsSelect = '-';
-                $feUserAuthCookieFieldModel->cookieToolsUse = $GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'];
-                $feUserAuthCookieFieldModel->cookieToolGroup = '1';
-                $feUserAuthCookieFieldModel->save();
-            }
+        $csrfTokenHttps = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'csrf_https_contao_csrf_token']);
+        if (empty($csrfTokenHttps)) {
+            $csrfTokenHttps = CookieTool::createDefault(
+                $cookieToolContainer,
+                'Contao HTTPS CSRF Token',
+                'csrf_https_contao_csrf_token',
+                $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'],
+                2
+            );
+            $em->persist($csrfTokenHttps);
         }
 
-		if (!empty($fieldValue)) {
-			$fieldValues = StringUtil::deserialize($fieldValue);
-			$fieldValues[] = [
-                $feUserAuthCookieFieldModel->id,
-				$csrfCookieFieldModel->id,
-				$phpSessIdCookieFieldModel->id,
-			];
-			$fieldValue = serialize($fieldValues);
-		}
+        $PHPSESSID = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'PHPSESSID']);
+        if (empty($PHPSESSID)) {
+            $PHPSESSID = CookieTool::createDefault(
+                $cookieToolContainer,
+                'PHP SESSION ID',
+                'PHPSESSID',
+                $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'],
+                3
+            );
+            $em->persist($PHPSESSID);
+        }
 
-		return $fieldValue;
+        $FE_USER_AUTH = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'FE_USER_AUTH']);
+        if (empty($FE_USER_AUTH)) {
+            $FE_USER_AUTH = CookieTool::createDefault(
+                $cookieToolContainer,
+                'FE USER AUTH',
+                'FE_USER_AUTH',
+                $GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'],
+                4
+            );
+            $em->persist($FE_USER_AUTH);
+        }
+
+        $em->flush();
 	}
 
     public function loadFromNcoiTableImpress($value,DC_Table $dca)

@@ -10,6 +10,7 @@ use Doctrine\DBAL\Driver\Exception;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class IFrameBlocker
@@ -20,7 +21,7 @@ class IFrameBlocker
      * @param RequestStack $requestStack
      * @return string
      */
-    public function iframe($buffer,Database $database, RequestStack$requestStack) {
+    public function iframe($buffer,Database $database, RequestStack $requestStack,ParameterBag $parameterBag) {
 
         if (empty($requestStack))
             return $buffer;
@@ -38,7 +39,7 @@ class IFrameBlocker
                     $iframe = substr($html,0,$iframeArray);
                     $iframeHTML = '<iframe'.$iframe;
                     try {
-                        $return .= $this->getIframeHTML($iframeHTML, $requestStack, $database);
+                        $return .= $this->getIframeHTML($iframeHTML, $requestStack, $database,$parameterBag);
                     } catch (Exception $e) {
                         return $buffer;
                     }
@@ -57,12 +58,12 @@ class IFrameBlocker
      * @param Database $database
      * @return string
      */
-    private function getIframeHTML($iframeHTML,$requestStack, Database $database)
+    private function getIframeHTML($iframeHTML,$requestStack, Database $database,ParameterBag $parameterBag)
     {
         //Frontendvariablen diese werden an das Template übergeben
         $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
 
-        $moduleData = Blocker::getModulData($requestStack,$database);
+        $moduleData = Blocker::getModulData($requestStack,$database,$parameterBag);
         if (empty($moduleData))
             return $iframeHTML;
 
@@ -85,7 +86,7 @@ class IFrameBlocker
         );
         if (empty($dataFromExternalMediaAndBar->getModId())) {
             global $objPage;
-            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout),$database, [], []);
+            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout),$database, [], [],$parameterBag);
             $moduleData[] =['mod' => $return['moduleIds'][0]];
             $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
                 $dataFromExternalMediaAndBar,
