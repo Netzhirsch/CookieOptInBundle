@@ -1,5 +1,4 @@
 <?php
-/********* config ****************************************************************************************/
 $GLOBALS['TL_DCA']['tl_ncoi_cookie_revoke'] = [
     'config' => [
         'label' => 'Cookie opt in revoke bundle table',

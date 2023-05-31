@@ -3,6 +3,7 @@
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
 
@@ -39,28 +40,35 @@ class CookieToolRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return CookieTool[] Returns an array of CookieTool objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findOneBySourceIdAndUrl(array $sourceIds, string $url)
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.i_frame_blocked_urls LIKE :url')
+            ->setParameter('url', '%'.$url.'%')
+            ->leftJoin('c.parent', 'parent')
+            ->andWhere('parent.sourceId IN (:sourceIds)')
+            ->setParameter('sourceIds', $sourceIds)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 
-//    public function findOneBySomeField($value): ?CookieTool
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findOneBySourceIdAndType(array $sourceIds, string $iFrameType)
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.cookieToolsSelect LIKE :iFrameType')
+            ->setParameter('iFrameType', $iFrameType)
+            ->leftJoin('c.parent', 'parent')
+            ->andWhere('parent.sourceId IN (:sourceIds)')
+            ->setParameter('sourceIds', $sourceIds)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

@@ -3,7 +3,7 @@
 namespace Netzhirsch\CookieOptInBundle\Repository;
 
 use Contao\Database;
-use Netzhirsch\CookieOptInBundle\Classes\GlobalDefaultText;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\GlobalDefaultText;
 
 class BarRepository extends Repository
 {

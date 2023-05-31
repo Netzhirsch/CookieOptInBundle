@@ -5,7 +5,7 @@ $GLOBALS['TL_HOOKS']['getSystemMessages'][] = [Netzhirsch\CookieOptInBundle\Even
 
 $GLOBALS['TL_HOOKS']['getPageLayout'][] = [Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener::class, 'onGetPageLayoutListener'];
 
-$GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = [Netzhirsch\CookieOptInBundle\EventListener\ParseFrontendTemplateListener::class, 'onParseFrontendTemplate'];
+$GLOBALS['TL_HOOKS']['getContentElement'][] = [Netzhirsch\CookieOptInBundle\EventListener\ContentElementListener::class, 'onContentElement'];
 
 $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = [Netzhirsch\CookieOptInBundle\EventListener\ReplaceInsertTag::class, 'onReplaceInsertTagsListener'];
 
@@ -14,11 +14,10 @@ $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = [Netzhirsch\CookieOptInBundle\
  * Add back end modules
  */
 $GLOBALS['BE_MOD']['accounts']['consentDirectory']['tables'][] = 'tl_consentDirectory';
-
 /**
  * Front end modules
  */
 $GLOBALS['FE_MOD']['cookieOptIn'] = [
-    'cookieOptInBar' => 'Netzhirsch\CookieOptInBundle\ModuleCookieOptInBar',
-    'cookieOptInRevoke' => 'Netzhirsch\CookieOptInBundle\ModuleCookieOptInRevoke'
+    'cookieOptInBar' => 'Netzhirsch\CookieOptInBundle\Resources\contao\modules\ModuleCookieOptInBar',
+    'cookieOptInRevoke' => 'Netzhirsch\CookieOptInBundle\Resources\contao\modules\ModuleCookieOptInRevoke',
 ];

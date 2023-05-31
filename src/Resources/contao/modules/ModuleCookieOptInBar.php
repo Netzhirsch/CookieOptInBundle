@@ -1,6 +1,6 @@
 <?php
 
-namespace Netzhirsch\CookieOptInBundle;
+namespace Netzhirsch\CookieOptInBundle\Resources\contao\modules;
 
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
@@ -9,7 +9,11 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Less_Exception_Parser;
-use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
+use Netzhirsch\CookieOptInBundle\Entity\CookieToolContainer;
+use Netzhirsch\CookieOptInBundle\Entity\OtherScript;
+use Netzhirsch\CookieOptInBundle\Entity\OtherScriptContainer;
 use Netzhirsch\CookieOptInBundle\Repository\LayoutRepository;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
 
@@ -114,9 +118,21 @@ class ModuleCookieOptInBar extends Module
         ];
 
 		$data['cookieTools'] = [];
-		$unorderedData = FieldPaletteModel::findByPid($this->id);
+        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $repoCookieToolContainer = $em->getRepository(CookieToolContainer::class);
+        $cookieToolContainer = $repoCookieToolContainer->findOneBy(['sourceId' => $this->id]);
+        $repoOtherScriptContainer = $em->getRepository(OtherScriptContainer::class);
+        $otherScriptContainer = $repoOtherScriptContainer->findOneBy(['sourceId' => $this->id]);
+
+		$unorderedData = array_merge(
+            $cookieToolContainer->getElements()->toArray(),
+            $otherScriptContainer->getElements()->toArray()
+        );
         foreach ($unorderedData as $unorderedDatum) {
-            $data['cookieTools'][$unorderedDatum->sorting] = $unorderedDatum;
+            if ($unorderedDatum instanceof OtherScript) {
+                $unorderedDatum->setPosition( $unorderedDatum->getPosition() + count($cookieToolContainer->getElements()->toArray()));
+            }
+            $data['cookieTools'][$unorderedDatum->getPosition()] = $unorderedDatum;
         }
         ksort($data['cookieTools']);
 
@@ -126,27 +142,29 @@ class ModuleCookieOptInBar extends Module
             foreach ($data['cookieTools'] as $cookieTool) {
                 if (!empty($ncoiSession) && $data['noscript']) {
                     foreach ($ncoiSession['cookieIds'] as $cookieId) {
-                        if ($cookieId == $cookieTool->id) {
+                        if ($cookieId == $cookieTool->getId()) {
 
                             if (!in_array($cookieId, $data['cookieGroupsSelected'])) {
-                                $data['cookieGroupsSelected'][] = $cookieTool->cookieToolGroup;
+                                $data['cookieGroupsSelected'][] = $cookieTool->getCookieToolGroup();
                             }
 
-                            $cookieToolsSelect = $cookieTool->cookieToolsSelect;
-                            if (self::hasTemplate($conn, $objPage->layout, $cookieToolsSelect)) {
-                                continue;
+                            if ($cookieTool instanceof CookieTool) {
+                                $cookieToolsSelect = $cookieTool->getCookieToolsSelect();
+                                if (self::hasTemplate($conn, $objPage->layout, $cookieToolsSelect)) {
+                                    continue;
+                                }
                             }
 
-                            $trackingId = $cookieTool->cookieToolsTrackingId;
+                            $trackingId = $cookieTool->getCookieToolsTrackingId();
 
-                            if ($cookieTool->cookieToolsSelect == 'facebookPixel') {
-                                $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='.$cookieTool->cookieToolsTrackingId.'&ev=PageView&noscript=1"/>';
-                            } elseif ($cookieTool->cookieToolsSelect == 'googleAnalytics') {
+                            if ($cookieTool->getCookieToolsSelect() == 'facebookPixel') {
+                                $data['noScriptTracking'][] = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='.$cookieTool->getCookieToolsTrackingId().'&ev=PageView&noscript=1"/>';
+                            } elseif ($cookieTool->getCookieToolsSelect() == 'googleAnalytics') {
 
                                 $data['noScriptTracking'][] = '<img src="https://www.google-analytics.com/collect?v=1&t=pageview&tid='.$trackingId.'&cid=1&dp='.$objPage->mainAlias.'">';
-                            } elseif ($cookieTool->cookieToolsSelect == 'matomo') {
+                            } elseif ($cookieTool->getCookieToolsSelect() == 'matomo') {
 
-                                $data['noScriptTracking'][] = '<img src="'.$cookieTool->cookieToolsTrackingServerUrl.'/matomo.php?idsite='.$trackingId.'&amp;rec=1" style="border:0" alt="" />';
+                                $data['noScriptTracking'][] = '<img src="'.$cookieTool->getCookieToolsTrackingServerUrl().'/matomo.php?idsite='.$trackingId.'&amp;rec=1" style="border:0" alt="" />';
                             }
                         }
                     }
@@ -155,7 +173,7 @@ class ModuleCookieOptInBar extends Module
                 $technicalName = null;
                 $name = null;
                 foreach ($groups as $group) {
-                    if ($group['key'] == $cookieTool->cookieToolGroup) {
+                    if ($group['key'] == $cookieTool->getCookieToolGroup()) {
                         $technicalName = $group['key'];
                         $name = $group['value'];
                         $cookieTool->cookieToolGroupName = $name;
@@ -243,7 +261,6 @@ class ModuleCookieOptInBar extends Module
             $data['optOut'] = 'default';
         else
             $data['optOut'] = 'no';
-
 		$this->Template->setData($data);
 	}
 
@@ -290,7 +307,6 @@ class ModuleCookieOptInBar extends Module
         if (!self::isCookieLibLoaded()) {
             $GLOBALS['TL_JAVASCRIPT']['cookieJs'] = 'bundles/netzhirschcookieoptin/library/cookie.min.js|static';
         }
-
         if (!self::isNcoiJsAlreadyLoaded()) {
             self::loadNcoiJs();
         }
@@ -333,7 +349,9 @@ class ModuleCookieOptInBar extends Module
                 self::includeFilesInDir($file);
             }
             else {
-                if (strpos($file, 'min') !== false)
+                if ($GLOBALS['_ENV']['APP_ENV'] == 'prod' && strpos($file, 'min') !== false)
+                    $GLOBALS['TL_JAVASCRIPT'][$file] = $relativDir.DIRECTORY_SEPARATOR.$file.'|static';
+                elseif ($GLOBALS['_ENV']['APP_ENV'] == 'dev' && strpos($file, 'min') === false)
                     $GLOBALS['TL_JAVASCRIPT'][$file] = $relativDir.DIRECTORY_SEPARATOR.$file.'|static';
             }
         }
@@ -347,7 +365,9 @@ class ModuleCookieOptInBar extends Module
             if (self::isPresentDirOrParentDir($templateFile))
                 continue;
             $filepath = $relativPath.DIRECTORY_SEPARATOR.$dir.DIRECTORY_SEPARATOR.$templateFile.'|static';
-            if (strpos($filepath, 'min') !== false)
+            if ($GLOBALS['_ENV']['APP_ENV'] == 'prod' && strpos($filepath, 'min') !== false)
+                $GLOBALS['TL_JAVASCRIPT'][$templateFile] = $filepath;
+            elseif ($GLOBALS['_ENV']['APP_ENV'] == 'dev' && strpos($filepath, 'min') === false)
                 $GLOBALS['TL_JAVASCRIPT'][$templateFile] = $filepath;
         }
 	}

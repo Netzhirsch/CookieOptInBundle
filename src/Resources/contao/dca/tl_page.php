@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Extend default palette
  */
 //Contao 4.9 need rootfallback and root
 use Contao\Config;
 use Contao\PageModel;
-use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener;
 use Contao\DC_Table;
@@ -96,7 +97,8 @@ class tl_page_ncoi extends tl_page {
 	 *
 	 * @return string
 	 */
-	public function saveLicenseData($licenseKey, DC_Table $dca) {
+	public function saveLicenseData($licenseKey, DC_Table $dca): string
+    {
 		if (in_array($dca->id, $dca->rootIds)) {
 			$pageModel = PageModel::findById($dca->id);
 
@@ -127,7 +129,8 @@ class tl_page_ncoi extends tl_page {
 	/**
 	 * @throws Exception
 	 */
-	public function showLicenseWarning() {
+	public function showLicenseWarning(): void
+    {
 		if (Contao\Input::get('act') != '')
 			return;
 

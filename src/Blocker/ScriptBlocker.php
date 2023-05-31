@@ -4,32 +4,42 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\Database;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Connection;
-use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\Logger\Logger;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 use DOMDocument;
 use DOMElement;
-use System;
+use Contao\System;
 
 class ScriptBlocker
 {
     /**
-     * @param $buffer
-     * @param Database $conn
+     * @param              $buffer
+     * @param Database     $conn
      * @param RequestStack $requestStack
+     *
      * @return string
      * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
+     * @throws \Doctrine\DBAL\Exception*@throws NonUniqueResultException
      */
-    public function script($buffer,Database $database,RequestStack $requestStack) {
-
-        if (empty($requestStack))
-            return $buffer;
-
+    public function script(
+        $buffer,
+        Database $database,
+        RequestStack $requestStack,
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        InsertTagParser $insertTagParser
+    ): string {
         /**
          * Scripts von anderen HTML Tags trennen.
          * Scripts encoden und in Container div einbetten.
@@ -44,23 +54,42 @@ class ScriptBlocker
 
             $wrapWithBlockContainer = $DOMElement->getAttribute('data-ncoi-no-block-container');
             if (empty($wrapWithBlockContainer))
-                $newBuffer .= $this->getScriptHTML($DOMElement,$requestStack,$database,$buffer);
+                $newBuffer .= $this->getScriptHTML(
+                    $DOMElement,
+                    $requestStack,
+                    $database,
+                    $buffer,
+                    $cookieToolRepository,
+                    $parameterBag,
+                    $insertTagParser
+                );
         }
         return $newBuffer;
     }
 
     /**
-     * @param DOMElement $DOMElement
-     * @param RequestStack $requestStack
-     * @param Connection $conn
-     * @param $buffer
+     * @param DOMElement           $DOMElement
+     * @param RequestStack         $requestStack
+     * @param Database             $database
+     * @param                      $buffer
+     * @param CookieToolRepository $cookieToolRepository
+     * @param ParameterBag         $parameterBag
+     * @param InsertTagParser      $insertTagParser
+     *
      * @return null|string
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
+     * @throws NonUniqueResultException
      */
-    private function getScriptHTML(DOMElement $DOMElement, RequestStack $requestStack, Database $database,$buffer){
+    private function getScriptHTML(
+        DOMElement $DOMElement,
+        RequestStack $requestStack,
+        Database $database,
+        $buffer,
+        CookieToolRepository $cookieToolRepository,
+        ParameterBag $parameterBag,
+        InsertTagParser $insertTagParser
+    ): ?string {
 
-        $moduleData = Blocker::getModulData($requestStack,$database);
+        $moduleData = Blocker::getModulData($requestStack,$database,$parameterBag);
         $container = System::getContainer();
         if (empty($moduleData)) {
             if ($container->getParameter('kernel.debug'))
@@ -68,25 +97,28 @@ class ScriptBlocker
             return $buffer;
         }
 
-        $src = self::getSrc($DOMElement);
-        if (empty($src)) {
-            if ($container->getParameter('kernel.debug'))
-                Logger::logExceptionInContaoSystemLog('src empty for'.$buffer);
-            return $buffer;
+        $src = self::getSrc($DOMElement)??'';
+        $url = Blocker::getLevelUrl($src);
+        $modIds = [];
+        foreach ($moduleData as $moduleDatum) {
+            $modIds[] = $moduleDatum['mod'];
         }
-
-        $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($database, $src);
-        if (empty($externalMediaCookiesInDB)) {
-            if ($container->getParameter('kernel.debug'))
-                Logger::logExceptionInContaoSystemLog('no data found by src:'.$src);
-            return $buffer;
+        $sourceIds = array_merge(Blocker::getModIdByInsertTagInModule($database,$modIds),$modIds);
+        if (!empty($url)) {
+            /** @var CookieTool $cookieTool */
+            $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
+        }
+        if (empty($cookieTool)) {
+            $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, 'script');
         }
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-            $dataFromExternalMediaAndBar,$database,$externalMediaCookiesInDB,$moduleData
+            $DOMElement->textContent,
+            $dataFromExternalMediaAndBar,
+            $cookieTool
         );
-        $dataFromExternalMediaAndBar->setDisclaimer($externalMediaCookiesInDB[0]['i_frame_blocked_text']);
+        $dataFromExternalMediaAndBar->setDisclaimer($cookieTool->getIFrameBlockedText());
         $dataFromExternalMediaAndBar->setIFrameType('script');
         $barRepo = new BarRepository($database);
         $blockText = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
@@ -102,12 +134,12 @@ class ScriptBlocker
             'height' => $DOMElement->getAttribute('height'),
             'width' => $DOMElement->getAttribute('width'),
         ];
-
         return Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockText,
             $size,
-            $buffer
+            $buffer,
+            $insertTagParser
         );
     }
 

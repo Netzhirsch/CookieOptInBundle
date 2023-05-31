@@ -21,7 +21,7 @@ class ReplaceInsertTag
      * @return mixed
      * @throws Exception
      */
-    public function onReplaceInsertTagsListener($insertTag)
+    public function onReplaceInsertTagsListener($insertTag): mixed
     {
         global $objPage;
         if (empty($objPage)) {

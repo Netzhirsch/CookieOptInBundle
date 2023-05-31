@@ -4,12 +4,17 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\Database;
 use Contao\LayoutModel;
 use Doctrine\DBAL\Driver\Exception;
-use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Doctrine\ORM\EntityManagerInterface;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\DataFromExternalMediaAndBar;
+use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolContainerRepository;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -21,7 +26,15 @@ class IFrameBlocker
      * @param RequestStack $requestStack
      * @return string
      */
-    public function iframe($buffer,Database $database, RequestStack $requestStack,ParameterBag $parameterBag) {
+    public function iframe(
+        $buffer,
+        Database $database,
+        RequestStack $requestStack,
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        string $sourceId,
+        InsertTagParser $insertTagParser
+    ) {
 
         if (empty($requestStack))
             return $buffer;
@@ -39,7 +52,15 @@ class IFrameBlocker
                     $iframe = substr($html,0,$iframeArray);
                     $iframeHTML = '<iframe'.$iframe;
                     try {
-                        $return .= $this->getIframeHTML($iframeHTML, $requestStack, $database,$parameterBag);
+                        $return .= $this->getIframeHTML(
+                            $iframeHTML,
+                            $requestStack,
+                            $database,
+                            $parameterBag,
+                            $cookieToolRepository,
+                            $sourceId,
+                            $insertTagParser
+                        );
                     } catch (Exception $e) {
                         return $buffer;
                     }
@@ -53,134 +74,51 @@ class IFrameBlocker
     }
 
     /**
-     * @param $iframeHTML
-     * @param $requestStack
+     * @param          $iframeHTML
+     * @param          $requestStack
      * @param Database $database
+     *
      * @return string
+     * @throws \Exception
      */
-    private function getIframeHTML($iframeHTML,$requestStack, Database $database,ParameterBag $parameterBag)
-    {
-        //Frontendvariablen diese werden an das Template übergeben
-        $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
+    private function getIframeHTML(
+        $iframeHTML,
+        $requestStack,
+        Database $database,
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        string $sourceId,
+        InsertTagParser $insertTagParser
+    ) {
 
-        $moduleData = Blocker::getModulData($requestStack,$database,$parameterBag);
-        if (empty($moduleData))
-            return $iframeHTML;
-
-        $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
-        $url = $this->getUrl($iframeHTML);
-        if (!empty($url))
-            $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($database, $url);
-        if (empty($externalMediaCookiesInDB)) {
-            $externalMediaCookiesInDB = Blocker::getExternalMediaByType($iframeHTML,$database);
-            $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($iframeHTML));
-        }
-        if (empty($externalMediaCookiesInDB))
-            return $iframeHTML;
-
-        $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-            $dataFromExternalMediaAndBar,
-            $database,
-            $externalMediaCookiesInDB,
-            $moduleData
-        );
-        if (empty($dataFromExternalMediaAndBar->getModId())) {
-            global $objPage;
-            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout),$database, [], [],$parameterBag);
-            $moduleData[] =['mod' => $return['moduleIds'][0]];
-            $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-                $dataFromExternalMediaAndBar,
-                $database,
-                $externalMediaCookiesInDB,
-                $moduleData
-            );
-        }
-        $isIFrameTypInDB = false;
-        $blockedIFrames = $dataFromExternalMediaAndBar->getBlockedIFrames();
-        if (in_array($iframeTypInHtml,$blockedIFrames) || empty($dataFromExternalMediaAndBar->getDisclaimer()))
-            $isIFrameTypInDB = true;
-
-        if (!$isIFrameTypInDB)
-            return $iframeHTML;
-
-        // alle icons liegen im gleich Ordner
-        // root der bundle assets
-        $iconPath = 'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR;
-        $barRepo = new BarRepository($database);
-        $blockTexts = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
-
-        if (!empty($dataFromExternalMediaAndBar->getDisclaimer())) {
-
-            $disclaimerString = $dataFromExternalMediaAndBar->getDisclaimer();
-
-        } else {
-
-            switch($iframeTypInHtml) {
-                case 'youtube':
-                case 'vimeo':
-                    $disclaimerString = $blockTexts['i_frame_video'];
-                    break;
-                case 'googleMaps':
-                    $disclaimerString = $blockTexts['i_frame_maps'];
-                    break;
-                case 'iframe':
-                    $disclaimerString = $blockTexts['i_frame_i_frame'];
-                    break;
-                default:
-                    $disclaimerString = 'Default disclaimer';
-            }
-        }
-        $dataFromExternalMediaAndBar->setDisclaimer($disclaimerString);
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
-        $size = [
-            'height' => self::getHeight($iframeHTML),
-            'width' => self::getWidth($iframeHTML)
-        ];
+
+        [$dataFromExternalMediaAndBar,$blockTexts,$size,$iconPath,$cookieTool] = Blocker::getIframeHTML(
+            $iframeHTML,
+            $requestStack,
+            $database,
+            $parameterBag,
+            $cookieToolRepository,
+            $sourceId
+        );
 
         $newBuffer = Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockTexts,
             $size,
             $iframeHTML,
-            $iconPath
+            $insertTagParser,
+            $iconPath,
         );
-        $isUserCookieDontAllowMedia = false;
-        if (
-            isset($_SESSION)
-            && isset($_SESSION['_sf2_attributes'])
-            && isset($_SESSION['_sf2_attributes']['ncoi'])
-            && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])
-        ) {
-            $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
-            foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                if (isset($externalMediaCookieInDB['id']) && in_array($externalMediaCookieInDB['id'],$cookieIds)) {
-                    $isUserCookieDontAllowMedia = true;
-                }
-            }
-        }
+
         //User möchte das iFrame sehen, aber vielleicht auch über JS wieder blocken
-        if ($isUserCookieDontAllowMedia) {
+        if (Blocker::isUserCookieDontAllowMedia($cookieTool)) {
             return $iframeHTML;
         } else {
             return $newBuffer;
         }
     }
 
-    private static function getUrl($html){
-
-        $htmlUrlPart = substr($html,strpos($html,'src="'));
-        $htmlUrlPart = str_replace('src="','',$htmlUrlPart);
-        $htmlUrlPart = str_replace('www.','',$htmlUrlPart);
-        $htmlUrlPart = substr($htmlUrlPart,0,strpos($htmlUrlPart,'"'));
-
-        $urlArray = explode('/',$htmlUrlPart);
-        foreach ($urlArray as $url) {
-            if (strpos($url,'.'))
-                return $url;
-        }
-
-        return '';
-    }
 
     private static function getHeight($iframeHTML): string
     {

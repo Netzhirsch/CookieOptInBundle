@@ -4,12 +4,15 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\Database;
 use Contao\LayoutModel;
 use Doctrine\DBAL\Driver\Exception;
-use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Doctrine\ORM\EntityManagerInterface;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -25,7 +28,10 @@ class VideoPreviewBlocker
         $buffer,
         Database $database,
         RequestStack $requestStack,
-        ParameterBag $parameterBag
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        string $sourceId,
+        InsertTagParser $insertTagParser
     )
     {
 
@@ -42,10 +48,26 @@ class VideoPreviewBlocker
         $iframe = substr($buffer, $start);
         $end = strpos($iframe, '</figure>')+ strlen('</figure>');
         $iframe = substr($iframe, 0, $end);
-        $iframe = $this->getIframeHTML($iframe,$requestStack,$database,$parameterBag);
+        $iframe = $this->getIframeHTML(
+            $iframe,
+            $requestStack,
+            $database,
+            $parameterBag,
+            $cookieToolRepository,
+            $sourceId,
+            $insertTagParser
+        );
         $nextPart = substr($buffer, $start+$end);
         if (strpos($nextPart, '<figure') > 0 && !strpos($nextPart, 'ncoi---blocked')) {
-            $nextPart .= $this->iframe($nextPart, $database, $requestStack,$parameterBag);
+            $nextPart .= $this->iframe(
+                $nextPart,
+                $database,
+                $requestStack,
+                $parameterBag,
+                $cookieToolRepository,
+                $sourceId,
+                $insertTagParser
+            );
         }
         return $noIframe.$iframe.$nextPart;
     }
@@ -61,109 +83,37 @@ class VideoPreviewBlocker
         $html,
         $requestStack,
         $database,
-        ParameterBag $parameterBag
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        string $sourceId,
+        InsertTagParser $insertTagParser
     )
     {
-        //Frontendvariablen diese werden an das Template übergeben
-        $iframeTypInHtml = Blocker::getIFrameType($html);
-
-        $moduleData = Blocker::getModulData($requestStack, $database,$parameterBag);
-        if (empty($moduleData)) {
-            return $html;
-        }
-
-        $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
-        $url = $this->getUrl($html);
-        if (!empty($url)) {
-            $externalMediaCookiesInDB = Blocker::getExternalMediaByUrl($database, $url);
-        }
-        if (empty($externalMediaCookiesInDB)) {
-            $externalMediaCookiesInDB = Blocker::getExternalMediaByType($html, $database);
-            $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($html));
-        }
-        if (empty($externalMediaCookiesInDB)) {
-            return $html;
-        }
-
-        $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-            $dataFromExternalMediaAndBar,
+        [$dataFromExternalMediaAndBar,$blockTexts,$sizeBackground,$iconPath,$cookieTool] = Blocker::getIframeHTML(
+            $html,
+            $requestStack,
             $database,
-            $externalMediaCookiesInDB,
-            $moduleData
+            $parameterBag,
+            $cookieToolRepository,
+            $sourceId
         );
 
-        if (empty($dataFromExternalMediaAndBar->getModId())) {
-            global $objPage;
-            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout), $database, [], [],$parameterBag);
-            $moduleData[] = ['mod' => $return['moduleIds'][0]];
-            $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-                $dataFromExternalMediaAndBar,
-                $database,
-                $externalMediaCookiesInDB,
-                $moduleData
-            );
-        }
-
-        $isIFrameTypInDB = false;
-        $blockedIFrames = $dataFromExternalMediaAndBar->getBlockedIFrames();
-        if (in_array($iframeTypInHtml, $blockedIFrames) || empty($dataFromExternalMediaAndBar->getDisclaimer())) {
-            $isIFrameTypInDB = true;
-        }
-
-        if (!$isIFrameTypInDB) {
-            return $html;
-        }
-
-        // alle icons liegen im gleich Ordner
-        // root der bundle assets
-        $iconPath = 'bundles'.DIRECTORY_SEPARATOR.'netzhirschcookieoptin'.DIRECTORY_SEPARATOR;
-        $barRepo = new BarRepository($database);
-        $blockTexts = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
-
-        if (!empty($dataFromExternalMediaAndBar->getDisclaimer())) {
-
-            $disclaimerString = $dataFromExternalMediaAndBar->getDisclaimer();
-
-        } else {
-
-            switch ($iframeTypInHtml) {
-                case 'youtube':
-                case 'vimeo':
-                    $disclaimerString = $blockTexts['i_frame_video'];
-                    break;
-                case 'googleMaps':
-                    $disclaimerString = $blockTexts['i_frame_maps'];
-                    break;
-                case 'iframe':
-                    $disclaimerString = $blockTexts['i_frame_i_frame'];
-                    break;
-                default:
-                    $disclaimerString = 'Default disclaimer';
-            }
-        }
-        $dataFromExternalMediaAndBar->setDisclaimer($disclaimerString);
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
-
         $imageSrc = $this->getImageSrc($html);
 
         $innerFigure = substr($html, strpos($html, '<figure'));
         $innerFigure = substr($innerFigure, 0, strpos($innerFigure, '</figure>'));
         $sizeIframe = $this->getIframeSize($innerFigure);
-
-        $html = $this->replacePreviewImageWithIframe($html, $innerFigure, $sizeIframe);
+        $html = $this->replacePreviewImageWithIframe($html, $sizeIframe);
 
         $newBuffer = Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockTexts,
             $sizeIframe,
             $html,
+            $insertTagParser,
             $iconPath
         );
-
-        $sizeBackground = [
-            'height' => self::getHeight($html),
-            'width' => self::getWidth($html),
-        ];
 
         if (!empty($sizeBackground['height']) && !Blocker::hasUnit($sizeBackground['height'])) {
             $sizeBackground['height'] .= 'px';
@@ -184,22 +134,8 @@ class VideoPreviewBlocker
             $newBuffer = str_replace($search, $replace, $newBuffer);
         }
 
-        $isUserCookieDontAllowMedia = false;
-        if (
-            isset($_SESSION)
-            && isset($_SESSION['_sf2_attributes'])
-            && isset($_SESSION['_sf2_attributes']['ncoi'])
-            && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])
-        ) {
-            $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
-            foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                if (isset($externalMediaCookieInDB['id']) && in_array($externalMediaCookieInDB['id'], $cookieIds)) {
-                    $isUserCookieDontAllowMedia = true;
-                }
-            }
-        }
         //User möchte das iFrame sehen, aber vielleicht auch über JS wieder blocken
-        if ($isUserCookieDontAllowMedia) {
+        if (Blocker::isUserCookieDontAllowMedia($cookieTool)) {
             return $html;
         } else {
             return $newBuffer;
@@ -208,7 +144,6 @@ class VideoPreviewBlocker
 
     private function replacePreviewImageWithIframe(
         string $html,
-        string $imageSrc,
         array $size
     )
     {
@@ -216,11 +151,7 @@ class VideoPreviewBlocker
             return $html;
         }
         $src = self::getFullURL($html);
-
-        $iframe = '<iframe src="'.$src.'" allowfullscreen="" width="'.$size['width'].'" height="'.$size['height'].'"></iframe>';
-        $imageSrc = str_replace($imageSrc, $iframe, $html);
-
-        return $imageSrc;
+        return '<iframe src="'.$src.'" allowfullscreen="" width="'.$size['width'].'" height="'.$size['height'].'"></iframe>';
     }
 
     private function getImageSrc(string $html)
@@ -235,26 +166,12 @@ class VideoPreviewBlocker
         return $imageSrc;
     }
 
-    private static function getUrl(string $html)
-    {
-
-        $htmlUrlPart = self::getFullURL($html);
-
-        $urlArray = explode('/', $htmlUrlPart);
-        foreach ($urlArray as $url) {
-            if (strpos($url, '.')) {
-                return $url;
-            }
-        }
-
-        return '';
-    }
 
     private static function getFullURL(string $html)
     {
-
-        $htmlUrlPart = substr($html, strpos($html, 'href="'));
-        $htmlUrlPart = str_replace('href="', '', $htmlUrlPart);
+        $html = substr($html, strpos($html, '<iframe') );
+        $htmlUrlPart = substr($html, strpos($html, 'src="'));
+        $htmlUrlPart = str_replace('src="', '', $htmlUrlPart);
         $htmlUrlPart = str_replace('www.', '', $htmlUrlPart);
 
         return substr($htmlUrlPart, 0, strpos($htmlUrlPart, '"'));
@@ -263,114 +180,30 @@ class VideoPreviewBlocker
 
     private function getIframeSize($html): array
     {
-        $position = self::getPosition($html, 'iframe.width = ');
-        if (empty($position)) {
-            $size['width'] = 0;
-        } else {
-            $width = substr($html, $position);
-            $width = substr($width, 0, strpos($width, ';'));
-            $width = str_replace('\'', '', $width);
-            $size['width'] = $width;
-        }
-
-        $position = self::getPosition($html, 'iframe.height = ');
-        if (empty($position)) {
-            $size['height'] = 0;
-        } else {
-            $height = substr($html, $position);
-            $height = substr($height, 0, strpos($height, ';'));
-            $height = str_replace('\'', '', $height);
-            $size['height'] = $height;
-        }
-
+        $size = [];
+        $size['width'] = $this->getDimensionFromIframeOrImage($html,'width',1920);
+        $size['height'] = $this->getDimensionFromIframeOrImage($html,'height',1080);
         return $size;
     }
 
-    private static function getHeight($iframeHTML): string
+    private function getDimensionFromIframeOrImage(string $html,string $dimension,int $dimensionValue): float|int|string
     {
-        $position = self::getPosition($iframeHTML, 'max-height:');
-        if (!empty($position)) {
-            return '';
+        $iframe = substr($html, strpos($html, '<iframe') );
+        $htmlUrlPart = substr($iframe, strpos($iframe, $dimension.'="'));
+        $htmlUrlPart = str_replace($dimension.'="', '', $htmlUrlPart);
+        $htmlUrlPart = substr($htmlUrlPart, 0,strpos($htmlUrlPart, '"') );
+        if (!empty($htmlUrlPart) && is_numeric($htmlUrlPart)) {
+            $dimensionValue = $htmlUrlPart;
+        } else {
+            $iframe = substr($html, strpos($html, '<img') );
+            $htmlUrlPart = substr($iframe, strpos($iframe, $dimension.'="'));
+            $htmlUrlPart = str_replace($dimension.'="', '', $htmlUrlPart);
+            $htmlUrlPart = substr($htmlUrlPart, 0,strpos($htmlUrlPart, '"') );
+            if (!empty($htmlUrlPart) && is_numeric($htmlUrlPart)) {
+                $dimensionValue = $htmlUrlPart;
+            }
         }
-
-        $position = self::getPosition($iframeHTML, 'height="');
-        if (!empty($position)) {
-            return self::getSizeFromAttribute($iframeHTML, $position);
-        }
-
-        $position = self::getPosition($iframeHTML, 'height:');
-        if (!empty($position)) {
-            return self::getSizeFromStyle($iframeHTML, $position);
-        }
-
-        return '';
+        return $dimensionValue;
     }
 
-    private static function getWidth($iframeHTML): string
-    {
-        $position = self::getPosition($iframeHTML, 'max-width:');
-        if (!empty($position)) {
-            return '';
-        }
-
-        $position = self::getPosition($iframeHTML, 'width="');
-        if (!empty($position)) {
-            return self::getSizeFromAttribute($iframeHTML, $position);
-        }
-
-        $position = self::getPosition($iframeHTML, 'width:');
-        if (!empty($position)) {
-            return self::getSizeFromStyle($iframeHTML, $position);
-        }
-
-        return '';
-    }
-
-    private static function getSizeFromAttribute(
-        string $iframeHTML,
-        int $position
-    )
-    {
-        return self::getSizeFrom($iframeHTML, $position, '"');
-    }
-
-    private static function getSizeFromStyle(
-        string $iframeHTML,
-        int $position
-    )
-    {
-        return self::getSizeFrom($iframeHTML, $position, ';');
-    }
-
-    private static function getSizeFrom(
-        string $iframeHTML,
-        int $position,
-        string $needle
-    )
-    {
-        if (empty($position)) {
-            return '';
-        }
-        $size = substr($iframeHTML, $position);
-        $position = strpos($size, $needle);
-        $size = substr($size, 0, $position);
-        if (strpos($size, 'figure') !== false) {
-            return '';
-        }
-
-        return $size;
-    }
-
-    private static function getPosition(
-        $iframeHTML,
-        $needle
-    ): int
-    {
-        $heightPosition = strpos($iframeHTML, $needle);
-        if ($heightPosition === false) {
-            return 0;
-        }
-
-        return $heightPosition + strlen($needle);
-    }
 }

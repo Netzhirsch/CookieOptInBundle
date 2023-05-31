@@ -1,6 +1,6 @@
 <?php
 
-namespace Netzhirsch\CookieOptInBundle;
+namespace Netzhirsch\CookieOptInBundle\Resources\contao\modules;
 
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
@@ -28,7 +28,7 @@ class ModuleCookieOptInRevoke extends Module
         if (!empty($request) && $scopeMatcher->isBackendRequest($request)) {
 			/** @var BackendTemplate|object $objTemplate */
 			$objTemplate = new BackendTemplate('be_wildcard');
-			$objTemplate->wildcard = '### Cookie Bar Revoke###';
+			$objTemplate->wildcard = '### Cookie Bar Revoke ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;

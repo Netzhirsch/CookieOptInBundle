@@ -1,5 +1,6 @@
 <?php
 
+use Contao\Config;
 use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 
 $dc = &$GLOBALS['TL_DCA']['tl_settings'];

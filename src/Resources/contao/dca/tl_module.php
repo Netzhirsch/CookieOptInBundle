@@ -1,24 +1,16 @@
 <?php
 
 use Contao\DC_Table;
+use Contao\Input;
 use Contao\ModuleModel;
 use Contao\StringUtil;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
 use Netzhirsch\CookieOptInBundle\Entity\CookieToolContainer;
 use Netzhirsch\CookieOptInBundle\Entity\OtherScriptContainer;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Contao\System;
-
-$GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root'] = [1];
-$GLOBALS['TL_DCA'][$this->strTable]['config']['dynamicPtable'] = null;
 
 /** @var RequestStack $requestStack */
 $scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
@@ -126,10 +118,6 @@ $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_n
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setLessVariables'];
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setGroupsToNcoiTable'];
 $GLOBALS['TL_DCA']['tl_module']['config']['onload_callback'][] = ['tl_module_ncoi','getNetzhirschCookie'];
-
-$GLOBALS['TL_DCA']['tl_module']['config']['ctable'] = [
-  'tl_ncoi_cookie',
-];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 	'label' => ['Überschrift'],
@@ -876,7 +864,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['languageSwitch'] = [
 ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE);
 
 class tl_module_ncoi extends tl_module {
-
     public function getDefaultMaxWidth($value,DC_Table $dca){
 
         $value = $this->loadFromNcoiTable($value,$dca);
@@ -1027,14 +1014,35 @@ class tl_module_ncoi extends tl_module {
 	public function getNetzhirschCookie(DC_Table $dca)
 	{
         $em = $dca->getContainer()->get('doctrine.orm.entity_manager');
+        if (Input::post('type') != 'cookieOptInBar')
+            return;
+
         $repoCookieToolContainer = $em->getRepository(CookieToolContainer::class);
-        $cookieToolContainer = $repoCookieToolContainer->findOneBy([]);
+        $cookieToolContainer = $repoCookieToolContainer->findOneBy([
+            'sourceId' => $dca->id,
+        ]);
         if (empty($cookieToolContainer)) {
             $cookieToolContainer = new CookieToolContainer();
+        } else {
+            $repoCookieTool = $em->getRepository(CookieTool::class);
+            $csrfToken = $repoCookieTool->findOneBy([
+                'cookieToolsTechnicalName' => 'csrf_contao_csrf_token',
+                'parent' => $cookieToolContainer->getId(),
+            ]);
+            $csrfTokenHttps = $repoCookieTool->findOneBy([
+                'cookieToolsTechnicalName' => 'csrf_https_contao_csrf_token',
+                'parent' => $cookieToolContainer->getId(),
+            ]);
+            $PHPSESSID = $repoCookieTool->findOneBy([
+                'cookieToolsTechnicalName' => 'PHPSESSID',
+                'parent' => $cookieToolContainer->getId(),
+            ]);
+            $FE_USER_AUTH = $repoCookieTool->findOneBy([
+                'cookieToolsTechnicalName' => 'FE_USER_AUTH',
+                'parent' => $cookieToolContainer->getId(),
+            ]);
         }
-        $repoCookieTool = $em->getRepository(CookieTool::class);
 
-        $csrfToken = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'csrf_contao_csrf_token']);
         if (empty($csrfToken)) {
             $csrfToken = CookieTool::createDefault(
                 $cookieToolContainer,
@@ -1046,7 +1054,6 @@ class tl_module_ncoi extends tl_module {
             $em->persist($csrfToken);
         }
 
-        $csrfTokenHttps = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'csrf_https_contao_csrf_token']);
         if (empty($csrfTokenHttps)) {
             $csrfTokenHttps = CookieTool::createDefault(
                 $cookieToolContainer,
@@ -1058,7 +1065,6 @@ class tl_module_ncoi extends tl_module {
             $em->persist($csrfTokenHttps);
         }
 
-        $PHPSESSID = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'PHPSESSID']);
         if (empty($PHPSESSID)) {
             $PHPSESSID = CookieTool::createDefault(
                 $cookieToolContainer,
@@ -1070,7 +1076,6 @@ class tl_module_ncoi extends tl_module {
             $em->persist($PHPSESSID);
         }
 
-        $FE_USER_AUTH = $repoCookieTool->findOneBy(['cookieToolsTechnicalName' => 'FE_USER_AUTH']);
         if (empty($FE_USER_AUTH)) {
             $FE_USER_AUTH = CookieTool::createDefault(
                 $cookieToolContainer,
@@ -1145,23 +1150,25 @@ class tl_module_ncoi extends tl_module {
         $conn = $dca->Database;
         $repo = new Repository($conn);
         $strQuery = "SELECT ".$field." FROM tl_ncoi_cookie_revoke WHERE pid=?";
-        $valueFromNetzhirschTable = $repo->findRow($strQuery,[], [$pid])[$field];
-
-        if ($valueFromNetzhirschTable === null)
+        $result = $repo->findRow($strQuery,[], [$pid]);
+        if ($field == 'templateRevoke') {
+            return $oldValue;
+        }
+        if (empty($result) || empty($result[$field])) {
             return $GLOBALS['TL_LANG']['tl_module'][$field.'Default'];
-
-        return $valueFromNetzhirschTable;
+        }
+        return $result[$field];
 
     }
 
-    public function loadFromNcoiTableCheckbox($value,DC_Table $dca)
+    public function loadFromNcoiTableCheckbox($value,DC_Table $dca): array
     {
         $valueNew = $this->loadFromNcoiTable($value,$dca);
         $field = $dca->__get('field');
         return ['opt_'.$field.'_0' => $valueNew];
     }
 
-    public function setPageTreeEntries(DC_Table $dca)
+    public function setPageTreeEntries(DC_Table $dca): void
     {
         if ($this->checkRightModule($dca->__get('field'))) {
             $activeRecord = $dca->__get('activeRecord');
@@ -1186,7 +1193,7 @@ class tl_module_ncoi extends tl_module {
         }
     }
 
-    public function saveInNcoiTableCheckbox($value,DC_Table $dca)
+    public function saveInNcoiTableCheckbox($value,DC_Table $dca): array|string
     {
         $value = $this->saveInNcoiTable($value,$dca);
         if ($value === null) {
@@ -1196,12 +1203,12 @@ class tl_module_ncoi extends tl_module {
         return ['opt_'.$field.'_0' => $value];
     }
 
-    public function saveInNcoiTableCookieTools(DC_Table $dca)
+    public function saveInNcoiTableCookieTools(DC_Table $dca): void
     {
         $this->saveInNcoiTableCookies($dca,'cookieTools');
     }
 
-    public function saveInNcoiTableOtherScripts(DC_Table $dca)
+    public function saveInNcoiTableOtherScripts(DC_Table $dca): void
     {
         $this->saveInNcoiTableCookies($dca,'otherScripts');
     }
@@ -1213,13 +1220,13 @@ class tl_module_ncoi extends tl_module {
         return $repo->updateOrInsert($dca, 'tl_ncoi_cookie_revoke', $value);
     }
 
-    public function saveInNcoiTablePageTree($value,DC_Table $dca)
+    public function saveInNcoiTablePageTree($value,DC_Table $dca): string
     {
         $this->saveInNcoiTable($value,$dca);
         return '';
     }
 
-    public function saveInNcoiTableCookies(DC_Table $dca,$field)
+    public function saveInNcoiTableCookies(DC_Table $dca,$field): void
     {
         $id = $dca->__get('id');
         $conn = $dca->Database;
@@ -1245,7 +1252,7 @@ class tl_module_ncoi extends tl_module {
         $this->saveInNcoiTable($cookieGroups,$dca,$pid,$field);
     }
 
-    public function setGroupsToNcoiTable(DC_Table $dca)
+    public function setGroupsToNcoiTable(DC_Table $dca): void
     {
         if ($this->checkRightModule($dca->__get('field'))) {
             $modulId = Input::get('id');
@@ -1264,28 +1271,7 @@ class tl_module_ncoi extends tl_module {
         return $field;
     }
 
-    public function deleteTool(DC_Table $dca)
-    {
-        $id = Input::get('id');
-        $strQueryFieldPalette = "SELECT pid,cookieToolsTechnicalName FROM tl_fieldpalette WHERE id = ?";
-        $conn = $dca->Database;
-        $repo = new Repository($conn);
-        $return = $repo->findRow($strQueryFieldPalette,[], [$id]);
-        if (!empty($return['pid'])) {
-
-            $pid = $return['pid'];
-            $strQuerySelectCookie = "SELECT toolsDeactivate FROM tl_ncoi_cookie WHERE pid=?";
-            $toolsDeactivateDB = $repo->findRow($strQuerySelectCookie,[], [$pid]);
-            $toolsDeactivate = [];
-            if (!empty($toolsDeactivateDB['toolsDeactivate']))
-                $toolsDeactivate = StringUtil::deserialize($toolsDeactivateDB['toolsDeactivate']);
-            $toolsDeactivate[]= $return['cookieToolsTechnicalName'];
-            $strQueryUpdateCookie = "UPDATE tl_ncoi_cookie %s WHERE pid=?";
-            $toolsDeactivate = serialize($toolsDeactivate);
-            $repo->executeStatement($strQueryUpdateCookie, ['toolsDeactivate' => $toolsDeactivate],[]);
-        }
-    }
-    public function checkRightModule($field)
+    public function checkRightModule($field): bool
     {
         if ($field == 'isNewCookieVersion')
             return true;

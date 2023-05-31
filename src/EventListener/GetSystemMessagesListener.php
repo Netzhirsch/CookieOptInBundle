@@ -6,7 +6,7 @@ namespace Netzhirsch\CookieOptInBundle\EventListener;
 use Contao\Config;
 use Contao\PageModel;
 use Exception;
-use Netzhirsch\CookieOptInBundle\Classes\Helper;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\Helper;
 
 class GetSystemMessagesListener
 {
@@ -14,7 +14,8 @@ class GetSystemMessagesListener
 	 * @return string
 	 * @throws Exception
 	 */
-	public function onGetSystemMessages() {
+	public function onGetSystemMessages(): string
+    {
 
         if (!Helper::isAdmin())
             return '';
@@ -61,9 +62,9 @@ class GetSystemMessagesListener
 	 *
 	 * @return string
 	 * @throws Exception
-	 * @noinspection PhpComposerExtensionStubsInspection ext-gettext require in bundle composer.json
-	 */
-	public static function getMessage($licenseKey,$licenseExpiryDate,$domain = null) {
+     */
+	public static function getMessage($licenseKey,$licenseExpiryDate,$domain = null): string
+    {
 
 		if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE |  FILTER_FLAG_NO_RES_RANGE) === false)
             return '';

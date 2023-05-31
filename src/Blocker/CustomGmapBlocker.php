@@ -2,12 +2,16 @@
 
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\Database;
+use Doctrine\ORM\NonUniqueResultException;
 use DOMDocument;
 use DOMElement;
-use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\Logger\Logger;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\DBAL\Driver\Exception as DriverException;
 use Doctrine\DBAL\Exception as DBALException;
@@ -22,12 +26,19 @@ class CustomGmapBlocker
      * @throws DBALException
      * @throws DriverException
      */
-    public function block($buffer,Database $database,RequestStack $requestStack) {
+    public function block(
+        $buffer,
+        Database $database,
+        RequestStack $requestStack,
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        InsertTagParser $insertTagParser
+    ) {
 
         if (empty($requestStack))
             return $buffer;
 
-        $newBuffer = $this->getCustomGmapHtml($buffer,$database,$requestStack);
+        $newBuffer = $this->getCustomGmapHtml($buffer,$database,$requestStack,$parameterBag,$cookieToolRepository,$insertTagParser);
         if (!empty($newBuffer))
             return $newBuffer;
 
@@ -35,28 +46,47 @@ class CustomGmapBlocker
     }
 
     /**
-     * @param $buffer
+     * @param          $buffer
      * @param Database $database
-     * @param $requestStack
+     * @param          $requestStack
+     *
      * @return null
      * @throws DriverException
-     * @throws DBALException
+     * @throws DBALException*@throws NonUniqueResultException
+     * @throws NonUniqueResultException
      */
-    private function getCustomGmapHtml($buffer,Database $database,$requestStack) {
+    private function getCustomGmapHtml(
+        $buffer,
+        Database $database,
+        $requestStack,
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        InsertTagParser $insertTagParser
+    ): ?string
+    {
 
-        $moduleData = Blocker::getModulData($requestStack,$database);
+        $moduleData = Blocker::getModulData($requestStack,$database,$parameterBag);
         if (empty($moduleData))
             return $buffer;
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
-        $externalMediaCookiesInDB = Blocker::getExternalMediaByType('maps.google',$database,'googleMaps');
+        $externalMediaCookiesInDB = Blocker::getType('maps.google',$database,'googleMaps');
         if (empty($externalMediaCookiesInDB))
             return $buffer;
 
         $dataFromExternalMediaAndBar->setIFrameType('googleMaps');
+        $modIds = [];
+        foreach ($moduleData as $moduleDatum) {
+            $modIds[] = $moduleDatum['mod'];
+        }
+        $sourceIds = array_merge(Blocker::getModIdByInsertTagInModule($database,$modIds),$modIds);
+
+        $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, 'googleMaps');
 
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
-            $dataFromExternalMediaAndBar,$database,$externalMediaCookiesInDB,$moduleData
+            $buffer,
+            $dataFromExternalMediaAndBar,
+            $cookieTool
         );
 
         $barRepo = new BarRepository($database);
@@ -95,6 +125,7 @@ class CustomGmapBlocker
             $blockText,
             $size,
             $buffer,
+            $insertTagParser,
             'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR
         );
         $html .='</div>';

@@ -13,7 +13,8 @@ class RevokeRepository extends Repository
         parent::__construct($database);
     }
 
-    public function findByPid($pid){
+    public function findByPid($pid): ?array
+    {
         $strQuery = "SELECT id,pid FROM tl_ncoi_cookie_revoke WHERE pid = ?";
         return $this->findAllAssoc($strQuery,[], [$pid]);
     }

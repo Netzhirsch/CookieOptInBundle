@@ -1,44 +1,57 @@
 <?php
 namespace Netzhirsch\CookieOptInBundle\EventListener;
 
+use Contao\ContentModel;
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\ThemeModel;
+use Doctrine\DBAL\Driver\Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use Netzhirsch\CookieOptInBundle\Blocker\AnalyticsBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\CustomGmapBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\IFrameBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\ScriptBlocker;
 use Contao\System;
-use Doctrine\DBAL\Connection;
 use Netzhirsch\CookieOptInBundle\Blocker\VideoPreviewBlocker;
+use Netzhirsch\CookieOptInBundle\Entity\CookieToolContainer;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolContainerRepository;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository;
 use Netzhirsch\CookieOptInBundle\Repository\RevokeRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class ParseFrontendTemplateListener
+class ContentElementListener
 {
     /** @var Database $database */
     private $database;
 
-    private $isNews = false;
-
-    public function __construct(private readonly ParameterBag $parameterBag)
+    public function __construct(
+        private readonly ParameterBag $parameterBag,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly CookieToolRepository $cookieToolRepository,
+        private readonly InsertTagParser $insertTagParser
+    )
     {
         $this->database = Database::getInstance();
     }
 
     /**
-     * @param $buffer
-     * @param $template
+     * @param ContentModel $contentModel
+     * @param string       $buffer
+     *
      * @return string
-     * @throws \Exception
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Exception
      */
-    public function onParseFrontendTemplate($buffer, $template)
+    public function onContentElement(ContentModel $contentModel,string $buffer): string
     {
         global $objPage;
+        $template = $contentModel->typePrefix.$contentModel->type;
+        $sourceId = $contentModel->pid;
         //On Backend empty
         if (empty($objPage))
             return $buffer;
@@ -51,37 +64,54 @@ class ParseFrontendTemplateListener
 
         if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
             if (
-                strpos($buffer, '<iframe') !== false
-                && strpos($buffer, '<figure class="video_container">') == false
+                str_contains($buffer, '<iframe')
+                && !strpos($buffer, '<figure class="video_container">')
+                && !strpos($buffer, 'data-splash-screen')
             ) {
                 if (
-                    strpos($template, 'ce_html') !== false
-                    || strpos($template, 'ce_text') !== false
-                    || strpos($template, 'ce_youtube') !== false
-                    || strpos($template, 'ce_vimeo') !== false
-                    || strpos($template, 'ce_metamodel_list') !== false
-                    || strpos($template, 'rsce_luxe_map') !== false
+                    str_contains($template, 'ce_html')
+                    || str_contains($template, 'ce_text')
+                    || str_contains($template, 'ce_youtube')
+                    || str_contains($template, 'ce_vimeo')
+                    || str_contains($template, 'ce_metamodel_list')
+                    || str_contains($template, 'rsce_luxe_map')
                 ) {
                     $iframeBlocker = new IFrameBlocker();
-                    return $iframeBlocker->iframe($buffer,$this->database,$this->getRequestStack(),$this->parameterBag);
+                    return $iframeBlocker->iframe(
+                        $buffer,
+                        $this->database,
+                        $this->getRequestStack(),
+                        $this->parameterBag,
+                        $this->cookieToolRepository,
+                        $sourceId,
+                        $this->insertTagParser
+                    );
                 }
             } elseif (
-                strpos($buffer, '<figure class="video_container">') !== false
-                && strpos($template, 'mod') === false
-                && strpos($template, $objPage->template) === false
+                str_contains($buffer, 'data-splash-screen')
+                && !str_contains($template, 'mod')
+                && !str_contains($template, $objPage->template)
 
             ) {
                 if (strpos($template, 'news') > 0)
                     return $buffer;
                 if ($template == 'ce_youtube') {
                     $videoPreviewBlocker = new VideoPreviewBlocker();
-                    return $videoPreviewBlocker->iframe($buffer,$this->database,$this->getRequestStack(),$this->parameterBag);
+                    return $videoPreviewBlocker->iframe(
+                        $buffer,
+                        $this->database,
+                        $this->getRequestStack(),
+                        $this->parameterBag,
+                        $this->cookieToolRepository,
+                        $sourceId,
+                        $this->insertTagParser
+                    );
                 }
 
             }
 
 
-            $isAnalyticsTemplateGoogle = (strpos($template, 'analytics_google') !== false);
+            $isAnalyticsTemplateGoogle = (str_contains($template, 'analytics_google'));
             if ($isAnalyticsTemplateGoogle) {
                 $analyticsBlocker = new AnalyticsBlocker();
                 return $analyticsBlocker->analyticsTemplate($buffer,'googleAnalytics');
@@ -89,9 +119,9 @@ class ParseFrontendTemplateListener
 
             $isAnalyticsTemplateMatomo
                 = (
-                    strpos($template, 'analytics_piwik') !== false
-                    || strpos($template, 'analytics_matomo') !== false
-                    || strpos($template, 'mod_matomo_Tracking') !== false
+                str_contains($template, 'analytics_piwik')
+                || str_contains($template, 'analytics_matomo')
+                || str_contains($template, 'mod_matomo_Tracking')
             );
 
             if ($isAnalyticsTemplateMatomo) {
@@ -100,18 +130,33 @@ class ParseFrontendTemplateListener
             }
 
             $isScriptTemplate =
-                   $template == 'ce_html' && strpos($buffer, '<script') !== false
-                || strpos($template, 'script_to_block') !== false
+                ($template == 'ce_html' && str_contains($buffer, '<script'))
+                   || str_contains($template, 'script_to_block')
+                   || ($template == 'ce_unfiltered_html' && str_contains($buffer, '<script'))
             ;
             if ($isScriptTemplate) {
                 $scriptBlocker = new ScriptBlocker();
-                return $scriptBlocker->script($buffer,$this->database,$this->getRequestStack());
+                return $scriptBlocker->script(
+                    $buffer,
+                    $this->database,
+                    $this->getRequestStack(),
+                    $this->parameterBag,
+                    $this->cookieToolRepository,
+                    $this->insertTagParser
+                );
             }
 
-            $isCustomElementGmapTemplate = strpos($template, 'customelement_gmap') !== false || strpos($template, 'mod_catalog_map_default') !== false;
+            $isCustomElementGmapTemplate = str_contains($template, 'customelement_gmap') || str_contains($template, 'mod_catalog_map_default');
             if ($isCustomElementGmapTemplate) {
                 $customGmapBlocker = new CustomGmapBlocker();
-                return $customGmapBlocker->block($buffer,$this->database,$this->getRequestStack());
+                return $customGmapBlocker->block(
+                    $buffer,
+                    $this->database,
+                    $this->getRequestStack(),
+                    $this->parameterBag,
+                    $this->cookieToolRepository,
+                    $this->insertTagParser
+                );
             }
         }
 
@@ -120,9 +165,10 @@ class ParseFrontendTemplateListener
     }
 
     /**
-     * @return object|RequestStack|null
+     * @return RequestStack|null
      */
-    private function getRequestStack() {
+    private function getRequestStack(): RequestStack|null
+    {
         $container = $this->getContainer();
         return $container->get('request_stack');
     }
@@ -130,11 +176,13 @@ class ParseFrontendTemplateListener
     /**
      * @return ContainerInterface
      */
-    private function getContainer() {
+    private function getContainer(): ContainerInterface
+    {
         return System::getContainer();
     }
 
-    private function isBarInLayoutOrPage($objPage){
+    private function isBarInLayoutOrPage($objPage): bool
+    {
 
         $layout = LayoutModel::findById($objPage->layout);
         if ($this->checkModulesEmpty($layout))
@@ -144,35 +192,32 @@ class ParseFrontendTemplateListener
             return true;
 
         $data = PageLayoutListener::getModuleIdFromInsertTag($objPage, $layout, $this->database);
-        if (isset($data['moduleIds']) && !empty($data['moduleIds']))
+        if (!empty($data['moduleIds']))
             return true;
 
         return false;
 
     }
 
-    public function checkModulesEmpty($layoutOrPage) {
+    public function checkModulesEmpty($layoutOrPage): bool
+    {
         $layoutModules = unserialize($layoutOrPage->__get('modules'));
         $conn = $this->database;
-        $barRepository = new BarRepository($conn);
-
+        /** @var CookieToolContainerRepository $repoCookieToolContainer */
+        $repoCookieToolContainer = $this->entityManager->getRepository(CookieToolContainer::class);
         if (!empty($layoutModules)) {
-            $bars = $barRepository->findAll();
             $revokeRepository = new RevokeRepository($conn);
-            foreach ($layoutModules as $key => $layoutModule) {
+            foreach ($layoutModules as $layoutModule) {
                 if (!empty($layoutModule['enable'])) {
-                    if (!empty($bars)) {
-                        foreach ($bars as $bar) {
-                            if ($bar['pid'] == $layoutModule['mod']) {
-                                return true;
-                            }
-                            if (isset($layoutModule['languageSwitch'])) {
-                                $languageSwitch = $layoutModule['languageSwitch'];
-                                $languageSwitch = unserialize($languageSwitch);
-                                if (isset($languageSwitch[0]) && $languageSwitch[0]['mod'] == $layoutModule['mod'])
-                                    return true;
-                            }
-                        }
+                    $cookieToolContainer = $repoCookieToolContainer->findOneBy(['sourceId' => $layoutModule['mod']]);
+                    if (!empty($cookieToolContainer)) {
+                        return true;
+                    }
+                    if (isset($layoutModule['languageSwitch'])) {
+                        $languageSwitch = $layoutModule['languageSwitch'];
+                        $languageSwitch = unserialize($languageSwitch);
+                        if (isset($languageSwitch[0]) && $languageSwitch[0]['mod'] == $layoutModule['mod'])
+                            return true;
                     }
                     $revokes = $revokeRepository->findByPid($layoutModule['mod']);
                     if (!empty($revokes)) {
@@ -187,6 +232,7 @@ class ParseFrontendTemplateListener
         }
 
         $pageId = $layoutOrPage->__get('id');
+        $barRepository = new BarRepository($this->database);
         $bars = $barRepository->findByLayoutOrPage($pageId);
         if (!empty($bars)) {
             return true;

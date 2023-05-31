@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netzhirsch\CookieOptInBundle\Classes;
+namespace Netzhirsch\CookieOptInBundle\Resources\contao\Classes;
 
 
 class LicenseAPIResponse

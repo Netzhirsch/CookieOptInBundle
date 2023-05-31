@@ -24,7 +24,7 @@
 	},
 	"require": {
 		"php": ">=7.2",
-		"contao/core-bundle": ">=4.9 <6",
+		"contao/core-bundle": ">=5 <6",
 		"mvo/contao-group-widget": "*",
 		"symfony/serializer": "*",
 		"ext-dom": "*",

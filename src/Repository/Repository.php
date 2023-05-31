@@ -43,7 +43,7 @@ class Repository
         if (empty($pid))
             $pid = $dca->__get('id');
         $result = $repo->findRow($strQuerySelect,[], [$pid]);
-        $id = $result['id'];
+        $id = $result['id']??null;
         if (empty($field))
             $field = $dca->__get('field');
 

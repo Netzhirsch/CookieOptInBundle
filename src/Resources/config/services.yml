@@ -22,7 +22,15 @@ services:
   Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener:
     - '@parameter_bag'
 
-  Netzhirsch\CookieOptInBundle\EventListener\ParseFrontendTemplateListener:
+  Netzhirsch\CookieOptInBundle\EventListener\ContentElementListener:
     - '@parameter_bag'
+    - '@doctrine.orm.entity_manager'
+    - '@netzhirsch_cookie_opt_in.repository.cookie_tool_repository'
+    - '@contao.insert_tag.parser'
 
   Netzhirsch\CookieOptInBundle\EventListener\ReplaceInsertTag:
+
+  netzhirsch_cookie_opt_in.repository.cookie_tool_repository:
+    class: Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'

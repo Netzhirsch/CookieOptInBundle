@@ -4,17 +4,19 @@
 namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\Database;
-use Contao\InsertTags;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use DOMDocument;
-use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
+use Exception;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\DataFromExternalMediaAndBar;
+use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
 use Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
+use Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
-use Netzhirsch\CookieOptInBundle\Repository\ToolRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -22,7 +24,7 @@ class Blocker
 {
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public static function getModulData(RequestStack $requestStack,Database $database,ParameterBag $parameterBag) {
         $moduleData = [];
@@ -61,7 +63,8 @@ class Blocker
         return $moduleData;
     }
 
-    public static function noScriptFallbackRenderScript(DataFromExternalMediaAndBar $dataFromExternalMediaAndBar){
+    public static function noScriptFallbackRenderScript(DataFromExternalMediaAndBar $dataFromExternalMediaAndBar): bool
+    {
         if (
             isset($_SESSION)
             && isset($_SESSION['_sf2_attributes'])
@@ -79,99 +82,53 @@ class Blocker
         return false;
     }
 
-    /**
-     * @param DataFromExternalMediaAndBar $dataFromExternalMediaAndBar
-     * @param Database $database
-     * @param array $externalMediaCookiesInDB
-     * @param $moduleData
-     * @return DataFromExternalMediaAndBar
-     */
     public static function getDataFromExternalMediaAndBar(
+        string $iframeTypInHtml,
         DataFromExternalMediaAndBar $dataFromExternalMediaAndBar,
-        Database $database,
-        $externalMediaCookiesInDB,
-        $moduleData
-    )
-    {
+        ?CookieTool $cookieTool,
+    ): DataFromExternalMediaAndBar {
         global $objPage;
         $provider = $objPage->rootTitle;
         $dataFromExternalMediaAndBar->setProvider($provider);
+        $dataFromExternalMediaAndBar->setIFrameType(Blocker::getIFrameType($iframeTypInHtml));
 
-        $barRepo = new BarRepository($database);
-        $cookieBars = $barRepo->findAll();
-        $isModuleIdInLayout = false;
-        $modIds = [];
-        foreach ($cookieBars as $cookieBar) {
-            foreach ($moduleData as $moduleId) {
-                if ($cookieBar['pid'] == $moduleId['mod']) {
-                    foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-                        if ($cookieBar['pid'] == $externalMediaCookieInDB['pid']) {
-                            $isModuleIdInLayout = true;
-                            $dataFromExternalMediaAndBar
-                                ->addBlockedIFrames($externalMediaCookieInDB['cookieToolsSelect']);
+        $dataFromExternalMediaAndBar
+            ->addBlockedIFrames($cookieTool->getCookieToolsSelect());
 
-                            $dataFromExternalMediaAndBar->addCookieId($externalMediaCookieInDB['id']);
-
-                            if (!empty($externalMediaCookieInDB['cookieToolsProvider'])) {
-                                $dataFromExternalMediaAndBar
-                                    ->setProvider($externalMediaCookieInDB['cookieToolsProvider']);
-                            }
-                            $dataFromExternalMediaAndBar->setModId($cookieBar['pid']);
-
-                            $privacyPolicyLink = '';
-                            if (!empty($externalMediaCookieInDB['cookieToolsPrivacyPolicyUrl'])) {
-                                $privacyPolicyLink = $externalMediaCookieInDB['cookieToolsPrivacyPolicyUrl'];
-
-                            }
-                            elseif (!empty(PageModel::findById($cookieBar['privacyPolicy']))) {
-                                $privacyPolicyLink = PageModel::findById($cookieBar['privacyPolicy']);
-                                $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
-                            }
-                            $dataFromExternalMediaAndBar
-                                ->setPrivacyPolicyLink($privacyPolicyLink);
-
-                            $disclaimer = $externalMediaCookieInDB['i_frame_blocked_text'];
-                            if (!empty($disclaimer))
-                                $dataFromExternalMediaAndBar->setDisclaimer($disclaimer);
-                        }
-                    }
-                }
-                if (!empty($moduleId['mod']))
-                    $modIds[] = $moduleId['mod'];
-            }
+        $dataFromExternalMediaAndBar->addCookieId($cookieTool->getId());
+        $provider = $cookieTool->getCookieToolsProvider();
+        if (!empty($provider)) {
+            $dataFromExternalMediaAndBar->setProvider($provider);
         }
+        $dataFromExternalMediaAndBar->setModId($cookieTool->getParent()->getSourceId());
 
-        if (!$isModuleIdInLayout) {
+        $privacyPolicyLink = $cookieTool->getCookieToolsPrivacyPolicyUrl()??'';
+        if (!empty($privacyPolicyLink)) {
+            $privacyPolicyLink = PageModel::findById($privacyPolicyLink);
+            $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
+        }
+        $dataFromExternalMediaAndBar
+            ->setPrivacyPolicyLink($privacyPolicyLink);
 
-            self::setModIdByInsertTagInModule($database,$modIds,$barRepo,$dataFromExternalMediaAndBar);
-        }
-        foreach ($externalMediaCookiesInDB as $externalMediaCookieInDB) {
-            $dataFromExternalMediaAndBar->addCookieId($externalMediaCookieInDB['id']);
-        }
+        $disclaimer = $cookieTool->getIFrameBlockedText();
+        if (!empty($disclaimer))
+                $dataFromExternalMediaAndBar->setDisclaimer($disclaimer);
 
         return $dataFromExternalMediaAndBar;
     }
 
 
-    private static function setModIdByInsertTagInModule
+    public static function getModIdByInsertTagInModule
     (
         Database $database,
         array $modIds,
-        BarRepository $barRepo,
-        DataFromExternalMediaAndBar $dataFromExternalMediaAndBar
-    ) {
+    ): array {
         $moduleRepo = new ModuleRepository($database);
         $htmlInModules = $moduleRepo->findByIds($modIds);
-        $ids = self::getModuleIdsFromHtml($htmlInModules);
-        if (!empty($ids)) {
-            $barModule = $barRepo->findByIds($ids);
-            if (!empty($barModule) && !empty($barModule['pid'])) {
-                $dataFromExternalMediaAndBar->setModId($barModule['pid']);
-            }
-        }
+        return self::getModuleIdsFromHtml($htmlInModules);
     }
 
-    private static function getModuleIdsFromHtml($htmlInModules)
+    private static function getModuleIdsFromHtml($htmlInModules): array
     {
         $ids = [];
         foreach ($htmlInModules as $html) {
@@ -181,7 +138,7 @@ class Blocker
         }
         return $ids;
     }
-    private static function getModuleIdFromHtml($html)
+    private static function getModuleIdFromHtml($html): float|int|string|null
     {
         if (is_array($html)) {
             foreach ($html as $item) {
@@ -198,7 +155,8 @@ class Blocker
         return null;
     }
 
-    private static function getModuleIdFromOneHtml($html){
+    private static function getModuleIdFromOneHtml($html): float|int|string|null
+    {
         $position = strpos($html,'{{insert_module::');
         if ($position !== false) {
             $doc = new DOMDocument();
@@ -216,23 +174,19 @@ class Blocker
         return null;
     }
 
-    /**
-     * @param Database $database
-     * @param $url
-     * @return mixed[]
-     */
-    public static function getExternalMediaByUrl(Database $database, $url) {
-        $toolRepo = new ToolRepository($database);
+    public static function getLevelUrl(string $url): string
+    {
         $topLevelPosition = self::getTopLevel($url);
         if (!empty($topLevelPosition)) {
             $url = substr($url,0,$topLevelPosition);
             $urlArray = explode('.',$url);
             $url = $urlArray[array_key_last($urlArray)];
         }
-        return $toolRepo->findByUrl($url);
+        return $url;
     }
 
-    private static function getTopLevel($url){
+    private static function getTopLevel($url): ?int
+    {
         $topLevelPosition = strpos($url,'.com');
         if ($topLevelPosition !== false)
             return $topLevelPosition;
@@ -253,24 +207,23 @@ class Blocker
     }
 
     /**
-     * @param $iframeHTML
-     * @param Database $database
-     * @param null $type
-     * @return array
+     * @param                      $iframeHTML
+     * @param null                 $type
+     *
+     * @return CookieTool|null
      */
-    public static function getExternalMediaByType($iframeHTML,Database $database,$type = null){
-
-        $toolRepo = new ToolRepository($database);
+    public static function getType(
+        $iframeHTML,
+        $type = null
+    ): ?string {
 
         if (empty($type))
-            $type = self::getIFrameType($iframeHTML);
-        if (empty($type))
-            return [];
-
-        return $toolRepo->findByType($type);
+            return self::getIFrameType($iframeHTML);
+        return $type;
     }
 
-    public static function getIFrameType($iframeHTML){
+    public static function getIFrameType($iframeHTML): string
+    {
 
         $type = 'iframe';
         //Type des iFrames suchen damit danach in der Datenbank gesucht werden kann
@@ -290,9 +243,10 @@ class Blocker
         $loadStrings,
         $size,
         $html,
+        InsertTagParser $insertTagParser,
         $iconPath = '',
         $isCustomGmap = false
-    ) {
+    ): string {
 
         $privacyPolicyLink = $dataFromExternalMediaAndBar->getPrivacyPolicyLink();
         $provider = $dataFromExternalMediaAndBar->getProvider();
@@ -335,8 +289,6 @@ class Blocker
 
         $htmlDisclaimer .= '</div>';
 
-
-
         $style = 'style="';
         if (!$isCustomGmap) {
             $height = $size['height'];
@@ -360,7 +312,7 @@ class Blocker
         $htmlConsentBox = '<div class="ncoi---consent-box">';
         $htmlConsentBoxEnd = '</div>';
 
-        $htmlForm = '<form action="/cookie/allowed/iframe" method="post">';
+        $htmlForm = '<form method="post">';
         $htmlFormEnd = '</form>';
         //Damit JS das iFrame wieder laden kann
         $htmlConsentButton = '<div class="ncoi---blocked-link"><button type="submit" name="iframe" value="'.$iframeTypInHtml.'" class="ncoi---release">';
@@ -371,11 +323,234 @@ class Blocker
 
         //Damit JS das iFrame wieder von base64 in ein HTML iFrame umwandel kann.
         $iframe = '';
-        $html = InsertTags::replaceInsertTags($html);
+        $html = $insertTagParser->replace($html);
         if (!$isCustomGmap) {
             $iframe = '<script type="text/template">' . ($html) . '</script>';
         }
         return $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
+    }
+
+    public static function getIframeHTML(
+        $iframeHTML,
+        $requestStack,
+        Database $database,
+        ParameterBag $parameterBag,
+        CookieToolRepository $cookieToolRepository,
+        string $sourceId
+    )
+    {
+        $moduleData = Blocker::getModulData($requestStack,$database,$parameterBag);
+        if (empty($moduleData))
+            return $iframeHTML;
+
+        $modIds = [];
+        foreach ($moduleData as $moduleDatum) {
+            $modIds[] = $moduleDatum['mod'];
+        }
+        $sourceIds = Blocker::getModIdByInsertTagInModule($database,$modIds);
+        $sourceIds[] = $sourceId;
+
+        $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
+        $url = self::getUrl($iframeHTML);
+        $url = Blocker::getLevelUrl($url);
+
+        $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
+
+        $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
+        if (empty($cookieTool)) {
+            $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
+        }
+
+        if (empty($cookieTool)) {
+            global $objPage;
+            $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout),$database, [], [],$parameterBag);
+            $sourceIds[] = ['mod' => $return['moduleIds'][0]];
+            $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
+            if (empty($cookieTool)) {
+                $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
+            }
+        }
+
+        if (empty($cookieTool)) {
+            return $iframeHTML;
+        }
+
+        $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
+            $iframeTypInHtml,
+            $dataFromExternalMediaAndBar,
+            $cookieTool,
+        );
+
+
+        $isIFrameTypInDB = false;
+        $blockedIFrames = $dataFromExternalMediaAndBar->getBlockedIFrames();
+        if (in_array($iframeTypInHtml,$blockedIFrames) || empty($dataFromExternalMediaAndBar->getDisclaimer()))
+            $isIFrameTypInDB = true;
+
+        if (!$isIFrameTypInDB)
+            return $iframeHTML;
+
+        // alle icons liegen im gleich Ordner
+        // root der bundle assets
+        $iconPath = 'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR;
+        $barRepo = new BarRepository($database);
+        $blockTexts = $barRepo->loadBlockContainerTexts($dataFromExternalMediaAndBar->getModId());
+
+        if (!empty($dataFromExternalMediaAndBar->getDisclaimer())) {
+
+            $disclaimerString = $dataFromExternalMediaAndBar->getDisclaimer();
+
+        } else {
+
+            switch($iframeTypInHtml) {
+                case 'youtube':
+                case 'vimeo':
+                    $disclaimerString = $blockTexts['i_frame_video'];
+                    break;
+                case 'googleMaps':
+                    $disclaimerString = $blockTexts['i_frame_maps'];
+                    break;
+                case 'iframe':
+                    $disclaimerString = $blockTexts['i_frame_i_frame'];
+                    break;
+                default:
+                    $disclaimerString = 'Default disclaimer';
+            }
+        }
+        $dataFromExternalMediaAndBar->setDisclaimer($disclaimerString);
+
+        $size = [
+            'height' => self::getHeight($iframeHTML),
+            'width' => self::getWidth($iframeHTML)
+        ];
+
+        return [
+            $dataFromExternalMediaAndBar,
+            $blockTexts,
+            $size,
+            $iconPath,
+            $cookieTool
+        ];
+    }
+
+    public static function isUserCookieDontAllowMedia(
+        CookieTool $cookieTool
+    )
+    {
+        if (
+            isset($_SESSION)
+            && isset($_SESSION['_sf2_attributes'])
+            && isset($_SESSION['_sf2_attributes']['ncoi'])
+            && isset($_SESSION['_sf2_attributes']['ncoi']['cookieIds'])
+        ) {
+            $cookieIds = $_SESSION['_sf2_attributes']['ncoi']['cookieIds'];
+            return  $cookieIds == $cookieTool->getId();
+        }
+        return false;
+    }
+
+    private static function getHeight($iframeHTML): string
+    {
+        $position = self::getPosition($iframeHTML, 'max-height:');
+        if (!empty($position)) {
+            return '';
+        }
+
+        $position = self::getPosition($iframeHTML, 'height="');
+        if (!empty($position)) {
+            return self::getSizeFromAttribute($iframeHTML, $position);
+        }
+
+        $position = self::getPosition($iframeHTML, 'height:');
+        if (!empty($position)) {
+            return self::getSizeFromStyle($iframeHTML, $position);
+        }
+
+        return '';
+    }
+
+    private static function getWidth($iframeHTML): string
+    {
+        $position = self::getPosition($iframeHTML, 'max-width:');
+        if (!empty($position)) {
+            return '';
+        }
+
+        $position = self::getPosition($iframeHTML, 'width="');
+        if (!empty($position)) {
+            return self::getSizeFromAttribute($iframeHTML, $position);
+        }
+
+        $position = self::getPosition($iframeHTML, 'width:');
+        if (!empty($position)) {
+            return self::getSizeFromStyle($iframeHTML, $position);
+        }
+
+        return '';
+    }
+
+    private static function getSizeFromAttribute(
+        string $iframeHTML,
+        int $position
+    )
+    {
+        return self::getSizeFrom($iframeHTML, $position, '"');
+    }
+
+    private static function getSizeFromStyle(
+        string $iframeHTML,
+        int $position
+    )
+    {
+        return self::getSizeFrom($iframeHTML, $position, ';');
+    }
+
+    private static function getSizeFrom(
+        string $iframeHTML,
+        int $position,
+        string $needle
+    )
+    {
+        if (empty($position)) {
+            return '';
+        }
+        $size = substr($iframeHTML, $position);
+        $position = strpos($size, $needle);
+        $size = substr($size, 0, $position);
+        if (strpos($size, 'figure') !== false) {
+            return '';
+        }
+
+        return $size;
+    }
+
+    public static function getPosition(
+        $iframeHTML,
+        $needle
+    ): int
+    {
+        $heightPosition = strpos($iframeHTML, $needle);
+        if ($heightPosition === false) {
+            return 0;
+        }
+
+        return $heightPosition + strlen($needle);
+    }
+
+    private static function getUrl($html){
+
+        $htmlUrlPart = substr($html,strpos($html,'src="'));
+        $htmlUrlPart = str_replace('src="','',$htmlUrlPart);
+        $htmlUrlPart = str_replace('www.','',$htmlUrlPart);
+        $htmlUrlPart = substr($htmlUrlPart,0,strpos($htmlUrlPart,'"'));
+
+        $urlArray = explode('/',$htmlUrlPart);
+        foreach ($urlArray as $url) {
+            if (strpos($url,'.'))
+                return $url;
+        }
+
+        return '';
     }
 
     public static function hasUnit($html)
@@ -397,7 +572,7 @@ class Blocker
             'mm',
         ];
         foreach ($units as $unit) {
-            if (strpos($html,$unit) !== false)
+            if (str_contains($html, $unit))
                 return true;
 
         }

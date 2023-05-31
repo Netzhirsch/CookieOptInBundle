@@ -6,7 +6,7 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 
 use Contao\Config;
 use DateTime;
-use Netzhirsch\CookieOptInBundle\Classes\LicenseAPIResponse;
+use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\LicenseAPIResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Contao\PageModel;
 use Exception;
@@ -69,7 +69,6 @@ class LicenseController extends AbstractController
 		}
 	}
 
-	/** @noinspection PhpComposerExtensionStubsInspection ext-curl,ext-json is required in bundle composer.json phpStorm don't check that*/
     /**
      * @param $domain
      * @param $isFrontendCall

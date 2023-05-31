@@ -7,7 +7,6 @@ use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
-use Contao\System;
 use Contao\ThemeModel;
 use DateInterval;
 use DateTime;
@@ -25,7 +24,9 @@ class PageLayoutListener {
     /** @var Database $database */
     private $database;
 
-    public function __construct(private readonly ParameterBag $parameterBag)
+    public function __construct(
+        private readonly ParameterBag $parameterBag
+    )
     {
         $this->database = Database::getInstance();
     }
@@ -36,7 +37,8 @@ class PageLayoutListener {
      *
      * @throws Exception
      */
-    public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout) {
+    public function onGetPageLayoutListener(PageModel $pageModel, LayoutModel $layout): void
+    {
 
         $removeModules = $this->shouldRemoveModules($pageModel);
         $moduleIds = [];
@@ -183,7 +185,8 @@ class PageLayoutListener {
      * @return DateInterval|false
      * @throws Exception
      */
-    public static function getLicenseRemainingExpiryDays(DateTime $licenseExpiryDate) {
+    public static function getLicenseRemainingExpiryDays(DateTime $licenseExpiryDate): DateInterval|bool
+    {
 
         $today = new DateTime('now');
 
@@ -194,7 +197,8 @@ class PageLayoutListener {
      * @return DateInterval|false|null
      * @throws Exception
      */
-    public static function checkLicenseRemainingTrialPeriod(){
+    public static function checkLicenseRemainingTrialPeriod(): DateInterval|bool|null
+    {
         $dateInterval = null;
 
         $path = dirname(__DIR__);
@@ -213,7 +217,8 @@ class PageLayoutListener {
      * @return DateTime|null
      * @throws Exception
      */
-    public static function getTrialPeriod(){
+    public static function getTrialPeriod(): ?DateTime
+    {
 
         $datetimeFile = null;
 
@@ -234,7 +239,7 @@ class PageLayoutListener {
      * @param null $allModuleIds
      * @return array
      */
-    public static function getModuleIdFromInsertTag($page,LayoutModel $layout,Database $database,$allModuleIds = null)
+    public static function getModuleIdFromInsertTag($page,LayoutModel $layout,Database $database,$allModuleIds = null): array
     {
         if (is_string($page))
             $page = PageModel::findById($page);
@@ -284,6 +289,7 @@ class PageLayoutListener {
 
         if (empty($modIds))
             return $parameters;
+
         $barRepo = new BarRepository($database);
 
         $return = $barRepo->findByIds($modIds);

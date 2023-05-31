@@ -3,6 +3,11 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
+use Doctrine\ORM\EntityManagerInterface;
+use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
+use Netzhirsch\CookieOptInBundle\Entity\CookieToolContainer;
+use Netzhirsch\CookieOptInBundle\Entity\OtherScript;
+use Netzhirsch\CookieOptInBundle\Entity\OtherScriptContainer;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,11 +37,13 @@ class CookieController extends AbstractController
 
     /**
      * @Route("/cookie/allowed", name="cookie_allowed")
-     * @param Request $request
+     * @param Request                $request
+     * @param EntityManagerInterface $entityManager
+     *
      * @return JsonResponse|RedirectResponse
      */
-	public function allowedAction(Request $request)
-	{
+	public function allowedAction(Request $request,EntityManagerInterface $entityManager): RedirectResponse|JsonResponse
+    {
         $jsonResponse = new JsonResponse();
         $jsonResponse->setData(['success' => false]);
         $files = $request->files->all();
@@ -49,52 +56,37 @@ class CookieController extends AbstractController
 
         $this->contaoFramework->initialize();
         $database = Database::getInstance();
-
         $return = $this->getTlCookieData($database,$data['modId']);
+        if (empty($return)) {
+            $jsonResponse->setData(['message' => 'Module '.$data['modId'].' in tl_ncoi_cookie nicht gefunden.']);
+            return $jsonResponse;
+        }
+
         $data['ipFormatSave'] = $return['ipFormatSave'];
         $data['cookieVersion'] = $return['cookieVersion'];
         $data['expireTime'] = $return['expireTime'];
-		$cookieDatabase = $this->getModulData($database,$data['modId'],$data);
-        if (count($cookieDatabase) == 0)
+		$cookieDatabase = $this->getModulData($data,$entityManager,$data['modId']);
+        if (count($cookieDatabase['cookieTools']) == 0) {
+            $jsonResponse->setData(['message' => 'Module '.$data['modId'].' in tl_cookie_tool_container nicht gefunden.']);
             return $jsonResponse;
-
+        }
         if (!isset($data['cookieIds']))
             $data['cookieIds'] = [];
-        //nur ohne JS gesetzt
-        if (isset($data['isNoJavaScript'])) {
-            foreach ($data['cookieGroups'] as $cookieGroup) {
-                foreach ($cookieDatabase['cookieTools'] as $cookieInDB) {
-                    if (!empty($data['all']))
-                        $data['cookieIds'][] = $cookieInDB['id'];
-                    elseif ($cookieGroup == $cookieInDB['cookieToolGroup'])
-                        $data['cookieIds'][] = $cookieInDB['id'];
-                }
-                foreach ($cookieDatabase['otherScripts'] as $cookieInDB) {
-                    if (!empty($data['all']))
-                        $data['cookieIds'][] = $cookieInDB['id'];
-                    elseif ($cookieGroup == $cookieInDB['cookieToolGroup'])
-                        $data['cookieIds'][] = $cookieInDB['id'];
-                }
-            }
 
-        }
 		$cookiesToSet = [
             'cookieTools' => [],
             'otherScripts' => [],
         ];
 
 		foreach ($cookieDatabase['cookieTools'] as $cookieTool) {
-			if (in_array($cookieTool['id'],$data['cookieIds']))
+			if (in_array($cookieTool->getId(),$data['cookieIds']))
 				$cookiesToSet['cookieTools'][] = $cookieTool;
 		}
 
-		if($cookieDatabase['otherScripts'] !== NULL) {
-			foreach ($cookieDatabase['otherScripts'] as $otherScripts) {
-				if (in_array($otherScripts['id'],$data['cookieIds']))
-					$cookiesToSet['otherScripts'][] = $otherScripts;
-			}
-		}
-
+        foreach ($cookieDatabase['otherScripts']  as $otherScript) {
+            if (in_array($otherScript->getId(),$data['cookieIds']))
+                $cookiesToSet['otherScripts'][] = $otherScript;
+        }
         $this->deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
 
         $id = null;
@@ -107,39 +99,45 @@ class CookieController extends AbstractController
         }
 
         $expireTime = self::getExpireTime($cookieDatabase['expireTime']);
-
-        if (isset($data['isNoJavaScript']) && !$request->get('isJava')) {
-            if ($request->hasSession()) {
-                $session = $request->getSession();
-                $session->set('ncoi',[
-                    'id' => $id,
-                    'cookieIds' => $data['cookieIds'],
-                    'cookieVersion' => $cookieDatabase['cookieVersion'],
-                    'expireTime' => $expireTime
-                ]);
-                $session->save();
-            }
+        $tools = [];
+        /** @var CookieTool $cookieTool */
+        foreach ($cookiesToSet['cookieTools'] as $cookieTool) {
+            $tools[] = [
+                'cookieToolsTechnicalName' => $cookieTool->getCookieToolsTechnicalName(),
+                'cookieToolsSelect' => $cookieTool->getCookieToolsSelect(),
+                'cookieToolsTrackingID' => $cookieTool->getCookieToolsTrackingId(),
+                'cookieToolsTrackingServerUrl' => $cookieTool->getCookieToolsTrackingServerUrl()
+            ];
         }
-
+        $otherScripts = [];
+        /** @var OtherScript $otherScript */
+        foreach ($cookiesToSet['otherScripts'] as $otherScript) {
+            $otherScripts[] = [
+                'cookieToolsTechnicalName' => $otherScript->getCookieToolsTechnicalName(),
+                'cookieToolsCode' => $otherScript->getCookieToolsCode(),
+            ];
+        }
         $jsonResponse->setData([
             'success' => true,
-            'tools' => $cookiesToSet['cookieTools'],
-            'otherScripts' => $cookiesToSet['otherScripts'],
+            'tools' => $tools,
+            'otherScripts' => $otherScripts,
             'id' => $id,
             'cookieVersion' => $cookieDatabase['cookieVersion'],
-            'expireTime' => $expireTime
+            'expireTime' => $expireTime,
         ]);
 
 		return $jsonResponse;
 	}
 
     /**
-     * @param Database $database
-     * @param $modId
-     * @param $data
+     * @param                        $data
+     * @param EntityManagerInterface $entityManager
+     * @param                        $modId
+     *
      * @return array
      */
-	private function getModulData(Database $database,$modId,$data){
+	private function getModulData($data,EntityManagerInterface $entityManager,$modId): array
+    {
 		
 		$response = [];
 
@@ -151,46 +149,22 @@ class CookieController extends AbstractController
         if (!empty($data['expireTime']))
 		    $response['expireTime'] = $data['expireTime'];
 
-		$select = [
-			'id',
-			'cookieToolsName',
-			'cookieToolsTechnicalName',
-			'cookieToolsPrivacyPolicyUrl',
-			'cookieToolsProvider',
-			'cookieToolsTrackingID',
-			'cookieToolsTrackingServerUrl',
-			'cookieToolsSelect',
-			'cookieToolsUse',
-			'cookieToolGroup',
-			'cookieToolExpiredTime',
-		];
+        $repoCookieToolContainer = $entityManager->getRepository(CookieToolContainer::class);
+        $cookieToolContainer = $repoCookieToolContainer->findOneBy(['sourceId' => $modId]);
+        if (empty($cookieToolContainer)) {
+            $response['cookieTools'] = [];
+        } else {
+            $response['cookieTools'] = $cookieToolContainer->getElements();
+        }
 
-        $repo = new Repository($database);
-        $strQueryTools = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
-		$strQueryTools .= ' WHERE pid = ? AND pfield = ?';
-        $tools = $repo->findAllAssoc($strQueryTools,[], [$modId,'cookieTools']);
+        $repoOtherScriptContainer = $entityManager->getRepository(OtherScriptContainer::class);
+        $otherScriptContainer = $repoOtherScriptContainer->findOneBy(['sourceId' => $modId]);
+        if (empty($otherScriptContainer)) {
+            $response['otherScripts'] = [];
+        } else {
+            $response['otherScripts'] = $otherScriptContainer->getElements();
+        }
 
-		$select = [
-			'id',
-			'cookieToolsName',
-			'cookieToolsTechnicalName',
-			'cookieToolsPrivacyPolicyUrl',
-			'cookieToolsProvider',
-			'cookieToolsUse',
-			'cookieToolsCode',
-			'cookieToolsCode',
-			'cookieToolExpiredTime',
-			'cookieToolGroup',
-		];
-
-		$strQueryOtherScripts = "SELECT ".implode(", ", $select)." FROM tl_fieldpalette";
-		$strQueryOtherScripts .= ' WHERE pid = ? AND pfield = ?';
-		
-		$otherScripts = $repo->findAllAssoc($strQueryOtherScripts,[], [$modId,'otherScripts']);
-		
-		$response['cookieTools'] = $tools;
-		$response['otherScripts'] = $otherScripts;
-		
 		return $response;
 	}
 
@@ -249,8 +223,8 @@ class CookieController extends AbstractController
 
         if (!empty($otherCookieIds)) {
             foreach ($otherCookieIds as $cookieTool) {
-                $cookieNames[] = $cookieTool['cookieToolsName'];
-                $technicalName = $cookieTool['cookieToolsTechnicalName'];
+                $cookieNames[] = $cookieTool->getCookieToolsName();
+                $technicalName = $cookieTool->getCookieToolsTechnicalName();
                 if (empty($technicalName))
                     $technicalName = 'kein Eintrag im Module';
                 $cookieTechnicalName[] = $technicalName;
@@ -280,45 +254,6 @@ class CookieController extends AbstractController
         return $data['id'];
 
 	}
-
-    /**
-     * @Route("/cookie/allowed/iframe", name="cookie_allowed_iframe", defaults={"_scope": "frontend"})
-     * @param Request $request
-     */
-    public function allowedIframeAction(Request $request)
-    {
-        $iframe = $request->get('iframe');
-        $modId = $request->get('data')['modId'];
-
-        $strQuery = "SELECT id,cookieToolsSelect,cookieToolExpiredTime,cookieToolsName,cookieToolsTechnicalName FROM tl_fieldpalette WHERE (pid = ? AND cookieToolsSelect = ?)";
-        $this->contaoFramework->initialize();
-        $database = Database::getInstance();
-        $repo = new Repository($database);
-        $cookie = $repo->findRow($strQuery,[], [$modId,$iframe]);
-
-        if (empty($cookie))
-            return;
-
-        if ($request->hasSession()) {
-            $session = $request->getSession();
-            $data = $this->getTlCookieData($database,$modId);
-            $cookieDatabase = $this->getModulData($database,$modId,$data);
-            $id = $this->changeConsent($database,['cookieTools' => [$cookie],'otherScripts' => []],$data);
-            if (isset($_SESSION) && isset($_SESSION['_sf2_attributes']) && isset($_SESSION['_sf2_attributes']['ncoi'])) {
-                $ncoi = $_SESSION['_sf2_attributes']['ncoi'];
-                $ncoi['cookieIds'][] = $cookie['id'];
-            } else {
-                $ncoi = [
-                    'id' => $id,
-                    'cookieIds' => [$cookie['id']],
-                    'cookieVersion' => $cookieDatabase['cookieVersion'],
-                    'expireTime' => self::getExpireTime($cookieDatabase['expireTime'])
-                ];
-            }
-            $session->set('ncoi',$ncoi);
-            $session->save();
-        }
-    }
 
     /**
      * @Route("/cookie/delete", name="cookie_delete")
@@ -406,7 +341,7 @@ class CookieController extends AbstractController
         if (!empty($cookieNotToDelete)) {
             foreach ($cookiesSet as $cookieSetTechnicalName => $value) {
                 foreach ($cookieNotToDelete as $cookie) {
-                    $cookieToolsTechnicalName = $cookie['cookieToolsTechnicalName'];
+                    $cookieToolsTechnicalName = $cookie->getCookieToolsTechnicalName();
                     if (strpos($cookieToolsTechnicalName,',')) {
                         $cookieToolsTechnicalName = explode(',',$cookieToolsTechnicalName);
                         foreach ($cookieToolsTechnicalName as $cookieToolTechnicalName) {
@@ -414,7 +349,7 @@ class CookieController extends AbstractController
                             unset($cookiesSet[$cookieToolTechnicalName]);
                         }
                     } else {
-                        unset($cookiesSet[$cookie['cookieToolsTechnicalName']]);
+                        unset($cookiesSet[$cookieToolsTechnicalName]);
                     }
                 }
             }

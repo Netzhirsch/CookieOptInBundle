@@ -11,7 +11,7 @@
         <?php echo $tlLang['name']; ?>
     </th>
     <td>
-        <?php echo $tool->cookieToolsName; ?>
+        <?php echo $tool->getCookieToolsName(); ?>
     </td>
 </tr>
 <tr>
@@ -19,7 +19,7 @@
         <?php echo $tlLang['cookieToolsTechnicalName']; ?>
     </th>
     <td>
-        <?php echo $tool->cookieToolsTechnicalName; ?>
+        <?php echo $tool->getCookieToolsTechnicalName(); ?>
     </td>
 </tr>
 <tr>
@@ -27,7 +27,7 @@
         <?php echo $tlLang['provider']; ?>
     </th>
     <td>
-        <?php echo $tool->cookieToolsProvider; ?>
+        <?php echo $tool->getCookieToolsProvider(); ?>
     </td>
 </tr>
 <tr>
@@ -35,7 +35,7 @@
         <?php echo $tlLang['cookieToolExpiredTime']; ?>
     </th>
     <td>
-        <?php echo $tool->cookieToolExpiredTime; ?>
+        <?php echo $tool->getCookieToolExpiredTime(); ?>
     </td>
 </tr>
 <tr>
@@ -44,13 +44,13 @@
     </th>
     <td>
         <?php echo '<a href="'; ?>
-        <?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
+        <?php echo $tool->getCookieToolsPrivacyPolicyUrl(); ?>
         <?php echo '"'; ?>
-        <?php echo ' title="'.$tool->cookieToolsProvider.'"'; ?>
+        <?php echo ' title="'.$tool->getCookieToolsProvider().'"'; ?>
         <?php echo 'target="_blank"'; ?>
         <?php echo ' class="ncoi---link"'; ?>
         <?php echo '>'; ?>
-        <?php echo $tool->cookieToolsPrivacyPolicyUrl; ?>
+        <?php echo $tool->getCookieToolsPrivacyPolicyUrl(); ?>
         <?php echo '</a>' ?>
     </td>
 </tr>
@@ -59,7 +59,7 @@
         <?php echo $tlLang['use']; ?>
     </th>
     <td>
-        <?php echo $tool->cookieToolsUse; ?>
+        <?php echo $tool->getCookieToolsUse(); ?>
     </td>
 </tr>
 <tr>
@@ -69,17 +69,21 @@
     <td>
         <input
             type="checkbox"
-            id="ncoi---table-cookie-<?=$tool->id?>"
-            value="<?=$tool->id?>"
+            id="ncoi---table-cookie-<?=$tool->getId()?>"
+            value="<?=$tool->getId()?>"
             form="cookieBar"
-            name="data[cookieIds][<?=$tool->id?>]"
+            name="data[cookieIds][<?=$tool->getId()?>]"
             class="ncoi---table-input ncoi---cookie ncoi---sliding"
-            data-group="<?= $tool->cookieToolGroup; ?>"
-            data-cookie-id="<?=$tool->id;?>"
-            data-block-class="ncoi---<?=$tool->cookieToolsSelect;?>"
-            <?=(in_array($tool->cookieToolGroup, $this->arrData['cookieGroupsSelected']) && in_array($tool->id,$this->arrData['cookiesSelected']) || $tool->cookieToolGroup == '1') ? 'checked' : ''?>
-            <?=($tool->cookieToolGroup == '1' ) ? 'disabled' : ''?>
+            data-group="<?= $tool->getCookieToolGroup(); ?>"
+            data-cookie-id="<?=$tool->getId();?>"
+            <?php if ($tool instanceof CookieTool):?>
+                data-block-class="ncoi---<?=$tool->getCookieToolsSelect();?>"
+            <?php else: ?>
+                data-block-class=""
+            <?php endif; ?>
+            <?=(in_array($tool->getCookieToolGroup(), $this->arrData['cookieGroupsSelected']) && in_array($tool->getId(),$this->arrData['cookiesSelected']) || $tool->getCookieToolGroup() == '1') ? 'checked' : ''?>
+            <?=($tool->getCookieToolGroup() == '1' ) ? 'disabled' : ''?>
         />
-        <label class="ncoi---sliding" for="ncoi---table-cookie-<?=$tool->id?>"><i></i><span><?=(isset($cookieGroup) ? $cookieGroup : '')?></span></label>
+        <label class="ncoi---sliding" for="ncoi---table-cookie-<?=$tool->getId()?>"><i></i><span><?=(isset($cookieGroup) ? $cookieGroup : '')?></span></label>
     </td>
 </tr>

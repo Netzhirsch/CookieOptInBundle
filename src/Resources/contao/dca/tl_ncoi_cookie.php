@@ -1,6 +1,4 @@
 <?php
-/********* config ****************************************************************************************/
-
 $GLOBALS['TL_DCA']['tl_ncoi_cookie'] = [
     'config' => [
         'label' => 'Cookie opt in bundle table',
