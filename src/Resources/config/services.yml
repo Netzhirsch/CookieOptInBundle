@@ -34,3 +34,9 @@ services:
     class: Netzhirsch\CookieOptInBundle\Repository\CookieToolRepository
     arguments:
       - '@Doctrine\Common\Persistence\ManagerRegistry'
+
+  Netzhirsch\CookieOptInBundle\Migration\FieldPaletteToGroupWidgetMigration:
+    tags:
+      - { name: contao.migration, priority: 1 }
+    arguments:
+      - '@doctrine.orm.entity_manager'

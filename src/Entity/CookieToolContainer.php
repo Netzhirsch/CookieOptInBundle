@@ -24,4 +24,22 @@ class CookieToolContainer extends AbstractGroupEntity
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: CookieTool::class, orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
     protected $elements;
+
+    /**
+     * @param mixed $sourceId
+     */
+    public function setSourceId($sourceId): void
+    {
+        $this->sourceId = $sourceId;
+    }
+
+
+    /**
+     * @param mixed $sourceTable
+     */
+    public function setSourceTable($sourceTable): void
+    {
+        $this->sourceTable = $sourceTable;
+    }
+
 }
