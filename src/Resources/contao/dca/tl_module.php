@@ -8,9 +8,6 @@ use HeimrichHannot\FieldpaletteBundle\Model\FieldPaletteModel;
 use Netzhirsch\CookieOptInBundle\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
 
-$GLOBALS['TL_DCA'][$this->strTable]['list']['sorting']['root'] = [1];
-$GLOBALS['TL_DCA'][$this->strTable]['config']['dynamicPtable'] = null;
-
 /** Revoke Modul ***********************************************/
 if (TL_MODE == 'BE') {
     $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackend.css|static';
@@ -111,10 +108,6 @@ $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_n
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setPageTreeEntries'];
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setLessVariables'];
 $GLOBALS['TL_DCA']['tl_module']['config']['onsubmit_callback'][] = ['tl_module_ncoi','setGroupsToNcoiTable'];
-
-$GLOBALS['TL_DCA']['tl_module']['config']['ctable'] = [
-  'tl_ncoi_cookie',
-];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['headlineCookieOptInBar'] = [
 	'label' => ['Überschrift'],
