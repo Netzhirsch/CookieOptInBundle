@@ -99,14 +99,24 @@ class FieldPaletteToGroupWidgetMigration extends AbstractMigration
         }
         $this->entityManager->flush();
 
+
+        $strQuery = 'CREATE TABLE ncoi_fieldpalette_backup LIKE tl_fieldpalette;';
+
+        $this->entityManager->getConnection()->executeQuery($strQuery);
+
+        $strQuery = 'INSERT INTO ncoi_fieldpalette_backup SELECT * FROM tl_fieldpalette;;';
+
+        $this->entityManager->getConnection()->executeQuery($strQuery);
+
         $strQuery = 'DROP TABLE tl_fieldpalette';
 
         $this->entityManager->getConnection()->executeQuery($strQuery);
 
         return $this->createResult(
             true,
-            'Tabelle tl_fieldpalette in tl_ncoi_cookie_tool_container,tl_ncoi_cookie_tool,
-             tl_ncoi_other_script_container und tl_ncoi_other_script überführt'
+            'Inhalt von tl_fieldpalette in tl_ncoi_cookie_tool_container,tl_ncoi_cookie_tool,'
+            .'tl_ncoi_other_script_container und tl_ncoi_other_script überführt.'
+            .'Tabelle tl_fieldpalette nach tl_fieldpalette_backup kopiert und gelöscht.'
         );
     }
 }
