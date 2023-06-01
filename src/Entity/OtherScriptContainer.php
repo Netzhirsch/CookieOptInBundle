@@ -23,4 +23,21 @@ class OtherScriptContainer extends AbstractGroupEntity
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: OtherScript::class,orphanRemoval: true)]
     protected $elements;
+
+    /**
+     * @param mixed $sourceId
+     */
+    public function setSourceId($sourceId): void
+    {
+        $this->sourceId = $sourceId;
+    }
+
+
+    /**
+     * @param mixed $sourceTable
+     */
+    public function setSourceTable($sourceTable): void
+    {
+        $this->sourceTable = $sourceTable;
+    }
 }

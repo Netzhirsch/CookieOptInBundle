@@ -37,6 +37,6 @@ services:
 
   Netzhirsch\CookieOptInBundle\Migration\FieldPaletteToGroupWidgetMigration:
     tags:
-      - { name: contao.migration, priority: 1 }
+      - { name: contao.migration, priority: 0 }
     arguments:
       - '@doctrine.orm.entity_manager'
