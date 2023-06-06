@@ -115,11 +115,24 @@ class ModuleCookieOptInBar extends Module
         ];
 
 		$data['cookieTools'] = [];
-		$unorderedData = FieldPaletteModel::findByPid($this->id);
+		$unorderedData = FieldPaletteModel::findByPid($this->id,['cookieGroups' => 'DESC']);
         foreach ($unorderedData as $unorderedDatum) {
             $data['cookieTools'][$unorderedDatum->sorting] = $unorderedDatum;
         }
         ksort($data['cookieTools']);
+        $unorderedData = $data['cookieTools'];
+        $data['cookieTools'] = [];
+        foreach ($unorderedData as $unorderedDatum) {
+            $data['cookieTools'][$unorderedDatum->cookieToolGroup][] = $unorderedDatum;
+        }
+        ksort($data['cookieTools']);
+        $unorderedData = $data['cookieTools'];
+        $data['cookieTools'] = [];
+        foreach ($unorderedData as $unorderedDatum) {
+            foreach ($unorderedDatum as $tmp) {
+                $data['cookieTools'][] = $tmp;
+            }
+        }
 
         $data['noScriptTracking'] = [];
         $data['cookieGroupsSelected'] = [1];
