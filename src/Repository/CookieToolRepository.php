@@ -40,9 +40,6 @@ class CookieToolRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     public function findOneBySourceIdAndUrl(array $sourceIds, string $url)
     {
         return $this->createQueryBuilder('c')
@@ -52,13 +49,10 @@ class CookieToolRepository extends ServiceEntityRepository
             ->andWhere('parent.sourceId IN (:sourceIds)')
             ->setParameter('sourceIds', $sourceIds)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
     public function findOneBySourceIdAndType(array $sourceIds, string $iFrameType)
     {
         return $this->createQueryBuilder('c')
@@ -68,7 +62,7 @@ class CookieToolRepository extends ServiceEntityRepository
             ->andWhere('parent.sourceId IN (:sourceIds)')
             ->setParameter('sourceIds', $sourceIds)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
 }

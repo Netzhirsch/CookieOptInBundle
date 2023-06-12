@@ -4,6 +4,7 @@ use Contao\DC_Table;
 use Contao\Input;
 use Contao\ModuleModel;
 use Contao\StringUtil;
+use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\Helper;
 use Netzhirsch\CookieOptInBundle\Entity\CookieTool;
 use Netzhirsch\CookieOptInBundle\Entity\CookieToolContainer;
@@ -1014,8 +1015,15 @@ class tl_module_ncoi extends tl_module {
 	public function getNetzhirschCookie(DC_Table $dca)
 	{
         $em = $dca->getContainer()->get('doctrine.orm.entity_manager');
-        if (Input::post('type') != 'cookieOptInBar')
+        if (!empty(Input::post('type')) && Input::post('type') != 'cookieOptInBar')
             return;
+
+        $moduleId = Input::get('id');
+        $barRepository = new BarRepository($dca->Database);
+        $module = $barRepository->findByPid($moduleId);
+        if (empty($module)) {
+            return;
+        }
 
         $repoCookieToolContainer = $em->getRepository(CookieToolContainer::class);
         $cookieToolContainer = $repoCookieToolContainer->findOneBy([
@@ -1023,27 +1031,35 @@ class tl_module_ncoi extends tl_module {
         ]);
         if (empty($cookieToolContainer)) {
             $cookieToolContainer = new CookieToolContainer();
-        } else {
-            $repoCookieTool = $em->getRepository(CookieTool::class);
-            $csrfToken = $repoCookieTool->findOneBy([
-                'cookieToolsTechnicalName' => 'csrf_contao_csrf_token',
-                'parent' => $cookieToolContainer->getId(),
-            ]);
-            $csrfTokenHttps = $repoCookieTool->findOneBy([
-                'cookieToolsTechnicalName' => 'csrf_https_contao_csrf_token',
-                'parent' => $cookieToolContainer->getId(),
-            ]);
-            $PHPSESSID = $repoCookieTool->findOneBy([
-                'cookieToolsTechnicalName' => 'PHPSESSID',
-                'parent' => $cookieToolContainer->getId(),
-            ]);
-            $FE_USER_AUTH = $repoCookieTool->findOneBy([
-                'cookieToolsTechnicalName' => 'FE_USER_AUTH',
-                'parent' => $cookieToolContainer->getId(),
-            ]);
+            $cookieToolContainer->setSourceId($dca->id);
+            $cookieToolContainer->setSourceTable('tl_module');
+            $em->persist($cookieToolContainer);
+            $em->flush();
         }
+        $repoCookieTool = $em->getRepository(CookieTool::class);
+        $csrfToken = $repoCookieTool->findOneBy([
+            'cookieToolsTechnicalName' => 'csrf_contao_csrf_token',
+            'parent' => $cookieToolContainer->getId(),
+        ]);
+        $csrfTokenHttps = $repoCookieTool->findOneBy([
+            'cookieToolsTechnicalName' => 'csrf_https_contao_csrf_token',
+            'parent' => $cookieToolContainer->getId(),
+        ]);
+        $PHPSESSID = $repoCookieTool->findOneBy([
+            'cookieToolsTechnicalName' => 'PHPSESSID',
+            'parent' => $cookieToolContainer->getId(),
+        ]);
+        $FE_USER_AUTH = $repoCookieTool->findOneBy([
+            'cookieToolsTechnicalName' => 'FE_USER_AUTH',
+            'parent' => $cookieToolContainer->getId(),
+        ]);
 
-        if (empty($csrfToken)) {
+        if (
+            empty($csrfToken)
+            && empty($csrfTokenHttps)
+            && empty($PHPSESSID)
+            && empty($FE_USER_AUTH)
+        ) {
             $csrfToken = CookieTool::createDefault(
                 $cookieToolContainer,
                 'Contao CSRF Token',
@@ -1052,9 +1068,6 @@ class tl_module_ncoi extends tl_module {
                 1
             );
             $em->persist($csrfToken);
-        }
-
-        if (empty($csrfTokenHttps)) {
             $csrfTokenHttps = CookieTool::createDefault(
                 $cookieToolContainer,
                 'Contao HTTPS CSRF Token',
@@ -1063,9 +1076,6 @@ class tl_module_ncoi extends tl_module {
                 2
             );
             $em->persist($csrfTokenHttps);
-        }
-
-        if (empty($PHPSESSID)) {
             $PHPSESSID = CookieTool::createDefault(
                 $cookieToolContainer,
                 'PHP SESSION ID',
@@ -1074,9 +1084,6 @@ class tl_module_ncoi extends tl_module {
                 3
             );
             $em->persist($PHPSESSID);
-        }
-
-        if (empty($FE_USER_AUTH)) {
             $FE_USER_AUTH = CookieTool::createDefault(
                 $cookieToolContainer,
                 'FE USER AUTH',

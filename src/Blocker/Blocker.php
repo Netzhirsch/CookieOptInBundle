@@ -9,6 +9,7 @@ use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Doctrine\ORM\NonUniqueResultException;
 use DOMDocument;
 use Exception;
 use Netzhirsch\CookieOptInBundle\Resources\contao\Classes\DataFromExternalMediaAndBar;
@@ -356,18 +357,34 @@ class Blocker
 
         $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
 
-        $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
+        $cookieTools = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
+        $key = array_key_first($cookieTools);
+        if ($key !== null) {
+            $cookieTool = $cookieTools[array_key_first($cookieTools)];
+        }
         if (empty($cookieTool)) {
-            $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
+            $cookieTools = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
+            $key = array_key_first($cookieTools);
+            if ($key !== null) {
+                $cookieTool = $cookieTools[array_key_first($cookieTools)];
+            }
         }
 
         if (empty($cookieTool)) {
             global $objPage;
             $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout),$database, [], [],$parameterBag);
             $sourceIds[] = ['mod' => $return['moduleIds'][0]];
-            $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
+            $cookieTools = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
+            $key = array_key_first($cookieTools);
+            if ($key !== null) {
+                $cookieTool = $cookieTools[array_key_first($cookieTools)];
+            }
             if (empty($cookieTool)) {
-                $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
+                $cookieTools = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
+                $key = array_key_first($cookieTools);
+                if ($key !== null) {
+                    $cookieTool = $cookieTools[array_key_first($cookieTools)];
+                }
             }
         }
 
