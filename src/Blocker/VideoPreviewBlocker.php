@@ -97,6 +97,9 @@ class VideoPreviewBlocker
             $cookieToolRepository,
             $sourceId
         );
+        if (empty($dataFromExternalMediaAndBar)) {
+            return $html;
+        }
 
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
         $imageSrc = $this->getImageSrc($html);

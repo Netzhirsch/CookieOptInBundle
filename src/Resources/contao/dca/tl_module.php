@@ -1019,10 +1019,9 @@ class tl_module_ncoi extends tl_module {
         $moduleId = Input::get('id');
         $barRepository = new BarRepository($dca->Database);
         $module = $barRepository->findByPid($moduleId);
-        if (empty($module) && empty(Input::post('type') && Input::post('type') != 'cookieOptInBar')) {
+        if (count($module) > 0 && empty(Input::post('type') && Input::post('type') != 'cookieOptInBar')) {
             return;
         }
-
         $repoCookieToolContainer = $em->getRepository(CookieToolContainer::class);
         $cookieToolContainer = $repoCookieToolContainer->findOneBy([
             'sourceId' => $dca->id,

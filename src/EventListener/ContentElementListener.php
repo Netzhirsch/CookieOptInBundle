@@ -52,7 +52,7 @@ class ContentElementListener
         global $objPage;
         $template = $contentModel->typePrefix.$contentModel->type;
         $sourceId = $contentModel->pid;
-
+        dump($template);
         if (
             empty($objPage)
             || empty($buffer)
@@ -64,6 +64,7 @@ class ContentElementListener
                 && !str_contains($template, 'analytics_matomo')
                 && !str_contains($template, 'analytics_piwik')
                 && !str_contains($template, 'ce_html')
+                && !str_contains($template, 'ce_unfiltered_html')
                 && !str_contains($template, 'customelement_gmap')
                 && !str_contains($template, 'mod_catalog_map_default')
                 && !str_contains($template, 'script_to_block')
@@ -92,6 +93,7 @@ class ContentElementListener
                     || str_contains($template, 'ce_vimeo')
                     || str_contains($template, 'ce_metamodel_list')
                     || str_contains($template, 'rsce_luxe_map')
+                    || str_contains($template, 'ce_unfiltered_html')
                 ) {
                     $iframeBlocker = new IFrameBlocker();
                     return $iframeBlocker->iframe(
