@@ -52,7 +52,6 @@ class ContentElementListener
         global $objPage;
         $template = $contentModel->typePrefix.$contentModel->type;
         $sourceId = $contentModel->pid;
-        dump($template);
         if (
             empty($objPage)
             || empty($buffer)
