@@ -1015,13 +1015,11 @@ class tl_module_ncoi extends tl_module {
 	public function getNetzhirschCookie(DC_Table $dca)
 	{
         $em = $dca->getContainer()->get('doctrine.orm.entity_manager');
-        if (!empty(Input::post('type')) && Input::post('type') != 'cookieOptInBar')
-            return;
 
         $moduleId = Input::get('id');
         $barRepository = new BarRepository($dca->Database);
         $module = $barRepository->findByPid($moduleId);
-        if (empty($module)) {
+        if (empty($module) && empty(Input::post('type') && Input::post('type') != 'cookieOptInBar')) {
             return;
         }
 
