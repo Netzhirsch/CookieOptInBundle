@@ -1,5 +1,6 @@
 <?php
 
+use Contao\DC_Table;
 use Netzhirsch\CookieOptInBundle\Controller\ConsentController;
 
 $deleteConfirm = 'Soll das Element ID %s wirklich gelöscht werden?';
@@ -9,7 +10,7 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 	// Config
 	'config' => array
 	(
-		'dataContainer'               => 'Table',
+		'dataContainer'               => DC_Table::class,
 		'enableVersioning'            => true,
 		'notCopyable' => true,
 		'notEditable' => true,
