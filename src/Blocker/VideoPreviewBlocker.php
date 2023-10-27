@@ -95,7 +95,8 @@ class VideoPreviewBlocker
             $database,
             $parameterBag,
             $cookieToolRepository,
-            $sourceId
+            $sourceId,
+            $insertTagParser
         );
         if (empty($dataFromExternalMediaAndBar)) {
             return $html;

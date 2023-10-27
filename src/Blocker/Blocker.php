@@ -326,13 +326,17 @@ class Blocker
         return $htmlContainer  .$htmlConsentBox . $htmlDisclaimer . $htmlForm . $htmlConsentButton . $htmlIcon . $htmlConsentButtonEnd . $htmlInputCurrentPage .$htmlInputModID .$htmlFormEnd  .$htmlReleaseAll . $htmlConsentBoxEnd . $iframe .$htmlContainerEnd;
     }
 
+    /**
+     * @throws Exception
+     */
     public static function getIframeHTML(
         $iframeHTML,
         $requestStack,
         Database $database,
         ParameterBag $parameterBag,
         CookieToolRepository $cookieToolRepository,
-        string $sourceId
+        string $sourceId,
+        InsertTagParser $insertTagParser
     )
     {
         $moduleData = Blocker::getModulData($requestStack,$database,$parameterBag);
@@ -343,7 +347,7 @@ class Blocker
         foreach ($moduleData as $moduleDatum) {
             $modIds[] = $moduleDatum['mod'];
         }
-        $sourceIds = Blocker::getModIdByInsertTagInModule($database,$modIds);
+        $sourceIds = Blocker::getModIdByInsertTagInModule($database,$modIds,$insertTagParser);
         $sourceIds[] = $sourceId;
 
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();

@@ -99,7 +99,8 @@ class IFrameBlocker
             $database,
             $parameterBag,
             $cookieToolRepository,
-            $sourceId
+            $sourceId,
+            $insertTagParser,
         );
 
         $newBuffer = Blocker::getHtmlContainer(
