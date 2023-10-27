@@ -49,7 +49,7 @@ class CookieToolRepository extends ServiceEntityRepository
             ->andWhere('parent.sourceId IN (:sourceIds)')
             ->setParameter('sourceIds', $sourceIds)
             ->getQuery()
-            ->getResult()
+            ->getOneOrNullResult()
         ;
     }
 
@@ -62,7 +62,7 @@ class CookieToolRepository extends ServiceEntityRepository
             ->andWhere('parent.sourceId IN (:sourceIds)')
             ->setParameter('sourceIds', $sourceIds)
             ->getQuery()
-            ->getResult()
+            ->getOneOrNullResult()
         ;
     }
 }

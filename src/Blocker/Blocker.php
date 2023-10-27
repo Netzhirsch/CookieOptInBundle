@@ -104,10 +104,6 @@ class Blocker
         $dataFromExternalMediaAndBar->setModId($cookieTool->getParent()->getSourceId());
 
         $privacyPolicyLink = $cookieTool->getCookieToolsPrivacyPolicyUrl()??'';
-        if (!empty($privacyPolicyLink)) {
-            $privacyPolicyLink = PageModel::findById($privacyPolicyLink);
-            $privacyPolicyLink = $privacyPolicyLink->getFrontendUrl();
-        }
         $dataFromExternalMediaAndBar
             ->setPrivacyPolicyLink($privacyPolicyLink);
 
@@ -123,32 +119,33 @@ class Blocker
     (
         Database $database,
         array $modIds,
+        InsertTagParser $insertTagParser
     ): array {
         $moduleRepo = new ModuleRepository($database);
         $htmlInModules = $moduleRepo->findByIds($modIds);
-        return self::getModuleIdsFromHtml($htmlInModules);
+        return self::getModuleIdsFromHtml($htmlInModules,$insertTagParser);
     }
 
-    private static function getModuleIdsFromHtml($htmlInModules): array
+    private static function getModuleIdsFromHtml($htmlInModules,InsertTagParser $insertTagParser): array
     {
         $ids = [];
         foreach ($htmlInModules as $html) {
-            $id = self::getModuleIdFromHtml($html);
+            $id = self::getModuleIdFromHtml($html,$insertTagParser);
             if (!empty($id))
                 $ids[] = $id;
         }
         return $ids;
     }
-    private static function getModuleIdFromHtml($html): float|int|string|null
+    private static function getModuleIdFromHtml($html,InsertTagParser $insertTagParser): float|int|string|null
     {
         if (is_array($html)) {
             foreach ($html as $item) {
-                $id = self::getModuleIdFromOneHtml($item);
+                $id = self::getModuleIdFromOneHtml($item,$insertTagParser);
                 if (!empty($id))
                     return $id;
             }
         } else {
-            $id = self::getModuleIdFromOneHtml($html);
+            $id = self::getModuleIdFromOneHtml($html,$insertTagParser);
             if (!empty($id))
                 return $id;
         }
@@ -156,21 +153,19 @@ class Blocker
         return null;
     }
 
-    private static function getModuleIdFromOneHtml($html): float|int|string|null
+    private static function getModuleIdFromOneHtml($html,InsertTagParser $insertTagParser): float|int|string|null
     {
         $position = strpos($html,'{{insert_module::');
         if ($position !== false) {
             $doc = new DOMDocument();
             $doc->loadHTML($html);
             $html = $doc->textContent;
-            $insertTags = explode('insert_module::',$html);
-            foreach ($insertTags as $insertTag) {
-                $id = str_replace('{{','',$insertTag);
-                $id = str_replace('}}','',$id);
-                $id = trim($id);
-                if (is_numeric($id))
-                    return $id;
-            }
+            $html = str_replace('{{insert_module::','',$html);
+            // all digitis from insertTag
+            $id = $insertTagParser->replace($html);
+            $id = preg_replace('/[^0-9]/', '', $id);
+            if (is_numeric($id))
+                return $id;
         }
         return null;
     }

@@ -317,7 +317,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
             'inputType' => 'text',
             'eval' => [
                 'mandatory' => true,
-                'tl_class'  =>  'w50',
+                'tl_class'  =>  'w50 cookieToolsName',
             ],
         ],
         'cookieToolsSelect' => [
@@ -455,7 +455,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['otherScripts'] = [
             'inputType' => 'text',
             'eval' => [
                 'mandatory' => true,
-                'tl_class'  =>  'long clr',
+                'tl_class'  =>  'long clr cookieToolsName',
             ],
         ],
         'cookieToolsTechnicalName' => [
@@ -1016,12 +1016,6 @@ class tl_module_ncoi extends tl_module {
 	{
         $em = $dca->getContainer()->get('doctrine.orm.entity_manager');
 
-        $moduleId = Input::get('id');
-        $barRepository = new BarRepository($dca->Database);
-        $module = $barRepository->findByPid($moduleId);
-        if (count($module) > 0 && empty(Input::post('type') && Input::post('type') != 'cookieOptInBar')) {
-            return;
-        }
         $repoCookieToolContainer = $em->getRepository(CookieToolContainer::class);
         $cookieToolContainer = $repoCookieToolContainer->findOneBy([
             'sourceId' => $dca->id,

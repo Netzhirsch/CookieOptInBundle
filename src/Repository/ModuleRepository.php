@@ -14,9 +14,8 @@ class ModuleRepository extends Repository
 
     public function findByIds($modIds): array
     {
-        $strQuery = "SELECT html FROM tl_module WHERE type = 'html' AND id IN (?)";
-
-        $founded = $this->findAllAssoc($strQuery,[], [implode(",",$modIds)]);
+        $strQuery = "SELECT html FROM tl_module WHERE type = 'html' AND id IN (".implode(',',$modIds).")";
+        $founded = $this->findAllAssoc($strQuery,[], []);
         if (empty($founded))
             return [];
         return $founded;

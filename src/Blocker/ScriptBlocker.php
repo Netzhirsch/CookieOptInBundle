@@ -68,16 +68,17 @@ class ScriptBlocker
     }
 
     /**
-     * @param DOMElement           $DOMElement
-     * @param RequestStack         $requestStack
-     * @param Database             $database
+     * @param DOMElement $DOMElement
+     * @param RequestStack $requestStack
+     * @param Database $database
      * @param                      $buffer
      * @param CookieToolRepository $cookieToolRepository
-     * @param ParameterBag         $parameterBag
-     * @param InsertTagParser      $insertTagParser
+     * @param ParameterBag $parameterBag
+     * @param InsertTagParser $insertTagParser
      *
      * @return null|string
      * @throws NonUniqueResultException
+     * @throws \Exception
      */
     private function getScriptHTML(
         DOMElement $DOMElement,
@@ -103,7 +104,7 @@ class ScriptBlocker
         foreach ($moduleData as $moduleDatum) {
             $modIds[] = $moduleDatum['mod'];
         }
-        $sourceIds = array_merge(Blocker::getModIdByInsertTagInModule($database,$modIds),$modIds);
+        $sourceIds = array_merge(Blocker::getModIdByInsertTagInModule($database,$modIds,$insertTagParser),$modIds);
         if (!empty($url)) {
             /** @var CookieTool $cookieTool */
             $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
@@ -111,7 +112,9 @@ class ScriptBlocker
         if (empty($cookieTool)) {
             $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, 'script');
         }
-
+        if (empty($cookieTool)) {
+            return $buffer;
+        }
         $dataFromExternalMediaAndBar = new DataFromExternalMediaAndBar();
         $dataFromExternalMediaAndBar = Blocker::getDataFromExternalMediaAndBar(
             $DOMElement->textContent,

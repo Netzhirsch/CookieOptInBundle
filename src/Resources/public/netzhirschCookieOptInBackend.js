@@ -62,5 +62,16 @@
 				}
 			});
 		}
+
+		let lastNameField = $('.cookieToolsName .tl_text:last');
+		focusAndScrollToElement(lastNameField);
 	});
 })(jQuery);
+
+function focusAndScrollToElement(element) {
+	if (element.val() === '') {
+		element.focus();
+		let scrollPos =  element.offset().top;
+		$(window).scrollTop(scrollPos);
+	}
+}

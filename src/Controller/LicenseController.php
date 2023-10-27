@@ -21,7 +21,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class LicenseController extends AbstractController
 {
-	/**
+
+    /**
 	 * @Route("/license", name="app.license")
 	 * @return RedirectResponse
 	 * @throws Exception
@@ -74,7 +75,8 @@ class LicenseController extends AbstractController
      * @param $isFrontendCall
      * @return LicenseAPIResponse
      */
-	public static function callAPI($domain,$isFrontendCall) {
+	public static function callAPI($domain,$isFrontendCall): LicenseAPIResponse
+    {
 
 	    $licenseAPIResponse = new LicenseAPIResponse();
 
@@ -107,10 +109,11 @@ class LicenseController extends AbstractController
             if ($lastLicenseCheck == $today)
                 return $licenseAPIResponse;
         }
-
 		$curl = curl_init('https://buero.netzhirsch.de/license/verify/' . $domain);
 		//response as string
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_POST, true);
 		$response = curl_exec($curl);
 		if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
 			$response = json_decode($response);

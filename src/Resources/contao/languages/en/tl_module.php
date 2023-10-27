@@ -112,6 +112,8 @@ $GLOBALS['TL_LANG']['tl_module']['contaoCsrfHttpsToken']['cookieToolsUse'] = 'Se
 
 $GLOBALS['TL_LANG']['tl_module']['phpSessionID']['cookieToolsUse'] = 'PHP cookie (programming language), PHP data identifier. Contains only a reference to the current session. There is no information in the user\'s browser saved and this cookie can only be used by the current website. This cookie is used all used in forms to increase usability. Data entered in forms will be e.g. B. briefly saved when there is an input error by the user and the user receives an error message receives. Otherwise all data would have to be entered again';
 
+$GLOBALS['TL_LANG']['tl_module']['FE_USER_AUTH']['cookieToolsUse'] = 'Stores information of a visitor as soon as he logs into the frontend.';
+
 $GLOBALS['TL_LANG']['tl_module']['i_frame_blocked_urls'] =
     ['Blocked URL','Please enter the URL of the IFrame here. If you do not enter any text, the URL of the IFrame type will be used. Please separate multiple URLS with commas. '];
 
