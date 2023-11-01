@@ -235,7 +235,7 @@ class Blocker
     }
 
     public static function getHtmlContainer(
-        DataFromExternalMediaAndBar $dataFromExternalMediaAndBar,
+        ?DataFromExternalMediaAndBar $dataFromExternalMediaAndBar,
         $loadStrings,
         $size,
         $html,
@@ -243,7 +243,9 @@ class Blocker
         $iconPath = '',
         $isCustomGmap = false
     ): string {
-
+        if (empty($dataFromExternalMediaAndBar)) {
+            return $html;
+        }
         $privacyPolicyLink = $dataFromExternalMediaAndBar->getPrivacyPolicyLink();
         $provider = $dataFromExternalMediaAndBar->getProvider();
 
@@ -355,35 +357,18 @@ class Blocker
         $url = Blocker::getLevelUrl($url);
 
         $iframeTypInHtml = Blocker::getIFrameType($iframeHTML);
-
-        $cookieTools = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
-        $key = array_key_first($cookieTools);
-        if ($key !== null) {
-            $cookieTool = $cookieTools[array_key_first($cookieTools)];
-        }
+        $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
         if (empty($cookieTool)) {
-            $cookieTools = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
-            $key = array_key_first($cookieTools);
-            if ($key !== null) {
-                $cookieTool = $cookieTools[array_key_first($cookieTools)];
-            }
+            $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
         }
 
         if (empty($cookieTool)) {
             global $objPage;
             $return = PageLayoutListener::checkModules(LayoutModel::findById($objPage->layout),$database, [], [],$parameterBag);
             $sourceIds[] = ['mod' => $return['moduleIds'][0]];
-            $cookieTools = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
-            $key = array_key_first($cookieTools);
-            if ($key !== null) {
-                $cookieTool = $cookieTools[array_key_first($cookieTools)];
-            }
+            $cookieTool = $cookieToolRepository->findOneBySourceIdAndUrl($sourceIds, $url);
             if (empty($cookieTool)) {
-                $cookieTools = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
-                $key = array_key_first($cookieTools);
-                if ($key !== null) {
-                    $cookieTool = $cookieTools[array_key_first($cookieTools)];
-                }
+                $cookieTool = $cookieToolRepository->findOneBySourceIdAndType($sourceIds, $iframeTypInHtml);
             }
         }
 

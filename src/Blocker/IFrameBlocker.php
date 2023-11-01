@@ -92,7 +92,6 @@ class IFrameBlocker
     ) {
 
         // Abmessungen des Block Container, damit es die gleiche Göße wie das iFrame hat.
-
         [$dataFromExternalMediaAndBar,$blockTexts,$size,$iconPath,$cookieTool] = Blocker::getIframeHTML(
             $iframeHTML,
             $requestStack,
@@ -102,6 +101,8 @@ class IFrameBlocker
             $sourceId,
             $insertTagParser,
         );
+        if (empty($cookieTool))
+            return $iframeHTML;
 
         $newBuffer = Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
