@@ -67,6 +67,7 @@ class ContentElementListener
                 && !str_contains($template, 'customelement_gmap')
                 && !str_contains($template, 'mod_catalog_map_default')
                 && !str_contains($template, 'script_to_block')
+                && !str_contains($template, 'ce_module')
             )
         ) {
             return $buffer;
@@ -93,6 +94,7 @@ class ContentElementListener
                     || str_contains($template, 'ce_metamodel_list')
                     || str_contains($template, 'rsce_luxe_map')
                     || str_contains($template, 'ce_unfiltered_html')
+                    || str_contains($template, 'ce_module')
                 ) {
                     $iframeBlocker = new IFrameBlocker();
                     return $iframeBlocker->iframe(
