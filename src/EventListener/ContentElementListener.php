@@ -153,6 +153,7 @@ class ContentElementListener
                 ($template == 'ce_html' && str_contains($buffer, '<script'))
                    || str_contains($template, 'script_to_block')
                    || ($template == 'ce_unfiltered_html' && str_contains($buffer, '<script'))
+                || (str_contains($template, 'ce_module') && str_contains($buffer, '<script'))
             ;
             if ($isScriptTemplate) {
                 $scriptBlocker = new ScriptBlocker();
