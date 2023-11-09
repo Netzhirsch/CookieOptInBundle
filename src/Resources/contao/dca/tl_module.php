@@ -1170,24 +1170,24 @@ class tl_module_ncoi extends tl_module {
     {
         if ($this->checkRightModule($dca->__get('field'))) {
             $activeRecord = $dca->__get('activeRecord');
-            $privacyPolicyOld = $activeRecord->__get('privacyPolicy');
+            $privacyPolicyOld = $activeRecord->privacyPolicy;
             $privacyPolicyNew = $this->loadFromNcoiTable('',$dca,null,'privacyPolicy');
             if (!empty($privacyPolicyOld) && empty($privacyPolicyNew)) {
                 $this->saveInNcoiTable($privacyPolicyNew,$dca,'','privacyPolicy');
             }
-            $imprintOLd = $activeRecord->__get('imprint');
+            $imprintOLd = $activeRecord->imprint;
             $imprintNew = $this->loadFromNcoiTable('',$dca,null,'imprint');
             if (!empty($imprintOLd) && empty($imprintNew)) {
                 $this->saveInNcoiTable($imprintNew,$dca,'','imprint');
             }
-            $excludePagesOld = $activeRecord->__get('excludePages');
+            $excludePagesOld = $activeRecord->excludePages;
             $excludePagesNew = $this->loadFromNcoiTable('',$dca,null,'excludePages');
             if (!empty($excludePagesOld) && empty($excludePagesNew)) {
                 $this->saveInNcoiTable($excludePagesNew,$dca,'','excludePages');
             }
-            $activeRecord->__set('privacyPolicy',null);
-            $activeRecord->__set('imprint',null);
-            $activeRecord->__set('excludePages',null);
+            $activeRecord->privacyPolicy = null;
+            $activeRecord->imprint = null;
+            $activeRecord->excludePages = null;
         }
     }
 
@@ -1271,7 +1271,7 @@ class tl_module_ncoi extends tl_module {
 
     public function checkRightModule($field): bool
     {
-        if ($field == 'isNewCookieVersion')
+        if ($field == 'languageSwitch')
             return true;
         else
             return false;
