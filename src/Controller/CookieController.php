@@ -98,8 +98,11 @@ class CookieController extends AbstractController
         $this->deleteCookies(array_merge($cookiesToSet['cookieTools'],$cookiesToSet['otherScripts']));
 
         $id = null;
-        if (isset($data['id']))
+        if (isset($data['id'])) {
+            if ($data['id'] > 4294967294)
+                return $jsonResponse;
             $id = $data['id'];
+        }
 
         $newConsent = $data['newConsent'];
         if ($newConsent) {

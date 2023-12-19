@@ -1,0 +1,5 @@
+.tl_listing {
+	display: table;
+	table-layout: fixed;
+	word-wrap: anywhere;
+}

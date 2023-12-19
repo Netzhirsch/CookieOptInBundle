@@ -39,8 +39,24 @@ class ParseFrontendTemplateListener
     {
         global $objPage;
         //On Backend empty
-        if (empty($objPage))
+        if (
+            empty($objPage)
+            || empty($buffer)
+            || (
+                strpos($buffer, '<iframe') === false
+                && strpos($buffer, '<figure class="video_container">') === false
+                && strpos($template, 'analytics_google') === false
+                && strpos($template, 'mod_matomo_Tracking') === false
+                && strpos($template, 'analytics_matomo') === false
+                && strpos($template, 'analytics_piwik') === false
+                && strpos($template, 'ce_html') === false
+                && strpos($template, 'customelement_gmap') === false
+                && strpos($template, 'mod_catalog_map_default') === false
+                && strpos($template, 'script_to_block') === false
+            )
+        )
             return $buffer;
+
 
         if (PageLayoutListener::isDisabled($objPage))
             return $buffer;
@@ -48,7 +64,8 @@ class ParseFrontendTemplateListener
         if (!$this->isBarInLayoutOrPage($objPage))
             return $buffer;
 
-        if (!empty($buffer) && !PageLayoutListener::shouldRemoveModules($objPage)) {
+
+        if (!PageLayoutListener::shouldRemoveModules($objPage)) {
             if (
                 strpos($buffer, '<iframe') !== false
                 && strpos($buffer, '<figure class="video_container">') == false
@@ -59,6 +76,7 @@ class ParseFrontendTemplateListener
                     || strpos($template, 'ce_youtube') !== false
                     || strpos($template, 'ce_vimeo') !== false
                     || strpos($template, 'ce_metamodel_list') !== false
+                    || strpos($template, 'rsce_luxe_map') !== false
                 ) {
                     $iframeBlocker = new IFrameBlocker();
                     return $iframeBlocker->iframe($buffer,$this->database,$this->getRequestStack());

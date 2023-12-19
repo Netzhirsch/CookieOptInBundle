@@ -1,7 +1,17 @@
 <?php
 
+use Contao\DC_Table;
+use Contao\System;
 use Netzhirsch\CookieOptInBundle\Controller\ConsentController;
+use Symfony\Component\HttpFoundation\RequestStack;
 
+/** @var RequestStack $requestStack */
+$scopeMatcher = System::getContainer()->get('contao.routing.scope_matcher');
+$requestStack = System::getContainer()->get('request_stack');
+$request = $requestStack->getCurrentRequest();
+if (!empty($request) && $scopeMatcher->isBackendRequest($request)) {
+    $GLOBALS['TL_CSS'][] = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInBackendConsentDirectory.css|static';
+}
 $deleteConfirm = 'Soll das Element ID %s wirklich gelöscht werden?';
 if (isset($GLOBALS['TL_LANG']['MSC']['deleteConfirm']))
     $deleteConfirm = $GLOBALS['TL_LANG']['MSC']['deleteConfirm'];
@@ -9,7 +19,7 @@ $GLOBALS['TL_DCA']['tl_consentDirectory'] = [
 	// Config
 	'config' => array
 	(
-		'dataContainer'               => 'Table',
+		'dataContainer'               => DC_Table::class,
 		'enableVersioning'            => true,
 		'notCopyable' => true,
 		'notEditable' => true,
