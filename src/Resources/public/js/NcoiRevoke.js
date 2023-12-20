@@ -3,10 +3,11 @@ class NcoiRevoke {
     constructor($) {
         this.$ = $;
     }
-    
     addOnClickEvent(storageKey) {
         let $ = this.$;
+
         $('.ncoi---revoke--button').on('click', function (e) {
+            e.preventDefault();
             let ncoiApp = new NcoiApp($);
             let storage = ncoiApp.getLocalStorage(storageKey);
             if (storage !== "") {
@@ -22,11 +23,12 @@ class NcoiRevoke {
                         $('#group-'+$(this).data('group')).prop('checked',false);
                     }
                 });
-
             }
-            e.preventDefault();
+            let ncoiCookie = new NcoiCookie($);
+            ncoiCookie.ajaxDeleteCookies(storageKey);
+            ncoiCookie.removeCookies(Cookies.get());
             $('.ncoi---behind').removeClass('ncoi---hidden--page-load')
-                .removeClass('ncoi---hidden');
+            .removeClass('ncoi---hidden');
             $('#FBTracking').remove();
             $('#matomoTracking').remove();
         });
