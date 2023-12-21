@@ -8,6 +8,7 @@ class NcoiRevoke {
         let $ = this.$;
         $('.ncoi---revoke--button').on('click', function (e) {
             e.preventDefault();
+
             let ncoiApp = new NcoiApp($);
             let storage = ncoiApp.getLocalStorage(storageKey);
             if (storage !== "") {
