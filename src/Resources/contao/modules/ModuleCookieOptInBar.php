@@ -113,8 +113,8 @@ class ModuleCookieOptInBar extends Module
         $data['cookieGroups'] = [
             0 => [
                 'technicalName' => $groups[0]['key'],
-                'name' => $groups[0]['value']
-            ]
+                'name' => $groups[0]['value'],
+            ],
         ];
 
 		$data['cookieTools'] = [];
@@ -166,10 +166,10 @@ class ModuleCookieOptInBar extends Module
 
                                 $data['noScriptTracking'][] = '<img src="'.$cookieTool->getCookieToolsTrackingServerUrl().'/matomo.php?idsite='.$trackingId.'&amp;rec=1" style="border:0" alt="" />';
                             }
+
                         }
                     }
                 }
-
                 $technicalName = null;
                 $name = null;
                 foreach ($groups as $group) {
@@ -194,7 +194,18 @@ class ModuleCookieOptInBar extends Module
                     }
                 }
             }
+        }
 
+        $data['googleConsentMode'] = 0;
+        $data['googleTagId'] = 0;
+        $data['googleTagManager'] = false;
+        /** @var CookieTool $cookieTool */
+        foreach ($data['cookieTools'] as $cookieTool) {
+            if ($cookieTool->isGoogleConsentMode()) {
+                $data['googleConsentMode'] = 1;
+                $data['googleTagId'] = $cookieTool->getCookieToolsTrackingId();
+                $data['googleTagManager'] = $cookieTool->getCookieToolsSelect() === "googleTagManager";
+            }
         }
 
         $headlineData = StringUtil::deserialize($result['headlineCookieOptInBar']);

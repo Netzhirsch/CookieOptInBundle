@@ -299,6 +299,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
     'palette' => [
         'cookieToolsName',
         'cookieToolsSelect',
+        'googleConsentMode',
         'cookieToolsTechnicalName',
         'cookieToolsTrackingId',
         'cookieToolsTrackingServerUrl',
@@ -337,7 +338,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                 '-' => '-'
             ],
             'eval' => [
-                'tl_class'  =>  'w50',
+                'tl_class'  =>  'w25',
             ],
         ],
         'googleConsentMode' => [
@@ -345,11 +346,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
             'exclude'   => true,
             'inputType' => 'checkbox',
             'eval' => [
-                'tl_class'  =>  'w50 clr',
+                'tl_class'  =>  'w25 m12',
                 'doNotSaveEmpty' => true,
             ],
-            'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
-            'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
         ],
         'cookieToolsTechnicalName' => [
             'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
