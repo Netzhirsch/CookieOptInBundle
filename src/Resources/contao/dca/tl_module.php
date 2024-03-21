@@ -340,6 +340,17 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                 'tl_class'  =>  'w50',
             ],
         ],
+        'googleConsentMode' => [
+            'label' => ['Google Consent Mode verwenden','Fall der Tag Manager verwendet wird, muss dieser entsprechend konfiguriert werden.'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval' => [
+                'tl_class'  =>  'w50 clr',
+                'doNotSaveEmpty' => true,
+            ],
+            'save_callback' => [['tl_module_ncoi', 'saveInNcoiTableCheckbox']],
+            'load_callback' => [['tl_module_ncoi', 'loadFromNcoiTableCheckbox']],
+        ],
         'cookieToolsTechnicalName' => [
             'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
             'exclude'   => true,

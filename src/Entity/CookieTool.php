@@ -48,6 +48,9 @@ class CookieTool extends AbstractGroupElementEntity
     #[ORM\Column(type: 'text',nullable: true)]
     private $cookieToolGroup;
 
+    #[ORM\Column(type: 'boolean',options: ['default' => '0'])]
+    private $googleConsentMode = false;
+
     #[ORM\Column(type: 'text',nullable: true)]
     private $cookieToolExpiredTime;
 
@@ -285,5 +288,15 @@ class CookieTool extends AbstractGroupElementEntity
         $this->i_frame_blocked_text = $i_frame_blocked_text;
 
         return $this;
+    }
+
+    public function isGoogleConsentMode(): bool
+    {
+        return $this->googleConsentMode;
+    }
+
+    public function setGoogleConsentMode(bool $googleConsentMode): void
+    {
+        $this->googleConsentMode = $googleConsentMode;
     }
 }
