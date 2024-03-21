@@ -15,10 +15,15 @@ class ModuleRepository extends Repository
     public function findByIds($modIds): array
     {
         $modIds = array_filter($modIds);
-        $strQuery = "SELECT html FROM tl_module WHERE type = 'html' AND id IN (".implode(',',$modIds).")";
-        $founded = $this->findAllAssoc($strQuery,[], []);
-        if (empty($founded))
+		if (!empty($modIds)) {
+			$strQuery = "SELECT html FROM tl_module WHERE type = 'html' AND id IN (".implode(',',$modIds).")";
+			$found = $this->findAllAssoc($strQuery,[], []);
+			$strQuery2 = "SELECT unfilteredHtml as html FROM tl_module WHERE type = 'unfiltered_html' AND id IN (".implode(',',$modIds).")";
+			$found2 = $this->findAllAssoc($strQuery2,[], []);
+		}
+		$result = array_merge($found ?? [], $found2 ?? []);
+        if (empty($result))
             return [];
-        return $founded;
+        return $result;
     }
 }

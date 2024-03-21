@@ -46,6 +46,7 @@ class ScriptBlocker
          * Andere HTML Tags einfach ans Return anhängen.
          */
         $newBuffer = '';
+        libxml_use_internal_errors(true);
         $doc = new DOMDocument();
 //        $clearBuffer = Blocker::clearHtmlComments($buffer);
         $doc->loadHTML($buffer);
@@ -53,7 +54,7 @@ class ScriptBlocker
         foreach ($DOMElements as $DOMElement) {
 
             $wrapWithBlockContainer = $DOMElement->getAttribute('data-ncoi-no-block-container');
-            if (empty($wrapWithBlockContainer))
+            if (empty($wrapWithBlockContainer) && !str_contains($buffer, 'data-ncoi-no-block-container'))
                 $newBuffer .= $this->getScriptHTML(
                     $DOMElement,
                     $requestStack,
