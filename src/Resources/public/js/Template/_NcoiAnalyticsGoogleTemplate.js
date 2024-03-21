@@ -1,10 +1,20 @@
 class _NcoiAnalyticsGoogleTemplate extends NcoiTemplate{
 
     setCookies (tool,body = null) {
-        if (this.hasContaoGoogleTemplate()) {
-            this.addContaoTemplate(body);
+        let googleConsent = $('.ncoi---behind').data('google-consent');
+        if (googleConsent === 1) {
+            gtag('consent', 'update', {
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+                'ad_storage': 'granted',
+                'analytics_storage': 'granted'
+            });
         } else {
-            this.executeDefault(this.getTrackingId(tool))
+            if (this.hasContaoGoogleTemplate()) {
+                this.addContaoTemplate(body);
+            } else {
+                this.executeDefault(this.getTrackingId(tool))
+            }
         }
     }
 

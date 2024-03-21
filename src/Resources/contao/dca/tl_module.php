@@ -309,6 +309,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 				'
 				cookieToolsName,
 				cookieToolsSelect,
+				googleConsentMode,
 				cookieToolsTechnicalName,
 				cookieToolsTrackingId,
 				cookieToolsTrackingServerUrl,
@@ -353,6 +354,16 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 					'tl_class'  =>  'long clr',
 				],
 			],
+            'googleConsentMode' => [
+                'label' => ['Google Consent Mode verwenden','Fall der Tag Manager verwendet wird, muss dieser entsprechend konfiguriert werden.'],
+                'exclude'   => true,
+                'inputType' => 'checkbox',
+                'sql' => "varchar(1) NULL default '0' ",
+                'eval' => [
+                    'tl_class'  =>  'long clr',
+                    'doNotSaveEmpty' => true,
+                ],
+            ],
 			'cookieToolsTechnicalName' => [
 				'label'     => ['Technischer Name','z.B. _gat,_gtag_UA_123456789_1 Komma getrennt. Wichtig zum Löschen der Cookies'],
 				'exclude'   => true,
