@@ -201,6 +201,7 @@
             'analytics_storage': 'denied'
           });
         </script>
+    <?php endif; ?>
     <?php if($this->googleTagManager) : ?>
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -219,6 +220,5 @@
 
           gtag('config', '<?= $this->googleTagId ?>');
         </script>
-    <?php endif; ?>
     <?php endif; ?>
 </div>
