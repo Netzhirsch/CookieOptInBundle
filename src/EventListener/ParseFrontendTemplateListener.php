@@ -5,7 +5,9 @@ use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\ThemeModel;
+use Doctrine\DBAL\Driver\Exception;
 use Netzhirsch\CookieOptInBundle\Blocker\AnalyticsBlocker;
+use Netzhirsch\CookieOptInBundle\Blocker\C4gmapBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\CustomGmapBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\IFrameBlocker;
 use Netzhirsch\CookieOptInBundle\Blocker\ScriptBlocker;
@@ -53,6 +55,7 @@ class ParseFrontendTemplateListener
                 && strpos($template, 'customelement_gmap') === false
                 && strpos($template, 'mod_catalog_map_default') === false
                 && strpos($template, 'script_to_block') === false
+                && strpos($template, 'c4g_maps') === false
             )
         )
             return $buffer;
@@ -123,11 +126,14 @@ class ParseFrontendTemplateListener
                 $scriptBlocker = new ScriptBlocker();
                 return $scriptBlocker->script($buffer,$this->database,$this->getRequestStack());
             }
-
             $isCustomElementGmapTemplate = strpos($template, 'customelement_gmap') !== false || strpos($template, 'mod_catalog_map_default') !== false;
             if ($isCustomElementGmapTemplate) {
                 $customGmapBlocker = new CustomGmapBlocker();
                 return $customGmapBlocker->block($buffer,$this->database,$this->getRequestStack());
+            }
+            if (strpos($template, 'c4g_maps') !== false) {
+                $c4gmapBlocker = new C4gmapBlocker();
+                return $c4gmapBlocker->block($buffer, $this->database, $this->getRequestStack());
             }
         }
 

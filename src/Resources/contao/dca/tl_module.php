@@ -345,6 +345,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                     'youtube' => 'YouTube',
                     'vimeo' => 'Vimeo',
                     'googleMaps' => 'iFrame [Google Maps]',
+                    'c4g_map' => 'con4gis map',
                     'iframe' => 'iFrame [Andere]',
                     'script' => 'HTML-Element [script]',
                     '-' => '-'

@@ -9,6 +9,7 @@ class NcoiExternalMedia {
         let that = this;
         $(document).on('click', '.ncoi---release', function (e) {
             e.preventDefault();
+            console.log('test');
             //Um richtige Chechbox zu finden
             //und um Blockcontainer vielleicht auszublenden und iFrame anzuhängen
             let parent = $(this).parents('.ncoi---blocked');
@@ -35,6 +36,7 @@ class NcoiExternalMedia {
                     that.addIframe(parent);
                     parent.trigger('change');
                 }
+                that.showC4gMap();
             }
         });
     }
@@ -73,6 +75,7 @@ class NcoiExternalMedia {
                             iframe.trigger('change');
                         }
                     }
+                    console.log(iframe);
                 }
             });
         });
@@ -85,9 +88,21 @@ class NcoiExternalMedia {
         $('.ncoi---custom_gmap').addClass('ncoi---hidden');
     }
 
+    showC4gMap() {
+        let $ = this.$;
+        $('.ncoi---custom_gmap').removeClass('ncoi---hidden');
+    }
+
     isCustomGmap(iframe) {
         let customGmap = iframe.parent('.ncoi---custom_gmap');
         return customGmap.length > 0;
+
+    }
+
+    isC4gMap(iframe) {
+        let c4g_maps = iframe.parent('.mod_c4g_maps');
+        console.log(c4g_maps);
+        return c4g_maps.length > 0;
 
     }
 
