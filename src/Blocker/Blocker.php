@@ -287,7 +287,8 @@ class Blocker
         $size,
         $html,
         $iconPath = '',
-        $isCustomGmap = false
+        $isCustomGmap = false,
+        $isC4GMap = false
     ) {
 
         $privacyPolicyLink = $dataFromExternalMediaAndBar->getPrivacyPolicyLink();
@@ -346,6 +347,9 @@ class Blocker
             }
             if (!empty($size['width']))
                 $style .= ' width:'.$width.';';
+        }
+        if ($isC4GMap) {
+            $style .= 'height:'.$size['height'].'; width:'.$size['width'].';';
         }
         $style .= '"';
         //Umschliedender Container damit Kinder zentiert werden könne

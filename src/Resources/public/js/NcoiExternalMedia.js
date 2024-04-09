@@ -36,7 +36,9 @@ class NcoiExternalMedia {
                     that.addIframe(parent);
                     parent.trigger('change');
                 }
-                that.showC4gMap();
+                if (that.isC4gMap(parent)) {
+                    that.showC4gMap(parent);
+                }
             }
         });
     }
@@ -74,6 +76,9 @@ class NcoiExternalMedia {
                             that.addIframe(iframe);
                             iframe.trigger('change');
                         }
+                        if (that.isC4gMap(iframe)) {
+                            that.showC4gMap(iframe);
+                        }
                     }
                     console.log(iframe);
                 }
@@ -88,8 +93,9 @@ class NcoiExternalMedia {
         $('.ncoi---custom_gmap').addClass('ncoi---hidden');
     }
 
-    showC4gMap() {
+    showC4gMap(parent) {
         let $ = this.$;
+        parent.parent().remove();
         $('.ncoi---custom_gmap').removeClass('ncoi---hidden');
     }
 
@@ -100,8 +106,7 @@ class NcoiExternalMedia {
     }
 
     isC4gMap(iframe) {
-        let c4g_maps = iframe.parent('.mod_c4g_maps');
-        console.log(c4g_maps);
+        let c4g_maps = iframe.parent('.ncoi---c4g_map');
         return c4g_maps.length > 0;
 
     }

@@ -4,6 +4,7 @@ namespace Netzhirsch\CookieOptInBundle\Blocker;
 
 use Contao\Database;
 use DOMDocument;
+use DOMDocumentType;
 use DOMElement;
 use Netzhirsch\CookieOptInBundle\Classes\DataFromExternalMediaAndBar;
 use Netzhirsch\CookieOptInBundle\Logger\Logger;
@@ -65,37 +66,39 @@ class C4gmapBlocker
         if (Blocker::noScriptFallbackRenderScript($dataFromExternalMediaAndBar))
             return $buffer;
 
-        $doc = new DOMDocument();
         if (self::isDebugModus($buffer)) {
             Logger::logExceptionInContaoSystemLog('HTML is no valid'.$buffer);
             return $buffer;
         }
-        @$doc->loadHTML($buffer);
-        $divs = @$doc->getElementsByTagName('div');
 
-        /** @var DOMElement $div */
-        $height = '100%';
-        foreach ($divs as $div) {
-            $style = $div->getAttribute('style');
-            if (!empty($style)) {
-                $height = str_replace('height:','',$style);
-                $height = str_replace(';','',$height);
-                if (!Blocker::hasUnit($height))
-                    $height .= 'px';
-            }
+        $height = '100vh';
+        $width = '100%';
+
+        $mapMetaDataStringStartPosition = strpos($buffer,'window.mapData[');
+        $mapMetaDataStringPart = substr($buffer,$mapMetaDataStringStartPosition);
+        $jsonStartPosition = strpos($mapMetaDataStringPart,'{');
+        $jsonStartPartString = substr($mapMetaDataStringPart,$jsonStartPosition);
+        $jsonPartEndPosition = strpos($jsonStartPartString,'};');
+        $jsonPart = substr($jsonStartPartString,0,$jsonPartEndPosition+1);
+        $mapMetaData = json_decode($jsonPart,true);
+        if (!empty($mapMetaData)) {
+            $height = $mapMetaData['height']??'100vh';
+            $width = $mapMetaData['width']??'100%';
         }
         $size = [
-          'height'  => $height,
-          'width'  => 'auto',
+            'width' => $width,
+            'height' => $height
         ];
         $dataFromExternalMediaAndBar->setDisclaimer($blockText['i_frame_maps']);
-        $html = '<div class="ncoi---custom_gmap">';
+        $html = '<div id="c4gMapWrapper-'.$dataFromExternalMediaAndBar->getCookieIds()[0].'" class="ncoi---c4g_map" style="height:'.$height.'; width:'.$width.'">';
         $html .= Blocker::getHtmlContainer(
             $dataFromExternalMediaAndBar,
             $blockText,
             $size,
             '',
-            'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR
+            'bundles' . DIRECTORY_SEPARATOR . 'netzhirschcookieoptin' . DIRECTORY_SEPARATOR,
+            false,
+            true
         );
         $html .='</div>';
         $buffer = str_replace('mod_c4g_maps','mod_c4g_maps ncoi---custom_gmap ncoi---hidden',$buffer);
