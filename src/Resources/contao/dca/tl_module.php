@@ -362,7 +362,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
                 'sql' => "varchar(1) NULL default '0' ",
                 'eval' => [
                     'tl_class'  =>  'long clr',
-                    'doNotSaveEmpty' => true,
+                    'doNotSaveEmpty' => false,
                 ],
             ],
 			'cookieToolsTechnicalName' => [

@@ -196,14 +196,19 @@ class ModuleCookieOptInBar extends Module
         $data['googleConsentMode'] = 0;
         $data['googleTagId'] = 0;
         $data['googleTagManager'] = false;
+        $data['googleGTag'] = false;
         foreach ($data['cookieTools'] as $cookieTool) {
-            if ($cookieTool->googleConsentMode) {
+            if ($cookieTool->googleConsentMode && $cookieTool->cookieToolsSelect === "googleTagManager") {
                 $data['googleConsentMode'] = 1;
                 $data['googleTagId'] = $cookieTool->cookieToolsTrackingId;
-                $data['googleTagManager'] = $cookieTool->cookieToolsSelect === "googleTagManager";
+                $data['googleTagManager'] = true;
+            }
+            if ($cookieTool->googleConsentMode && $cookieTool->cookieToolsSelect === "googleAnalytics") {
+                $data['googleConsentMode'] = 1;
+                $data['googleTagId'] = $cookieTool->cookieToolsTrackingId;
+                $data['googleGTag'] = true;
             }
         }
-
         $headlineData = StringUtil::deserialize($result['headlineCookieOptInBar']);
 		if (!empty($headlineData['value'])) {
 			$data['headlineCookieOptInBar'] = "<".$headlineData['unit']." class=\"ncoi---headline\">".$headlineData['value']."</".$headlineData['unit'].">";

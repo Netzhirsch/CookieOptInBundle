@@ -210,7 +210,7 @@
               'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer','<?= $this->googleTagId ?>');</script>
         <!-- End Google Tag Manager -->
-    <?php else: ?>
+    <?php elseif($this->googleGTag): ?>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=<?= $this->googleTagId ?>"></script>
         <script>
