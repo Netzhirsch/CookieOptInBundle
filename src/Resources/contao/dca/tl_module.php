@@ -290,7 +290,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cookieTools'] = [
 			'hidePublished' => true,
 			'notSortable' => false,
             'onsubmit_callback' => [['tl_module_ncoi', 'saveInNcoiTableCookieTools']],
-//	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
+	        'ondelete_callback' => [['tl_module_ncoi','deleteTool']],
 		],
 		'list'     => [
 			'label' => [
@@ -1434,7 +1434,7 @@ class tl_module_ncoi extends tl_module {
             $toolsDeactivate[]= $return['cookieToolsTechnicalName'];
             $strQueryUpdateCookie = "UPDATE tl_ncoi_cookie %s WHERE pid=?";
             $toolsDeactivate = serialize($toolsDeactivate);
-            $repo->executeStatement($strQueryUpdateCookie, ['toolsDeactivate' => $toolsDeactivate],[]);
+            $repo->executeStatement($strQueryUpdateCookie, ['toolsDeactivate' => $toolsDeactivate],[$pid]);
         }
     }
     public function checkRightModule($field)
