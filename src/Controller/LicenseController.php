@@ -7,6 +7,7 @@ namespace Netzhirsch\CookieOptInBundle\Controller;
 use Contao\Config;
 use DateTime;
 use Netzhirsch\CookieOptInBundle\Classes\LicenseAPIResponse;
+use Netzhirsch\CookieOptInBundle\Logger\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Contao\PageModel;
 use Exception;
@@ -120,7 +121,9 @@ class LicenseController extends AbstractController
 				$licenseAPIResponse->setDateOfExpiry($response->dateOfExpiry);
 				$licenseAPIResponse->setLicenseKey($response->licenseKey);
 			}
-		}
+		} else {
+            Logger::logExceptionInContaoSystemLog(curl_getinfo($curl, CURLINFO_HTTP_CODE));
+        }
 
 		curl_close($curl);
 		return $licenseAPIResponse;
