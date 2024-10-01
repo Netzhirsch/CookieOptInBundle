@@ -1,8 +1,5 @@
 <?php
 
-
-$GLOBALS['TL_HOOKS']['getSystemMessages'][] = [Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener::class, 'onGetSystemMessages'];
-
 $GLOBALS['TL_HOOKS']['getPageLayout'][] = [Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener::class, 'onGetPageLayoutListener'];
 
 $GLOBALS['TL_HOOKS']['getContentElement'][] = [Netzhirsch\CookieOptInBundle\EventListener\ContentElementListener::class, 'onContentElement'];
