@@ -15,10 +15,6 @@ services:
       - '@request_stack'
       - '@contao.framework'
 
-  Netzhirsch\CookieOptInBundle\Controller\LicenseController:
-
-  Netzhirsch\CookieOptInBundle\EventListener\GetSystemMessagesListener:
-
   Netzhirsch\CookieOptInBundle\EventListener\PageLayoutListener:
     - '@parameter_bag'
 

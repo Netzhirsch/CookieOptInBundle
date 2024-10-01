@@ -2,17 +2,13 @@
 
 namespace Netzhirsch\CookieOptInBundle\EventListener;
 
-use Contao\Config;
 use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\ThemeModel;
-use DateInterval;
-use DateTime;
 use Exception;
 use Netzhirsch\CookieOptInBundle\Controller\CookieController;
-use Netzhirsch\CookieOptInBundle\Controller\LicenseController;
 use Netzhirsch\CookieOptInBundle\Repository\BarRepository;
 use Netzhirsch\CookieOptInBundle\Repository\ModuleRepository;
 use Netzhirsch\CookieOptInBundle\Repository\Repository;
@@ -124,112 +120,6 @@ class PageLayoutListener {
         }
 
         return $doNotTrack;
-    }
-
-    /**
-     * @param string $licenseKey
-     * @param string $licenseExpiryDate
-     *
-     * @param        $domain
-     *
-     * @return bool
-     * @throws Exception
-     */
-    public static function checkLicense($licenseKey,$licenseExpiryDate,$domain) {
-
-        if (empty($licenseKey) || empty($licenseExpiryDate))
-            return false;
-
-        if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE |  FILTER_FLAG_NO_RES_RANGE) === false)
-            return true;
-
-        // in Frontend Y-m-d in Backend d.m.Y
-        $licenseExpiryDate = date("Y-m-d", strtotime($licenseExpiryDate));
-        if ($licenseExpiryDate < date("Y-m-d"))
-            return false;
-
-        return self::checkHash($licenseKey, $licenseExpiryDate, $domain);
-    }
-
-    /**
-     * @param       $licenseKey
-     * @param       $licenseExpiryDate
-     * @param       $domain
-     *
-     * @return bool
-     */
-    private static function checkHash($licenseKey, $licenseExpiryDate, $domain) {
-        $hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
-
-        //all possible subdomains
-        $domainLevels = explode(".", $domain);
-
-        foreach ($domainLevels as $key => $domainLevel) {
-            if (count($domainLevels) < 2)
-                break;
-            unset($domainLevels[$key]);
-            $domain = implode(".", $domainLevels);
-            $hashes[] = LicenseController::getHash($domain, $licenseExpiryDate);
-        }
-
-        if (in_array($licenseKey, $hashes)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @param DateTime $licenseExpiryDate
-     *
-     * @return DateInterval|false
-     * @throws Exception
-     */
-    public static function getLicenseRemainingExpiryDays(DateTime $licenseExpiryDate): DateInterval|bool
-    {
-
-        $today = new DateTime('now');
-
-        return date_diff($licenseExpiryDate, $today);
-    }
-
-    /**
-     * @return DateInterval|false|null
-     * @throws Exception
-     */
-    public static function checkLicenseRemainingTrialPeriod(): DateInterval|bool|null
-    {
-        $dateInterval = null;
-
-        $path = dirname(__DIR__);
-        $filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
-        if (file_exists($filename)) {
-            $fileTime = self::getTrialPeriod();
-            if ($fileTime->getTimestamp() > time()) {
-                $today = new DateTime();
-                $dateInterval = date_diff($fileTime, $today);
-            }
-        }
-        return $dateInterval;
-    }
-
-    /**
-     * @return DateTime|null
-     * @throws Exception
-     */
-    public static function getTrialPeriod(): ?DateTime
-    {
-
-        $datetimeFile = null;
-
-        $path = dirname(__DIR__);
-        $filename = $path.DIRECTORY_SEPARATOR.'NetzhirschCookieOptInBundle.php';
-        if (file_exists($filename)) {
-            $fileTime = strtotime('+1 month',filectime($filename));
-            $datetimeFile = new DateTime();
-            $datetimeFile->setTimestamp($fileTime);
-        }
-        return $datetimeFile;
     }
 
     /**
@@ -503,46 +393,6 @@ class PageLayoutListener {
 
         if (self::isDisabled($pageModel))
             return true;
-
-        $rootPage = ($pageModel->__get('type') == 'root') ? $pageModel : null;
-        if (empty($rootPage)) {
-            $rootPage = $pageModel->__get('rootId');
-            $rootPage = PageModel::findByIdOrAlias($rootPage);
-        }
-
-        $licenseKey = (!empty($rootPage->__get('ncoi_license_key'))) ? $rootPage->__get(
-            'ncoi_license_key'
-        ) : Config::get('ncoi_license_key');
-
-        $licenseExpiryDate = (!empty($rootPage->__get('ncoi_license_expiry_date'))) ? $rootPage->__get(
-            'ncoi_license_expiry_date'
-        ) : Config::get('ncoi_license_expiry_date');
-
-        $domain = $_SERVER['SERVER_NAME'];
-        if (!empty($licenseKey) && !empty($licenseExpiryDate) && !self::checkLicense(
-                $licenseKey,
-                $licenseExpiryDate,
-                $domain
-            ) && self::checkHash($licenseKey, $licenseExpiryDate, $domain)) {
-
-            $licenseAPIResponse = LicenseController::callAPI($domain,true);
-            if ($licenseAPIResponse->getSuccess()) {
-                $licenseExpiryDate = $licenseAPIResponse->getDateOfExpiry();
-                $licenseKey = $licenseAPIResponse->getLicenseKey();
-                LicenseController::setLicense($licenseExpiryDate, $licenseKey, $rootPage);
-            }
-        }
-
-        if (!self::checkLicense(
-                $licenseKey,
-                $licenseExpiryDate,
-                $domain
-            ) && empty(self::checkLicenseRemainingTrialPeriod())) {
-
-            $GLOBALS['TL_JAVASCRIPT']['netzhirschCookieOptInError']
-                = 'bundles/netzhirschcookieoptin/netzhirschCookieOptInNoLicense.js|static';
-            return true;
-        }
 
         return false;
     }
